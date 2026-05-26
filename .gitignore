@@ -3,6 +3,18 @@
 # dependencies
 node_modules/
 
+# env files
+.env
+.env*.local
+
+# Firebase / service account secrets (never commit)
+serviceAccountKey.json
+serviceAccount*.json
+!serviceAccountKey.example.json
+*-firebase-adminsdk-*.json
+firebase-adminsdk*.json
+**/firebase-adminsdk*.json
+
 # Expo
 .expo/
 dist/
@@ -30,13 +42,13 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
-
 # typescript
 *.tsbuildinfo
 
 app-example
+
+# local test output (optional)
+coverage/
 
 # generated native folders
 /ios
