@@ -6,13 +6,22 @@ import {
   getAuth,
   initializeAuth,
   inMemoryPersistence,
+  type Auth,
 } from "firebase/auth";
-import { getFirestore, terminate } from "firebase/firestore";
+import { getFirestore, terminate, type Firestore } from "firebase/firestore";
+import type { SchoolFirebaseConfig } from "../types/school";
 import { notifyFirestoreClosing } from "./firestoreSession";
 
-/** @typedef {import('../types/school').SchoolFirebaseConfig} SchoolFirebaseConfig */
+type EnvFirebaseConfig = {
+  apiKey?: string;
+  authDomain?: string;
+  projectId?: string;
+  storageBucket?: string;
+  messagingSenderId?: string;
+  appId?: string;
+};
 
-function configFromEnv(prefix) {
+function configFromEnv(prefix: string): EnvFirebaseConfig {
   return {
     apiKey: process.env[`${prefix}_API_KEY`],
     authDomain: process.env[`${prefix}_AUTH_DOMAIN`],
@@ -23,7 +32,9 @@ function configFromEnv(prefix) {
   };
 }
 
-function hasValidConfig(config) {
+function hasValidConfig(
+  config: EnvFirebaseConfig | SchoolFirebaseConfig | null | undefined,
+): config is SchoolFirebaseConfig {
   return Boolean(config?.apiKey && config?.projectId);
 }
 
@@ -39,16 +50,19 @@ if (!hasValidConfig(effectiveRegistryConfig)) {
   );
 }
 
-/** School + admin secondary apps use this config for lazy admin-auth init. */
-/** @type {SchoolFirebaseConfig | null} */
-let lastSchoolFirebaseConfig = null;
+let lastSchoolFirebaseConfig: SchoolFirebaseConfig | null = null;
 
-function initAuthForApp(app) {
+function initAuthForApp(app: ReturnType<typeof initializeApp>): Auth {
   if (Platform.OS === "web") {
     try {
       return initializeAuth(app);
     } catch (err) {
-      if (err?.code === "auth/already-initialized") {
+      if (
+        err &&
+        typeof err === "object" &&
+        "code" in err &&
+        err.code === "auth/already-initialized"
+      ) {
         return getAuth(app);
       }
       throw err;
@@ -60,42 +74,52 @@ function initAuthForApp(app) {
       persistence: getReactNativePersistence(AsyncStorage),
     });
   } catch (err) {
-    if (err?.code === "auth/already-initialized") {
+    if (
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      err.code === "auth/already-initialized"
+    ) {
       return getAuth(app);
     }
     throw err;
   }
 }
 
-function initAdminCreateAuth(app) {
+function initAdminCreateAuth(app: ReturnType<typeof initializeApp>): Auth {
   try {
     return initializeAuth(app, {
       persistence: inMemoryPersistence,
     });
   } catch (err) {
-    if (err?.code === "auth/already-initialized") {
+    if (
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      err.code === "auth/already-initialized"
+    ) {
       return getAuth(app);
     }
     throw err;
   }
 }
 
-const registryApp = initializeApp(effectiveRegistryConfig, "EduTrackRegistry");
+const registryApp = initializeApp(
+  effectiveRegistryConfig as SchoolFirebaseConfig,
+  "EduTrackRegistry",
+);
 export const registryDb = getFirestore(registryApp);
 export const registryAuth = initAuthForApp(registryApp);
 
-/** @type {import('firebase/auth').Auth | null} */
-export let auth = null;
+export let auth: Auth | null = null;
+export let db: Firestore | null = null;
+export let adminCreateAuth: Auth | null = null;
 
-/** @type {import('firebase/firestore').Firestore | null} */
-export let db = null;
+let connectedSchoolProjectId: string | null = null;
 
-/** @type {import('firebase/auth').Auth | null} */
-export let adminCreateAuth = null;
-
-let connectedSchoolProjectId = null;
-
-async function shutdownFirebaseApp(app) {
+async function shutdownFirebaseApp(
+  app: ReturnType<typeof initializeApp>,
+): Promise<void> {
   try {
     await terminate(getFirestore(app));
   } catch {
@@ -110,9 +134,8 @@ async function shutdownFirebaseApp(app) {
 
 /**
  * Secondary Auth used only when admins create/import users (in-memory session).
- * Lazily initialized so login/school connect does not trigger RN persistence warnings.
  */
-export function ensureAdminCreateAuth() {
+export function ensureAdminCreateAuth(): Auth | null {
   if (!lastSchoolFirebaseConfig || !connectedSchoolProjectId) {
     return null;
   }
@@ -134,11 +157,9 @@ export function ensureAdminCreateAuth() {
   return adminCreateAuth;
 }
 
-/**
- * Connect the app to a school's Firebase project (Auth + Firestore).
- * @param {SchoolFirebaseConfig} firebaseConfig
- */
-export async function connectToSchool(firebaseConfig) {
+export async function connectToSchool(
+  firebaseConfig: SchoolFirebaseConfig,
+): Promise<{ auth: Auth; db: Firestore }> {
   const projectId = firebaseConfig?.projectId;
   if (!hasValidConfig(firebaseConfig)) {
     throw new Error("Invalid school Firebase configuration");
@@ -182,15 +203,15 @@ export async function connectToSchool(firebaseConfig) {
   return { auth, db };
 }
 
-export function getDefaultFirebaseConfig() {
+export function getDefaultFirebaseConfig(): EnvFirebaseConfig {
   return defaultConfig;
 }
 
-export function getConnectedSchoolProjectId() {
+export function getConnectedSchoolProjectId(): string | null {
   return connectedSchoolProjectId;
 }
 
-export async function disconnectSchool() {
+export async function disconnectSchool(): Promise<void> {
   notifyFirestoreClosing();
 
   auth = null;

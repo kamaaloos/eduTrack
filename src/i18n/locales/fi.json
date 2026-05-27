@@ -179,7 +179,9 @@
     "loading": "Ladataan kouluja…",
     "empty": "Kouluja ei ole vielä saatavilla. Ota yhteyttä ylläpitäjääsi.",
     "connectError": "Tähän kouluun ei saatu yhteyttä",
-    "superAdminLink": "Alustan ylläpitäjän kirjautuminen"
+    "superAdminLink": "Alustan ylläpitäjän kirjautuminen",
+    "backToOnboarding": "Takaisin aloitukseen",
+    "signOutPlatformAdmin": "Kirjaudu ulos alustan ylläpidosta"
   },
   "index": {
     "loading": "Ladataan…"
@@ -243,6 +245,7 @@
     "emptyTeacher": "Ei ilmoituksia vielä. Läsnäoloon, poissaoloihin ja koulutiedotteisiin liittyvät päivitykset näkyvät täällä.",
     "emptyStudent": "Ei ilmoituksia vielä. Kotitehtävät, kokeet ja koulutiedotteet näkyvät täällä.",
     "emptyParent": "Ei ilmoituksia vielä. Lastesi läsnäoloon ja koulupäivityksiin liittyvät hälytykset näkyvät täällä.",
+    "emptyAdmin": "Ei ilmoituksia vielä. Käyttöajan hälytykset ja koulupäivitykset näkyvät täällä.",
     "markRead": "Merkitse luetuksi"
   },
   "teacher": {
@@ -639,6 +642,11 @@
     "directories": "Hakemistot",
     "directoriesHint": "Hallitse tilejä, kun joku lähtee, siirtyy tai tarvitsee salasanan nollauksen.",
     "management": "Hallinta",
+    "usageTimeNoticeTitle": "Koulun käyttöaika",
+    "usageTimeRemainingDays": "{{count}} päivää jäljellä",
+    "usageExpiredNotice": "Käyttöaika on päättynyt. Lataa fee-time nyt.",
+    "usageRechargeHint": "Ota yhteys alustan ylläpitäjään tämän koulun ajan uusimiseksi.",
+    "notificationsTitle": "Ilmoitukset",
     "analyticsSubtitle": "Yleiskatsaus koulun toimintaan",
     "analyticsLoading": "Ladataan analytiikkaa…",
     "analyticsLoadError": "Analytiikkaa ei voitu ladata",
@@ -882,6 +890,10 @@
     "activeInPickerHint": "Piilotetut koulut pysyvät rekisterissä, mutta niitä ei voi valita.",
     "firebaseConfigSection": "Firebase-projektin asetukset",
     "firebaseConfigHint": "Kopioi Firebase Console → Projektin asetukset → Sovelluksesi → Web-sovellus. Jokaisella koululla on oma Firebase-projekti.",
+    "usageExpiresAt": "Käytön päättymispäivä *",
+    "usageExpiresAtPlaceholder": "YYYY-MM-DD",
+    "usageExpiresAtHint": "Aseta milloin tämän koulun käyttöjakso päättyy.",
+    "usageNotSet": "Käytön päättymispäivää ei ole asetettu",
     "saveChanges": "Tallenna muutokset",
     "registerSchool": "Rekisteröi koulu",
     "notFound": "Ei löytynyt",

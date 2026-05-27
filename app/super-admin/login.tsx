@@ -84,6 +84,15 @@ export default function SuperAdminLoginScreen() {
             <Ionicons name="chevron-back" size={18} color="#1E3A8A" />
             <Text style={styles.backLinkText}>{t("superAdmin.backToSchoolList")}</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.backLink}
+            onPress={() => router.replace("/onboarding")}
+          >
+            <Ionicons name="home-outline" size={16} color="#475569" />
+            <Text style={styles.backLinkSubText}>
+              {t("selectSchool.backToOnboarding")}
+            </Text>
+          </TouchableOpacity>
 
           <View style={styles.hero}>
             <View style={styles.iconCircle}>
@@ -165,6 +174,11 @@ const styles = StyleSheet.create({
     color: "#1E3A8A",
     fontWeight: "600",
     fontSize: 15,
+  },
+  backLinkSubText: {
+    color: "#475569",
+    fontWeight: "600",
+    fontSize: 13,
   },
   hero: {
     alignItems: "center",

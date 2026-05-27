@@ -179,7 +179,9 @@
     "loading": "جارٍ تحميل المدارس…",
     "empty": "لا توجد مدارس متاحة بعد. تواصل مع مسؤولك.",
     "connectError": "تعذّر الاتصال بهذه المدرسة",
-    "superAdminLink": "تسجيل دخول مسؤول المنصة"
+    "superAdminLink": "تسجيل دخول مسؤول المنصة",
+    "backToOnboarding": "العودة إلى البدء",
+    "signOutPlatformAdmin": "تسجيل خروج مسؤول المنصة"
   },
   "index": {
     "loading": "جارٍ التحميل…"
@@ -243,6 +245,7 @@
     "emptyTeacher": "لا توجد إشعارات بعد. ستظهر هنا التحديثات حول الحضور والغياب وأخبار المدرسة.",
     "emptyStudent": "لا توجد إشعارات بعد. ستظهر هنا الواجبات والاختبارات وإعلانات المدرسة.",
     "emptyParent": "لا توجد إشعارات بعد. ستظهر هنا تنبيهات حضور أبنائك وتحديثات المدرسة.",
+    "emptyAdmin": "لا توجد إشعارات بعد. ستظهر هنا تنبيهات وقت الاستخدام وتحديثات المدرسة.",
     "markRead": "وضع علامة كمقروء"
   },
   "teacher": {
@@ -639,6 +642,11 @@
     "directories": "الأدلة",
     "directoriesHint": "إدارة الحسابات عند المغادرة أو الانتقال أو الحاجة لإعادة تعيين كلمة المرور.",
     "management": "الإدارة",
+    "usageTimeNoticeTitle": "وقت اشتراك المدرسة",
+    "usageTimeRemainingDays": "المتبقي {{count}} يوم",
+    "usageExpiredNotice": "انتهى وقت الاشتراك. يرجى شحن fee-time الآن.",
+    "usageRechargeHint": "يرجى التواصل مع مسؤول المنصة لتجديد وقت هذه المدرسة.",
+    "notificationsTitle": "الإشعارات",
     "analyticsSubtitle": "نظرة عامة على نشاط المدرسة",
     "analyticsLoading": "جاري تحميل التحليلات…",
     "analyticsLoadError": "تعذر تحميل التحليلات",
@@ -882,6 +890,10 @@
     "activeInPickerHint": "المدارس المخفية تبقى في السجل لكن لا يمكن اختيارها.",
     "firebaseConfigSection": "إعداد مشروع Firebase",
     "firebaseConfigHint": "انسخ من Firebase Console → إعدادات المشروع → تطبيقاتك → تطبيق الويب.",
+    "usageExpiresAt": "تاريخ انتهاء الاستخدام *",
+    "usageExpiresAtPlaceholder": "YYYY-MM-DD",
+    "usageExpiresAtHint": "حدد متى تنتهي مدة استخدام هذه المدرسة.",
+    "usageNotSet": "تاريخ انتهاء الاستخدام غير محدد",
     "saveChanges": "حفظ التغييرات",
     "registerSchool": "تسجيل المدرسة",
     "notFound": "غير موجود",

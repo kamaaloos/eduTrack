@@ -17,6 +17,8 @@ type AdminScreenHeaderProps = {
   subtitle?: string;
   showBack?: boolean;
   showLogout?: boolean;
+  notificationCount?: number;
+  onNotificationsPress?: () => void;
 };
 
 export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
@@ -24,6 +26,8 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
   subtitle,
   showBack = false,
   showLogout = true,
+  notificationCount = 0,
+  onNotificationsPress,
 }) => {
   const { t } = useTranslation();
   const { logout } = useContext(AuthContext);
@@ -77,18 +81,37 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
             ) : null}
           </View>
 
-          {showLogout ? (
-            <TouchableOpacity
-              style={styles.logoutButton}
-              onPress={handleLogout}
-              accessibilityLabel={t("common.logout")}
-            >
-              <Ionicons name="log-out-outline" size={18} color="#1E3A8A" />
-              <Text style={styles.logoutText}>{t("common.logout")}</Text>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.logoutPlaceholder} />
-          )}
+          <View style={styles.headerActions}>
+            {onNotificationsPress ? (
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={onNotificationsPress}
+                accessibilityLabel={t("admin.notificationsTitle")}
+              >
+                <Ionicons name="notifications-outline" size={20} color="#1E3A8A" />
+                {notificationCount > 0 ? (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>
+                      {notificationCount > 99 ? "99+" : notificationCount}
+                    </Text>
+                  </View>
+                ) : null}
+              </TouchableOpacity>
+            ) : null}
+
+            {showLogout ? (
+              <TouchableOpacity
+                style={styles.logoutButton}
+                onPress={handleLogout}
+                accessibilityLabel={t("common.logout")}
+              >
+                <Ionicons name="log-out-outline" size={18} color="#1E3A8A" />
+                <Text style={styles.logoutText}>{t("common.logout")}</Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.logoutPlaceholder} />
+            )}
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -171,5 +194,36 @@ const styles = StyleSheet.create({
   logoutPlaceholder: {
     width: 100,
     flexShrink: 0,
+  },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexShrink: 0,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badge: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "#DC2626",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 3,
+  },
+  badgeText: {
+    color: "#FFFFFF",
+    fontSize: 9,
+    fontWeight: "800",
   },
 });

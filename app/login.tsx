@@ -26,11 +26,7 @@ import { useSchoolContext } from "../src/context/schoolContext";
 import { APP_COPYRIGHT } from "../src/constants/appTheme";
 import { AuthContext } from "../src/context/authContext";
 import { auth } from "../src/services/firebase";
-
-const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
+import { validateEmail } from "../src/utils/validation";
 
 export default function Login() {
   const { t } = useTranslation();

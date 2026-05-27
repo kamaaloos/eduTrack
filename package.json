@@ -14,7 +14,10 @@
     "lint": "expo lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "ci": "npm test && npm run lint"
+    "test:coverage": "jest --coverage",
+    "typecheck": "tsc --noEmit -p tsconfig.ci.json",
+    "typecheck:app": "tsc --noEmit",
+    "ci": "npm test && npm run lint && npm run typecheck"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

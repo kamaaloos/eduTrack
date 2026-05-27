@@ -8,13 +8,21 @@ import {
   type ReactNode,
 } from "react";
 import { signOut } from "firebase/auth";
-import { loadActiveSchools } from "../services/schoolRegistry";
+import {
+  getSchoolRegistryEntry,
+  loadActiveSchools,
+} from "../services/schoolRegistry";
 import {
   auth,
   connectToSchool,
   disconnectSchool,
 } from "../services/firebase";
 import type { SchoolRecord, StoredSchool } from "../types/school";
+import {
+  applyRegistryToStoredSchool,
+  storedSchoolNeedsPersist,
+  toStoredSchool,
+} from "../utils/schoolSelection";
 import {
   clearSelectedSchool,
   getSelectedSchool,
@@ -32,6 +40,7 @@ type SchoolContextValue = {
   clearSchool: () => Promise<void>;
   resetSchoolSession: () => Promise<void>;
   reloadSchools: () => Promise<void>;
+  refreshSelectedSchoolFromRegistry: () => Promise<StoredSchool | null>;
 };
 
 export const SchoolContext = createContext<SchoolContextValue | null>(null);
@@ -45,6 +54,18 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
   const [schoolsLoading, setSchoolsLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const mergeStoredSchoolWithRegistry = useCallback(
+    async (stored: StoredSchool): Promise<StoredSchool> => {
+      const fresh = await getSchoolRegistryEntry(stored.id);
+      const updated = applyRegistryToStoredSchool(stored, fresh);
+      if (storedSchoolNeedsPersist(stored, updated)) {
+        await saveSelectedSchool(updated);
+      }
+      return updated;
+    },
+    [],
+  );
 
   const reloadSchools = useCallback(async () => {
     setSchoolsLoading(true);
@@ -62,6 +83,24 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const refreshSelectedSchoolFromRegistry =
+    useCallback(async (): Promise<StoredSchool | null> => {
+      if (!selectedSchool) return null;
+      try {
+        const updated = await mergeStoredSchoolWithRegistry(selectedSchool);
+        if (
+          updated.usageExpiresAt !== (selectedSchool.usageExpiresAt ?? null) ||
+          updated.name !== selectedSchool.name
+        ) {
+          setSelectedSchool(updated);
+        }
+        return updated;
+      } catch (err) {
+        console.warn("refreshSelectedSchoolFromRegistry failed:", err);
+        return selectedSchool;
+      }
+    }, [mergeStoredSchoolWithRegistry, selectedSchool]);
+
   useEffect(() => {
     let active = true;
 
@@ -73,8 +112,9 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
 
         if (saved) {
           await connectToSchool(saved.firebase);
+          const merged = await mergeStoredSchoolWithRegistry(saved);
           if (active) {
-            setSelectedSchool(saved);
+            setSelectedSchool(merged);
           }
         }
       } catch (err) {
@@ -93,18 +133,33 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [reloadSchools]);
+  }, [reloadSchools, mergeStoredSchoolWithRegistry]);
+
+  useEffect(() => {
+    if (!selectedSchool || schools.length === 0) return;
+    const match = schools.find((school) => school.id === selectedSchool.id);
+    if (!match) return;
+
+    const nextExpiry = match.usageExpiresAt ?? null;
+    const currentExpiry = selectedSchool.usageExpiresAt ?? null;
+    if (match.name === selectedSchool.name && nextExpiry === currentExpiry) {
+      return;
+    }
+
+    const updated: StoredSchool = {
+      ...selectedSchool,
+      name: match.name,
+      usageExpiresAt: nextExpiry,
+    };
+    void saveSelectedSchool(updated).then(() => setSelectedSchool(updated));
+  }, [schools, selectedSchool]);
 
   const selectSchool = useCallback(async (school: SchoolRecord) => {
     setConnecting(true);
     setError(null);
     try {
       await connectToSchool(school.firebase);
-      const stored: StoredSchool = {
-        id: school.id,
-        name: school.name,
-        firebase: school.firebase,
-      };
+      const stored = toStoredSchool(school);
       await saveSelectedSchool(stored);
       setSelectedSchool(stored);
     } catch (err) {
@@ -153,6 +208,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
       clearSchool,
       resetSchoolSession,
       reloadSchools,
+      refreshSelectedSchoolFromRegistry,
     }),
     [
       selectedSchool,
@@ -165,6 +221,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
       clearSchool,
       resetSchoolSession,
       reloadSchools,
+      refreshSelectedSchoolFromRegistry,
     ],
   );
 

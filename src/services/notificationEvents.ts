@@ -1,6 +1,13 @@
 import type { CreateNotificationInput } from "./notifications";
 import { createNotifications } from "./notifications";
 import {
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "./firebase";
+import {
   getParentIdsForStudents,
   getStudentIdsInClass,
   getTeacherIdsForClass,
@@ -213,4 +220,52 @@ export async function notifyTeachersParentAttendanceResponse(params: {
     studentId: params.studentId,
     actorId: params.parentId,
   });
+}
+
+export async function notifySchoolUsageExpiring(params: {
+  schoolId: string;
+  schoolName: string;
+  remainingDays: number;
+  actorId?: string | null;
+}): Promise<void> {
+  if (!db) return;
+
+  // Avoid creating duplicate warnings frequently.
+  const existing = await getDocs(
+    query(
+      collection(db, "notifications"),
+      where("type", "==", "school_usage_expiring"),
+    ),
+  );
+  const now = Date.now();
+  const hasRecent = existing.docs.some((docSnap) => {
+    const data = docSnap.data();
+    if (data.classId !== params.schoolId) return false;
+    const raw = data.createdAt as { toDate?: () => Date } | undefined;
+    const createdAt = raw?.toDate?.();
+    return createdAt ? now - createdAt.getTime() < 24 * 60 * 60 * 1000 : false;
+  });
+  if (hasRecent) return;
+
+  const users = await getDocs(
+    query(
+      collection(db, "users"),
+      where("role", "in", ["admin", "superAdmin"]),
+    ),
+  );
+  if (users.empty) return;
+
+  const title = "School usage expires soon";
+  const message = `${params.schoolName}: ${params.remainingDays} day(s) remaining. Recharge fee-time soon.`;
+  const inputs: CreateNotificationInput[] = users.docs.map((u) => ({
+    title,
+    message,
+    type: "school_usage_expiring",
+    targetRole:
+      u.data().role === "superAdmin" ? "superAdmin" : "admin",
+    targetUserId: u.id,
+    classId: params.schoolId,
+    actorId: params.actorId ?? null,
+  }));
+  await createNotifications(inputs);
 }

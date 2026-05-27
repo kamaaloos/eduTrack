@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   RefreshControl,
@@ -13,7 +13,12 @@ import {
 } from "react-native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminScreenHeader } from "../../components/admin/AdminScreenHeader";
+import { AuthContext } from "../../src/context/authContext";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { useSchoolContext } from "../../src/context/schoolContext";
+import { useUnreadNotificationCount } from "../../hooks/useNotifications";
+import { notifySchoolUsageExpiring } from "../../src/services/notificationEvents";
+import { getUsageRemainingDays } from "../../src/utils/usageExpiry";
 
 type MenuRoute =
   | "/(admin)/users"
@@ -30,6 +35,8 @@ type DirectoryRoute =
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
+  const { user } = useContext(AuthContext);
+  const { selectedSchool, refreshSelectedSchoolFromRegistry } = useSchoolContext();
   const {
     students,
     teachers,
@@ -41,6 +48,12 @@ export default function AdminDashboard() {
   } = useAdminData();
 
   const [refreshing, setRefreshing] = useState(false);
+  const notificationCount = useUnreadNotificationCount(user?.uid);
+
+  const usageRemainingDays = useMemo(
+    () => getUsageRemainingDays(selectedSchool?.usageExpiresAt),
+    [selectedSchool?.usageExpiresAt],
+  );
 
   const directoryItems = useMemo(
     () => [
@@ -136,10 +149,37 @@ export default function AdminDashboard() {
     }
   }, [refreshAll, syncClassIdsFromAssignments, loadUsers]);
 
+  const maybeNotifyUsageExpiring = useCallback(
+    async (school: { id: string; name: string; usageExpiresAt?: string | null }) => {
+      const remaining = getUsageRemainingDays(school.usageExpiresAt);
+      if (remaining == null || remaining > 7) return;
+
+      await notifySchoolUsageExpiring({
+        schoolId: school.id,
+        schoolName: school.name,
+        remainingDays: remaining,
+        actorId: user?.uid ?? null,
+      });
+    },
+    [user?.uid],
+  );
+
   useFocusEffect(
     useCallback(() => {
-      void reloadDashboard();
-    }, [reloadDashboard]),
+      void (async () => {
+        const school =
+          (await refreshSelectedSchoolFromRegistry()) ?? selectedSchool;
+        await reloadDashboard();
+        if (school?.id && school.name) {
+          await maybeNotifyUsageExpiring(school);
+        }
+      })();
+    }, [
+      reloadDashboard,
+      maybeNotifyUsageExpiring,
+      refreshSelectedSchoolFromRegistry,
+      selectedSchool,
+    ]),
   );
 
   const onRefresh = async () => {
@@ -157,6 +197,10 @@ export default function AdminDashboard() {
         <AdminScreenHeader
           title={t("admin.dashboardTitle")}
           subtitle={t("admin.dashboardSubtitle")}
+          notificationCount={notificationCount}
+          onNotificationsPress={() =>
+            router.push("/(admin)/notifications" as never)
+          }
         />
 
         <ScrollView
@@ -167,6 +211,30 @@ export default function AdminDashboard() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
+          {usageRemainingDays != null ? (
+            <View
+              style={[
+                styles.usageCard,
+                usageRemainingDays <= 7 ? styles.usageCardWarn : null,
+              ]}
+            >
+              <Ionicons
+                name={usageRemainingDays <= 7 ? "warning-outline" : "time-outline"}
+                size={18}
+                color={usageRemainingDays <= 7 ? "#B45309" : "#0369A1"}
+              />
+              <View style={styles.usageCardText}>
+                <Text style={styles.usageTitle}>{t("admin.usageTimeNoticeTitle")}</Text>
+                <Text style={styles.usageSub}>
+                  {usageRemainingDays <= 0
+                    ? t("admin.usageExpiredNotice")
+                    : t("admin.usageTimeRemainingDays", { count: usageRemainingDays })}
+                </Text>
+                <Text style={styles.usageHint}>{t("admin.usageRechargeHint")}</Text>
+              </View>
+            </View>
+          ) : null}
+
           <View style={styles.statsSection}>
             <View style={styles.statsRow}>
               <TouchableOpacity
@@ -294,6 +362,38 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 16,
     paddingTop: 16,
+  },
+  usageCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+    backgroundColor: "#F0F9FF",
+    borderWidth: 1,
+    borderColor: "#BAE6FD",
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 12,
+  },
+  usageCardWarn: {
+    backgroundColor: "#FFFBEB",
+    borderColor: "#FDE68A",
+  },
+  usageCardText: { flex: 1 },
+  usageTitle: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  usageSub: {
+    marginTop: 4,
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#334155",
+  },
+  usageHint: {
+    marginTop: 4,
+    fontSize: 12,
+    color: "#64748B",
   },
   statsSection: {
     marginBottom: 8,

@@ -179,7 +179,9 @@
     "loading": "Dugsiyada waa la soo rarayaa…",
     "empty": "Weli ma jiraan dugsiyo la heli karo. La xiriir maamulahaaga.",
     "connectError": "Lama xiriiri karin dugsigan",
-    "superAdminLink": "Soo gelitaanka maamulaha madasha"
+    "superAdminLink": "Soo gelitaanka maamulaha madasha",
+    "backToOnboarding": "Ku laabo bilowga",
+    "signOutPlatformAdmin": "Ka bax maamulaha madasha"
   },
   "index": {
     "loading": "Waa la soo rarayaa…"
@@ -243,6 +245,7 @@
     "emptyTeacher": "Weli ma jiraan ogeysiisyo. Cusbooneysiinta ku saabsan imaanshaha, maqnaanshaha, iyo wararka dugsiga ayaa halkan ka muuqan doona.",
     "emptyStudent": "Weli ma jiraan ogeysiisyo. Hawl guriga, imtixaanada, iyo ogeysiisyada dugsiga ayaa halkan ka muuqan doona.",
     "emptyParent": "Weli ma jiraan ogeysiisyo. Digniinaha ku saabsan imaanshaha carruurtaada iyo cusbooneysiinta dugsiga ayaa halkan ka muuqan doona.",
+    "emptyAdmin": "Weli ma jiraan ogeysiisyo. Digniinaha waqtiga adeegga iyo cusbooneysiinta dugsiga ayaa halkan ka muuqan doona.",
     "markRead": "Calaamadee in la akhriyay"
   },
   "teacher": {
@@ -639,6 +642,11 @@
     "directories": "Maamulida",
     "directoriesHint": "Maamul akoonnada marka qof baxo, u guuro, ama u baahan yahay dib u dejinta furaha.",
     "management": "Maamul",
+    "usageTimeNoticeTitle": "Waqtiga adeegga dugsiga",
+    "usageTimeRemainingDays": "{{count}} maalmood ayaa haray",
+    "usageExpiredNotice": "Waqtiga adeeggu wuu dhacay. Dib u buuxi fee-time hadda.",
+    "usageRechargeHint": "La xiriir maamulaha madasha si loo cusbooneysiiyo waqtiga dugsigan.",
+    "notificationsTitle": "Ogeysiisyada",
     "analyticsSubtitle": "Dulmar guud ee dhaqdhaqaaqa dugsiga",
     "analyticsLoading": "Falanqaynta waa la soo rarayaa…",
     "analyticsLoadError": "Lama soo rari karin falanqaynta",
@@ -882,6 +890,10 @@
     "activeInPickerHint": "Dugsiyada qarsoon waxay ku jiraan diiwaanka laakiin lama dooran karo.",
     "firebaseConfigSection": "Dejinta mashruuca Firebase",
     "firebaseConfigHint": "Ka nuqul Firebase Console → Dejinta mashruuca → Apps-kaaga → Web app. Dugsiga kastaa waa inuu isticmaalaa mashruuc Firebase u gaar ah.",
+    "usageExpiresAt": "Taariikhda dhicitaanka adeegga *",
+    "usageExpiresAtPlaceholder": "YYYY-MM-DD",
+    "usageExpiresAtHint": "Deji goorta ay dhammaanayso muddada isticmaalka dugsigan.",
+    "usageNotSet": "Taariikhda dhicitaanka adeegga lama dejin",
     "saveChanges": "Kaydi isbeddellada",
     "registerSchool": "Diiwaangeli dugsiga",
     "notFound": "Lama helin",

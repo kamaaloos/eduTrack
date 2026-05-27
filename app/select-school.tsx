@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -14,8 +15,10 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { useSuperAdminAuth } from "../src/context/superAdminAuthContext";
 import { useSchoolContext } from "../src/context/schoolContext";
 import type { SchoolRecord } from "../src/types/school";
+import { clearLocalSessionPreferences } from "../src/utils/authNavigation";
 
 export default function SelectSchoolScreen() {
   const { t } = useTranslation();
@@ -28,6 +31,8 @@ export default function SelectSchoolScreen() {
     selectSchool,
     reloadSchools,
   } = useSchoolContext();
+  const { user: superAdminUser, role: superAdminRole, logout: superAdminLogout } =
+    useSuperAdminAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [selectError, setSelectError] = useState<string | null>(null);
 
@@ -52,6 +57,33 @@ export default function SelectSchoolScreen() {
     }
   };
 
+  const handleBackToOnboarding = async () => {
+    await clearLocalSessionPreferences();
+    router.replace("/onboarding");
+  };
+
+  const handleSuperAdminLogout = () => {
+    Alert.alert(t("superAdmin.signOutTitle"), t("superAdmin.signOutConfirm"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("common.logout"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await superAdminLogout();
+          } catch (err) {
+            Alert.alert(
+              t("common.error"),
+              err instanceof Error
+                ? err.message
+                : t("superAdmin.signOutFailed"),
+            );
+          }
+        },
+      },
+    ]);
+  };
+
   return (
     <AppScreenBackground>
     <View style={styles.screen}>
@@ -63,6 +95,28 @@ export default function SelectSchoolScreen() {
         </View>
         <Text style={styles.title}>{t("selectSchool.title")}</Text>
         <Text style={styles.subtitle}>{t("selectSchool.subtitle")}</Text>
+        <TouchableOpacity
+          style={styles.secondaryLink}
+          onPress={() => void handleBackToOnboarding()}
+          activeOpacity={0.85}
+        >
+          <Ionicons name="arrow-back" size={16} color="#475569" />
+          <Text style={styles.secondaryLinkText}>
+            {t("selectSchool.backToOnboarding")}
+          </Text>
+        </TouchableOpacity>
+        {superAdminUser && superAdminRole === "superAdmin" ? (
+          <TouchableOpacity
+            style={styles.secondaryLink}
+            onPress={handleSuperAdminLogout}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="log-out-outline" size={16} color="#475569" />
+            <Text style={styles.secondaryLinkText}>
+              {t("selectSchool.signOutPlatformAdmin")}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       {(error || selectError) && (
@@ -125,7 +179,7 @@ export default function SelectSchoolScreen() {
       ) : null}
 
       <TouchableOpacity
-        style={[styles.adminLink, { bottom: Math.max(insets.bottom, 16) + 8 }]}
+        style={[styles.adminLink, { bottom: Math.max(insets.bottom, 16) + 42 }]}
         onPress={() => router.push("/super-admin/login")}
       >
         <Ionicons name="planet-outline" size={18} color="#1E3A8A" />
@@ -170,6 +224,21 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: "#64748B",
     textAlign: "center",
+  },
+  secondaryLink: {
+    marginTop: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: "#F1F5F9",
+  },
+  secondaryLinkText: {
+    color: "#475569",
+    fontSize: 13,
+    fontWeight: "600",
   },
   errorBox: {
     marginHorizontal: 20,

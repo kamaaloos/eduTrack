@@ -15,7 +15,7 @@ import {
   type AppNotification,
 } from "../../src/services/notifications";
 
-type NotificationAudience = "teacher" | "student" | "parent";
+type NotificationAudience = "teacher" | "student" | "parent" | "admin";
 
 type NotificationsListProps = {
   audience: NotificationAudience;
@@ -31,6 +31,7 @@ const EMPTY_MESSAGE_KEYS: Record<NotificationAudience, string> = {
   teacher: "notifications.emptyTeacher",
   student: "notifications.emptyStudent",
   parent: "notifications.emptyParent",
+  admin: "notifications.emptyAdmin",
 };
 
 function formatWhen(date: Date | null): string {

@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { SuperAdminScreenHeader } from "../../components/superAdmin/SuperAdminScreenHeader";
+import { getUsageRemainingDays } from "../../src/utils/usageExpiry";
 import {
   deleteSchoolRecord,
   listAllSchoolsForAdmin,
@@ -147,6 +148,24 @@ export default function SuperAdminSchoolsScreen() {
                       {item.city ? `${item.city} · ` : ""}
                       {item.firebase.projectId}
                     </Text>
+                    {getUsageRemainingDays(item.usageExpiresAt) != null ? (
+                      <Text
+                        style={[
+                          styles.cardUsage,
+                          (getUsageRemainingDays(item.usageExpiresAt) ?? 0) <= 7
+                            ? styles.cardUsageWarn
+                            : null,
+                        ]}
+                      >
+                        {t("admin.usageTimeRemainingDays", {
+                          count: getUsageRemainingDays(item.usageExpiresAt),
+                        })}
+                      </Text>
+                    ) : (
+                      <Text style={[styles.cardUsage, styles.cardUsageWarn]}>
+                        {t("superAdmin.usageNotSet")}
+                      </Text>
+                    )}
                   </View>
                   <View
                     style={[
@@ -298,6 +317,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
     color: "#64748B",
+  },
+  cardUsage: {
+    marginTop: 4,
+    fontSize: 12,
+    color: "#475569",
+    fontWeight: "600",
+  },
+  cardUsageWarn: {
+    color: "#B45309",
   },
   badge: {
     borderRadius: 999,

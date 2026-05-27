@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "types": ["jest", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "src/types/**/*.ts",
+    "src/utils/validation.ts",
+    "src/utils/usageExpiry.ts",
+    "src/utils/schoolSelection.ts",
+    "src/utils/schoolRoles.ts",
+    "src/utils/authNavigation.ts",
+    "src/utils/mustChangePassword.ts",
+    "src/utils/letterGrade.ts",
+    "src/utils/subjectKey.ts",
+    "src/utils/timeGreeting.ts",
+    "src/utils/academicFilters.ts",
+    "src/utils/scheduleFormat.ts",
+    "src/services/schoolRegistryMappers.ts",
+    "src/services/schoolRegistryValidation.ts",
+    "tests/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

@@ -32,6 +32,12 @@ const EMPTY_FIREBASE: SchoolFirebaseConfig = {
   appId: "",
 };
 
+function defaultUsageExpiryDate(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 30);
+  return d.toISOString().slice(0, 10);
+}
+
 export default function SuperAdminSchoolFormScreen() {
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -42,6 +48,7 @@ export default function SuperAdminSchoolFormScreen() {
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [active, setActive] = useState(true);
+  const [usageExpiresAt, setUsageExpiresAt] = useState(defaultUsageExpiryDate());
   const [firebase, setFirebase] = useState<SchoolFirebaseConfig>(EMPTY_FIREBASE);
 
   useEffect(() => {
@@ -58,6 +65,7 @@ export default function SuperAdminSchoolFormScreen() {
         setName(school.name);
         setCity(school.city ?? "");
         setActive(school.active);
+        setUsageExpiresAt(school.usageExpiresAt ?? "");
         setFirebase(school.firebase);
       } catch (err) {
         Alert.alert(
@@ -80,6 +88,7 @@ export default function SuperAdminSchoolFormScreen() {
       name,
       city,
       active,
+      usageExpiresAt,
       firebase,
     };
 
@@ -162,6 +171,16 @@ export default function SuperAdminSchoolFormScreen() {
             placeholder="Addis Ababa"
             placeholderTextColor="#94A3B8"
           />
+
+          <Text style={styles.label}>{t("superAdmin.usageExpiresAt")}</Text>
+          <TextInput
+            style={styles.input}
+            value={usageExpiresAt}
+            onChangeText={setUsageExpiresAt}
+            placeholder={t("superAdmin.usageExpiresAtPlaceholder")}
+            placeholderTextColor="#94A3B8"
+          />
+          <Text style={styles.hint}>{t("superAdmin.usageExpiresAtHint")}</Text>
 
           <View style={styles.switchRow}>
             <View style={styles.switchTextBlock}>

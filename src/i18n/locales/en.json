@@ -179,7 +179,9 @@
     "loading": "Loading schools…",
     "empty": "No schools are available yet. Contact your administrator.",
     "connectError": "Could not connect to this school",
-    "superAdminLink": "Platform administrator sign in"
+    "superAdminLink": "Platform administrator sign in",
+    "backToOnboarding": "Back to onboarding",
+    "signOutPlatformAdmin": "Sign out platform admin"
   },
   "index": {
     "loading": "Loading…"
@@ -243,6 +245,7 @@
     "emptyTeacher": "No notifications yet. Updates about attendance, absences, and school news will appear here.",
     "emptyStudent": "No notifications yet. Homework, exams, and school announcements will appear here.",
     "emptyParent": "No notifications yet. Alerts about your children's attendance and school updates will appear here.",
+    "emptyAdmin": "No notifications yet. Usage-time alerts and school updates will appear here.",
     "markRead": "Mark as read"
   },
   "teacher": {
@@ -639,6 +642,11 @@
     "directories": "Directories",
     "directoriesHint": "Manage accounts when someone leaves, moves, or needs a password reset.",
     "management": "Management",
+    "usageTimeNoticeTitle": "School subscription time",
+    "usageTimeRemainingDays": "{{count}} day(s) remaining",
+    "usageExpiredNotice": "Subscription time has expired. Recharge fee-time now.",
+    "usageRechargeHint": "Please contact platform administrator to recharge this school.",
+    "notificationsTitle": "Notifications",
     "analyticsSubtitle": "Overview of school activity",
     "analyticsLoading": "Loading analytics…",
     "analyticsLoadError": "Unable to load analytics",
@@ -882,6 +890,10 @@
     "activeInPickerHint": "Hidden schools stay in the registry but users cannot select them.",
     "firebaseConfigSection": "Firebase project config",
     "firebaseConfigHint": "Copy from Firebase Console → Project settings → Your apps → Web app. Each school must use its own Firebase project.",
+    "usageExpiresAt": "Usage expiry date *",
+    "usageExpiresAtPlaceholder": "YYYY-MM-DD",
+    "usageExpiresAtHint": "Set when this school subscription/usage period ends.",
+    "usageNotSet": "Usage expiry date not set",
     "saveChanges": "Save changes",
     "registerSchool": "Register school",
     "notFound": "Not found",

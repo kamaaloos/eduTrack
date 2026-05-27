@@ -1,1 +1,1 @@
-export const APP_COPYRIGHT = "© 2026 - MayleSoft school-app. All rights reserved. MayleSoft Technologies.";
+export const APP_COPYRIGHT = "© 2026 - MayleSoft school-app.";
