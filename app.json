@@ -17,10 +17,7 @@
         "backgroundColor": "#E8F2FA"
       },
       "package": "com.maylesoft.edutrack",
-      "versionCode": 2,
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+      "versionCode": 2
     },
     "plugins": [
       "expo-router",

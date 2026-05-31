@@ -43,6 +43,11 @@ export default function SuperAdminLoginScreen() {
       return;
     }
 
+    if (!registryAuth) {
+      setError(t("common.firebaseConfigMissingHint"));
+      return;
+    }
+
     setSubmitting(true);
     try {
       await signInWithEmailAndPassword(

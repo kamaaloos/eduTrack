@@ -52,6 +52,11 @@ if (!hasValidConfig(effectiveRegistryConfig)) {
   );
 }
 
+type RegistryFirebase = {
+  db: Firestore;
+  auth: Auth;
+};
+
 let lastSchoolFirebaseConfig: SchoolFirebaseConfig | null = null;
 
 function initAuthForApp(app: ReturnType<typeof initializeApp>): Auth {
@@ -106,12 +111,38 @@ function initAdminCreateAuth(app: ReturnType<typeof initializeApp>): Auth {
   }
 }
 
-const registryApp = initializeApp(
-  effectiveRegistryConfig as SchoolFirebaseConfig,
-  "EduTrackRegistry",
-);
-export const registryDb = getFirestore(registryApp);
-export const registryAuth = initAuthForApp(registryApp);
+function createRegistryFirebase(): RegistryFirebase | null {
+  if (!hasValidConfig(effectiveRegistryConfig)) {
+    return null;
+  }
+
+  try {
+    const app = initializeApp(
+      effectiveRegistryConfig as SchoolFirebaseConfig,
+      "EduTrackRegistry",
+    );
+    return {
+      db: getFirestore(app),
+      auth: initAuthForApp(app),
+    };
+  } catch (err) {
+    console.error("Registry Firebase init failed:", err);
+    return null;
+  }
+}
+
+const registryFirebase = createRegistryFirebase();
+
+export const registryDb = registryFirebase?.db ?? null;
+export const registryAuth = registryFirebase?.auth ?? null;
+
+export function isRegistryFirebaseReady(): boolean {
+  return registryDb !== null && registryAuth !== null;
+}
+
+export function isFirebaseConfigured(): boolean {
+  return isRegistryFirebaseReady() || hasValidConfig(defaultConfig);
+}
 
 export let auth: Auth | null = null;
 export let db: Firestore | null = null;

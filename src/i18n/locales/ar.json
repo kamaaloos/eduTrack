@@ -103,6 +103,8 @@
     "rename": "إعادة تسمية",
     "assign": "تعيين",
     "errorBoundaryTitle": "حدث خطأ ما",
+    "firebaseConfigMissingTitle": "إعدادات التطبيق مفقودة",
+    "firebaseConfigMissingHint": "لم تُضمَّن إعدادات Firebase في هذا البناء. يجب على المطوّر تعيين EXPO_PUBLIC_REGISTRY_* أو EXPO_PUBLIC_FIREBASE_* في EAS (بيئة preview) ثم إعادة بناء APK.",
     "errorBoundaryMessage": "حدث خطأ غير متوقع",
     "errorBoundaryUnexpected": "حدث خطأ غير متوقع"
   },

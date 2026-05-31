@@ -31,6 +31,14 @@ export function SuperAdminAuthProvider({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!registryAuth || !registryDb) {
+      setError(
+        "Firebase registry is not configured. Rebuild the app with EXPO_PUBLIC_REGISTRY_* or EXPO_PUBLIC_FIREBASE_* set.",
+      );
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(registryAuth, async (currentUser) => {
       try {
         setError(null);
@@ -87,7 +95,9 @@ export function SuperAdminAuthProvider({
 
   const logout = useCallback(async () => {
     setError(null);
-    await signOut(registryAuth);
+    if (registryAuth) {
+      await signOut(registryAuth);
+    }
     setUser(null);
     setUserData(null);
     setRole(null);

@@ -103,6 +103,8 @@
     "rename": "Magac beddel",
     "assign": "Xilsaar",
     "errorBoundaryTitle": "Wax baa khaldamay",
+    "firebaseConfigMissingTitle": "Habaynta app-ka maqan",
+    "firebaseConfigMissingHint": "Firebase lama gelin build-kan. Horumariyuhu waa inuu dejiyaa EXPO_PUBLIC_REGISTRY_* ama EXPO_PUBLIC_FIREBASE_* EAS (preview) kadibna dib u dhiso APK.",
     "errorBoundaryMessage": "Khalad lama filayn ayaa dhacay",
     "errorBoundaryUnexpected": "Khalad lama filayn ayaa dhacay"
   },

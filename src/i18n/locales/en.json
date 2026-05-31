@@ -103,6 +103,8 @@
     "rename": "Rename",
     "assign": "Assign",
     "errorBoundaryTitle": "Something went wrong",
+    "firebaseConfigMissingTitle": "App configuration missing",
+    "firebaseConfigMissingHint": "Firebase settings were not embedded in this build. The developer must set EXPO_PUBLIC_REGISTRY_* or EXPO_PUBLIC_FIREBASE_* in EAS (preview environment) and rebuild the APK.",
     "errorBoundaryMessage": "An unexpected error occurred",
     "errorBoundaryUnexpected": "An unexpected error occurred"
   },

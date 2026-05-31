@@ -18,8 +18,16 @@ export { validateSchoolInput } from "./schoolRegistryValidation";
 
 const COLLECTION = "schoolRegistry";
 
+function requireRegistryDb() {
+  if (!registryDb) {
+    throw new Error("Firebase registry is not configured");
+  }
+  return registryDb;
+}
+
 export async function listAllSchoolsForAdmin(): Promise<SchoolRecord[]> {
-  const snapshot = await getDocs(collection(registryDb, COLLECTION));
+  const db = requireRegistryDb();
+  const snapshot = await getDocs(collection(db, COLLECTION));
   return snapshot.docs
     .map((docSnap) => mapSchoolRegistryDoc(docSnap.id, docSnap.data()))
     .filter((school): school is SchoolRecord => school !== null)
@@ -29,7 +37,8 @@ export async function listAllSchoolsForAdmin(): Promise<SchoolRecord[]> {
 export async function getSchoolForAdmin(
   schoolId: string,
 ): Promise<SchoolRecord | null> {
-  const snap = await getDoc(doc(registryDb, COLLECTION, schoolId));
+  const db = requireRegistryDb();
+  const snap = await getDoc(doc(db, COLLECTION, schoolId));
   if (!snap.exists()) return null;
   return mapSchoolRegistryDoc(snap.id, snap.data());
 }
@@ -37,7 +46,8 @@ export async function getSchoolForAdmin(
 export async function createSchoolRecord(
   input: SchoolRegistryInput,
 ): Promise<string> {
-  const docRef = await addDoc(collection(registryDb, COLLECTION), {
+  const db = requireRegistryDb();
+  const docRef = await addDoc(collection(db, COLLECTION), {
     name: input.name.trim(),
     city: input.city?.trim() || null,
     logoUrl: input.logoUrl?.trim() || null,
@@ -55,7 +65,8 @@ export async function updateSchoolRecord(
   schoolId: string,
   input: SchoolRegistryInput,
 ): Promise<void> {
-  await updateDoc(doc(registryDb, COLLECTION, schoolId), {
+  const db = requireRegistryDb();
+  await updateDoc(doc(db, COLLECTION, schoolId), {
     name: input.name.trim(),
     city: input.city?.trim() || null,
     logoUrl: input.logoUrl?.trim() || null,
@@ -68,14 +79,16 @@ export async function updateSchoolRecord(
 }
 
 export async function deleteSchoolRecord(schoolId: string): Promise<void> {
-  await deleteDoc(doc(registryDb, COLLECTION, schoolId));
+  const db = requireRegistryDb();
+  await deleteDoc(doc(db, COLLECTION, schoolId));
 }
 
 export async function setSchoolActive(
   schoolId: string,
   active: boolean,
 ): Promise<void> {
-  await updateDoc(doc(registryDb, COLLECTION, schoolId), {
+  const db = requireRegistryDb();
+  await updateDoc(doc(db, COLLECTION, schoolId), {
     active,
     updatedAt: serverTimestamp(),
   });

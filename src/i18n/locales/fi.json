@@ -103,6 +103,8 @@
     "rename": "Nimeä uudelleen",
     "assign": "Määritä",
     "errorBoundaryTitle": "Jokin meni pieleen",
+    "firebaseConfigMissingTitle": "Sovelluksen asetukset puuttuvat",
+    "firebaseConfigMissingHint": "Firebase-asetuksia ei ole upotettu tähän buildiin. Kehittäjän täytyy asettaa EXPO_PUBLIC_REGISTRY_* tai EXPO_PUBLIC_FIREBASE_* EAS:ssa (preview) ja rakentaa APK uudelleen.",
     "errorBoundaryMessage": "Odottamaton virhe tapahtui",
     "errorBoundaryUnexpected": "Odottamaton virhe tapahtui"
   },
