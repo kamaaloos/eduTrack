@@ -103,6 +103,11 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    const readyTimeout = setTimeout(() => {
+      if (active) {
+        setSchoolReady(true);
+      }
+    }, 8000);
 
     void (async () => {
       try {
@@ -133,6 +138,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
         }
       } finally {
         if (active) {
+          clearTimeout(readyTimeout);
           setSchoolReady(true);
         }
       }
@@ -140,6 +146,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
 
     return () => {
       active = false;
+      clearTimeout(readyTimeout);
     };
   }, [reloadSchools, mergeStoredSchoolWithRegistry]);
 

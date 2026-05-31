@@ -12,6 +12,15 @@ import { mapSchoolRegistryDoc } from "./schoolRegistryMappers";
 
 const COLLECTION = "schoolRegistry";
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    }),
+  ]);
+}
+
 export async function loadActiveSchools(): Promise<SchoolRecord[]> {
   if (registryDb) {
     try {
@@ -19,7 +28,11 @@ export async function loadActiveSchools(): Promise<SchoolRecord[]> {
         collection(registryDb, COLLECTION),
         where("active", "==", true),
       );
-      const snapshot = await getDocs(schoolsQuery);
+      const snapshot = await withTimeout(
+        getDocs(schoolsQuery),
+        5000,
+        "schoolRegistry load",
+      );
       const schools = snapshot.docs
         .map((docSnap) => mapSchoolRegistryDoc(docSnap.id, docSnap.data()))
         .filter((school): school is SchoolRecord => school !== null)
