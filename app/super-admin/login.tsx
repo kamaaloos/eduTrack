@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AppScreenBackground } from "../../components/AppScreenBackground";
 import { PasswordInput } from "../../components/PasswordInput";
 import { useSuperAdminAuth } from "../../src/context/superAdminAuthContext";
 import { registryAuth } from "../../src/services/firebase";
@@ -66,22 +67,23 @@ export default function SuperAdminLoginScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <StatusBar style="dark" />
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <ScrollView
-          contentContainerStyle={[
-            styles.content,
-            {
-              paddingTop: insets.top + 24,
-              paddingBottom: insets.bottom + 24,
-            },
-          ]}
-          keyboardShouldPersistTaps="handled"
+    <AppScreenBackground>
+      <View style={styles.screen}>
+        <StatusBar style="dark" />
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
+          <ScrollView
+            contentContainerStyle={[
+              styles.content,
+              {
+                paddingTop: insets.top + 24,
+                paddingBottom: insets.bottom + 56,
+              },
+            ]}
+            keyboardShouldPersistTaps="handled"
+          >
           <TouchableOpacity
             style={styles.backLink}
             onPress={() => router.replace("/select-school")}
@@ -155,13 +157,14 @@ export default function SuperAdminLoginScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
+    </AppScreenBackground>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "transparent",
   },
   flex: {
     flex: 1,
