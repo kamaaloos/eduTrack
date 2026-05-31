@@ -327,14 +327,14 @@ export function useTeacherExamReports() {
         getTermExamCertificateLabels,
         shareTermExamCertificatePdf,
         getPdfShareErrorKey,
-      } = await import("../services/certificatePdfService");
+      } = await import("../src/services/certificatePdfService");
       await shareTermExamCertificatePdf(
         buildTermExamCertificateParams(student, result),
         getTermExamCertificateLabels(t),
       );
     } catch (err) {
       const { getPdfShareErrorKey } = await import(
-        "../services/certificatePdfService"
+        "../src/services/certificatePdfService"
       );
       Alert.alert(t("common.error"), t(getPdfShareErrorKey(err)));
     }
@@ -393,7 +393,7 @@ export function useTeacherExamReports() {
         getTermExamCertificateLabels,
         shareTermExamCertificatesPdf,
         getPdfShareErrorKey,
-      } = await import("../services/certificatePdfService");
+      } = await import("../src/services/certificatePdfService");
       const labels = getTermExamCertificateLabels(t);
       const examSlug =
         selectedExam.title ||
@@ -409,7 +409,7 @@ export function useTeacherExamReports() {
       );
     } catch (err) {
       const { getPdfShareErrorKey } = await import(
-        "../services/certificatePdfService"
+        "../src/services/certificatePdfService"
       );
       Alert.alert(t("common.error"), t(getPdfShareErrorKey(err)));
     } finally {
