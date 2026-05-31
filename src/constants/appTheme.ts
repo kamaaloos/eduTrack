@@ -1,5 +1,9 @@
 export const APP_COPYRIGHT = "© 2026 - MayleSoft school-app.";
 
+/** Latest APK builds on Expo — used on the public About screen. */
+export const APP_BUILDS_URL =
+  "https://expo.dev/accounts/kamaaloos/projects/eduTrack/builds";
+
 /** Screen content sits on AppScreenBackground — keep surfaces transparent. */
 export const APP_SCREEN_BACKGROUND = "transparent";
 

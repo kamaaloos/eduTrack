@@ -12,6 +12,9 @@ export type SchoolRecord = {
   name: string;
   active: boolean;
   firebase: SchoolFirebaseConfig;
+  /** Trial/testing end date (YYYY-MM-DD). */
+  testingExpiresAt?: string | null;
+  /** Registered usage subscription end date (YYYY-MM-DD). */
   usageExpiresAt?: string | null;
   logoUrl?: string | null;
   city?: string | null;
@@ -25,5 +28,6 @@ export type StoredSchool = {
   id: string;
   name: string;
   firebase: SchoolFirebaseConfig;
+  testingExpiresAt?: string | null;
   usageExpiresAt?: string | null;
 };

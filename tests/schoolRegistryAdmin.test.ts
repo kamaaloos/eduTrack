@@ -15,6 +15,7 @@ const validFirebase = {
 const baseInput: SchoolRegistryInput = {
   name: "Test School",
   active: true,
+  testingExpiresAt: "2026-06-30",
   usageExpiresAt: "2026-12-31",
   userCount: null,
   firebase: validFirebase,
@@ -29,7 +30,19 @@ describe("validateSchoolInput", () => {
     expect(validateSchoolInput({ ...baseInput, name: "  " })).toMatch(/name/i);
   });
 
-  it("requires YYYY-MM-DD usage expiry", () => {
+  it("requires YYYY-MM-DD testing expiry", () => {
+    expect(
+      validateSchoolInput({ ...baseInput, testingExpiresAt: "31-12-2026" }),
+    ).toMatch(/YYYY-MM-DD/i);
+  });
+
+  it("allows empty registered usage expiry", () => {
+    expect(
+      validateSchoolInput({ ...baseInput, usageExpiresAt: "" }),
+    ).toBeNull();
+  });
+
+  it("requires YYYY-MM-DD usage expiry when set", () => {
     expect(
       validateSchoolInput({ ...baseInput, usageExpiresAt: "31-12-2026" }),
     ).toMatch(/YYYY-MM-DD/i);

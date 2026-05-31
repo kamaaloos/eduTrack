@@ -69,7 +69,7 @@ export async function getSchoolById(schoolId: string): Promise<SchoolRecord | nu
 /** Fresh registry metadata for the selected school (usage expiry, name). */
 export async function getSchoolRegistryEntry(
   schoolId: string,
-): Promise<Pick<SchoolRecord, "id" | "name" | "usageExpiresAt"> | null> {
+): Promise<Pick<SchoolRecord, "id" | "name" | "testingExpiresAt" | "usageExpiresAt"> | null> {
   if (!schoolId || schoolId === "default" || !registryDb) return null;
   try {
     const snap = await getDoc(doc(registryDb, COLLECTION, schoolId));
@@ -79,6 +79,7 @@ export async function getSchoolRegistryEntry(
     return {
       id: mapped.id,
       name: mapped.name,
+      testingExpiresAt: mapped.testingExpiresAt ?? null,
       usageExpiresAt: mapped.usageExpiresAt ?? null,
     };
   } catch (err) {

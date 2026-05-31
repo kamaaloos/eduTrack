@@ -16,8 +16,14 @@ import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { AuthContext } from "../../src/context/authContext";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { useSchoolContext } from "../../src/context/schoolContext";
-import { notifySchoolUsageExpiring } from "../../src/services/notificationEvents";
+import {
+  notifySchoolTestingEnded,
+  notifySchoolTestingExpiring,
+  notifySchoolUsageEnded,
+  notifySchoolUsageExpiring,
+} from "../../src/services/notificationEvents";
 import { getUsageRemainingDays } from "../../src/utils/usageExpiry";
+import type { StoredSchool } from "../../src/types/school";
 
 type MenuRoute =
   | "/(admin)/users"
@@ -47,6 +53,11 @@ export default function AdminDashboard() {
   } = useAdminData();
 
   const [refreshing, setRefreshing] = useState(false);
+
+  const testingRemainingDays = useMemo(
+    () => getUsageRemainingDays(selectedSchool?.testingExpiresAt),
+    [selectedSchool?.testingExpiresAt],
+  );
 
   const usageRemainingDays = useMemo(
     () => getUsageRemainingDays(selectedSchool?.usageExpiresAt),
@@ -147,19 +158,75 @@ export default function AdminDashboard() {
     }
   }, [refreshAll, syncClassIdsFromAssignments, loadUsers]);
 
-  const maybeNotifyUsageExpiring = useCallback(
-    async (school: { id: string; name: string; usageExpiresAt?: string | null }) => {
-      const remaining = getUsageRemainingDays(school.usageExpiresAt);
-      if (remaining == null || remaining > 7) return;
+  const maybeNotifySchoolPeriods = useCallback(
+    async (school: Pick<StoredSchool, "id" | "name" | "testingExpiresAt" | "usageExpiresAt">) => {
+      const notifyPeriod = async (
+        expiresAt: string | null | undefined,
+        expiring: (title: string, message: string) => Promise<void>,
+        ended: (title: string, message: string) => Promise<void>,
+        expiringTitle: string,
+        expiringMessage: (count: number) => string,
+        endedTitle: string,
+        endedMessage: string,
+      ) => {
+        const remaining = getUsageRemainingDays(expiresAt);
+        if (remaining == null) return;
 
-      await notifySchoolUsageExpiring({
-        schoolId: school.id,
-        schoolName: school.name,
-        remainingDays: remaining,
-        actorId: user?.uid ?? null,
-      });
+        if (remaining <= 0) {
+          await ended(endedTitle, endedMessage);
+          return;
+        }
+
+        if (remaining > 7) return;
+
+        await expiring(expiringTitle, expiringMessage(remaining));
+      };
+
+      await notifyPeriod(
+        school.testingExpiresAt,
+        (title, message) =>
+          notifySchoolTestingExpiring({
+            schoolId: school.id,
+            title,
+            message,
+            actorId: user?.uid ?? null,
+          }),
+        (title, message) =>
+          notifySchoolTestingEnded({
+            schoolId: school.id,
+            title,
+            message,
+            actorId: user?.uid ?? null,
+          }),
+        t("admin.testingExpiringNotificationTitle"),
+        (count) => t("admin.testingExpiringNotificationMessage", { count }),
+        t("admin.testingEndedNotificationTitle"),
+        t("admin.testingEndedNotificationMessage"),
+      );
+
+      await notifyPeriod(
+        school.usageExpiresAt,
+        (title, message) =>
+          notifySchoolUsageExpiring({
+            schoolId: school.id,
+            title,
+            message,
+            actorId: user?.uid ?? null,
+          }),
+        (title, message) =>
+          notifySchoolUsageEnded({
+            schoolId: school.id,
+            title,
+            message,
+            actorId: user?.uid ?? null,
+          }),
+        t("admin.usageExpiringNotificationTitle"),
+        (count) => t("admin.usageExpiringNotificationMessage", { count }),
+        t("admin.usageEndedNotificationTitle"),
+        t("admin.usageEndedNotificationMessage"),
+      );
     },
-    [user?.uid],
+    [t, user?.uid],
   );
 
   useFocusEffect(
@@ -169,12 +236,12 @@ export default function AdminDashboard() {
           (await refreshSelectedSchoolFromRegistry()) ?? selectedSchool;
         await reloadDashboard();
         if (school?.id && school.name) {
-          await maybeNotifyUsageExpiring(school);
+          await maybeNotifySchoolPeriods(school);
         }
       })();
     }, [
       reloadDashboard,
-      maybeNotifyUsageExpiring,
+      maybeNotifySchoolPeriods,
       refreshSelectedSchoolFromRegistry,
       selectedSchool,
     ]),
@@ -204,28 +271,28 @@ export default function AdminDashboard() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
+          {testingRemainingDays != null ? (
+            <PeriodNoticeCard
+              remainingDays={testingRemainingDays}
+              title={t("admin.testingPeriodNoticeTitle")}
+              expiredText={t("admin.testingExpiredNotice")}
+              remainingText={t("admin.usageTimeRemainingDays", {
+                count: testingRemainingDays,
+              })}
+              hintText={t("admin.testingContactHint")}
+            />
+          ) : null}
+
           {usageRemainingDays != null ? (
-            <View
-              style={[
-                styles.usageCard,
-                usageRemainingDays <= 7 ? styles.usageCardWarn : null,
-              ]}
-            >
-              <Ionicons
-                name={usageRemainingDays <= 7 ? "warning-outline" : "time-outline"}
-                size={18}
-                color={usageRemainingDays <= 7 ? "#B45309" : "#0369A1"}
-              />
-              <View style={styles.usageCardText}>
-                <Text style={styles.usageTitle}>{t("admin.usageTimeNoticeTitle")}</Text>
-                <Text style={styles.usageSub}>
-                  {usageRemainingDays <= 0
-                    ? t("admin.usageExpiredNotice")
-                    : t("admin.usageTimeRemainingDays", { count: usageRemainingDays })}
-                </Text>
-                <Text style={styles.usageHint}>{t("admin.usageRechargeHint")}</Text>
-              </View>
-            </View>
+            <PeriodNoticeCard
+              remainingDays={usageRemainingDays}
+              title={t("admin.usageSubscriptionNoticeTitle")}
+              expiredText={t("admin.usageExpiredNotice")}
+              remainingText={t("admin.usageTimeRemainingDays", {
+                count: usageRemainingDays,
+              })}
+              hintText={t("admin.usageRechargeHint")}
+            />
           ) : null}
 
           <View style={styles.statsSection}>
@@ -344,6 +411,45 @@ export default function AdminDashboard() {
   );
 }
 
+function PeriodNoticeCard({
+  remainingDays,
+  title,
+  expiredText,
+  remainingText,
+  hintText,
+}: {
+  remainingDays: number;
+  title: string;
+  expiredText: string;
+  remainingText: string;
+  hintText: string;
+}) {
+  const isExpired = remainingDays <= 0;
+  const isWarn = !isExpired && remainingDays <= 7;
+
+  return (
+    <View
+      style={[
+        styles.usageCard,
+        isExpired ? styles.usageCardExpired : isWarn ? styles.usageCardWarn : null,
+      ]}
+    >
+      <Ionicons
+        name={
+          isExpired ? "alert-circle-outline" : isWarn ? "warning-outline" : "time-outline"
+        }
+        size={18}
+        color={isExpired ? "#B91C1C" : isWarn ? "#B45309" : "#0369A1"}
+      />
+      <View style={styles.usageCardText}>
+        <Text style={styles.usageTitle}>{title}</Text>
+        <Text style={styles.usageSub}>{isExpired ? expiredText : remainingText}</Text>
+        <Text style={styles.usageHint}>{hintText}</Text>
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   scroll: {
     flex: 1,
@@ -366,6 +472,10 @@ const styles = StyleSheet.create({
   usageCardWarn: {
     backgroundColor: "#FFFBEB",
     borderColor: "#FDE68A",
+  },
+  usageCardExpired: {
+    backgroundColor: "#FEF2F2",
+    borderColor: "#FECACA",
   },
   usageCardText: { flex: 1 },
   usageTitle: {

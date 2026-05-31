@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { SchoolBillingMetrics } from "../../../components/superAdmin/SchoolBillingMetrics";
+import { SchoolPeriodEditors } from "../../../components/superAdmin/SchoolPeriodEditors";
 import { SuperAdminScreenShell } from "../../../components/superAdmin/SuperAdminScreenShell";
 import {
   deleteSchoolRecord,
@@ -208,6 +209,21 @@ export default function SuperAdminSchoolDetailScreen() {
           </View>
           <Text style={styles.sectionHint}>{t("superAdmin.billingHint")}</Text>
           <SchoolBillingMetrics school={school} />
+          <SchoolPeriodEditors
+            schoolId={school.id}
+            testingExpiresAt={school.testingExpiresAt}
+            usageExpiresAt={school.usageExpiresAt}
+            onTestingSaved={(next) =>
+              setSchool((current) =>
+                current ? { ...current, testingExpiresAt: next } : current,
+              )
+            }
+            onUsageSaved={(next) =>
+              setSchool((current) =>
+                current ? { ...current, usageExpiresAt: next } : current,
+              )
+            }
+          />
         </View>
 
         <View style={styles.section}>

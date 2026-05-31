@@ -17,6 +17,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../../components/AppScreenBackground";
+import { AuthAboutLink } from "../../components/auth/AuthAboutLink";
 import { PasswordInput } from "../../components/PasswordInput";
 import { useSuperAdminAuth } from "../../src/context/superAdminAuthContext";
 import { registryAuth } from "../../src/services/firebase";
@@ -70,6 +71,12 @@ export default function SuperAdminLoginScreen() {
     <AppScreenBackground>
       <View style={styles.screen}>
         <StatusBar style="dark" />
+        <AuthAboutLink
+          style={[
+            styles.aboutLink,
+            { top: insets.top + 8 },
+          ]}
+        />
         <KeyboardAvoidingView
           style={styles.flex}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -165,6 +172,11 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: "transparent",
+  },
+  aboutLink: {
+    position: "absolute",
+    right: 16,
+    zIndex: 10,
   },
   flex: {
     flex: 1,

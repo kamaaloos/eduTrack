@@ -56,6 +56,7 @@ export function mapSchoolRegistryDoc(
     name: String(data.name ?? "School"),
     active: data.active !== false,
     firebase,
+    testingExpiresAt: normalizeUsageExpiresAt(data.testingExpiresAt),
     usageExpiresAt: normalizeUsageExpiresAt(data.usageExpiresAt),
     logoUrl:
       typeof data.logoUrl === "string" && data.logoUrl.trim()

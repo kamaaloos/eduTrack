@@ -2,7 +2,7 @@ import type { SchoolRecord, StoredSchool } from "../types/school";
 
 export type SchoolRegistrySnapshot = Pick<
   SchoolRecord,
-  "id" | "name" | "usageExpiresAt"
+  "id" | "name" | "testingExpiresAt" | "usageExpiresAt"
 >;
 
 /** Merge cached school selection with fresh registry metadata. */
@@ -14,6 +14,7 @@ export function applyRegistryToStoredSchool(
   return {
     ...stored,
     name: fresh.name,
+    testingExpiresAt: fresh.testingExpiresAt ?? null,
     usageExpiresAt: fresh.usageExpiresAt ?? null,
   };
 }
@@ -23,6 +24,7 @@ export function storedSchoolNeedsPersist(
   after: StoredSchool,
 ): boolean {
   return (
+    (after.testingExpiresAt ?? null) !== (before.testingExpiresAt ?? null) ||
     (after.usageExpiresAt ?? null) !== (before.usageExpiresAt ?? null) ||
     after.name !== before.name
   );
@@ -33,6 +35,7 @@ export function toStoredSchool(school: SchoolRecord): StoredSchool {
     id: school.id,
     name: school.name,
     firebase: school.firebase,
+    testingExpiresAt: school.testingExpiresAt ?? null,
     usageExpiresAt: school.usageExpiresAt ?? null,
   };
 }

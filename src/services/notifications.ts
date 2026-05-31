@@ -28,7 +28,10 @@ export type NotificationType =
   | "grade_posted"
   | "parent_absence_report"
   | "parent_attendance_response"
-  | "school_usage_expiring";
+  | "school_usage_expiring"
+  | "school_usage_ended"
+  | "school_testing_expiring"
+  | "school_testing_ended";
 
 export type CreateNotificationInput = {
   title: string;
@@ -65,7 +68,10 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   grade_posted: "Grade",
   parent_absence_report: "Absence report",
   parent_attendance_response: "Attendance reply",
-  school_usage_expiring: "Usage time",
+  school_usage_expiring: "Usage period",
+  school_usage_ended: "Usage ended",
+  school_testing_expiring: "Testing period",
+  school_testing_ended: "Testing ended",
 };
 
 function toDate(value: unknown): Date | null {

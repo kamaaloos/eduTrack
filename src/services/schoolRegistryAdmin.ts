@@ -12,6 +12,8 @@ import type { SchoolRecord } from "../types/school";
 import { registryDb } from "./firebase";
 import { mapSchoolRegistryDoc } from "./schoolRegistryMappers";
 import type { SchoolRegistryInput } from "./schoolRegistryValidation";
+import { registryUsageExpiresAt } from "./schoolRegistryValidation";
+import { validateUsageExpiryDate } from "../utils/validation";
 
 export type { SchoolRegistryInput } from "./schoolRegistryValidation";
 export { validateSchoolInput } from "./schoolRegistryValidation";
@@ -52,7 +54,8 @@ export async function createSchoolRecord(
     city: input.city?.trim() || null,
     logoUrl: input.logoUrl?.trim() || null,
     active: input.active,
-    usageExpiresAt: input.usageExpiresAt,
+    testingExpiresAt: input.testingExpiresAt.trim(),
+    usageExpiresAt: registryUsageExpiresAt(input),
     userCount: input.userCount,
     firebase: input.firebase,
     createdAt: serverTimestamp(),
@@ -71,7 +74,8 @@ export async function updateSchoolRecord(
     city: input.city?.trim() || null,
     logoUrl: input.logoUrl?.trim() || null,
     active: input.active,
-    usageExpiresAt: input.usageExpiresAt,
+    testingExpiresAt: input.testingExpiresAt.trim(),
+    usageExpiresAt: registryUsageExpiresAt(input),
     userCount: input.userCount,
     firebase: input.firebase,
     updatedAt: serverTimestamp(),
@@ -90,6 +94,41 @@ export async function setSchoolActive(
   const db = requireRegistryDb();
   await updateDoc(doc(db, COLLECTION, schoolId), {
     active,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function updateSchoolTestingPeriod(
+  schoolId: string,
+  testingExpiresAt: string,
+): Promise<void> {
+  const trimmed = testingExpiresAt.trim();
+  if (!trimmed) {
+    throw new Error("Testing period end date is required.");
+  }
+  if (!validateUsageExpiryDate(trimmed)) {
+    throw new Error("Testing period end date must be YYYY-MM-DD.");
+  }
+
+  const db = requireRegistryDb();
+  await updateDoc(doc(db, COLLECTION, schoolId), {
+    testingExpiresAt: trimmed,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function updateSchoolUsagePeriod(
+  schoolId: string,
+  usageExpiresAt: string,
+): Promise<void> {
+  const trimmed = usageExpiresAt.trim();
+  if (trimmed && !validateUsageExpiryDate(trimmed)) {
+    throw new Error("Usage expiry date must be YYYY-MM-DD.");
+  }
+
+  const db = requireRegistryDb();
+  await updateDoc(doc(db, COLLECTION, schoolId), {
+    usageExpiresAt: trimmed || null,
     updatedAt: serverTimestamp(),
   });
 }

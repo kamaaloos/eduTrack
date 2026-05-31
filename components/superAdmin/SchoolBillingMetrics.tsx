@@ -56,8 +56,10 @@ export function SchoolBillingMetrics({
 }: SchoolBillingMetricsProps) {
   const { t } = useTranslation();
   const subscriptionStatus = getSubscriptionStatus(school.usageExpiresAt);
-  const expiryLabel = formatUsageExpiryDate(school.usageExpiresAt);
-  const daysLeft = getUsageRemainingDays(school.usageExpiresAt);
+  const usageExpiryLabel = formatUsageExpiryDate(school.usageExpiresAt);
+  const usageDaysLeft = getUsageRemainingDays(school.usageExpiresAt);
+  const testingExpiryLabel = formatUsageExpiryDate(school.testingExpiresAt);
+  const testingDaysLeft = getUsageRemainingDays(school.testingExpiresAt);
   const lastSynced = formatLastSynced(school.userCountUpdatedAt);
 
   const userCountLabel =
@@ -106,17 +108,30 @@ export function SchoolBillingMetrics({
       {!compact ? (
         <View style={styles.detailsList}>
           <DetailRow
-            label={t("superAdmin.usageExpiresAt")}
-            value={expiryLabel ?? t("superAdmin.usageNotSet")}
+            label={t("superAdmin.testingExpiresAt")}
+            value={testingExpiryLabel ?? t("superAdmin.usageNotSet")}
           />
           <DetailRow
-            label={t("superAdmin.daysRemaining")}
+            label={t("superAdmin.daysRemainingTesting")}
             value={
-              daysLeft != null
-                ? t("admin.usageTimeRemainingDays", { count: daysLeft })
+              testingDaysLeft != null
+                ? t("admin.usageTimeRemainingDays", { count: testingDaysLeft })
                 : t("superAdmin.usageNotSet")
             }
-            warn={daysLeft != null && daysLeft <= 7}
+            warn={testingDaysLeft != null && testingDaysLeft <= 7}
+          />
+          <DetailRow
+            label={t("superAdmin.usageExpiresAt")}
+            value={usageExpiryLabel ?? t("superAdmin.usageNotSet")}
+          />
+          <DetailRow
+            label={t("superAdmin.daysRemainingUsage")}
+            value={
+              usageDaysLeft != null
+                ? t("admin.usageTimeRemainingDays", { count: usageDaysLeft })
+                : t("superAdmin.usageNotSet")
+            }
+            warn={usageDaysLeft != null && usageDaysLeft <= 7}
           />
           <DetailRow
             label={t("superAdmin.showInApp")}

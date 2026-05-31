@@ -50,7 +50,8 @@ export default function SuperAdminSchoolFormScreen() {
   const [city, setCity] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [active, setActive] = useState(true);
-  const [usageExpiresAt, setUsageExpiresAt] = useState(defaultUsageExpiryDate());
+  const [testingExpiresAt, setTestingExpiresAt] = useState(defaultUsageExpiryDate());
+  const [usageExpiresAt, setUsageExpiresAt] = useState("");
   const [userCount, setUserCount] = useState("");
   const [firebase, setFirebase] = useState<SchoolFirebaseConfig>(EMPTY_FIREBASE);
 
@@ -69,6 +70,7 @@ export default function SuperAdminSchoolFormScreen() {
         setCity(school.city ?? "");
         setLogoUrl(school.logoUrl ?? "");
         setActive(school.active);
+        setTestingExpiresAt(school.testingExpiresAt ?? defaultUsageExpiryDate());
         setUsageExpiresAt(school.usageExpiresAt ?? "");
         setUserCount(
           school.userCount != null ? String(school.userCount) : "",
@@ -105,6 +107,7 @@ export default function SuperAdminSchoolFormScreen() {
       city,
       logoUrl,
       active,
+      testingExpiresAt,
       usageExpiresAt,
       userCount: parsedUserCount,
       firebase,
@@ -198,6 +201,16 @@ export default function SuperAdminSchoolFormScreen() {
             autoCorrect={false}
           />
           <Text style={styles.hint}>{t("superAdmin.schoolLogoUrlHint")}</Text>
+
+          <Text style={styles.label}>{t("superAdmin.testingExpiresAt")}</Text>
+          <TextInput
+            style={styles.input}
+            value={testingExpiresAt}
+            onChangeText={setTestingExpiresAt}
+            placeholder={t("superAdmin.usageExpiresAtPlaceholder")}
+            placeholderTextColor="#94A3B8"
+          />
+          <Text style={styles.hint}>{t("superAdmin.testingExpiresAtHint")}</Text>
 
           <Text style={styles.label}>{t("superAdmin.usageExpiresAt")}</Text>
           <TextInput

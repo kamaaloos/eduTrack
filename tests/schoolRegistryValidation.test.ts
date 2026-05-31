@@ -7,6 +7,7 @@ import {
 const validInput: SchoolRegistryInput = {
   name: "Test School",
   active: true,
+  testingExpiresAt: "2026-06-30",
   usageExpiresAt: "2026-12-31",
   userCount: null,
   firebase: {

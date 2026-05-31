@@ -89,7 +89,10 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
       try {
         const updated = await mergeStoredSchoolWithRegistry(selectedSchool);
         if (
-          updated.usageExpiresAt !== (selectedSchool.usageExpiresAt ?? null) ||
+          (updated.testingExpiresAt ?? null) !==
+            (selectedSchool.testingExpiresAt ?? null) ||
+          (updated.usageExpiresAt ?? null) !==
+            (selectedSchool.usageExpiresAt ?? null) ||
           updated.name !== selectedSchool.name
         ) {
           setSelectedSchool(updated);
@@ -155,16 +158,23 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     const match = schools.find((school) => school.id === selectedSchool.id);
     if (!match) return;
 
-    const nextExpiry = match.usageExpiresAt ?? null;
-    const currentExpiry = selectedSchool.usageExpiresAt ?? null;
-    if (match.name === selectedSchool.name && nextExpiry === currentExpiry) {
+    const nextTesting = match.testingExpiresAt ?? null;
+    const currentTesting = selectedSchool.testingExpiresAt ?? null;
+    const nextUsage = match.usageExpiresAt ?? null;
+    const currentUsage = selectedSchool.usageExpiresAt ?? null;
+    if (
+      match.name === selectedSchool.name &&
+      nextTesting === currentTesting &&
+      nextUsage === currentUsage
+    ) {
       return;
     }
 
     const updated: StoredSchool = {
       ...selectedSchool,
       name: match.name,
-      usageExpiresAt: nextExpiry,
+      testingExpiresAt: nextTesting,
+      usageExpiresAt: nextUsage,
     };
     void saveSelectedSchool(updated).then(() => setSelectedSchool(updated));
   }, [schools, selectedSchool]);

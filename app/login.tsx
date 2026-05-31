@@ -22,6 +22,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PasswordInput } from "../components/PasswordInput";
+import { AuthAboutLink } from "../components/auth/AuthAboutLink";
 import { useSchoolContext } from "../src/context/schoolContext";
 import { APP_COPYRIGHT } from "../src/constants/appTheme";
 import { AuthContext } from "../src/context/authContext";
@@ -191,6 +192,12 @@ export default function Login() {
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
+        <AuthAboutLink
+          style={[
+            styles.aboutLink,
+            { top: insets.top + 8 },
+          ]}
+        />
         <ScrollView
           contentContainerStyle={[
             styles.scrollContainer,
@@ -370,6 +377,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "transparent",
+  },
+
+  aboutLink: {
+    position: "absolute",
+    right: 16,
+    zIndex: 10,
   },
 
   scrollContainer: {
