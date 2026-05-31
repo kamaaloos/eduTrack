@@ -32,6 +32,14 @@ Scan the QR code with Expo Go or run on a simulator (`npm run android` / `npm ru
 | `npm run lint` | ESLint (Expo) |
 | `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
 | `npm run ci` | `test` + `lint` + `typecheck` (same as CI locally) |
+| `npm run build:android:preview` | EAS cloud build → Android APK (pilot) |
+| `npm run build:android:production` | EAS cloud build → Android APK (production profile) |
+
+## Android APK (pilot deploy)
+
+See **[docs/ANDROID_BUILD.md](docs/ANDROID_BUILD.md)** for EAS setup, Firebase secrets, and install steps.
+
+Quick path: `eas login` → `eas init` → set `EXPO_PUBLIC_REGISTRY_*` secrets → `npm run build:android:preview`.
 
 ## Documentation
 

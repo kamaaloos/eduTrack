@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { StudentDashboardView } from "../../../components/dashboard/StudentDashboardView";
 import { AuthContext } from "../../../src/context/authContext";
 import { useParentChild } from "../../../src/context/parentChildContext";
+import { useParentMenu } from "../../../src/context/parentMenuContext";
+import { useUserPhotoURL } from "../../../hooks/useUserPhotoURL";
 import { useStudentDashboardData } from "../../../hooks/useStudentDashboardData";
 import { syncParentClassAccess } from "../../../src/services/parentChildren";
 
@@ -12,16 +14,25 @@ export default function ParentStudentDashboard() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const { setSelectedChild } = useParentChild();
-  const { id, name, classId, className } = useLocalSearchParams<{
-    id: string;
-    name?: string;
-    classId?: string;
-    className?: string;
-  }>();
+  const { openMenu } = useParentMenu();
+  const { id, name, photoURL: photoURLParam, classId, className } =
+    useLocalSearchParams<{
+      id: string;
+      name?: string;
+      photoURL?: string;
+      classId?: string;
+      className?: string;
+    }>();
 
   const studentId = String(id ?? "");
   const resolvedClassId = classId ? String(classId) : null;
   const displayName = name ? String(name) : t("common.student");
+  const livePhotoURL = useUserPhotoURL(studentId);
+  const photoURL =
+    livePhotoURL ||
+    (photoURLParam && String(photoURLParam).trim()
+      ? String(photoURLParam)
+      : null);
 
   const {
     classId: liveClassId,
@@ -40,10 +51,11 @@ export default function ParentStudentDashboard() {
     setSelectedChild({
       id: studentId,
       name: displayName,
+      photoURL,
       classId: resolvedClassId || undefined,
       className: className ? String(className) : undefined,
     });
-  }, [studentId, displayName, resolvedClassId, className, setSelectedChild]);
+  }, [studentId, displayName, photoURL, resolvedClassId, className, setSelectedChild]);
 
   useEffect(() => {
     if (user?.uid && studentId) {
@@ -64,11 +76,13 @@ export default function ParentStudentDashboard() {
       studentId={studentId}
       classId={liveClassId}
       displayName={displayName}
+      photoURL={photoURL}
       showNotifications={false}
       hideViewAllRoutes
       useParentRoutes
       showAbsenceReport={false}
       showHealthCheck
+      onMenuPress={openMenu}
       onHealthCheckPress={() =>
         router.push({
           pathname: "/(parent)/report-absence",

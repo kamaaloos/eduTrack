@@ -4,6 +4,7 @@ import {
   getDocs,
   query,
   where,
+  type Firestore,
 } from "firebase/firestore";
 import { getAttendanceHistorySinceDate } from "../constants/attendanceHistory";
 import { db } from "./firebase";
@@ -63,7 +64,7 @@ export async function fetchStudentAttendanceHistory(
 }
 
 export function summarizeAttendanceRecords(
-  records: Array<{ status?: string }>,
+  records: { status?: string }[],
 ): AttendanceSummary {
   const sinceDate = getAttendanceHistorySinceDate();
   const present = records.filter((r) => r.status === "present").length;
@@ -77,21 +78,26 @@ export function summarizeAttendanceRecords(
 }
 
 /** Admin-scoped attendance counts for the history window (2 count reads). */
-export async function countAdminAttendanceSummary(): Promise<AttendanceSummary> {
+export async function countAdminAttendanceSummary(
+  firestore: Firestore | null = db,
+): Promise<AttendanceSummary> {
   const sinceDate = getAttendanceHistorySinceDate();
 
-  if (!db) {
+  if (!firestore) {
     return { total: 0, present: 0, rate: null, sinceDate };
   }
 
   try {
     const [totalSnap, presentSnap] = await Promise.all([
       getCountFromServer(
-        query(collection(db, "attendance"), where("date", ">=", sinceDate)),
+        query(
+          collection(firestore, "attendance"),
+          where("date", ">=", sinceDate),
+        ),
       ),
       getCountFromServer(
         query(
-          collection(db, "attendance"),
+          collection(firestore, "attendance"),
           where("status", "==", "present"),
           where("date", ">=", sinceDate),
         ),

@@ -1,11 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Image,
+  Pressable,
   RefreshControl,
   StyleSheet,
   Text,
@@ -19,6 +21,11 @@ import { useSuperAdminAuth } from "../src/context/superAdminAuthContext";
 import { useSchoolContext } from "../src/context/schoolContext";
 import type { SchoolRecord } from "../src/types/school";
 import { clearLocalSessionPreferences } from "../src/utils/authNavigation";
+
+const PLATFORM_ADMIN_LINK_VISIBLE =
+  process.env.EXPO_PUBLIC_SHOW_PLATFORM_ADMIN_LINK === "true";
+const PLATFORM_ADMIN_LOGO_TAPS = 5;
+const PLATFORM_ADMIN_TAP_WINDOW_MS = 2500;
 
 export default function SelectSchoolScreen() {
   const { t } = useTranslation();
@@ -35,6 +42,32 @@ export default function SelectSchoolScreen() {
     useSuperAdminAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [selectError, setSelectError] = useState<string | null>(null);
+  const [logoTapCount, setLogoTapCount] = useState(0);
+  const logoTapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openPlatformAdminLogin = () => {
+    router.push("/super-admin/login");
+  };
+
+  const handleLogoPress = () => {
+    if (PLATFORM_ADMIN_LINK_VISIBLE) return;
+
+    const nextCount = logoTapCount + 1;
+    if (logoTapTimerRef.current) {
+      clearTimeout(logoTapTimerRef.current);
+    }
+
+    if (nextCount >= PLATFORM_ADMIN_LOGO_TAPS) {
+      setLogoTapCount(0);
+      openPlatformAdminLogin();
+      return;
+    }
+
+    setLogoTapCount(nextCount);
+    logoTapTimerRef.current = setTimeout(() => {
+      setLogoTapCount(0);
+    }, PLATFORM_ADMIN_TAP_WINDOW_MS);
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -90,9 +123,14 @@ export default function SelectSchoolScreen() {
       <StatusBar style="dark" />
 
       <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
-        <View style={styles.logo}>
+        <Pressable
+          style={styles.logo}
+          onPress={handleLogoPress}
+          accessibilityRole="image"
+          accessibilityLabel={t("selectSchool.title")}
+        >
           <Text style={styles.logoText}>🎓</Text>
-        </View>
+        </Pressable>
         <Text style={styles.title}>{t("selectSchool.title")}</Text>
         <Text style={styles.subtitle}>{t("selectSchool.subtitle")}</Text>
         <TouchableOpacity
@@ -136,7 +174,7 @@ export default function SelectSchoolScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={[
             styles.list,
-            { paddingBottom: Math.max(insets.bottom, 20) + 56 },
+            { paddingBottom: Math.max(insets.bottom, 20) + 16 },
           ]}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -154,9 +192,13 @@ export default function SelectSchoolScreen() {
               disabled={connecting}
               activeOpacity={0.85}
             >
-              <View style={styles.schoolIcon}>
-                <Ionicons name="business" size={24} color="#1E3A8A" />
-              </View>
+              {item.logoUrl ? (
+                <Image source={{ uri: item.logoUrl }} style={styles.schoolLogo} />
+              ) : (
+                <View style={styles.schoolIcon}>
+                  <Ionicons name="business" size={24} color="#1E3A8A" />
+                </View>
+              )}
               <View style={styles.schoolInfo}>
                 <Text style={styles.schoolName}>{item.name}</Text>
                 {item.city ? (
@@ -178,13 +220,15 @@ export default function SelectSchoolScreen() {
         </View>
       ) : null}
 
-      <TouchableOpacity
-        style={[styles.adminLink, { bottom: Math.max(insets.bottom, 16) + 42 }]}
-        onPress={() => router.push("/super-admin/login")}
-      >
-        <Ionicons name="planet-outline" size={18} color="#1E3A8A" />
-        <Text style={styles.adminLinkText}>{t("selectSchool.superAdminLink")}</Text>
-      </TouchableOpacity>
+      {PLATFORM_ADMIN_LINK_VISIBLE ? (
+        <TouchableOpacity
+          style={[styles.adminLink, { bottom: Math.max(insets.bottom, 16) + 16 }]}
+          onPress={openPlatformAdminLogin}
+        >
+          <Ionicons name="planet-outline" size={18} color="#1E3A8A" />
+          <Text style={styles.adminLinkText}>{t("selectSchool.superAdminLink")}</Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
     </AppScreenBackground>
   );
@@ -274,6 +318,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFF6FF",
     alignItems: "center",
     justifyContent: "center",
+  },
+  schoolLogo: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: "#EFF6FF",
   },
   schoolInfo: {
     flex: 1,

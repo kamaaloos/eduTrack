@@ -1,6 +1,7 @@
 import "../src/i18n";
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { BrandedSplashGate } from "../components/BrandedSplashGate";
 import { MustChangePasswordGate } from "../components/auth/MustChangePasswordGate";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { AuthProvider } from "../src/context/authContext";
@@ -13,15 +14,17 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <LanguageProvider>
         <SchoolProvider>
-          <SuperAdminAuthProvider>
-            <AuthProvider>
-              <ErrorBoundary>
-                <MustChangePasswordGate>
-                  <Stack screenOptions={{ headerShown: false }} />
-                </MustChangePasswordGate>
-              </ErrorBoundary>
-            </AuthProvider>
-          </SuperAdminAuthProvider>
+          <BrandedSplashGate>
+            <SuperAdminAuthProvider>
+              <AuthProvider>
+                <ErrorBoundary>
+                  <MustChangePasswordGate>
+                    <Stack screenOptions={{ headerShown: false }} />
+                  </MustChangePasswordGate>
+                </ErrorBoundary>
+              </AuthProvider>
+            </SuperAdminAuthProvider>
+          </BrandedSplashGate>
         </SchoolProvider>
       </LanguageProvider>
     </SafeAreaProvider>

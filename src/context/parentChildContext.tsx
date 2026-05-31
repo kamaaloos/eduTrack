@@ -3,6 +3,7 @@ import React, { createContext, useContext, useMemo, useState } from "react";
 export type SelectedChild = {
   id: string;
   name: string;
+  photoURL?: string | null;
   classId?: string;
   className?: string;
 };

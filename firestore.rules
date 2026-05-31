@@ -176,7 +176,18 @@ service cloud.firestore {
           request.auth.uid == userId
           && request.resource.data.role == resource.data.role
           && (
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(["name", "email"])
+            request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(["name", "email"])
+            || (
+              request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(["photoURL"])
+              && (resource.data.role == "student" || resource.data.role == "teacher")
+            )
+            || (
+              request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(["name", "email", "photoURL"])
+              && (resource.data.role == "student" || resource.data.role == "teacher")
+            )
             || (
               resource.data.mustChangePassword == true
               && request.resource.data.mustChangePassword == false
@@ -544,7 +555,11 @@ service cloud.firestore {
      */
     match /schoolRegistry/{schoolId} {
       allow read: if resource.data.active == true || isSuperAdmin();
-      allow create, update, delete: if isSuperAdmin();
+      allow create: if isSuperAdmin();
+      allow update: if isSuperAdmin()
+        && !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['userCountUpdatedAt', 'userCountSyncError']);
+      allow delete: if isSuperAdmin();
     }
 
     /* Deny everything else by default */

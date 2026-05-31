@@ -1,78 +1,50 @@
-import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Tabs, useSegments } from "expo-router";
 import { RoleGate } from "../../components/auth/RoleGate";
 import { AppScreenBackground } from "../../components/AppScreenBackground";
+import { MenuOverlayButton } from "../../components/navigation/MenuOverlayButton";
 import { ParentChildProvider } from "../../src/context/parentChildContext";
 import {
-  floatingTabBarStyle,
-  tabSceneContainerStyle,
+  ParentMenuProvider,
+  useParentMenu,
+} from "../../src/context/parentMenuContext";
+import {
+  hiddenTabBarStyle,
+  SHELL_SCENE_CONTAINER_STYLE,
 } from "../../src/constants/tabBar";
-import { useContext } from "react";
-import { useTranslation } from "react-i18next";
-import { AuthContext } from "../../src/context/authContext";
-import { useUnreadNotificationCount } from "../../hooks/useNotifications";
+
+const PARENT_SHELL_ROUTES = new Set([
+  "dashboard",
+  "report-card",
+  "notifications",
+  "account",
+]);
+
+function ParentMenuOverlay() {
+  const { openMenu } = useParentMenu();
+  const segments = useSegments();
+  const route = segments.at(-1) ?? "";
+  const parentSegment = segments.at(-2) ?? "";
+  const onChildDashboard = parentSegment === "student";
+  const showOverlay = !PARENT_SHELL_ROUTES.has(route) && !onChildDashboard;
+
+  if (!showOverlay) return null;
+  return <MenuOverlayButton onPress={openMenu} />;
+}
 
 function ParentTabs() {
-  const { t } = useTranslation();
-  const { user } = useContext(AuthContext);
-  const unreadCount = useUnreadNotificationCount(user?.uid);
-
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        sceneStyle: tabSceneContainerStyle,
-        sceneContainerStyle: tabSceneContainerStyle,
-        tabBarActiveTintColor: "#2563EB",
-        tabBarInactiveTintColor: "#9CA3AF",
-        tabBarStyle: floatingTabBarStyle,
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
-        },
+        sceneStyle: SHELL_SCENE_CONTAINER_STYLE,
+        sceneContainerStyle: SHELL_SCENE_CONTAINER_STYLE,
+        tabBarStyle: hiddenTabBarStyle,
       }}
     >
-      <Tabs.Screen
-        name="dashboard"
-        options={{
-          title: t("tabs.parent.home"),
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="report-card"
-        options={{
-          title: t("tabs.parent.reportCard"),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-text" size={size} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          title: t("tabs.parent.alerts"),
-          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications" size={size} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="account"
-        options={{
-          title: t("tabs.parent.profile"),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-circle-outline" size={size} color={color} />
-          ),
-        }}
-      />
+      <Tabs.Screen name="dashboard" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="report-card" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="notifications" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="account" options={{ href: null, headerShown: false }} />
 
       <Tabs.Screen name="student/[id]" options={{ href: null, headerShown: false }} />
       <Tabs.Screen
@@ -91,11 +63,14 @@ function ParentTabs() {
 export default function ParentLayout() {
   return (
     <RoleGate allowedRole="parent">
-    <ParentChildProvider>
-      <AppScreenBackground copyrightBottomOffset={88}>
-        <ParentTabs />
-      </AppScreenBackground>
-    </ParentChildProvider>
+      <ParentChildProvider>
+        <ParentMenuProvider>
+          <AppScreenBackground copyrightBottomOffset={8}>
+            <ParentTabs />
+            <ParentMenuOverlay />
+          </AppScreenBackground>
+        </ParentMenuProvider>
+      </ParentChildProvider>
     </RoleGate>
   );
 }

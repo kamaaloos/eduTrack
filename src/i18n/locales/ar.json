@@ -125,7 +125,8 @@
     "slide4Title": "هل أنت مستعد للبدء؟",
     "slide4Desc": "سجّل الدخول باستخدام بيانات الاعتماد التي قدّمها مسؤول مدرستك للبدء.",
     "getStarted": "ابدأ",
-    "next": "التالي"
+    "next": "التالي",
+    "continue": "متابعة"
   },
   "auth": {
     "login": {
@@ -238,7 +239,21 @@
     "roleTeacher": "معلّم",
     "roleParent": "وليّ أمر",
     "roleAdmin": "مسؤول",
-    "roleSuperAdmin": "مسؤول المنصة"
+    "roleSuperAdmin": "مسؤول المنصة",
+    "changePhoto": "تغيير الصورة",
+    "removePhoto": "إزالة الصورة",
+    "removePhotoTitle": "إزالة صورة الملف الشخصي؟",
+    "removePhotoConfirm": "سيتم إزالة صورة ملفك الشخصي.",
+    "photoSaved": "تم تحديث صورة الملف الشخصي.",
+    "photoRemoved": "تمت إزالة صورة الملف الشخصي.",
+    "photoPermissionDenied": "يلزم الوصول إلى مكتبة الصور لاختيار صورة الملف الشخصي.",
+    "photoTooLarge": "يجب أن تكون الصورة أصغر من 5 ميجابايت.",
+    "photoUploadFailed": "تعذر تحديث صورة الملف الشخصي.",
+    "photoStorageNotReady": "تخزين المدرسة غير متصل. سجّل الخروج واختر المدرسة مرة أخرى.",
+    "photoReadFailed": "تعذر قراءة الصورة المختارة.",
+    "photoStorageRules": "رفع محظور بقواعد Firebase Storage. انشر storage.rules لمشروع المدرسة.",
+    "photoFirestoreRules": "Firestore منع حفظ photoURL. انشر firestore.rules لمشروع المدرسة.",
+    "photoStorageUnavailable": "Firebase Storage غير متاح. تحقق من تفعيل Storage وstorageBucket."
   },
   "notifications": {
     "title": "الإشعارات",
@@ -402,7 +417,14 @@
       "saveScoreError": "تعذّر حفظ الدرجة",
       "reportRowSub": "نفس العرض الذي يراه أولياء الأمور — كل الاختبارات والدرجات الإجمالية",
       "generalSubject": "عام",
-      "examFallback": "اختبار"
+      "examFallback": "اختبار",
+      "certificatePdf": "شهادة PDF",
+      "certificateNeedsGrade": "الدرجة مطلوبة",
+      "certificateNeedsGradeHint": "احفظ درجة هذا الطالب قبل تصدير شهادة اختبار الفصل.",
+      "exportAllCertificatesPdf": "تصدير جميع الشهادات PDF ({{count}})",
+      "exportAllCertificatesReady": "تمت مشاركة PDF مع {{count}} شهادة طالب.",
+      "exportAllCertificatesNoneTitle": "لا يوجد طلاب مُقيَّمون",
+      "exportAllCertificatesNoneHint": "قيّم طالبًا واحدًا على الأقل لهذا الاختبار قبل تصدير الشهادات."
     },
     "students": {
       "title": "طلابي"
@@ -544,6 +566,36 @@
     "dueDate": "الاستحقاق {{date}}",
     "submitted": "مُسلَّم",
     "pending": "قيد الانتظار"
+  },
+  "certificates": {
+    "adminMenu": "شهادات النتائج",
+    "adminTitle": "شهادات النتائج",
+    "adminSubtitle": "تصدير شهادات نتائج المواد السنوية لصف",
+    "adminHint": "ينشئ ملف PDF واحدًا مع صفحة شهادة لكل طالب. يتضمن جميع اختبارات الفصل المُقيَّمة في السنة الدراسية المحددة، مجمّعة حسب المادة.",
+    "yearlyTitle": "شهادة نتائج المواد السنوية",
+    "termExamTitle": "شهادة اختبار الفصل",
+    "termExamCertifies": "تُشهد هذه الشهادة بنتيجة اختبار الفصل للطالب",
+    "academicYear": "السنة الدراسية",
+    "termExamColumn": "اختبار الفصل",
+    "examDate": "تاريخ الاختبار",
+    "score": "الدرجة",
+    "grade": "التقدير",
+    "average": "المتوسط",
+    "overallAverage": "المتوسط العام",
+    "overallGrade": "التقدير العام",
+    "issuedOn": "صُدرت في",
+    "teacherSignature": "المعلّم",
+    "schoolFallback": "المدرسة",
+    "exportYearlyPdf": "تصدير الشهادات السنوية PDF",
+    "exportReadyTitle": "PDF جاهز",
+    "exportReadyMessage": "تمت مشاركة PDF مع {{count}} شهادة طالب.",
+    "selectClassTitle": "اختر صفًا",
+    "selectClassHint": "اختر صفًا قبل تصدير الشهادات.",
+    "noClasses": "أنشئ صفًا وقيّم الاختبارات قبل تصدير الشهادات.",
+    "noData": "لم يتم العثور على نتائج اختبار مُقيَّمة لهذا الصف والسنة الدراسية.",
+    "noSubjectResults": "لا توجد نتائج مُقيَّمة لهذه السنة الدراسية.",
+    "shareUnavailable": "مشاركة PDF غير متاحة على هذا الجهاز.",
+    "exportFailed": "تعذّر تصدير شهادة PDF."
   },
   "parent": {
     "dashboardTitle": "أبنائي",
@@ -893,6 +945,10 @@
     "usageExpiresAt": "تاريخ انتهاء الاستخدام *",
     "usageExpiresAtPlaceholder": "YYYY-MM-DD",
     "usageExpiresAtHint": "حدد متى تنتهي مدة استخدام هذه المدرسة.",
+    "userCountLabel": "عدد المستخدمين القابل للفوترة (اختياري)",
+    "userCountPlaceholder": "مثال 120",
+    "userCountHint": "يُستخدم لفوترة المنصة. اتركه فارغًا إذا كان غير معروف.",
+    "userCountInvalid": "يجب أن يكون عدد المستخدمين عددًا صحيحًا أكبر من أو يساوي 0.",
     "usageNotSet": "تاريخ انتهاء الاستخدام غير محدد",
     "saveChanges": "حفظ التغييرات",
     "registerSchool": "تسجيل المدرسة",
@@ -912,6 +968,9 @@
     "storageBucket": "حاوية التخزين",
     "messagingSenderId": "معرّف مرسل الرسائل",
     "appId": "معرّف التطبيق *",
-    "schoolNameRequired": "اسم المدرسة *"
+    "schoolNameRequired": "اسم المدرسة *",
+    "schoolLogoUrl": "رابط شعار المدرسة (اختياري)",
+    "schoolLogoUrlPlaceholder": "https://example.com/logo.png",
+    "schoolLogoUrlHint": "ألصق رابط صورة HTTPS (يمكنك استخدام Firebase Storage أو Cloudinary)."
   }
 }

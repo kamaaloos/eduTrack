@@ -1,56 +1,33 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useContext } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AuthContext } from "../../src/context/authContext";
 
 type AdminScreenHeaderProps = {
   title: string;
   subtitle?: string;
   showBack?: boolean;
-  showLogout?: boolean;
   notificationCount?: number;
   onNotificationsPress?: () => void;
+  onMenuPress?: () => void;
 };
 
 export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
   title,
   subtitle,
   showBack = false,
-  showLogout = true,
   notificationCount = 0,
   onNotificationsPress,
+  onMenuPress,
 }) => {
   const { t } = useTranslation();
-  const { logout } = useContext(AuthContext);
-
-  const handleLogout = () => {
-    Alert.alert(t("profile.signOutTitle"), t("profile.signOutConfirm"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("common.logout"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await logout();
-          } catch (err) {
-            Alert.alert(
-              t("common.error"),
-              err instanceof Error ? err.message : t("common.somethingWentWrong"),
-            );
-          }
-        },
-      },
-    ]);
-  };
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -58,7 +35,7 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
         <View style={styles.row}>
           {showBack ? (
             <TouchableOpacity
-              style={styles.backButton}
+              style={styles.sideButton}
               onPress={() => router.back()}
               accessibilityLabel={t("admin.goBackA11y")}
             >
@@ -99,18 +76,15 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
               </TouchableOpacity>
             ) : null}
 
-            {showLogout ? (
+            {onMenuPress ? (
               <TouchableOpacity
-                style={styles.logoutButton}
-                onPress={handleLogout}
-                accessibilityLabel={t("common.logout")}
+                style={styles.iconButton}
+                onPress={onMenuPress}
+                accessibilityLabel={t("admin.management")}
               >
-                <Ionicons name="log-out-outline" size={18} color="#1E3A8A" />
-                <Text style={styles.logoutText}>{t("common.logout")}</Text>
+                <Ionicons name="menu" size={20} color="#1E3A8A" />
               </TouchableOpacity>
-            ) : (
-              <View style={styles.logoutPlaceholder} />
-            )}
+            ) : null}
           </View>
         </View>
       </View>
@@ -140,7 +114,7 @@ const styles = StyleSheet.create({
     gap: 10,
     minHeight: 52,
   },
-  backButton: {
+  sideButton: {
     width: 40,
     height: 40,
     borderRadius: 12,
@@ -174,26 +148,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     marginTop: 2,
-  },
-  logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 12,
-    flexShrink: 0,
-    maxWidth: 100,
-  },
-  logoutText: {
-    color: "#1E3A8A",
-    fontWeight: "700",
-    fontSize: 13,
-  },
-  logoutPlaceholder: {
-    width: 100,
-    flexShrink: 0,
   },
   headerActions: {
     flexDirection: "row",

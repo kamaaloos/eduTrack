@@ -16,6 +16,7 @@ export type ParentChild = {
   id: string;
   name: string;
   email?: string;
+  photoURL?: string | null;
   classId?: string;
   className?: string;
 };
@@ -74,10 +75,16 @@ export async function loadParentChildrenDetailed(
         }
       }
 
+      const photoURL =
+        typeof data.photoURL === "string" && data.photoURL.trim()
+          ? data.photoURL.trim()
+          : null;
+
       return {
         id: studentId,
         name: (data.name as string) || (data.email as string) || "Student",
         email: data.email as string | undefined,
+        photoURL,
         classId,
         className,
       } satisfies ParentChild;

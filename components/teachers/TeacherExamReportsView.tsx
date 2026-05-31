@@ -9,9 +9,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { useTeacherExamReports } from "../../hooks/useTeacherExamReports";
 import { SelectChips } from "./SelectChips";
-import { ExamReportsGradeSection } from "./examReports/ExamReportsGradeSection";
+import {
+  ExamReportsGradeFixedHeader,
+  ExamReportsGradeStudentList,
+} from "./examReports/ExamReportsGradeSection";
 import { ExamReportsModeTabs } from "./examReports/ExamReportsModeTabs";
-import { ExamReportsReportsSection } from "./examReports/ExamReportsReportsSection";
+import {
+  ExamReportsReportsSearch,
+  ExamReportsReportsStudentList,
+} from "./examReports/ExamReportsReportsSection";
 import { examReportsStyles as styles } from "./examReports/examReportsStyles";
 
 export type TeacherExamReportsViewProps = ReturnType<
@@ -51,6 +57,9 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
     updateScoreDraft,
     saveScore,
     openReport,
+    exportCertificate,
+    exportAllCertificates,
+    exportingAllCertificates,
     showMoreGradeStudents,
     showMoreReportStudents,
   } = props;
@@ -74,15 +83,12 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
     );
   }
 
+  const showGradeStudents = mode === "grade" && exams.length > 0;
+  const showReportStudents = mode === "reports";
+
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
+      <View style={styles.fixedTop}>
         <Text style={styles.pageTitle}>{t("teacher.examReports.pageTitle")}</Text>
         <Text style={styles.pageSub}>{t("teacher.examReports.pageSub")}</Text>
 
@@ -98,7 +104,7 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
         {loading ? (
           <ActivityIndicator style={styles.loader} color="#2563EB" />
         ) : mode === "grade" ? (
-          <ExamReportsGradeSection
+          <ExamReportsGradeFixedHeader
             exams={exams}
             examChipOptions={examChipOptions}
             selectedExamId={selectedExamId}
@@ -108,28 +114,51 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
             gradedCount={gradedCount}
             classAverage={classAverage}
             studentsInClass={studentsInClass}
-            visibleGradeStudents={visibleGradeStudents}
-            resultByStudent={resultByStudent}
-            scoreDrafts={scoreDrafts}
-            savingId={savingId}
-            onScoreChange={updateScoreDraft}
-            onSaveScore={saveScore}
-            onOpenReport={openReport}
-            onShowMore={showMoreGradeStudents}
+            onExportAllCertificates={() => void exportAllCertificates()}
+            exportingAllCertificates={exportingAllCertificates}
           />
         ) : (
-          <ExamReportsReportsSection
+          <ExamReportsReportsSearch
             reportSearch={reportSearch}
             onReportSearchChange={setReportSearch}
-            filteredReportStudents={filteredReportStudents}
-            visibleReportStudents={visibleReportStudents}
-            onOpenReport={openReport}
-            onShowMore={showMoreReportStudents}
           />
         )}
+      </View>
 
-        <View style={styles.scrollBottomSpacer} />
-      </ScrollView>
+      {!loading && (showGradeStudents || showReportStudents) ? (
+        <ScrollView
+          style={styles.studentScroll}
+          contentContainerStyle={styles.studentScrollContent}
+          showsVerticalScrollIndicator
+          keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          {mode === "grade" ? (
+            <ExamReportsGradeStudentList
+              studentsInClass={studentsInClass}
+              visibleGradeStudents={visibleGradeStudents}
+              resultByStudent={resultByStudent}
+              maxMarks={maxMarks}
+              scoreDrafts={scoreDrafts}
+              savingId={savingId}
+              onScoreChange={updateScoreDraft}
+              onSaveScore={saveScore}
+              onOpenReport={openReport}
+              onExportCertificate={exportCertificate}
+              onShowMore={showMoreGradeStudents}
+            />
+          ) : (
+            <ExamReportsReportsStudentList
+              filteredReportStudents={filteredReportStudents}
+              visibleReportStudents={visibleReportStudents}
+              onOpenReport={openReport}
+              onShowMore={showMoreReportStudents}
+            />
+          )}
+        </ScrollView>
+      ) : null}
     </SafeAreaView>
   );
 }

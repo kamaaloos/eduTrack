@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { useParentChild } from "../../src/context/parentChildContext";
 import {
   ActivityIndicator,
-  Alert,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -14,17 +13,17 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { UserAvatar } from "../../components/common/UserAvatar";
+import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 import { AuthContext } from "../../src/context/authContext";
 import {
   loadParentChildrenDetailed,
   type ParentChild,
 } from "../../src/services/parentChildren";
-import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 
 export default function ParentDashboard() {
   const { t } = useTranslation();
-  const { user, userData, logout } = useContext(AuthContext);
+  const { user, userData } = useContext(AuthContext);
   const { setSelectedChild } = useParentChild();
   const [children, setChildren] = useState<ParentChild[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,30 +67,11 @@ export default function ParentDashboard() {
     void load();
   };
 
-  const handleLogout = () => {
-    Alert.alert(t("profile.signOutTitle"), t("profile.signOutConfirm"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("common.logout"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await logout();
-          } catch (err) {
-            Alert.alert(
-              t("common.error"),
-              err instanceof Error ? err.message : t("common.somethingWentWrong"),
-            );
-          }
-        },
-      },
-    ]);
-  };
-
   const openChild = (child: ParentChild) => {
     setSelectedChild({
       id: child.id,
       name: child.name,
+      photoURL: child.photoURL,
       classId: child.classId,
       className: child.className,
     });
@@ -100,6 +80,7 @@ export default function ParentDashboard() {
       params: {
         id: child.id,
         name: child.name,
+        photoURL: child.photoURL ?? "",
         classId: child.classId ?? "",
         className: child.className ?? "",
       },
@@ -107,28 +88,12 @@ export default function ParentDashboard() {
   };
 
   return (
-    <View style={styles.screen}>
-      <SafeAreaView style={styles.header} edges={["top"]}>
-        <View style={styles.headerRow}>
-          <View style={styles.headerTextBlock}>
-            <Text style={styles.greeting}>
-              {t("parent.homeGreeting", {
-                name: userData?.name || t("common.parent"),
-              })}
-            </Text>
-            <Text style={styles.subtitle}>{t("parent.dashboardSubtitle")}</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.logoutButton}
-            onPress={handleLogout}
-            accessibilityLabel={t("common.logout")}
-          >
-            <Ionicons name="log-out-outline" size={18} color="#1E3A8A" />
-            <Text style={styles.logoutText}>{t("common.logout")}</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-
+    <ParentScreenShell
+      title={t("parent.homeGreeting", {
+        name: userData?.name || t("common.parent"),
+      })}
+      subtitle={t("parent.dashboardSubtitle")}
+    >
       {loading && !refreshing ? (
         <View style={styles.centered}>
           <ActivityIndicator size="large" color="#1E3A8A" />
@@ -166,9 +131,14 @@ export default function ParentDashboard() {
               onPress={() => openChild(child)}
               activeOpacity={0.85}
             >
-              <View style={styles.childIcon}>
-                <Ionicons name="person" size={28} color="#1E3A8A" />
-              </View>
+              <UserAvatar
+                name={child.name}
+                email={child.email}
+                photoURL={child.photoURL}
+                size={52}
+                textColor="#1E3A8A"
+                backgroundColor="#EFF6FF"
+              />
               <View style={styles.childInfo}>
                 <Text style={styles.childName}>{child.name}</Text>
                 <Text style={styles.childMeta}>
@@ -183,59 +153,14 @@ export default function ParentDashboard() {
           ))}
         </ScrollView>
       )}
-    </View>
+    </ParentScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "transparent",
-  },
-  header: {
-    backgroundColor: "#1E3A8A",
-    paddingHorizontal: 16,
-    paddingBottom: 24,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
-  },
-  headerTextBlock: {
-    flex: 1,
-    minWidth: 0,
-  },
-  logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  logoutText: {
-    color: "#1E3A8A",
-    fontWeight: "700",
-    fontSize: 13,
-  },
-  greeting: {
-    color: "#FFFFFF",
-    fontSize: 22,
-    fontWeight: "800",
-  },
-  subtitle: {
-    color: "#BFDBFE",
-    fontSize: 14,
-    marginTop: 6,
-    lineHeight: 20,
-  },
   scroll: {
     padding: 16,
-    paddingBottom: FLOATING_TAB_BAR_INSET,
+    paddingBottom: 24,
   },
   centered: {
     flex: 1,

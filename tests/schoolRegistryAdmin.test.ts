@@ -16,6 +16,7 @@ const baseInput: SchoolRegistryInput = {
   name: "Test School",
   active: true,
   usageExpiresAt: "2026-12-31",
+  userCount: null,
   firebase: validFirebase,
 };
 
@@ -41,5 +42,14 @@ describe("validateSchoolInput", () => {
         firebase: { ...validFirebase, projectId: "" },
       }),
     ).toMatch(/project/i);
+  });
+
+  it("rejects non-http logo url", () => {
+    expect(
+      validateSchoolInput({
+        ...baseInput,
+        logoUrl: "ftp://example.com/logo.png",
+      }),
+    ).toMatch(/logo/i);
   });
 });

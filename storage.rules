@@ -1,0 +1,150 @@
+rules_version = '2';
+
+/**
+ * School Firebase Storage — access driven by Firestore `users` and relation docs.
+ * Deploy to each **school** project (same as firestore.rules), not the registry:
+ *   firebase deploy --only storage
+ */
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    /* ---------------- FIRESTORE HELPERS ---------------- */
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userPath(uid) {
+      return /databases/(default)/documents/users/$(uid);
+    }
+
+    function callerDoc() {
+      return firestore.get(userPath(request.auth.uid));
+    }
+
+    function callerExists() {
+      return firestore.exists(userPath(request.auth.uid));
+    }
+
+    function callerRole() {
+      return callerExists() ? callerDoc().data.role : null;
+    }
+
+    function targetUserDoc(userId) {
+      return firestore.get(userPath(userId));
+    }
+
+    function targetUserExists(userId) {
+      return firestore.exists(userPath(userId));
+    }
+
+    function isAdmin() {
+      return isSignedIn() && callerRole() == "admin";
+    }
+
+    function isTeacher() {
+      return isSignedIn() && callerRole() == "teacher";
+    }
+
+    function isParent() {
+      return isSignedIn() && callerRole() == "parent";
+    }
+
+    function teacherOwnsClass(classId) {
+      return isTeacher()
+        && firestore.exists(
+          /databases/(default)/documents/teacherClasses/$(request.auth.uid + "_" + classId)
+        );
+    }
+
+    function parentLinkedStudentIds() {
+      return isParent()
+        && callerExists()
+        && "linkedStudentIds" in callerDoc().data
+        ? callerDoc().data.linkedStudentIds
+        : [];
+    }
+
+    function parentOwnsStudent(studentId) {
+      return isParent()
+        && (
+          firestore.exists(
+            /databases/(default)/documents/parentStudents/$(request.auth.uid + "_" + studentId)
+          )
+          || studentId in parentLinkedStudentIds()
+        );
+    }
+
+    function studentProfileClassId(studentId) {
+      let studentPath = userPath(studentId);
+      return targetUserExists(studentId)
+        && targetUserDoc(studentId).data.role == "student"
+        && targetUserDoc(studentId).data.classId != null
+        ? targetUserDoc(studentId).data.classId
+        : null;
+    }
+
+    function teacherOwnsStudent(studentId) {
+      let profileClass = studentProfileClassId(studentId);
+      return isTeacher()
+        && profileClass != null
+        && teacherOwnsClass(profileClass);
+    }
+
+    /**
+     * Mirrors Firestore `users/{userId}` allow get — who may view a profile photo URL.
+     */
+    function canReadProfilePhoto(userId) {
+      return isSignedIn()
+        && targetUserExists(userId)
+        && (
+          request.auth.uid == userId
+          || isAdmin()
+          || (isParent() && parentOwnsStudent(userId))
+          || (
+            isTeacher()
+            && targetUserDoc(userId).data.role == "student"
+            && (
+              (
+                targetUserDoc(userId).data.classId != null
+                && teacherOwnsClass(targetUserDoc(userId).data.classId)
+              )
+              || teacherOwnsStudent(userId)
+            )
+          )
+        );
+    }
+
+    /**
+     * Only students/teachers may set their own photo (matches Firestore photoURL updates).
+     */
+    function canWriteOwnProfilePhoto(userId) {
+      return isSignedIn()
+        && request.auth.uid == userId
+        && targetUserExists(userId)
+        && targetUserDoc(userId).data.role in ["student", "teacher"]
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches("image/.*");
+    }
+
+    function canDeleteOwnProfilePhoto(userId) {
+      return isSignedIn()
+        && request.auth.uid == userId
+        && targetUserExists(userId)
+        && targetUserDoc(userId).data.role in ["student", "teacher"];
+    }
+
+    /* ---------------- PROFILE PHOTOS ---------------- */
+
+    match /profilePhotos/{userId}/{fileName} {
+      allow read: if canReadProfilePhoto(userId);
+      allow create, update: if canWriteOwnProfilePhoto(userId);
+      allow delete: if canDeleteOwnProfilePhoto(userId);
+    }
+
+    /* Deny all other paths */
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

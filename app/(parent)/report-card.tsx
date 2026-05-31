@@ -1,10 +1,16 @@
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useContext, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useContext, useEffect, useState, type ReactNode } from "react";
 import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../src/context/authContext";
 import { useParentChild } from "../../src/context/parentChildContext";
+import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 import { ReportCardView } from "../../components/report/ReportCardView";
 import { generateReportCard } from "../../src/services/reportCardEngine";
 import type { ReportCardData } from "../../src/services/reportCardEngine";
@@ -51,9 +57,11 @@ export default function ParentReportCardTab() {
     };
   }, [studentId, user?.uid, selectedChild?.classId, selectedChild?.name, t]);
 
+  let body: ReactNode;
+
   if (!selectedChild) {
-    return (
-      <SafeAreaView style={styles.centered} edges={["top"]}>
+    body = (
+      <View style={styles.centered}>
         <Text style={styles.emptyTitle}>{t("parent.selectChild")}</Text>
         <Text style={styles.emptyText}>{t("parent.dashboardSubtitle")}</Text>
         <TouchableOpacity
@@ -62,28 +70,33 @@ export default function ParentReportCardTab() {
         >
           <Text style={styles.emptyButtonText}>{t("tabs.parent.home")}</Text>
         </TouchableOpacity>
-      </SafeAreaView>
+      </View>
     );
-  }
-
-  if (!report && !error) {
-    return (
+  } else if (!report && !error) {
+    body = (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#1E40AF" />
         <Text style={styles.loadingLabel}>{t("common.loading")}</Text>
       </View>
     );
-  }
-
-  if (error) {
-    return (
-      <SafeAreaView style={styles.centered} edges={["top"]}>
+  } else if (error) {
+    body = (
+      <View style={styles.centered}>
         <Text style={styles.error}>{error}</Text>
-      </SafeAreaView>
+      </View>
     );
+  } else {
+    body = report ? <ReportCardView report={report} /> : null;
   }
 
-  return report ? <ReportCardView report={report} /> : null;
+  return (
+    <ParentScreenShell
+      title={t("tabs.parent.reportCard")}
+      subtitle={selectedChild?.name}
+    >
+      {body}
+    </ParentScreenShell>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -92,7 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
-    backgroundColor: "transparent",
   },
   emptyTitle: {
     fontSize: 20,

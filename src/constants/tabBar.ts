@@ -1,6 +1,16 @@
 /** Space reserved above the floating tab bar (height + bottom offset + margin). */
 export const FLOATING_TAB_BAR_INSET = 110;
 
+/** Scene padding when the tab bar is hidden (side menu is primary navigation). */
+export const SHELL_SCENE_CONTAINER_STYLE = {
+  paddingBottom: 16,
+  backgroundColor: "transparent" as const,
+};
+
+export const hiddenTabBarStyle = {
+  display: "none" as const,
+};
+
 export const floatingTabBarStyle = {
   position: "absolute" as const,
   left: 15,

@@ -21,6 +21,7 @@ type ExamReportsStudentGradeRowProps = {
   onScoreChange: (text: string) => void;
   onSave: () => void;
   onOpenReport: () => void;
+  onExportCertificate: () => void;
 };
 
 export function ExamReportsStudentGradeRow({
@@ -32,6 +33,7 @@ export function ExamReportsStudentGradeRow({
   onScoreChange,
   onSave,
   onOpenReport,
+  onExportCertificate,
 }: ExamReportsStudentGradeRowProps) {
   const { t } = useTranslation();
   const graded = Boolean(result?.graded);
@@ -86,11 +88,23 @@ export function ExamReportsStudentGradeRow({
             </View>
           </View>
         </View>
-        <TouchableOpacity onPress={onOpenReport} style={styles.reportLink}>
-          <Text style={styles.reportLinkText}>
-            {t("teacher.examReports.report")}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.actionLinks}>
+          <TouchableOpacity onPress={onOpenReport} style={styles.reportLink}>
+            <Text style={styles.reportLinkText}>
+              {t("teacher.examReports.report")}
+            </Text>
+          </TouchableOpacity>
+          {graded ? (
+            <TouchableOpacity
+              onPress={onExportCertificate}
+              style={styles.reportLink}
+            >
+              <Text style={styles.reportLinkText}>
+                {t("teacher.examReports.certificatePdf")}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
 
       <View style={styles.scoreRow}>

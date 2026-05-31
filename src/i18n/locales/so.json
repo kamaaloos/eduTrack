@@ -125,7 +125,8 @@
     "slide4Title": "Diyaar ma u tahay inaad bilowdo?",
     "slide4Desc": "Ku soo gal aqoonsiga uu bixiyay maamulaha dugsigaaga si aad u bilowdo.",
     "getStarted": "Bilow",
-    "next": "Xigta"
+    "next": "Xigta",
+    "continue": "Sii wad"
   },
   "auth": {
     "login": {
@@ -238,7 +239,21 @@
     "roleTeacher": "Macallin",
     "roleParent": "Waalid",
     "roleAdmin": "Maamule",
-    "roleSuperAdmin": "Maamulaha madasha"
+    "roleSuperAdmin": "Maamulaha madasha",
+    "changePhoto": "Beddel sawirka",
+    "removePhoto": "Ka saar sawirka",
+    "removePhotoTitle": "Ka saar sawirka astaanta?",
+    "removePhotoConfirm": "Sawirka astaantaada waa la saari doonaa.",
+    "photoSaved": "Sawirka astaanta waa la cusbooneysiiyay.",
+    "photoRemoved": "Sawirka astaanta waa la saaray.",
+    "photoPermissionDenied": "Waxaa loo baahan yahay ogolaanshaha maktabadda sawirrada.",
+    "photoTooLarge": "Sawirku waa inuu ka yar yahay 5 MB.",
+    "photoUploadFailed": "Sawirka astaanta lama cusbooneysiin karo.",
+    "photoStorageNotReady": "Kaydinta dugsiga lama xirin. Ka bax, dooro dugsiga mar kale.",
+    "photoReadFailed": "Sawirka la doortay lama akhrin karo.",
+    "photoStorageRules": "Soo rarista waa la xannibay Storage rules. Deploy storage.rules.",
+    "photoFirestoreRules": "Firestore wuu diiday photoURL. Deploy firestore.rules.",
+    "photoStorageUnavailable": "Firebase Storage ma shaqeynayo. Hubi Storage iyo storageBucket."
   },
   "notifications": {
     "title": "Ogeysiisyada",
@@ -402,7 +417,14 @@
       "saveScoreError": "Lama kaydin karin dhibcaha",
       "reportRowSub": "Isla aragtida waalidiinta — dhammaan imtixaanada & celceliska",
       "generalSubject": "Guud",
-      "examFallback": "Imtixaan"
+      "examFallback": "Imtixaan",
+      "certificatePdf": "Shahaado PDF",
+      "certificateNeedsGrade": "Darajo ayaa loo baahan yahay",
+      "certificateNeedsGradeHint": "Kaydi dhibcaha ardayga ka hor intaadan dhoofin shahaadada imtixaanka muddada.",
+      "exportAllCertificatesPdf": "Dhoofi dhammaan shahaadooyinka PDF ({{count}})",
+      "exportAllCertificatesReady": "PDF waa la wadaagay — {{count}} shahaado arday.",
+      "exportAllCertificatesNoneTitle": "Ma jiraan arday la qiimeeyay",
+      "exportAllCertificatesNoneHint": "Qiimee ugu yaraan hal arday imtixaankan ka hor intaadan dhoofin shahaadooyinka."
     },
     "students": {
       "title": "Ardaydayda"
@@ -544,6 +566,36 @@
     "dueDate": "Waqtiga {{date}}",
     "submitted": "La gudbiyay",
     "pending": "Sugitaan"
+  },
+  "certificates": {
+    "adminMenu": "Shahaadooyinka natiijada",
+    "adminTitle": "Shahaadooyinka natiijada",
+    "adminSubtitle": "Dhoofi shahaadooyinka natiijada sanadlaha ah ee maadooyinka fasalka",
+    "adminHint": "Dhis hal PDF oo leh bog shahaado arday kasta. Waxaa ku jira dhammaan imtixaanada muddada ee la qiimeeyay sanadka waxbarashada la doortay, oo loo kala saaray maadooyinka.",
+    "yearlyTitle": "Shahaadada natiijada sanadlaha ah ee maadooyinka",
+    "termExamTitle": "Shahaadada imtixaanka muddada",
+    "termExamCertifies": "Tani waxay caddeynaysaa natiijada imtixaanka muddada ee",
+    "academicYear": "Sanadka waxbarashada",
+    "termExamColumn": "Imtixaanka muddada",
+    "examDate": "Taariikhda imtixaanka",
+    "score": "Dhibcaha",
+    "grade": "Darajada",
+    "average": "Celcelis",
+    "overallAverage": "Celceliska guud",
+    "overallGrade": "Darajada guud",
+    "issuedOn": "La bixiyay",
+    "teacherSignature": "Macallin",
+    "schoolFallback": "Dugsi",
+    "exportYearlyPdf": "Dhoofi shahaadooyinka sanadlaha ah PDF",
+    "exportReadyTitle": "PDF diyaar",
+    "exportReadyMessage": "PDF la wadaagay oo leh {{count}} shahaado arday.",
+    "selectClassTitle": "Dooro fasal",
+    "selectClassHint": "Dooro fasal ka hor intaadan dhoofin shahaadooyinka.",
+    "noClasses": "Abuur fasal oo qiimee imtixaanada ka hor intaadan dhoofin shahaadooyinka.",
+    "noData": "Natiijooyin imtixaan oo la qiimeeyay lama helin fasalkan iyo sanadka waxbarashada.",
+    "noSubjectResults": "Natiijooyin la qiimeeyay ma jiraan sanadkan waxbarashada.",
+    "shareUnavailable": "Wadaagista PDF lama heli karo qalabkan.",
+    "exportFailed": "Lama dhoofin karin shahaadada PDF."
   },
   "parent": {
     "dashboardTitle": "Carruurtayda",
@@ -893,6 +945,10 @@
     "usageExpiresAt": "Taariikhda dhicitaanka adeegga *",
     "usageExpiresAtPlaceholder": "YYYY-MM-DD",
     "usageExpiresAtHint": "Deji goorta ay dhammaanayso muddada isticmaalka dugsigan.",
+    "userCountLabel": "Tirada isticmaaleyaasha la biili gareeyo (ikhtiyaari)",
+    "userCountPlaceholder": "tusaale 120",
+    "userCountHint": "Waxaa loo isticmaalaa biilka madasha. Ka tag madhan haddii aan la aqoon.",
+    "userCountInvalid": "Tirada isticmaaleyaasha waa inay noqotaa tiro dhamaystiran 0 ama ka weyn.",
     "usageNotSet": "Taariikhda dhicitaanka adeegga lama dejin",
     "saveChanges": "Kaydi isbeddellada",
     "registerSchool": "Diiwaangeli dugsiga",
@@ -912,6 +968,9 @@
     "storageBucket": "Storage bucket",
     "messagingSenderId": "Messaging sender ID",
     "appId": "Aqoonsiga app-ka *",
-    "schoolNameRequired": "Magaca dugsiga *"
+    "schoolNameRequired": "Magaca dugsiga *",
+    "schoolLogoUrl": "URL-ga astaanta dugsiga (ikhtiyaari)",
+    "schoolLogoUrlPlaceholder": "https://example.com/logo.png",
+    "schoolLogoUrlHint": "Ku dheji URL sawir HTTPS ah (waxaad isticmaali kartaa Firebase Storage ama Cloudinary)."
   }
 }

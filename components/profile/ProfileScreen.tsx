@@ -13,15 +13,22 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LanguageSelector } from "../LanguageSelector";
+import { UserAvatar } from "../common/UserAvatar";
 import { PasswordInput } from "../PasswordInput";
 import { AuthContext } from "../../src/context/authContext";
+import {
+  getProfilePhotoErrorKey,
+  pickProfileImageUri,
+  removeProfilePhoto,
+  uploadProfilePhoto,
+} from "../../src/services/profilePhoto";
 import {
   changeUserEmail,
   changeUserPassword,
   mapAuthError,
   updateProfileName,
 } from "../../src/services/userProfile";
+import { canUploadProfilePhoto } from "../../src/utils/userAvatar";
 
 type ProfileScreenProps = {
   roleLabel?: string;
@@ -61,6 +68,13 @@ export function ProfileScreen({ roleLabel, showBack = false }: ProfileScreenProp
   const [savingName, setSavingName] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  const canEditPhoto = canUploadProfilePhoto(role);
+  const photoURL =
+    typeof userData?.photoURL === "string" && userData.photoURL.trim()
+      ? userData.photoURL.trim()
+      : null;
 
   const roleKey = roleLabelKey(role);
   const displayRole =
@@ -132,6 +146,47 @@ export function ProfileScreen({ roleLabel, showBack = false }: ProfileScreenProp
     }
   };
 
+  const mapPhotoError = (err: unknown): string => {
+    return t(getProfilePhotoErrorKey(err));
+  };
+
+  const handleChangePhoto = async () => {
+    setUploadingPhoto(true);
+    try {
+      const uri = await pickProfileImageUri();
+      if (!uri) return;
+      await uploadProfilePhoto(uri);
+      await refreshUserProfile?.();
+      Alert.alert(t("common.success"), t("profile.photoSaved"));
+    } catch (err) {
+      Alert.alert(t("common.error"), mapPhotoError(err));
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    Alert.alert(t("profile.removePhotoTitle"), t("profile.removePhotoConfirm"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("profile.removePhoto"),
+        style: "destructive",
+        onPress: async () => {
+          setUploadingPhoto(true);
+          try {
+            await removeProfilePhoto();
+            await refreshUserProfile?.();
+            Alert.alert(t("common.success"), t("profile.photoRemoved"));
+          } catch {
+            Alert.alert(t("common.error"), t("profile.photoUploadFailed"));
+          } finally {
+            setUploadingPhoto(false);
+          }
+        },
+      },
+    ]);
+  };
+
   const handleLogout = () => {
     Alert.alert(t("profile.signOutTitle"), t("profile.signOutConfirm"), [
       { text: t("common.cancel"), style: "cancel" },
@@ -172,11 +227,52 @@ export function ProfileScreen({ roleLabel, showBack = false }: ProfileScreenProp
         ) : null}
 
         <View style={styles.hero}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {(userData?.name || loginEmail).charAt(0).toUpperCase()}
-            </Text>
-          </View>
+          <TouchableOpacity
+            style={styles.avatarWrap}
+            onPress={canEditPhoto ? handleChangePhoto : undefined}
+            disabled={!canEditPhoto || uploadingPhoto}
+            activeOpacity={canEditPhoto ? 0.85 : 1}
+          >
+            <UserAvatar
+              name={userData?.name}
+              email={loginEmail !== "—" ? loginEmail : undefined}
+              photoURL={photoURL}
+              size={72}
+              textColor="#FFFFFF"
+              backgroundColor="#2563EB"
+            />
+            {canEditPhoto ? (
+              <View style={styles.avatarBadge}>
+                {uploadingPhoto ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Ionicons name="camera" size={16} color="#FFFFFF" />
+                )}
+              </View>
+            ) : null}
+          </TouchableOpacity>
+          {canEditPhoto ? (
+            <View style={styles.photoActions}>
+              <TouchableOpacity
+                style={styles.photoActionBtn}
+                onPress={handleChangePhoto}
+                disabled={uploadingPhoto}
+              >
+                <Text style={styles.photoActionText}>{t("profile.changePhoto")}</Text>
+              </TouchableOpacity>
+              {photoURL ? (
+                <TouchableOpacity
+                  style={styles.photoActionBtnOutline}
+                  onPress={handleRemovePhoto}
+                  disabled={uploadingPhoto}
+                >
+                  <Text style={styles.photoActionTextOutline}>
+                    {t("profile.removePhoto")}
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+          ) : null}
           <Text style={styles.heroName} numberOfLines={2}>
             {userData?.name || t("profile.yourProfile")}
           </Text>
@@ -186,7 +282,6 @@ export function ProfileScreen({ roleLabel, showBack = false }: ProfileScreenProp
           <View style={styles.roleBadge}>
             <Text style={styles.roleBadgeText}>{displayRole}</Text>
           </View>
-          <LanguageSelector compact />
         </View>
       </View>
 
@@ -328,16 +423,53 @@ const styles = StyleSheet.create({
   hero: {
     alignItems: "center",
   },
-  avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: "#2563EB",
+  avatarWrap: {
+    marginBottom: 8,
+    position: "relative",
+  },
+  avatarBadge: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#1E40AF",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
   },
-  avatarText: { fontSize: 28, fontWeight: "800", color: "#FFFFFF" },
+  photoActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 8,
+    marginBottom: 10,
+  },
+  photoActionBtn: {
+    backgroundColor: "#2563EB",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  photoActionText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 12,
+  },
+  photoActionBtnOutline: {
+    borderWidth: 1,
+    borderColor: "#2563EB",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  photoActionTextOutline: {
+    color: "#2563EB",
+    fontWeight: "700",
+    fontSize: 12,
+  },
   heroName: { fontSize: 22, fontWeight: "800", color: "#0F172A" },
   heroEmail: { fontSize: 14, color: "#64748B", marginTop: 4 },
   roleBadge: {

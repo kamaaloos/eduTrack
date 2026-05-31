@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Image,
   RefreshControl,
   StyleSheet,
   Switch,
@@ -13,13 +14,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SuperAdminScreenHeader } from "../../components/superAdmin/SuperAdminScreenHeader";
-import { getUsageRemainingDays } from "../../src/utils/usageExpiry";
+import { SchoolBillingMetrics } from "../../components/superAdmin/SchoolBillingMetrics";
+import { SuperAdminScreenShell } from "../../components/superAdmin/SuperAdminScreenShell";
 import {
   deleteSchoolRecord,
   listAllSchoolsForAdmin,
   setSchoolActive,
 } from "../../src/services/schoolRegistryAdmin";
+import { refreshSchoolUserCounts } from "../../src/services/schoolUserCountSync";
 import type { SchoolRecord } from "../../src/types/school";
 
 export default function SuperAdminSchoolsScreen() {
@@ -27,6 +29,7 @@ export default function SuperAdminSchoolsScreen() {
   const [schools, setSchools] = useState<SchoolRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -55,6 +58,30 @@ export default function SuperAdminSchoolsScreen() {
   const onRefresh = () => {
     setRefreshing(true);
     void load();
+  };
+
+  const syncAllUserCounts = async () => {
+    setSyncing(true);
+    try {
+      const result = await refreshSchoolUserCounts();
+      if ("failed" in result && result.failed > 0) {
+        Alert.alert(
+          t("superAdmin.syncPartialTitle"),
+          t("superAdmin.syncPartialMessage", {
+            synced: result.synced,
+            failed: result.failed,
+          }),
+        );
+      }
+      await load();
+    } catch (err) {
+      Alert.alert(
+        t("common.error"),
+        err instanceof Error ? err.message : t("superAdmin.syncUserCountsFailed"),
+      );
+    } finally {
+      setSyncing(false);
+    }
   };
 
   const toggleActive = async (school: SchoolRecord, active: boolean) => {
@@ -102,17 +129,37 @@ export default function SuperAdminSchoolsScreen() {
     );
   };
 
-  return (
-    <View style={styles.screen}>
-      <SuperAdminScreenHeader
-        title={t("superAdmin.schoolsTitle")}
-        subtitle={t("superAdmin.schoolsSubtitle")}
-      />
+  const openSchool = (schoolId: string) => {
+    router.push({
+      pathname: "/(super-admin)/school/[id]",
+      params: { id: schoolId },
+    } as never);
+  };
 
+  return (
+    <SuperAdminScreenShell
+      title={t("superAdmin.schoolsTitle")}
+      subtitle={t("superAdmin.schoolsSubtitle")}
+    >
       {error ? (
         <View style={styles.errorBox}>
           <Text style={styles.errorText}>{error}</Text>
         </View>
+      ) : null}
+
+      {schools.length > 0 ? (
+        <TouchableOpacity
+          style={styles.syncBar}
+          onPress={() => void syncAllUserCounts()}
+          disabled={syncing}
+        >
+          {syncing ? (
+            <ActivityIndicator size="small" color="#1E3A8A" />
+          ) : (
+            <Ionicons name="refresh-outline" size={18} color="#1E3A8A" />
+          )}
+          <Text style={styles.syncBarText}>{t("superAdmin.syncAllUserCounts")}</Text>
+        </TouchableOpacity>
       ) : null}
 
       {loading && !refreshing ? (
@@ -136,37 +183,41 @@ export default function SuperAdminSchoolsScreen() {
           }
           renderItem={({ item }) => {
             const busy = busyId === item.id;
+
             return (
               <View style={styles.card}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.cardIcon}>
-                    <Ionicons name="business" size={22} color="#1E3A8A" />
-                  </View>
-                  <View style={styles.cardInfo}>
-                    <Text style={styles.cardTitle}>{item.name}</Text>
-                    <Text style={styles.cardMeta}>
-                      {item.city ? `${item.city} · ` : ""}
-                      {item.firebase.projectId}
-                    </Text>
-                    {getUsageRemainingDays(item.usageExpiresAt) != null ? (
-                      <Text
-                        style={[
-                          styles.cardUsage,
-                          (getUsageRemainingDays(item.usageExpiresAt) ?? 0) <= 7
-                            ? styles.cardUsageWarn
-                            : null,
-                        ]}
-                      >
-                        {t("admin.usageTimeRemainingDays", {
-                          count: getUsageRemainingDays(item.usageExpiresAt),
-                        })}
-                      </Text>
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  onPress={() => openSchool(item.id)}
+                  accessibilityRole="button"
+                  accessibilityHint={t("superAdmin.tapForDetails")}
+                >
+                  <View style={styles.cardHeader}>
+                    {item.logoUrl ? (
+                      <Image source={{ uri: item.logoUrl }} style={styles.cardLogo} />
                     ) : (
-                      <Text style={[styles.cardUsage, styles.cardUsageWarn]}>
-                        {t("superAdmin.usageNotSet")}
-                      </Text>
+                      <View style={styles.cardIcon}>
+                        <Ionicons name="business" size={22} color="#1E3A8A" />
+                      </View>
                     )}
+                    <View style={styles.cardInfo}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+                      <Text style={styles.cardMeta}>
+                        {item.city ? `${item.city} · ` : ""}
+                        {item.firebase.projectId}
+                      </Text>
+                    </View>
+                    <View style={styles.chevronWrap}>
+                      <Ionicons name="chevron-forward" size={22} color="#94A3B8" />
+                    </View>
                   </View>
+
+                  <SchoolBillingMetrics school={item} compact />
+
+                  <Text style={styles.tapHint}>{t("superAdmin.tapForDetails")}</Text>
+                </TouchableOpacity>
+
+                <View style={styles.cardRow}>
                   <View
                     style={[
                       styles.badge,
@@ -182,9 +233,6 @@ export default function SuperAdminSchoolsScreen() {
                       {item.active ? t("superAdmin.active") : t("superAdmin.hidden")}
                     </Text>
                   </View>
-                </View>
-
-                <View style={styles.cardRow}>
                   <Text style={styles.rowLabel}>{t("superAdmin.showInApp")}</Text>
                   <Switch
                     value={item.active}
@@ -202,7 +250,7 @@ export default function SuperAdminSchoolsScreen() {
                       router.push({
                         pathname: "/(super-admin)/school-form",
                         params: { id: item.id },
-                      } as any)
+                      } as never)
                     }
                     disabled={busy}
                   >
@@ -227,20 +275,16 @@ export default function SuperAdminSchoolsScreen() {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => router.push("/(super-admin)/school-form" as any)}
+        onPress={() => router.push("/(super-admin)/school-form" as never)}
         accessibilityLabel={t("superAdmin.addSchool")}
       >
         <Ionicons name="add" size={28} color="#FFFFFF" />
       </TouchableOpacity>
-    </View>
+    </SuperAdminScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "transparent",
-  },
   list: {
     padding: 16,
     paddingBottom: 100,
@@ -261,6 +305,26 @@ const styles = StyleSheet.create({
     color: "#B91C1C",
     fontSize: 14,
     textAlign: "center",
+  },
+  syncBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 4,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    backgroundColor: "#EFF6FF",
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+  },
+  syncBarText: {
+    color: "#1E3A8A",
+    fontWeight: "700",
+    fontSize: 14,
   },
   emptyCard: {
     alignItems: "center",
@@ -304,6 +368,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  cardLogo: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "#EFF6FF",
+  },
   cardInfo: {
     flex: 1,
     minWidth: 0,
@@ -318,14 +388,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#64748B",
   },
-  cardUsage: {
-    marginTop: 4,
-    fontSize: 12,
-    color: "#475569",
-    fontWeight: "600",
+  chevronWrap: {
+    flexShrink: 0,
   },
-  cardUsageWarn: {
-    color: "#B45309",
+  tapHint: {
+    marginTop: 8,
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#2563EB",
   },
   badge: {
     borderRadius: 999,
@@ -352,15 +422,18 @@ const styles = StyleSheet.create({
     marginTop: 14,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
+    gap: 10,
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: "#F1F5F9",
   },
   rowLabel: {
+    flex: 1,
     fontSize: 14,
     fontWeight: "600",
     color: "#475569",
+    textAlign: "right",
   },
   actions: {
     flexDirection: "row",

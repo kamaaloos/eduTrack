@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import type { useAdminAcademic } from "../../hooks/useAdminAcademic";
-import { AdminScreenHeader } from "./AdminScreenHeader";
+import { AdminScreenShell } from "./AdminScreenShell";
 import {
   AdminAcademicButton,
   AdminAcademicCard,
@@ -39,12 +39,11 @@ export function AdminAcademicView(props: AdminAcademicViewProps) {
   } = props;
 
   return (
-    <View style={styles.screen}>
-      <AdminScreenHeader
-        title={t("admin.academicLegacyTitle")}
-        subtitle={t("admin.academicLegacySubtitle")}
-        showBack
-      />
+    <AdminScreenShell
+      title={t("admin.academicLegacyTitle")}
+      subtitle={t("admin.academicLegacySubtitle")}
+      showBack
+    >
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}
@@ -136,6 +135,6 @@ export function AdminAcademicView(props: AdminAcademicViewProps) {
           <AdminAcademicButton onPress={addRemark} label={t("admin.addRemark")} />
         </AdminAcademicCard>
       </ScrollView>
-    </View>
+    </AdminScreenShell>
   );
 }

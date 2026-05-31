@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
-import { AdminScreenHeader } from "../../components/admin/AdminScreenHeader";
+import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { UserCreationCard } from "../../components/admin/UserCreationCard";
 import { useAdminData } from "../../src/context/adminDataContext";
 
@@ -19,12 +19,11 @@ export default function AdminUsersScreen() {
 
   return (
     <ErrorBoundary>
-      <View style={styles.screen}>
-        <AdminScreenHeader
-          title={t("admin.users")}
-          subtitle={t("admin.usersSubtitle")}
-          showBack
-        />
+      <AdminScreenShell
+        title={t("admin.users")}
+        subtitle={t("admin.usersSubtitle")}
+        showBack
+      >
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.content}
@@ -35,13 +34,12 @@ export default function AdminUsersScreen() {
           </View>
           <Text style={styles.hint}>{t("admin.usersHint")}</Text>
         </ScrollView>
-      </View>
+      </AdminScreenShell>
     </ErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "transparent" },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 16, paddingBottom: 40 },
   panel: {

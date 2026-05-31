@@ -32,6 +32,19 @@ export function normalizeUsageExpiresAt(raw: unknown): string | null {
   return null;
 }
 
+/** Registry timestamp fields as ISO strings (Firestore Timestamp or string). */
+export function normalizeRegistryTimestamp(raw: unknown): string | null {
+  if (!raw) return null;
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    return trimmed || null;
+  }
+  if (typeof raw === "object" && raw !== null && "toDate" in raw) {
+    return (raw as Timestamp).toDate().toISOString();
+  }
+  return null;
+}
+
 export function mapSchoolRegistryDoc(
   id: string,
   data: Record<string, unknown>,
@@ -44,7 +57,19 @@ export function mapSchoolRegistryDoc(
     active: data.active !== false,
     firebase,
     usageExpiresAt: normalizeUsageExpiresAt(data.usageExpiresAt),
-    logoUrl: data.logoUrl ? String(data.logoUrl) : null,
+    logoUrl:
+      typeof data.logoUrl === "string" && data.logoUrl.trim()
+        ? data.logoUrl.trim()
+        : null,
     city: data.city ? String(data.city) : null,
+    userCount:
+      typeof data.userCount === "number" && Number.isFinite(data.userCount)
+        ? data.userCount
+        : null,
+    userCountUpdatedAt: normalizeRegistryTimestamp(data.userCountUpdatedAt),
+    userCountSyncError:
+      typeof data.userCountSyncError === "string" && data.userCountSyncError.trim()
+        ? data.userCountSyncError.trim()
+        : null,
   };
 }

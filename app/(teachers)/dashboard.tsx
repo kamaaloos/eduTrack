@@ -5,11 +5,13 @@ import { useTeacherDashboardData } from "../../hooks/useTeacherDashboardData";
 import { useTeacherPendingAbsenceCount } from "../../hooks/useTeacherPendingAbsenceCount";
 import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { AuthContext } from "../../src/context/authContext";
+import { useTeacherMenu } from "../../src/context/teacherMenuContext";
 import { useTeacherClassesContext } from "../../src/context/teacherClassesContext";
 
 export default function TeacherDashboard() {
   const { t } = useTranslation();
-  const { user, userData, logout } = useContext(AuthContext);
+  const { user, userData } = useContext(AuthContext);
+  const { openMenu } = useTeacherMenu();
   const { classes: teacherClasses, teacherId } = useTeacherClassesContext();
   const pendingAbsenceCount = useTeacherPendingAbsenceCount(
     teacherId,
@@ -31,16 +33,11 @@ export default function TeacherDashboard() {
   } = useTeacherDashboardData();
 
   const firstName = userData?.name?.split(" ")[0] || t("common.teacher");
-  const initials =
-    userData?.name
-      ?.split(" ")
-      ?.map((n: string) => n[0])
-      ?.join("")
-      ?.toUpperCase() || "T";
 
   return (
     <TeacherDashboardView
-      initials={initials}
+      displayName={userData?.name}
+      photoURL={userData?.photoURL ?? null}
       firstName={firstName}
       alertCount={alertCount}
       pendingAbsenceCount={pendingAbsenceCount}
@@ -54,7 +51,7 @@ export default function TeacherDashboard() {
       announcements={announcements}
       refreshing={refreshing}
       onRefresh={onRefresh}
-      onLogout={logout}
+      onMenuPress={openMenu}
     />
   );
 }

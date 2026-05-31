@@ -6,6 +6,7 @@ import { Alert } from "react-native";
 import type { ClassExam, ExamReportsMode } from "../components/teachers/examReports/examReportsTypes";
 import { EXAM_REPORTS_STUDENTS_PAGE_SIZE } from "../components/teachers/examReports/examReportsTypes";
 import { AuthContext } from "../src/context/authContext";
+import { useSchoolContext } from "../src/context/schoolContext";
 import { useTeacherClassesContext } from "../src/context/teacherClassesContext";
 import { db } from "../src/services/firebase";
 import {
@@ -21,6 +22,7 @@ import {
 export function useTeacherExamReports() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
+  const { selectedSchool } = useSchoolContext();
   const {
     classes,
     selectedClassId,
@@ -44,6 +46,7 @@ export function useTeacherExamReports() {
   const [reportListLimit, setReportListLimit] = useState(
     EXAM_REPORTS_STUDENTS_PAGE_SIZE,
   );
+  const [exportingAllCertificates, setExportingAllCertificates] = useState(false);
 
   const classOptions = useMemo(
     () =>
@@ -304,6 +307,122 @@ export function useTeacherExamReports() {
     });
   };
 
+  const exportCertificate = async (student: TeacherStudent) => {
+    if (!selectedExam || !selectedClassId) {
+      Alert.alert(t("teacher.examReports.selectExamFirst"));
+      return;
+    }
+
+    const result = resultByStudent.get(student.id);
+    if (!result?.graded || result.score == null) {
+      Alert.alert(
+        t("teacher.examReports.certificateNeedsGrade"),
+        t("teacher.examReports.certificateNeedsGradeHint"),
+      );
+      return;
+    }
+
+    try {
+      const {
+        getTermExamCertificateLabels,
+        shareTermExamCertificatePdf,
+        getPdfShareErrorKey,
+      } = await import("../services/certificatePdfService");
+      await shareTermExamCertificatePdf(
+        buildTermExamCertificateParams(student, result),
+        getTermExamCertificateLabels(t),
+      );
+    } catch (err) {
+      const { getPdfShareErrorKey } = await import(
+        "../services/certificatePdfService"
+      );
+      Alert.alert(t("common.error"), t(getPdfShareErrorKey(err)));
+    }
+  };
+
+  const buildTermExamCertificateParams = (
+    student: TeacherStudent,
+    result: ExamResultRecord,
+  ) => {
+    const className =
+      classes.find((item) => item.id === selectedClassId)?.name ||
+      t("common.class");
+
+    return {
+      schoolName: selectedSchool?.name || t("certificates.schoolFallback"),
+      className,
+      studentName: student.name || t("common.student"),
+      subject:
+        selectedExam?.subject || t("teacher.examReports.generalSubject"),
+      examTitle:
+        selectedExam?.title ||
+        selectedExam?.date ||
+        t("teacher.examReports.examFallback"),
+      examDate: selectedExam?.date,
+      score: result.score!,
+      maxMarks: result.maxMarks ?? maxMarks,
+      teacherName: user?.displayName || undefined,
+    };
+  };
+
+  const exportAllCertificates = async () => {
+    if (!selectedExam || !selectedClassId) {
+      Alert.alert(t("teacher.examReports.selectExamFirst"));
+      return;
+    }
+
+    const graded = studentsInClass
+      .map((student) => {
+        const result = resultByStudent.get(student.id);
+        if (!result?.graded || result.score == null) return null;
+        return buildTermExamCertificateParams(student, result);
+      })
+      .filter((item): item is NonNullable<typeof item> => item != null);
+
+    if (graded.length === 0) {
+      Alert.alert(
+        t("teacher.examReports.exportAllCertificatesNoneTitle"),
+        t("teacher.examReports.exportAllCertificatesNoneHint"),
+      );
+      return;
+    }
+
+    setExportingAllCertificates(true);
+    try {
+      const {
+        getTermExamCertificateLabels,
+        shareTermExamCertificatesPdf,
+        getPdfShareErrorKey,
+      } = await import("../services/certificatePdfService");
+      const labels = getTermExamCertificateLabels(t);
+      const examSlug =
+        selectedExam.title ||
+        selectedExam.subject ||
+        t("teacher.examReports.examFallback");
+      const count = await shareTermExamCertificatesPdf(graded, labels, {
+        fileName: `term-exam-${classNameSlug(selectedClassId)}-${examSlug}.pdf`,
+        dialogTitle: labels.documentTitle,
+      });
+      Alert.alert(
+        t("certificates.exportReadyTitle"),
+        t("teacher.examReports.exportAllCertificatesReady", { count }),
+      );
+    } catch (err) {
+      const { getPdfShareErrorKey } = await import(
+        "../services/certificatePdfService"
+      );
+      Alert.alert(t("common.error"), t(getPdfShareErrorKey(err)));
+    } finally {
+      setExportingAllCertificates(false);
+    }
+  };
+
+  function classNameSlug(classId: string): string {
+    const name =
+      classes.find((item) => item.id === classId)?.name || classId;
+    return name.replace(/[^\w.-]+/g, "_");
+  }
+
   const showMoreGradeStudents = () => {
     setGradeListLimit((n) =>
       Math.min(n + EXAM_REPORTS_STUDENTS_PAGE_SIZE, studentsInClass.length),
@@ -350,6 +469,9 @@ export function useTeacherExamReports() {
     updateScoreDraft,
     saveScore,
     openReport,
+    exportCertificate,
+    exportAllCertificates,
+    exportingAllCertificates,
     showMoreGradeStudents,
     showMoreReportStudents,
   };

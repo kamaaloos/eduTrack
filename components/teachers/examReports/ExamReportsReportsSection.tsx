@@ -14,6 +14,84 @@ type ExamReportsReportsSectionProps = {
   onShowMore: () => void;
 };
 
+export function ExamReportsReportsSearch({
+  reportSearch,
+  onReportSearchChange,
+}: Pick<ExamReportsReportsSectionProps, "reportSearch" | "onReportSearchChange">) {
+  const { t } = useTranslation();
+
+  return (
+    <TextInput
+      style={styles.search}
+      placeholder={t("teacher.examReports.searchStudents")}
+      value={reportSearch}
+      onChangeText={onReportSearchChange}
+    />
+  );
+}
+
+export function ExamReportsReportsStudentList({
+  filteredReportStudents,
+  visibleReportStudents,
+  onOpenReport,
+  onShowMore,
+}: Pick<
+  ExamReportsReportsSectionProps,
+  | "filteredReportStudents"
+  | "visibleReportStudents"
+  | "onOpenReport"
+  | "onShowMore"
+>) {
+  const { t } = useTranslation();
+
+  if (filteredReportStudents.length === 0) {
+    return (
+      <Text style={styles.emptySub}>
+        {t("teacher.examReports.noSearchMatch")}
+      </Text>
+    );
+  }
+
+  return (
+    <>
+      <Text style={styles.listHint}>
+        {t("teacher.examReports.showingStudents", {
+          shown: visibleReportStudents.length,
+          total: filteredReportStudents.length,
+        })}
+      </Text>
+      {visibleReportStudents.map((student) => (
+        <TouchableOpacity
+          key={student.id}
+          style={styles.reportRow}
+          onPress={() => onOpenReport(student)}
+          activeOpacity={0.85}
+        >
+          <View style={styles.reportAvatar}>
+            <Text style={styles.reportAvatarText}>
+              {(student.name || "S").charAt(0).toUpperCase()}
+            </Text>
+          </View>
+          <View style={styles.reportRowText}>
+            <Text style={styles.studentName}>
+              {student.name || t("common.student")}
+            </Text>
+            <Text style={styles.reportRowSub}>
+              {t("teacher.examReports.reportRowSub")}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+        </TouchableOpacity>
+      ))}
+      <ExamReportsShowMore
+        shown={visibleReportStudents.length}
+        total={filteredReportStudents.length}
+        onPress={onShowMore}
+      />
+    </>
+  );
+}
+
 export function ExamReportsReportsSection({
   reportSearch,
   onReportSearchChange,
@@ -22,59 +100,18 @@ export function ExamReportsReportsSection({
   onOpenReport,
   onShowMore,
 }: ExamReportsReportsSectionProps) {
-  const { t } = useTranslation();
-
   return (
     <>
-      <TextInput
-        style={styles.search}
-        placeholder={t("teacher.examReports.searchStudents")}
-        value={reportSearch}
-        onChangeText={onReportSearchChange}
+      <ExamReportsReportsSearch
+        reportSearch={reportSearch}
+        onReportSearchChange={onReportSearchChange}
       />
-
-      {filteredReportStudents.length === 0 ? (
-        <Text style={styles.emptySub}>
-          {t("teacher.examReports.noSearchMatch")}
-        </Text>
-      ) : (
-        <>
-          <Text style={styles.listHint}>
-            {t("teacher.examReports.showingStudents", {
-              shown: visibleReportStudents.length,
-              total: filteredReportStudents.length,
-            })}
-          </Text>
-          {visibleReportStudents.map((student) => (
-            <TouchableOpacity
-              key={student.id}
-              style={styles.reportRow}
-              onPress={() => onOpenReport(student)}
-              activeOpacity={0.85}
-            >
-              <View style={styles.reportAvatar}>
-                <Text style={styles.reportAvatarText}>
-                  {(student.name || "S").charAt(0).toUpperCase()}
-                </Text>
-              </View>
-              <View style={styles.reportRowText}>
-                <Text style={styles.studentName}>
-                  {student.name || t("common.student")}
-                </Text>
-                <Text style={styles.reportRowSub}>
-                  {t("teacher.examReports.reportRowSub")}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
-            </TouchableOpacity>
-          ))}
-          <ExamReportsShowMore
-            shown={visibleReportStudents.length}
-            total={filteredReportStudents.length}
-            onPress={onShowMore}
-          />
-        </>
-      )}
+      <ExamReportsReportsStudentList
+        filteredReportStudents={filteredReportStudents}
+        visibleReportStudents={visibleReportStudents}
+        onOpenReport={onOpenReport}
+        onShowMore={onShowMore}
+      />
     </>
   );
 }

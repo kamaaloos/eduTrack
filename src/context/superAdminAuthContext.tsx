@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { router } from "expo-router";
@@ -85,7 +85,7 @@ export function SuperAdminAuthProvider({
     return unsubscribe;
   }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     setError(null);
     await signOut(registryAuth);
     setUser(null);
@@ -94,7 +94,7 @@ export function SuperAdminAuthProvider({
     await clearLocalSessionPreferences();
     await resetSchoolSession();
     router.replace("/onboarding");
-  };
+  }, [resetSchoolSession]);
 
   const value = useMemo(
     () => ({
@@ -105,7 +105,7 @@ export function SuperAdminAuthProvider({
       error,
       logout,
     }),
-    [user, userData, role, loading, error],
+    [user, userData, role, loading, error, logout],
   );
 
   return (

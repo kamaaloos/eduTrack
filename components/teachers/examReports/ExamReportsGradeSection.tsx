@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Text, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import type { ExamResultRecord } from "../../../src/services/examResults";
 import type { TeacherStudent } from "../../../src/services/teacherStudents";
 import { SelectChips } from "../SelectChips";
@@ -25,10 +26,13 @@ type ExamReportsGradeSectionProps = {
   onScoreChange: (studentId: string, text: string) => void;
   onSaveScore: (student: TeacherStudent) => void;
   onOpenReport: (student: TeacherStudent) => void;
+  onExportCertificate: (student: TeacherStudent) => void;
+  onExportAllCertificates?: () => void;
+  exportingAllCertificates?: boolean;
   onShowMore: () => void;
 };
 
-export function ExamReportsGradeSection({
+export function ExamReportsGradeFixedHeader({
   exams,
   examChipOptions,
   selectedExamId,
@@ -38,15 +42,22 @@ export function ExamReportsGradeSection({
   gradedCount,
   classAverage,
   studentsInClass,
-  visibleGradeStudents,
-  resultByStudent,
-  scoreDrafts,
-  savingId,
-  onScoreChange,
-  onSaveScore,
-  onOpenReport,
-  onShowMore,
-}: ExamReportsGradeSectionProps) {
+  onExportAllCertificates,
+  exportingAllCertificates,
+}: Pick<
+  ExamReportsGradeSectionProps,
+  | "exams"
+  | "examChipOptions"
+  | "selectedExamId"
+  | "onSelectExam"
+  | "selectedExam"
+  | "maxMarks"
+  | "gradedCount"
+  | "classAverage"
+  | "studentsInClass"
+  | "onExportAllCertificates"
+  | "exportingAllCertificates"
+>) {
   const { t } = useTranslation();
 
   if (exams.length === 0) {
@@ -100,38 +111,147 @@ export function ExamReportsGradeSection({
         </View>
       ) : null}
 
-      {studentsInClass.length === 0 ? (
-        <Text style={styles.emptySub}>
-          {t("teacher.examReports.noStudentsInClass")}
-        </Text>
-      ) : (
-        <>
-          <Text style={styles.listHint}>
-            {t("teacher.examReports.showingStudents", {
-              shown: visibleGradeStudents.length,
-              total: studentsInClass.length,
-            })}
-          </Text>
-          {visibleGradeStudents.map((student) => (
-            <ExamReportsStudentGradeRow
-              key={student.id}
-              student={student}
-              result={resultByStudent.get(student.id)}
-              maxMarks={maxMarks}
-              scoreDraft={scoreDrafts[student.id] ?? ""}
-              saving={savingId === student.id}
-              onScoreChange={(text) => onScoreChange(student.id, text)}
-              onSave={() => onSaveScore(student)}
-              onOpenReport={() => onOpenReport(student)}
-            />
-          ))}
-          <ExamReportsShowMore
-            shown={visibleGradeStudents.length}
-            total={studentsInClass.length}
-            onPress={onShowMore}
-          />
-        </>
-      )}
+      {selectedExam && gradedCount > 0 && onExportAllCertificates ? (
+        <TouchableOpacity
+          style={[styles.exportAllBtn, exportingAllCertificates && styles.exportAllBtnDisabled]}
+          onPress={onExportAllCertificates}
+          disabled={exportingAllCertificates}
+        >
+          {exportingAllCertificates ? (
+            <ActivityIndicator color="#FFFFFF" size="small" />
+          ) : (
+            <>
+              <Ionicons name="documents-outline" size={18} color="#FFFFFF" />
+              <Text style={styles.exportAllBtnText}>
+                {t("teacher.examReports.exportAllCertificatesPdf", {
+                  count: gradedCount,
+                })}
+              </Text>
+            </>
+          )}
+        </TouchableOpacity>
+      ) : null}
+    </>
+  );
+}
+
+export function ExamReportsGradeStudentList({
+  studentsInClass,
+  visibleGradeStudents,
+  resultByStudent,
+  maxMarks,
+  scoreDrafts,
+  savingId,
+  onScoreChange,
+  onSaveScore,
+  onOpenReport,
+  onExportCertificate,
+  onShowMore,
+}: Pick<
+  ExamReportsGradeSectionProps,
+  | "studentsInClass"
+  | "visibleGradeStudents"
+  | "resultByStudent"
+  | "maxMarks"
+  | "scoreDrafts"
+  | "savingId"
+  | "onScoreChange"
+  | "onSaveScore"
+  | "onOpenReport"
+  | "onExportCertificate"
+  | "onShowMore"
+>) {
+  const { t } = useTranslation();
+
+  if (studentsInClass.length === 0) {
+    return (
+      <Text style={styles.emptySub}>
+        {t("teacher.examReports.noStudentsInClass")}
+      </Text>
+    );
+  }
+
+  return (
+    <>
+      <Text style={styles.listHint}>
+        {t("teacher.examReports.showingStudents", {
+          shown: visibleGradeStudents.length,
+          total: studentsInClass.length,
+        })}
+      </Text>
+      {visibleGradeStudents.map((student) => (
+        <ExamReportsStudentGradeRow
+          key={student.id}
+          student={student}
+          result={resultByStudent.get(student.id)}
+          maxMarks={maxMarks}
+          scoreDraft={scoreDrafts[student.id] ?? ""}
+          saving={savingId === student.id}
+          onScoreChange={(text) => onScoreChange(student.id, text)}
+          onSave={() => onSaveScore(student)}
+          onOpenReport={() => onOpenReport(student)}
+          onExportCertificate={() => onExportCertificate(student)}
+        />
+      ))}
+      <ExamReportsShowMore
+        shown={visibleGradeStudents.length}
+        total={studentsInClass.length}
+        onPress={onShowMore}
+      />
+    </>
+  );
+}
+
+export function ExamReportsGradeSection({
+  exams,
+  examChipOptions,
+  selectedExamId,
+  onSelectExam,
+  selectedExam,
+  maxMarks,
+  gradedCount,
+  classAverage,
+  studentsInClass,
+  visibleGradeStudents,
+  resultByStudent,
+  scoreDrafts,
+  savingId,
+  onScoreChange,
+  onSaveScore,
+  onOpenReport,
+  onExportCertificate,
+  onExportAllCertificates,
+  exportingAllCertificates,
+  onShowMore,
+}: ExamReportsGradeSectionProps) {
+  return (
+    <>
+      <ExamReportsGradeFixedHeader
+        exams={exams}
+        examChipOptions={examChipOptions}
+        selectedExamId={selectedExamId}
+        onSelectExam={onSelectExam}
+        selectedExam={selectedExam}
+        maxMarks={maxMarks}
+        gradedCount={gradedCount}
+        classAverage={classAverage}
+        studentsInClass={studentsInClass}
+        onExportAllCertificates={onExportAllCertificates}
+        exportingAllCertificates={exportingAllCertificates}
+      />
+      <ExamReportsGradeStudentList
+        studentsInClass={studentsInClass}
+        visibleGradeStudents={visibleGradeStudents}
+        resultByStudent={resultByStudent}
+        maxMarks={maxMarks}
+        scoreDrafts={scoreDrafts}
+        savingId={savingId}
+        onScoreChange={onScoreChange}
+        onSaveScore={onSaveScore}
+        onOpenReport={onOpenReport}
+        onExportCertificate={onExportCertificate}
+        onShowMore={onShowMore}
+      />
     </>
   );
 }

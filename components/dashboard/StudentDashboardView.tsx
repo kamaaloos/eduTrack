@@ -22,9 +22,11 @@ export function StudentDashboardView({
   studentId,
   classId,
   displayName,
+  photoURL,
   routePrefix = "/(students)",
   showNotifications = true,
   showHeaderLogout = false,
+  onMenuPress,
   showAbsenceReport = false,
   showHealthCheck = false,
   onHealthCheckPress,
@@ -83,6 +85,8 @@ export function StudentDashboardView({
     <View style={styles.mainContainer}>
       <DashboardHeader
         initials={initials}
+        displayName={displayName}
+        photoURL={photoURL}
         firstName={firstName}
         headerSubtitle={headerSubtitle}
         showNotifications={showNotifications}
@@ -92,6 +96,7 @@ export function StudentDashboardView({
         notificationRoute={`${routePrefix}/notifications`}
         notificationUnreadCount={notificationUnreadCount}
         onLogout={handleLogout}
+        onMenuPress={onMenuPress}
       />
 
       <ScrollView

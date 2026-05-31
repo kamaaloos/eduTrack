@@ -2,48 +2,27 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSuperAdminAuth } from "../../src/context/superAdminAuthContext";
 
 type SuperAdminScreenHeaderProps = {
   title: string;
   subtitle?: string;
   showBack?: boolean;
+  onMenuPress?: () => void;
 };
 
 export function SuperAdminScreenHeader({
   title,
   subtitle,
   showBack = false,
+  onMenuPress,
 }: SuperAdminScreenHeaderProps) {
   const { t } = useTranslation();
-  const { logout } = useSuperAdminAuth();
-
-  const handleLogout = () => {
-    Alert.alert(t("superAdmin.signOutTitle"), t("superAdmin.signOutConfirm"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("superAdmin.signOutTitle"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await logout();
-          } catch (err) {
-            Alert.alert(
-              t("common.error"),
-              err instanceof Error ? err.message : t("superAdmin.signOutFailed"),
-            );
-          }
-        },
-      },
-    ]);
-  };
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -51,7 +30,7 @@ export function SuperAdminScreenHeader({
         <View style={styles.row}>
           {showBack ? (
             <TouchableOpacity
-              style={styles.backButton}
+              style={styles.sideButton}
               onPress={() => router.back()}
               accessibilityLabel={t("admin.goBackA11y")}
             >
@@ -74,14 +53,15 @@ export function SuperAdminScreenHeader({
             ) : null}
           </View>
 
-          <TouchableOpacity
-            style={styles.logoutButton}
-            onPress={handleLogout}
-            accessibilityLabel={t("superAdmin.signOutTitle")}
-          >
-            <Ionicons name="log-out-outline" size={18} color="#1E3A8A" />
-            <Text style={styles.logoutText}>{t("common.logout")}</Text>
-          </TouchableOpacity>
+          {onMenuPress ? (
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={onMenuPress}
+              accessibilityLabel={t("admin.management")}
+            >
+              <Ionicons name="menu" size={20} color="#1E3A8A" />
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
     </SafeAreaView>
@@ -95,19 +75,23 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     paddingBottom: 18,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+    minHeight: 52,
   },
-  backButton: {
+  sideButton: {
     width: 40,
     height: 40,
     borderRadius: 12,
     backgroundColor: "rgba(255,255,255,0.15)",
     alignItems: "center",
     justifyContent: "center",
+    flexShrink: 0,
   },
   brandBadge: {
     width: 40,
@@ -116,6 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
+    flexShrink: 0,
   },
   titleBlock: {
     flex: 1,
@@ -132,18 +117,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
     lineHeight: 18,
   },
-  logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
+  menuButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     backgroundColor: "#FFFFFF",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  logoutText: {
-    color: "#1E3A8A",
-    fontWeight: "700",
-    fontSize: 13,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
   },
 });

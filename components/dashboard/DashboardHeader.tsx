@@ -2,11 +2,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { UserAvatar } from "../common/UserAvatar";
 import { TimeGreeting } from "./TimeGreeting";
 import { dashboardStyles as styles } from "./dashboardStyles";
 
 type DashboardHeaderProps = {
   initials: string;
+  displayName?: string;
+  photoURL?: string | null;
   firstName: string;
   headerSubtitle?: string;
   showNotifications: boolean;
@@ -16,10 +19,13 @@ type DashboardHeaderProps = {
   notificationRoute: string;
   notificationUnreadCount: number;
   onLogout: () => void;
+  onMenuPress?: () => void;
 };
 
 export function DashboardHeader({
   initials,
+  displayName,
+  photoURL,
   firstName,
   headerSubtitle,
   showNotifications,
@@ -29,15 +35,20 @@ export function DashboardHeader({
   notificationRoute,
   notificationUnreadCount,
   onLogout,
+  onMenuPress,
 }: DashboardHeaderProps) {
   const { t } = useTranslation();
 
   return (
     <View style={styles.headerGradient}>
       <View style={styles.headerContent}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{initials}</Text>
-        </View>
+        <UserAvatar
+          name={displayName}
+          photoURL={photoURL}
+          size={60}
+          textColor="#1E40AF"
+          backgroundColor="#FFFFFF"
+        />
 
         <View style={styles.headerText}>
           <TimeGreeting textStyle={styles.welcome} />
@@ -48,15 +59,35 @@ export function DashboardHeader({
         </View>
 
         {showHealthCheck && onHealthCheckPress ? (
-          <TouchableOpacity
-            onPress={onHealthCheckPress}
-            style={styles.alertButton}
-            accessibilityLabel={t("parent.reportAbsenceTitle")}
-          >
-            <Ionicons name="medkit" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            {onMenuPress ? (
+              <TouchableOpacity
+                onPress={onMenuPress}
+                style={styles.alertButton}
+                accessibilityLabel={t("admin.management")}
+              >
+                <Ionicons name="menu" size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+            ) : null}
+            <TouchableOpacity
+              onPress={onHealthCheckPress}
+              style={styles.alertButton}
+              accessibilityLabel={t("parent.reportAbsenceTitle")}
+            >
+              <Ionicons name="medkit" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
         ) : (
           <View style={styles.headerActions}>
+            {onMenuPress ? (
+              <TouchableOpacity
+                onPress={onMenuPress}
+                style={styles.alertButton}
+                accessibilityLabel={t("admin.management")}
+              >
+                <Ionicons name="menu" size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+            ) : null}
             {showNotifications ? (
               <TouchableOpacity
                 onPress={() => router.push(notificationRoute as never)}

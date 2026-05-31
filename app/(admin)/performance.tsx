@@ -11,7 +11,7 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { BarChart, LineChart } from "react-native-chart-kit";
-import { AdminScreenHeader } from "../../components/admin/AdminScreenHeader";
+import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import {
   chartValues,
   loadAdminAnalytics,
@@ -99,17 +99,16 @@ export default function PerformanceCharts() {
 
   if (loading && !stats) {
     return (
-      <View style={styles.screen}>
-        <AdminScreenHeader
-          title={t("admin.performance")}
-          subtitle={t("admin.performanceSubtitle")}
-          showBack
-        />
+      <AdminScreenShell
+        title={t("admin.performance")}
+        subtitle={t("admin.performanceSubtitle")}
+        showBack
+      >
         <View style={styles.centered}>
           <ActivityIndicator size="large" color="#2563EB" />
           <Text style={styles.statusText}>{t("admin.performanceLoading")}</Text>
         </View>
-      </View>
+      </AdminScreenShell>
     );
   }
 
@@ -128,12 +127,11 @@ export default function PerformanceCharts() {
       : t("admin.avgGradeNoScores");
 
   return (
-    <View style={styles.screen}>
-      <AdminScreenHeader
-        title={t("admin.performance")}
-        subtitle={t("admin.performanceSubtitle")}
-        showBack
-      />
+    <AdminScreenShell
+      title={t("admin.performance")}
+      subtitle={t("admin.performanceSubtitle")}
+      showBack
+    >
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -234,7 +232,7 @@ export default function PerformanceCharts() {
           <Text style={styles.caption}>{t("admin.legacyCollectionsNote")}</Text>
         </View>
       </ScrollView>
-    </View>
+    </AdminScreenShell>
   );
 }
 

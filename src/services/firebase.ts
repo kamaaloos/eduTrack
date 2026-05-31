@@ -9,7 +9,9 @@ import {
   type Auth,
 } from "firebase/auth";
 import { getFirestore, terminate, type Firestore } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 import type { SchoolFirebaseConfig } from "../types/school";
+import { normalizeSchoolFirebaseConfig } from "../utils/firebaseConfig";
 import { notifyFirestoreClosing } from "./firestoreSession";
 
 type EnvFirebaseConfig = {
@@ -113,6 +115,7 @@ export const registryAuth = initAuthForApp(registryApp);
 
 export let auth: Auth | null = null;
 export let db: Firestore | null = null;
+export let storage: FirebaseStorage | null = null;
 export let adminCreateAuth: Auth | null = null;
 
 let connectedSchoolProjectId: string | null = null;
@@ -160,13 +163,25 @@ export function ensureAdminCreateAuth(): Auth | null {
 export async function connectToSchool(
   firebaseConfig: SchoolFirebaseConfig,
 ): Promise<{ auth: Auth; db: Firestore }> {
-  const projectId = firebaseConfig?.projectId;
-  if (!hasValidConfig(firebaseConfig)) {
+  const config = normalizeSchoolFirebaseConfig(firebaseConfig);
+  const projectId = config.projectId;
+  if (!hasValidConfig(config)) {
     throw new Error("Invalid school Firebase configuration");
   }
 
   if (connectedSchoolProjectId === projectId && auth && db) {
-    return { auth, db };
+    try {
+      const schoolApp = getApp(`EduTrackSchool-${projectId}`);
+      if (!storage) {
+        const bucket = config.storageBucket.trim();
+        storage = bucket ? getStorage(schoolApp, bucket) : getStorage(schoolApp);
+      }
+    } catch {
+      /* fall through to full reconnect */
+    }
+    if (storage) {
+      return { auth, db };
+    }
   }
 
   notifyFirestoreClosing();
@@ -191,12 +206,14 @@ export async function connectToSchool(
   try {
     schoolApp = getApp(schoolAppName);
   } catch {
-    schoolApp = initializeApp(firebaseConfig, schoolAppName);
+    schoolApp = initializeApp(config, schoolAppName);
   }
 
-  lastSchoolFirebaseConfig = firebaseConfig;
+  lastSchoolFirebaseConfig = config;
   auth = initAuthForApp(schoolApp);
   db = getFirestore(schoolApp);
+  const bucket = config.storageBucket.trim();
+  storage = bucket ? getStorage(schoolApp, bucket) : getStorage(schoolApp);
   adminCreateAuth = null;
 
   connectedSchoolProjectId = projectId;
@@ -216,6 +233,7 @@ export async function disconnectSchool(): Promise<void> {
 
   auth = null;
   db = null;
+  storage = null;
   adminCreateAuth = null;
   lastSchoolFirebaseConfig = null;
   connectedSchoolProjectId = null;

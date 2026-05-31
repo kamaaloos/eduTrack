@@ -127,13 +127,6 @@ function formatAttendanceDate(value: unknown): string {
   return "—";
 }
 
-function attendanceSortTime(record: { date?: unknown }): number {
-  const parsed = parseFirestoreDate(record.date as Parameters<typeof parseFirestoreDate>[0]);
-  if (parsed) return parsed.getTime();
-  const fallback = new Date(String(record.date ?? "")).getTime();
-  return Number.isNaN(fallback) ? 0 : fallback;
-}
-
 async function loadStudentAttendance(
   studentId: string,
 ): Promise<ReportAttendanceSummary> {

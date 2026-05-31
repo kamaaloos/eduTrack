@@ -18,13 +18,21 @@ import { AppScreenBackground } from "../components/AppScreenBackground";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { markOnboardingComplete } from "../src/utils/onboardingStorage";
 
-type Slide = {
+type LanguageSlide = {
+  id: "language";
+  type: "language";
+};
+
+type ContentSlide = {
   id: string;
+  type: "content";
   icon: keyof typeof Ionicons.glyphMap;
   iconBg: string;
   title: string;
   description: string;
 };
+
+type Slide = LanguageSlide | ContentSlide;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -36,8 +44,10 @@ export default function OnboardingScreen() {
 
   const slides = useMemo<Slide[]>(
     () => [
+      { id: "language", type: "language" },
       {
         id: "welcome",
+        type: "content",
         icon: "school",
         iconBg: "#DBEAFE",
         title: t("onboarding.slide1Title"),
@@ -45,6 +55,7 @@ export default function OnboardingScreen() {
       },
       {
         id: "students",
+        type: "content",
         icon: "people",
         iconBg: "#E0E7FF",
         title: t("onboarding.slide2Title"),
@@ -52,6 +63,7 @@ export default function OnboardingScreen() {
       },
       {
         id: "teachers",
+        type: "content",
         icon: "clipboard",
         iconBg: "#EDE9FE",
         title: t("onboarding.slide3Title"),
@@ -59,6 +71,7 @@ export default function OnboardingScreen() {
       },
       {
         id: "start",
+        type: "content",
         icon: "rocket",
         iconBg: "#DCFCE7",
         title: t("onboarding.slide4Title"),
@@ -92,14 +105,16 @@ export default function OnboardingScreen() {
     }
   };
 
+  const isLanguageSlide = slides[activeIndex]?.type === "language";
   const isLastSlide = activeIndex === slides.length - 1;
+  const showSkip = activeIndex > 0 && !isLastSlide;
 
   return (
     <AppScreenBackground>
     <View style={styles.screen}>
       <StatusBar style="dark" />
 
-      {!isLastSlide ? (
+      {showSkip ? (
         <TouchableOpacity
           style={[styles.skipButton, { top: insets.top + 8 }]}
           onPress={() => void finishOnboarding()}
@@ -123,11 +138,25 @@ export default function OnboardingScreen() {
         bounces={false}
         renderItem={({ item }) => (
           <View style={[styles.slide, { width: SCREEN_WIDTH }]}>
-            <View style={[styles.iconCircle, { backgroundColor: item.iconBg }]}>
-              <Ionicons name={item.icon} size={56} color="#1E3A8A" />
-            </View>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.description}>{item.description}</Text>
+            {item.type === "language" ? (
+              <>
+                <View style={[styles.iconCircle, styles.languageIconCircle]}>
+                  <Ionicons name="language" size={56} color="#1E3A8A" />
+                </View>
+                <Text style={styles.languageHint}>
+                  English · العربية · Soomaali · Suomi
+                </Text>
+                <LanguageSelector compact showTitle={false} />
+              </>
+            ) : (
+              <>
+                <View style={[styles.iconCircle, { backgroundColor: item.iconBg }]}>
+                  <Ionicons name={item.icon} size={56} color="#1E3A8A" />
+                </View>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+              </>
+            )}
           </View>
         )}
       />
@@ -147,15 +176,17 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        {isLastSlide ? <LanguageSelector compact /> : null}
-
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={goNext}
           activeOpacity={0.85}
         >
           <Text style={styles.primaryButtonText}>
-            {isLastSlide ? t("onboarding.getStarted") : t("onboarding.next")}
+            {isLastSlide
+              ? t("onboarding.getStarted")
+              : isLanguageSlide
+                ? t("onboarding.continue")
+                : t("onboarding.next")}
           </Text>
           <Ionicons
             name={isLastSlide ? "log-in-outline" : "arrow-forward"}
@@ -207,6 +238,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 32,
+  },
+  languageIconCircle: {
+    backgroundColor: "#E0F2FE",
+    marginBottom: 20,
+  },
+  languageHint: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#64748B",
+    textAlign: "center",
+    marginBottom: 8,
   },
   title: {
     fontSize: 28,
@@ -260,11 +302,5 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 17,
     fontWeight: "700",
-  },
-  brand: {
-    marginTop: 20,
-    textAlign: "center",
-    fontSize: 12,
-    color: "#94A3B8",
   },
 });

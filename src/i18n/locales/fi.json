@@ -125,7 +125,8 @@
     "slide4Title": "Valmis aloittamaan?",
     "slide4Desc": "Kirjaudu sisään koulun ylläpitäjän antamilla tunnuksilla aloittaaksesi.",
     "getStarted": "Aloita",
-    "next": "Seuraava"
+    "next": "Seuraava",
+    "continue": "Jatka"
   },
   "auth": {
     "login": {
@@ -238,7 +239,21 @@
     "roleTeacher": "Opettaja",
     "roleParent": "Huoltaja",
     "roleAdmin": "Ylläpitäjä",
-    "roleSuperAdmin": "Alustan ylläpitäjä"
+    "roleSuperAdmin": "Alustan ylläpitäjä",
+    "changePhoto": "Vaihda kuva",
+    "removePhoto": "Poista kuva",
+    "removePhotoTitle": "Poistetaanko profiilikuva?",
+    "removePhotoConfirm": "Profiilikuvasi poistetaan.",
+    "photoSaved": "Profiilikuva päivitetty.",
+    "photoRemoved": "Profiilikuva poistettu.",
+    "photoPermissionDenied": "Kuvakirjaston käyttöoikeus tarvitaan profiilikuvan valintaan.",
+    "photoTooLarge": "Kuvan on oltava alle 5 Mt.",
+    "photoUploadFailed": "Profiilikuvaa ei voitu päivittää.",
+    "photoStorageNotReady": "Koulun tallennus ei ole yhdistetty. Kirjaudu ulos, valitse koulu uudelleen.",
+    "photoReadFailed": "Kuvaa ei voitu lukea. Kokeile toista kuvaa.",
+    "photoStorageRules": "Lataus estetty Storage-säännöillä. Ota storage.rules käyttöön koulu-projektissa.",
+    "photoFirestoreRules": "Firestore esti photoURL-kentän. Ota firestore.rules käyttöön.",
+    "photoStorageUnavailable": "Firebase Storage ei ole käytettävissä. Tarkista Storage ja storageBucket."
   },
   "notifications": {
     "title": "Ilmoitukset",
@@ -402,7 +417,14 @@
       "saveScoreError": "Pisteitä ei voitu tallentaa",
       "reportRowSub": "Sama näkymä kuin huoltajilla — kaikki kokeet ja kokonaisarvosanat",
       "generalSubject": "Yleinen",
-      "examFallback": "Koe"
+      "examFallback": "Koe",
+      "certificatePdf": "Todistus PDF",
+      "certificateNeedsGrade": "Arvosana vaaditaan",
+      "certificateNeedsGradeHint": "Tallenna oppilaan pistemäärä ennen kauden kokeen todistuksen vientiä.",
+      "exportAllCertificatesPdf": "Vie kaikki todistukset PDF ({{count}})",
+      "exportAllCertificatesReady": "PDF jaettu — {{count}} oppilaan todistus(ta).",
+      "exportAllCertificatesNoneTitle": "Ei arvosteltuja oppilaita",
+      "exportAllCertificatesNoneHint": "Arvostele vähintään yksi oppilas ennen todistusten vientiä."
     },
     "students": {
       "title": "Omat oppilaat"
@@ -544,6 +566,36 @@
     "dueDate": "Eräpäivä {{date}}",
     "submitted": "Lähetetty",
     "pending": "Odottaa"
+  },
+  "certificates": {
+    "adminMenu": "Tulostodistukset",
+    "adminTitle": "Tulostodistukset",
+    "adminSubtitle": "Vie vuosittaiset ainekohtaiset tulostodistukset luokalle",
+    "adminHint": "Luo yhden PDF-tiedoston, jossa on todistussivu jokaista oppilasta kohti. Sisältää kaikki arvostellut kauden kokeet valitulla lukuvuodella, ryhmiteltynä aineittain.",
+    "yearlyTitle": "Vuosittainen ainekohtainen tulostodistus",
+    "termExamTitle": "Kauden kokeen todistus",
+    "termExamCertifies": "Tämä todistaa kauden kokeen tuloksen oppilaalle",
+    "academicYear": "Lukuvuosi",
+    "termExamColumn": "Kauden koe",
+    "examDate": "Koepäivä",
+    "score": "Pisteet",
+    "grade": "Arvosana",
+    "average": "Keskiarvo",
+    "overallAverage": "Kokonaiskeskiarvo",
+    "overallGrade": "Kokonaisarvosana",
+    "issuedOn": "Myönnetty",
+    "teacherSignature": "Opettaja",
+    "schoolFallback": "Koulu",
+    "exportYearlyPdf": "Vie vuosittaiset todistukset PDF",
+    "exportReadyTitle": "PDF valmis",
+    "exportReadyMessage": "Jaettu PDF, jossa {{count}} oppilaan todistus(ta).",
+    "selectClassTitle": "Valitse luokka",
+    "selectClassHint": "Valitse luokka ennen todistusten vientiä.",
+    "noClasses": "Luo luokka ja arvostele kokeet ennen todistusten vientiä.",
+    "noData": "Arvosteltuja koetuloksia ei löytynyt tälle luokalle ja lukuvuodelle.",
+    "noSubjectResults": "Ei arvosteltuja tuloksia tälle lukuvuodelle.",
+    "shareUnavailable": "PDF-jakaminen ei ole käytettävissä tällä laitteella.",
+    "exportFailed": "Todistus-PDF:ää ei voitu viedä."
   },
   "parent": {
     "dashboardTitle": "Lapseni",
@@ -893,6 +945,10 @@
     "usageExpiresAt": "Käytön päättymispäivä *",
     "usageExpiresAtPlaceholder": "YYYY-MM-DD",
     "usageExpiresAtHint": "Aseta milloin tämän koulun käyttöjakso päättyy.",
+    "userCountLabel": "Laskutettavien käyttäjien määrä (valinnainen)",
+    "userCountPlaceholder": "esim. 120",
+    "userCountHint": "Käytetään alustan laskutukseen. Jätä tyhjäksi jos tuntematon.",
+    "userCountInvalid": "Laskutettavien käyttäjien määrän on oltava kokonaisluku 0 tai suurempi.",
     "usageNotSet": "Käytön päättymispäivää ei ole asetettu",
     "saveChanges": "Tallenna muutokset",
     "registerSchool": "Rekisteröi koulu",
@@ -912,6 +968,9 @@
     "storageBucket": "Tallennusämpäri",
     "messagingSenderId": "Viestien lähettäjätunnus",
     "appId": "Sovellustunnus *",
-    "schoolNameRequired": "Koulun nimi *"
+    "schoolNameRequired": "Koulun nimi *",
+    "schoolLogoUrl": "Koulun logon URL (valinnainen)",
+    "schoolLogoUrlPlaceholder": "https://example.com/logo.png",
+    "schoolLogoUrlHint": "Liitä HTTPS-kuvan URL (voit käyttää Firebase Storagea tai Cloudinarya)."
   }
 }

@@ -12,11 +12,10 @@ import {
   View,
 } from "react-native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
-import { AdminScreenHeader } from "../../components/admin/AdminScreenHeader";
+import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { AuthContext } from "../../src/context/authContext";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { useSchoolContext } from "../../src/context/schoolContext";
-import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { notifySchoolUsageExpiring } from "../../src/services/notificationEvents";
 import { getUsageRemainingDays } from "../../src/utils/usageExpiry";
 
@@ -48,7 +47,6 @@ export default function AdminDashboard() {
   } = useAdminData();
 
   const [refreshing, setRefreshing] = useState(false);
-  const notificationCount = useUnreadNotificationCount(user?.uid);
 
   const usageRemainingDays = useMemo(
     () => getUsageRemainingDays(selectedSchool?.usageExpiresAt),
@@ -193,16 +191,11 @@ export default function AdminDashboard() {
 
   return (
     <ErrorBoundary>
-      <View style={styles.screen}>
-        <AdminScreenHeader
-          title={t("admin.dashboardTitle")}
-          subtitle={t("admin.dashboardSubtitle")}
-          notificationCount={notificationCount}
-          onNotificationsPress={() =>
-            router.push("/(admin)/notifications" as never)
-          }
-        />
-
+      <AdminScreenShell
+        title={t("admin.dashboardTitle")}
+        subtitle={t("admin.dashboardSubtitle")}
+        showNotifications
+      >
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.content}
@@ -346,16 +339,12 @@ export default function AdminDashboard() {
 
           <View style={{ height: 32 }} />
         </ScrollView>
-      </View>
+      </AdminScreenShell>
     </ErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "transparent",
-  },
   scroll: {
     flex: 1,
   },

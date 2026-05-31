@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
-import { AdminScreenHeader } from "../../components/admin/AdminScreenHeader";
+import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { BroadcastAnnouncementCard } from "../../components/admin/BroadcastAnnouncementCard";
 import { ExcelImportCard } from "../../components/admin/ExcelImportCard";
 import { useAdminData } from "../../src/context/adminDataContext";
@@ -42,12 +42,11 @@ export default function AdminSystemScreen() {
 
   return (
     <ErrorBoundary>
-      <View style={styles.screen}>
-        <AdminScreenHeader
-          title={t("admin.system")}
-          subtitle={t("admin.systemSubtitle")}
-          showBack
-        />
+      <AdminScreenShell
+        title={t("admin.system")}
+        subtitle={t("admin.systemSubtitle")}
+        showBack
+      >
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.content}
@@ -67,13 +66,12 @@ export default function AdminSystemScreen() {
           <BroadcastAnnouncementCard classCount={classes.length} />
           <ExcelImportCard onImportComplete={handleImportComplete} />
         </ScrollView>
-      </View>
+      </AdminScreenShell>
     </ErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "transparent" },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 16, paddingBottom: 40 },
   systemCard: {

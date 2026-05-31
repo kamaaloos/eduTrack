@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SuperAdminScreenHeader } from "../../components/superAdmin/SuperAdminScreenHeader";
+import { SuperAdminScreenShell } from "../../components/superAdmin/SuperAdminScreenShell";
 import {
   createSchoolRecord,
   getSchoolForAdmin,
@@ -21,6 +21,7 @@ import {
   validateSchoolInput,
   type SchoolRegistryInput,
 } from "../../src/services/schoolRegistryAdmin";
+import { parseOptionalUserCount } from "../../src/services/schoolRegistryValidation";
 import type { SchoolFirebaseConfig } from "../../src/types/school";
 
 const EMPTY_FIREBASE: SchoolFirebaseConfig = {
@@ -47,8 +48,10 @@ export default function SuperAdminSchoolFormScreen() {
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
   const [active, setActive] = useState(true);
   const [usageExpiresAt, setUsageExpiresAt] = useState(defaultUsageExpiryDate());
+  const [userCount, setUserCount] = useState("");
   const [firebase, setFirebase] = useState<SchoolFirebaseConfig>(EMPTY_FIREBASE);
 
   useEffect(() => {
@@ -64,8 +67,12 @@ export default function SuperAdminSchoolFormScreen() {
         }
         setName(school.name);
         setCity(school.city ?? "");
+        setLogoUrl(school.logoUrl ?? "");
         setActive(school.active);
         setUsageExpiresAt(school.usageExpiresAt ?? "");
+        setUserCount(
+          school.userCount != null ? String(school.userCount) : "",
+        );
         setFirebase(school.firebase);
       } catch (err) {
         Alert.alert(
@@ -84,11 +91,22 @@ export default function SuperAdminSchoolFormScreen() {
   };
 
   const handleSave = async () => {
+    const parsedUserCount = parseOptionalUserCount(userCount);
+    if (parsedUserCount === undefined) {
+      Alert.alert(
+        t("superAdmin.validation"),
+        t("superAdmin.userCountInvalid"),
+      );
+      return;
+    }
+
     const input: SchoolRegistryInput = {
       name,
       city,
+      logoUrl,
       active,
       usageExpiresAt,
+      userCount: parsedUserCount,
       firebase,
     };
 
@@ -127,26 +145,23 @@ export default function SuperAdminSchoolFormScreen() {
 
   if (loading) {
     return (
-      <View style={styles.screen}>
-        <SuperAdminScreenHeader
-          title={isEdit ? t("superAdmin.editSchool") : t("superAdmin.addSchool")}
-          showBack
-        />
+      <SuperAdminScreenShell
+        title={isEdit ? t("superAdmin.editSchool") : t("superAdmin.addSchool")}
+        showBack
+      >
         <View style={styles.centered}>
           <ActivityIndicator size="large" color="#1E3A8A" />
         </View>
-      </View>
+      </SuperAdminScreenShell>
     );
   }
 
   return (
-    <View style={styles.screen}>
-      <SuperAdminScreenHeader
-        title={isEdit ? t("superAdmin.editSchool") : t("superAdmin.addSchool")}
-        subtitle={t("superAdmin.schoolFormSubtitle")}
-        showBack
-      />
-
+    <SuperAdminScreenShell
+      title={isEdit ? t("superAdmin.editSchool") : t("superAdmin.addSchool")}
+      subtitle={t("superAdmin.schoolFormSubtitle")}
+      showBack
+    >
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
@@ -172,6 +187,18 @@ export default function SuperAdminSchoolFormScreen() {
             placeholderTextColor="#94A3B8"
           />
 
+          <Text style={styles.label}>{t("superAdmin.schoolLogoUrl")}</Text>
+          <TextInput
+            style={styles.input}
+            value={logoUrl}
+            onChangeText={setLogoUrl}
+            placeholder={t("superAdmin.schoolLogoUrlPlaceholder")}
+            placeholderTextColor="#94A3B8"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <Text style={styles.hint}>{t("superAdmin.schoolLogoUrlHint")}</Text>
+
           <Text style={styles.label}>{t("superAdmin.usageExpiresAt")}</Text>
           <TextInput
             style={styles.input}
@@ -181,6 +208,17 @@ export default function SuperAdminSchoolFormScreen() {
             placeholderTextColor="#94A3B8"
           />
           <Text style={styles.hint}>{t("superAdmin.usageExpiresAtHint")}</Text>
+
+          <Text style={styles.label}>{t("superAdmin.userCountLabel")}</Text>
+          <TextInput
+            style={styles.input}
+            value={userCount}
+            onChangeText={setUserCount}
+            placeholder={t("superAdmin.userCountPlaceholder")}
+            placeholderTextColor="#94A3B8"
+            keyboardType="number-pad"
+          />
+          <Text style={styles.hint}>{t("superAdmin.userCountHint")}</Text>
 
           <View style={styles.switchRow}>
             <View style={styles.switchTextBlock}>
@@ -233,15 +271,11 @@ export default function SuperAdminSchoolFormScreen() {
           )}
         </TouchableOpacity>
       </ScrollView>
-    </View>
+    </SuperAdminScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "transparent",
-  },
   centered: {
     flex: 1,
     alignItems: "center",

@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }: any) => {
     });
 
     return unsubscribe;
-  }, [schoolReady, selectedSchool?.id]);
+  }, [schoolReady, selectedSchool]);
 
   const logout = async () => {
     notifyFirestoreClosing();

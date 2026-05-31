@@ -2,9 +2,11 @@ export type StudentDashboardViewProps = {
   studentId: string;
   classId: string | null;
   displayName: string;
+  photoURL?: string | null;
   routePrefix?: string;
   showNotifications?: boolean;
   showHeaderLogout?: boolean;
+  onMenuPress?: () => void;
   showAbsenceReport?: boolean;
   showHealthCheck?: boolean;
   onHealthCheckPress?: () => void;

@@ -6,24 +6,21 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "edutrack",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.eduTrack"
+      "bundleIdentifier": "com.maylesoft.edutrack"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#E8F2FA"
       },
-      "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.eduTrack"
-    },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "package": "com.maylesoft.edutrack",
+      "versionCode": 2,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -31,18 +28,40 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
+          "resizeMode": "cover",
+          "backgroundColor": "#6B9FD4",
+          "android": {
+            "image": "./assets/images/splash-icon.png",
+            "resizeMode": "cover",
+            "backgroundColor": "#6B9FD4"
+          },
+          "ios": {
+            "image": "./assets/images/splash-icon.png",
+            "resizeMode": "cover",
+            "backgroundColor": "#6B9FD4",
+            "enableFullScreenImage_legacy": true
           }
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow eduTrack to access your photos to set your profile picture."
+        }
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9d115957-ea1b-41e7-90be-30b91ef386ac"
+      }
+    },
+    "owner": "kamaaloos"
   }
 }

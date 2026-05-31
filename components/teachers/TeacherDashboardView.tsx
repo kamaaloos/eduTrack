@@ -9,7 +9,8 @@ import { TeacherDashboardStudentsSection } from "./TeacherDashboardStudentsSecti
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 export type TeacherDashboardViewProps = {
-  initials: string;
+  displayName?: string;
+  photoURL?: string | null;
   firstName: string;
   alertCount: number;
   pendingAbsenceCount: number;
@@ -23,11 +24,12 @@ export type TeacherDashboardViewProps = {
   announcements: any[];
   refreshing: boolean;
   onRefresh: () => void;
-  onLogout: () => Promise<void>;
+  onMenuPress?: () => void;
 };
 
 export function TeacherDashboardView({
-  initials,
+  displayName,
+  photoURL,
   firstName,
   alertCount,
   pendingAbsenceCount,
@@ -41,15 +43,16 @@ export function TeacherDashboardView({
   announcements,
   refreshing,
   onRefresh,
-  onLogout,
+  onMenuPress,
 }: TeacherDashboardViewProps) {
   return (
     <View style={styles.mainContainer}>
       <TeacherDashboardHeader
-        initials={initials}
+        displayName={displayName}
+        photoURL={photoURL}
         firstName={firstName}
         alertCount={alertCount}
-        onLogout={onLogout}
+        onMenuPress={onMenuPress}
       />
 
       <ScrollView

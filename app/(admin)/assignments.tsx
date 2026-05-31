@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
-import { AdminScreenHeader } from "../../components/admin/AdminScreenHeader";
+import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { ClassSubjectsCard } from "../../components/admin/ClassSubjectsCard";
 import { RelationsCard } from "../../components/admin/RelationsCard";
 import { TeacherSubjectAssignmentCard } from "../../components/admin/TeacherSubjectAssignmentCard";
@@ -13,7 +13,6 @@ export default function AdminAssignmentsScreen() {
   const { t } = useTranslation();
   const {
     students,
-    teachers,
     parents,
     classes,
     refreshAll,
@@ -42,12 +41,11 @@ export default function AdminAssignmentsScreen() {
 
   return (
     <ErrorBoundary>
-      <View style={styles.screen}>
-        <AdminScreenHeader
-          title={t("admin.assignments")}
-          subtitle={t("admin.assignmentsSubtitle")}
-          showBack
-        />
+      <AdminScreenShell
+        title={t("admin.assignments")}
+        subtitle={t("admin.assignmentsSubtitle")}
+        showBack
+      >
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.content}
@@ -92,7 +90,7 @@ export default function AdminAssignmentsScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </View>
+      </AdminScreenShell>
     </ErrorBoundary>
   );
 }

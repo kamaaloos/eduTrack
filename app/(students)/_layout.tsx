@@ -8,12 +8,14 @@ import {
   floatingTabBarStyle,
   tabSceneContainerStyle,
 } from "../../src/constants/tabBar";
+import { StudentMenuProvider } from "../../src/context/studentMenuContext";
 
 export default function StudentLayout() {
   const { t } = useTranslation();
 
   return (
     <RoleGate allowedRole="student">
+    <StudentMenuProvider>
     <AppScreenBackground copyrightBottomOffset={88}>
     <Tabs
       screenOptions={{
@@ -114,6 +116,7 @@ export default function StudentLayout() {
       <Tabs.Screen name="attendance-detail" options={{ href: null, headerShown: false }} />
     </Tabs>
     </AppScreenBackground>
+    </StudentMenuProvider>
     </RoleGate>
   );
 }

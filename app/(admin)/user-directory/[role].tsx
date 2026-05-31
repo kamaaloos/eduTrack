@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
-import { AdminScreenHeader } from "../../../components/admin/AdminScreenHeader";
+import { AdminScreenShell } from "../../../components/admin/AdminScreenShell";
 import { UserDirectoryList } from "../../../components/admin/UserDirectoryList";
 import type { UserRole } from "../../../hooks/useAdminUsers";
 import { useAdminData } from "../../../src/context/adminDataContext";
@@ -70,12 +70,11 @@ export default function UserDirectoryScreen() {
 
   return (
     <ErrorBoundary>
-      <View style={styles.screen}>
-        <AdminScreenHeader
-          title={config.title}
-          subtitle={config.subtitle}
-          showBack
-        />
+      <AdminScreenShell
+        title={config.title}
+        subtitle={config.subtitle}
+        showBack
+      >
         <View style={styles.body}>
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -89,13 +88,12 @@ export default function UserDirectoryScreen() {
             />
           </ScrollView>
         </View>
-      </View>
+      </AdminScreenShell>
     </ErrorBoundary>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "transparent" },
   body: { flex: 1 },
   scrollContent: {
     paddingHorizontal: 16,

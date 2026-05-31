@@ -63,6 +63,27 @@ describe("mapSchoolRegistryDoc", () => {
     });
   });
 
+  it("maps user count sync fields", () => {
+    const school = mapSchoolRegistryDoc("school-2", {
+      name: "Billing School",
+      active: true,
+      firebase: {
+        apiKey: "k",
+        projectId: "p",
+        authDomain: "a",
+        storageBucket: "s",
+        messagingSenderId: "m",
+        appId: "app",
+      },
+      userCount: 42,
+      userCountUpdatedAt: "2026-05-28T10:00:00.000Z",
+      userCountSyncError: null,
+    });
+    expect(school?.userCount).toBe(42);
+    expect(school?.userCountUpdatedAt).toBe("2026-05-28T10:00:00.000Z");
+    expect(school?.userCountSyncError).toBeNull();
+  });
+
   it("returns null when firebase config invalid", () => {
     expect(mapSchoolRegistryDoc("x", { name: "Bad" })).toBeNull();
   });

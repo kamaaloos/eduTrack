@@ -6,17 +6,25 @@ import type { AppLanguage } from "../src/i18n/languages";
 type LanguageSelectorProps = {
   compact?: boolean;
   title?: string;
+  showTitle?: boolean;
 };
 
-export function LanguageSelector({ compact, title }: LanguageSelectorProps) {
+export function LanguageSelector({
+  compact,
+  title,
+  showTitle = true,
+}: LanguageSelectorProps) {
   const { t } = useTranslation();
   const { language, setLanguage, languages } = useLanguage();
 
   return (
     <View style={[styles.wrap, compact && styles.wrapCompact]}>
-      {title ? <Text style={styles.title}>{title}</Text> : null}
-      {!title ? (
-        <Text style={styles.title}>{t("language.choose")}</Text>
+      {showTitle ? (
+        title ? (
+          <Text style={styles.title}>{title}</Text>
+        ) : (
+          <Text style={styles.title}>{t("language.choose")}</Text>
+        )
       ) : null}
       <View style={styles.row}>
         {languages.map((item) => {

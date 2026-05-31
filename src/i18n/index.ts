@@ -13,6 +13,7 @@ export const i18nResources = {
   fi: { translation: fi },
 } as const;
 
+// eslint-disable-next-line import/no-named-as-default-member -- i18next init API
 void i18n.use(initReactI18next).init({
   resources: i18nResources,
   lng: DEFAULT_LANGUAGE,

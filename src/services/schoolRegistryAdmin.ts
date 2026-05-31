@@ -40,8 +40,10 @@ export async function createSchoolRecord(
   const docRef = await addDoc(collection(registryDb, COLLECTION), {
     name: input.name.trim(),
     city: input.city?.trim() || null,
+    logoUrl: input.logoUrl?.trim() || null,
     active: input.active,
     usageExpiresAt: input.usageExpiresAt,
+    userCount: input.userCount,
     firebase: input.firebase,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -56,8 +58,10 @@ export async function updateSchoolRecord(
   await updateDoc(doc(registryDb, COLLECTION, schoolId), {
     name: input.name.trim(),
     city: input.city?.trim() || null,
+    logoUrl: input.logoUrl?.trim() || null,
     active: input.active,
     usageExpiresAt: input.usageExpiresAt,
+    userCount: input.userCount,
     firebase: input.firebase,
     updatedAt: serverTimestamp(),
   });

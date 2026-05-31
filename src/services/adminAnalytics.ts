@@ -4,6 +4,7 @@ import {
   getDocs,
   limit,
   query,
+  type Firestore,
   type QueryConstraint,
   where,
 } from "firebase/firestore";
@@ -35,15 +36,15 @@ export type AdminAnalyticsStats = {
 const GRADE_SAMPLE_LIMIT = 800;
 
 async function countCollection(
+  schoolDb: Firestore,
   collectionPath: string,
   ...constraints: QueryConstraint[]
 ): Promise<number> {
-  if (!db) return 0;
   try {
     const q =
       constraints.length > 0
-        ? query(collection(db, collectionPath), ...constraints)
-        : collection(db, collectionPath);
+        ? query(collection(schoolDb, collectionPath), ...constraints)
+        : collection(schoolDb, collectionPath);
     const snap = await getCountFromServer(q);
     return snap.data().count;
   } catch (err) {
@@ -52,18 +53,21 @@ async function countCollection(
   }
 }
 
-async function countUsersByRole(role: string): Promise<number> {
-  return countCollection("users", where("role", "==", role));
+async function countUsersByRole(
+  schoolDb: Firestore,
+  role: string,
+): Promise<number> {
+  return countCollection(schoolDb, "users", where("role", "==", role));
 }
 
 async function countSubcollection(
+  schoolDb: Firestore,
   classId: string,
   sub: "homework" | "exams" | "remarks" | "announcements",
 ): Promise<number> {
-  if (!db) return 0;
   try {
     const snap = await getCountFromServer(
-      collection(db, "classes", classId, sub),
+      collection(schoolDb, "classes", classId, sub),
     );
     return snap.data().count;
   } catch {
@@ -71,7 +75,7 @@ async function countSubcollection(
   }
 }
 
-function emptyAdminAnalytics(): AdminAnalyticsStats {
+export function emptyAdminAnalytics(): AdminAnalyticsStats {
   return {
     students: 0,
     teachers: 0,
@@ -95,11 +99,9 @@ function emptyAdminAnalytics(): AdminAnalyticsStats {
 }
 
 /** Loads school-wide stats using count queries and bounded attendance/grade samples. */
-export async function loadAdminAnalytics(): Promise<AdminAnalyticsStats> {
-  if (!db) {
-    return emptyAdminAnalytics();
-  }
-
+export async function loadAdminAnalyticsForDb(
+  schoolDb: Firestore,
+): Promise<AdminAnalyticsStats> {
   const [
     students,
     teachers,
@@ -117,21 +119,23 @@ export async function loadAdminAnalytics(): Promise<AdminAnalyticsStats> {
     gradeSample,
     examResultsSample,
   ] = await Promise.all([
-    countUsersByRole("student"),
-    countUsersByRole("teacher"),
-    countUsersByRole("parent"),
-    countUsersByRole("admin"),
-    getDocs(collection(db, "classes")),
-    countAdminAttendanceSummary(),
-    countCollection("studentClasses"),
-    countCollection("teacherClasses"),
-    countCollection("homeworks"),
-    countCollection("exams"),
-    countCollection("remarks"),
-    countCollection("messages"),
-    countCollection("announcements"),
-    getDocs(query(collection(db, "grades"), limit(GRADE_SAMPLE_LIMIT))),
-    getDocs(query(collection(db, "examResults"), limit(GRADE_SAMPLE_LIMIT))),
+    countUsersByRole(schoolDb, "student"),
+    countUsersByRole(schoolDb, "teacher"),
+    countUsersByRole(schoolDb, "parent"),
+    countUsersByRole(schoolDb, "admin"),
+    getDocs(collection(schoolDb, "classes")),
+    countAdminAttendanceSummary(schoolDb),
+    countCollection(schoolDb, "studentClasses"),
+    countCollection(schoolDb, "teacherClasses"),
+    countCollection(schoolDb, "homeworks"),
+    countCollection(schoolDb, "exams"),
+    countCollection(schoolDb, "remarks"),
+    countCollection(schoolDb, "messages"),
+    countCollection(schoolDb, "announcements"),
+    getDocs(query(collection(schoolDb, "grades"), limit(GRADE_SAMPLE_LIMIT))),
+    getDocs(
+      query(collection(schoolDb, "examResults"), limit(GRADE_SAMPLE_LIMIT)),
+    ),
   ]);
 
   const classIds = classesSnap.docs.map((d) => d.id);
@@ -147,10 +151,10 @@ export async function loadAdminAnalytics(): Promise<AdminAnalyticsStats> {
     const counts = await Promise.all(
       batch.map(async (classId) => {
         const [hw, ex, rm, ann] = await Promise.all([
-          countSubcollection(classId, "homework"),
-          countSubcollection(classId, "exams"),
-          countSubcollection(classId, "remarks"),
-          countSubcollection(classId, "announcements"),
+          countSubcollection(schoolDb, classId, "homework"),
+          countSubcollection(schoolDb, classId, "exams"),
+          countSubcollection(schoolDb, classId, "remarks"),
+          countSubcollection(schoolDb, classId, "announcements"),
         ]);
         return { hw, ex, rm, ann };
       }),
@@ -209,6 +213,13 @@ export async function loadAdminAnalytics(): Promise<AdminAnalyticsStats> {
     teacherClassLinks,
     gradesSampleSize: allScores.length,
   };
+}
+
+export async function loadAdminAnalytics(): Promise<AdminAnalyticsStats> {
+  if (!db) {
+    return emptyAdminAnalytics();
+  }
+  return loadAdminAnalyticsForDb(db);
 }
 
 /** Bar chart values must be > 0 for react-native-chart-kit; use 0.01 floor for display. */

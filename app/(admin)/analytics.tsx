@@ -11,7 +11,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { BarChart, PieChart } from "react-native-chart-kit";
-import { AdminScreenHeader } from "../../components/admin/AdminScreenHeader";
+import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import {
   chartValues,
   loadAdminAnalytics,
@@ -135,27 +135,25 @@ export default function AnalyticsScreen() {
 
   if (loading && !stats) {
     return (
-      <View style={styles.screen}>
-        <AdminScreenHeader
-          title={t("admin.schoolAnalytics")}
-          subtitle={t("admin.analyticsSubtitle")}
-          showBack
-        />
+      <AdminScreenShell
+        title={t("admin.schoolAnalytics")}
+        subtitle={t("admin.analyticsSubtitle")}
+        showBack
+      >
         <View style={styles.centered}>
           <ActivityIndicator size="large" color="#2563EB" />
           <Text style={styles.statusText}>{t("admin.analyticsLoading")}</Text>
         </View>
-      </View>
+      </AdminScreenShell>
     );
   }
 
   return (
-    <View style={styles.screen}>
-      <AdminScreenHeader
-        title={t("admin.schoolAnalytics")}
-        subtitle={t("admin.analyticsSubtitle")}
-        showBack
-      />
+    <AdminScreenShell
+      title={t("admin.schoolAnalytics")}
+      subtitle={t("admin.analyticsSubtitle")}
+      showBack
+    >
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -250,7 +248,7 @@ export default function AnalyticsScreen() {
           </Text>
         </View>
       </ScrollView>
-    </View>
+    </AdminScreenShell>
   );
 }
 

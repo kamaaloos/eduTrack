@@ -3,33 +3,38 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { UserAvatar } from "../common/UserAvatar";
 import { TimeGreeting } from "../dashboard/TimeGreeting";
-import { useDashboardLogout } from "../dashboard/DashboardHeader";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 type TeacherDashboardHeaderProps = {
-  initials: string;
+  displayName?: string;
+  photoURL?: string | null;
   firstName: string;
   alertCount: number;
-  onLogout: () => Promise<void>;
+  onMenuPress?: () => void;
 };
 
 export function TeacherDashboardHeader({
-  initials,
+  displayName,
+  photoURL,
   firstName,
   alertCount,
-  onLogout,
+  onMenuPress,
 }: TeacherDashboardHeaderProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const handleLogout = useDashboardLogout(onLogout);
 
   return (
     <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
       <View style={styles.headerRow}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{initials}</Text>
-        </View>
+        <UserAvatar
+          name={displayName}
+          photoURL={photoURL}
+          size={52}
+          textColor="#1E3A8A"
+          backgroundColor="#FFFFFF"
+        />
 
         <View style={styles.headerTextBlock}>
           <TimeGreeting
@@ -44,6 +49,16 @@ export function TeacherDashboardHeader({
       </View>
 
       <View style={styles.headerActionsRow}>
+        {onMenuPress ? (
+          <TouchableOpacity
+            style={styles.headerIconBtn}
+            onPress={onMenuPress}
+            accessibilityLabel={t("admin.management")}
+          >
+            <Ionicons name="menu-outline" size={22} color="#FFFFFF" />
+          </TouchableOpacity>
+        ) : null}
+
         <TouchableOpacity
           style={styles.headerIconBtn}
           onPress={() => router.push("/(teachers)/notifications")}
@@ -59,13 +74,6 @@ export function TeacherDashboardHeader({
           ) : null}
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={handleLogout}
-          accessibilityLabel={t("common.logout")}
-        >
-          <Ionicons name="log-out-outline" size={20} color="#1E3A8A" />
-        </TouchableOpacity>
       </View>
     </View>
   );

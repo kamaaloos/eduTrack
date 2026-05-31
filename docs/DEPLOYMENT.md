@@ -23,11 +23,28 @@ firebase deploy --only firestore:rules
 
 Repeat for each `projectId` in your `schoolRegistry` documents.
 
+## Firebase Storage rules
+
+Profile photos for students and teachers are stored at `profilePhotos/{uid}/profile.jpg`. Rules are in `storage.rules`.
+
+**Storage rules read Firestore** (`firestore.get` / `firestore.exists`) to decide who can view or upload a photo — aligned with `users/{userId}` read/update in `firestore.rules` (admin, linked parent, teacher for their students, owner only for writes).
+
+Deploy to **each school project** (not the registry project unless you add uploads there):
+
+```bash
+firebase use <school-project-id>
+firebase deploy --only storage
+```
+
+Ensure each school Firebase web app config includes a valid `storageBucket` (same as in `schoolRegistry` / `.env`).
+
 ### Checklist
 
 - [ ] Registry project rules allow read of active `schoolRegistry` entries (as configured for your setup)
 - [ ] Each school project has the same (or school-appropriate) `firestore.rules`
+- [ ] Storage rules deployed to each school project
 - [ ] Rules tested with admin, teacher, student, and parent test accounts
+- [ ] Student/teacher can upload a profile photo; parent can see linked child photo on dashboard
 
 ## Firestore indexes
 
@@ -51,11 +68,15 @@ School **admin** usage notifications are written to the **school** project’s `
 
 For production, consider a **scheduled Cloud Function** to notify admins without requiring the app to open.
 
+## Billable user counts (registry Cloud Functions)
+
+Super-admin **billable user** metrics are synced server-side into `schoolRegistry` (`userCount`, `userCountUpdatedAt`). See [REGISTRY_USER_COUNT_SYNC.md](./REGISTRY_USER_COUNT_SYNC.md) for deploy steps and IAM setup on each school project.
+
 ## Mobile app builds
 
-Use [EAS Build](https://docs.expo.dev/build/introduction/) or `expo run:android` / `expo run:ios` for store binaries.
+**Android APK (current target):** see [ANDROID_BUILD.md](./ANDROID_BUILD.md) — EAS profiles in `eas.json`, package `com.maylesoft.edutrack`.
 
-Set `EXPO_PUBLIC_*` env vars in EAS secrets or `eas.json` profiles per environment (staging/production).
+Set `EXPO_PUBLIC_REGISTRY_*` (and optional `EXPO_PUBLIC_FIREBASE_*`) as EAS project secrets before cloud builds.
 
 ## CI
 

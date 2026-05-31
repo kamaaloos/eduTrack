@@ -1,9 +1,23 @@
 import { StyleSheet } from "react-native";
+import { FLOATING_TAB_BAR_INSET } from "../../../src/constants/tabBar";
 
 export const examReportsStyles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "transparent" },
   container: { flex: 1, backgroundColor: "transparent" },
   content: { padding: 20, paddingTop: 8 },
+  fixedTop: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+  studentScroll: {
+    flex: 1,
+  },
+  studentScrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 4,
+    paddingBottom: FLOATING_TAB_BAR_INSET,
+  },
   scrollBottomSpacer: { height: 100 },
   centered: {
     flex: 1,
@@ -113,6 +127,7 @@ export const examReportsStyles = StyleSheet.create({
   badgeTextPending: { color: "#64748B" },
   badgeTextSeen: { color: "#059669" },
   badgeTextUnseen: { color: "#B45309" },
+  actionLinks: { alignItems: "flex-end", gap: 6 },
   reportLink: {
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -188,5 +203,22 @@ export const examReportsStyles = StyleSheet.create({
     textAlign: "center",
     marginTop: 8,
     lineHeight: 20,
+  },
+  exportAllBtn: {
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#1E3A8A",
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  exportAllBtnDisabled: { opacity: 0.7 },
+  exportAllBtnText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "700",
   },
 });
