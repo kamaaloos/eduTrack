@@ -111,10 +111,18 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
         if (!active) return;
 
         if (saved) {
-          await connectToSchool(saved.firebase);
-          const merged = await mergeStoredSchoolWithRegistry(saved);
-          if (active) {
-            setSelectedSchool(merged);
+          try {
+            await connectToSchool(saved.firebase);
+            const merged = await mergeStoredSchoolWithRegistry(saved);
+            if (active) {
+              setSelectedSchool(merged);
+            }
+          } catch (connectErr) {
+            console.warn("Saved school connection failed, clearing selection:", connectErr);
+            await clearSelectedSchool();
+            if (active) {
+              setSelectedSchool(null);
+            }
           }
         }
       } catch (err) {

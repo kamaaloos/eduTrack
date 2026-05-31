@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 import "../src/i18n";
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -16,18 +17,18 @@ export default function RootLayout() {
       <LanguageProvider>
         <FirebaseBootstrapGate>
           <SchoolProvider>
-          <BrandedSplashGate>
-            <SuperAdminAuthProvider>
-              <AuthProvider>
-                <ErrorBoundary>
-                  <MustChangePasswordGate>
-                    <Stack screenOptions={{ headerShown: false }} />
-                  </MustChangePasswordGate>
-                </ErrorBoundary>
-              </AuthProvider>
-            </SuperAdminAuthProvider>
-          </BrandedSplashGate>
-        </SchoolProvider>
+            <BrandedSplashGate>
+              <ErrorBoundary>
+                <SuperAdminAuthProvider>
+                  <AuthProvider>
+                    <MustChangePasswordGate>
+                      <Stack screenOptions={{ headerShown: false }} />
+                    </MustChangePasswordGate>
+                  </AuthProvider>
+                </SuperAdminAuthProvider>
+              </ErrorBoundary>
+            </BrandedSplashGate>
+          </SchoolProvider>
         </FirebaseBootstrapGate>
       </LanguageProvider>
     </SafeAreaProvider>

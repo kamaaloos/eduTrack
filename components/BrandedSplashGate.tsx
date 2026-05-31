@@ -1,7 +1,6 @@
-import { Image } from "expo-image";
+import { Image, StyleSheet, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { useEffect, useState, type ReactNode } from "react";
 import { useSchoolContext } from "../src/context/schoolContext";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -13,37 +12,34 @@ type BrandedSplashGateProps = {
 };
 
 /**
- * Shows the eduTrack splash art until the school session is ready, then reveals the app.
- * Works in Expo Go (which ignores app.json splash) and in release APKs.
+ * Shows splash art until the school session is ready, then mounts the app tree.
+ * Deferring children avoids navigation/auth running under the splash overlay
+ * (a common source of release APK crashes on first launch).
  */
 export function BrandedSplashGate({ children }: BrandedSplashGateProps) {
   const { schoolReady } = useSchoolContext();
-  const [appVisible, setAppVisible] = useState(false);
-
-  const hideSplash = useCallback(async () => {
-    try {
-      await SplashScreen.hideAsync();
-    } catch {
-      /* ignore */
-    }
-    setAppVisible(true);
-  }, []);
+  const [overlayVisible, setOverlayVisible] = useState(true);
 
   useEffect(() => {
-    if (schoolReady) {
-      void hideSplash();
-    }
-  }, [schoolReady, hideSplash]);
+    if (!schoolReady) return;
+
+    void SplashScreen.hideAsync().catch(() => {
+      /* ignore */
+    });
+
+    const timer = setTimeout(() => setOverlayVisible(false), 100);
+    return () => clearTimeout(timer);
+  }, [schoolReady]);
 
   return (
     <View style={styles.root}>
-      {children}
-      {!appVisible ? (
+      {schoolReady ? children : null}
+      {overlayVisible ? (
         <View style={styles.overlay} pointerEvents="none">
           <Image
             source={require("../assets/images/splash-icon.png")}
             style={styles.image}
-            contentFit="cover"
+            resizeMode="cover"
             accessibilityLabel="eduTrack"
           />
         </View>
