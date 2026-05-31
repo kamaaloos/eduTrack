@@ -1015,6 +1015,21 @@
     "schoolNameRequired": "اسم المدرسة *",
     "schoolLogoUrl": "رابط شعار المدرسة (اختياري)",
     "schoolLogoUrlPlaceholder": "https://example.com/logo.png",
-    "schoolLogoUrlHint": "ألصق رابط صورة HTTPS (يمكنك استخدام Firebase Storage أو Cloudinary)."
+    "schoolLogoUrlHint": "ارفع صورة مربعة (JPEG أو PNG أو WebP، بحد أقصى 5 ميجابايت) أو ألصق رابط HTTPS.",
+    "logoUpload": "رفع الشعار",
+    "logoUploaded": "تم رفع الشعار.",
+    "logoPendingSave": "سيتم رفع الشعار عند حفظ المدرسة.",
+    "logoRemove": "إزالة الشعار",
+    "logoRemoveTitle": "إزالة الشعار؟",
+    "logoRemoveConfirm": "سيؤدي هذا إلى مسح الشعار من النموذج. احفظ المدرسة لتطبيق التغييرات.",
+    "logoEmpty": "لا يوجد شعار بعد",
+    "logoOrPasteUrl": "أو ألصق رابطًا",
+    "logoPermissionDenied": "يلزم الوصول إلى مكتبة الصور لاختيار شعار.",
+    "logoTooLarge": "يجب ألا يتجاوز حجم الشعار 5 ميجابايت.",
+    "logoStorageNotReady": "تخزين السجل غير مهيأ. تحقق من EXPO_PUBLIC_REGISTRY_STORAGE_BUCKET.",
+    "logoReadFailed": "تعذر قراءة الصورة المحددة.",
+    "logoStorageRules": "رفض الرفع بسبب قواعد التخزين. انشر registry.storage.rules وسجّل الدخول كمسؤول أعلى.",
+    "logoStorageUnavailable": "التخزين غير متاح مؤقتًا. حاول مرة أخرى.",
+    "logoUploadFailed": "فشل رفع الشعار."
   }
 }

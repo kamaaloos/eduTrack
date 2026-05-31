@@ -1031,8 +1031,23 @@
     "syncPartialTitle": "Partial sync",
     "syncPartialMessage": "{{synced}} schools synced, {{failed}} failed. Check IAM access on school projects.",
     "schoolNameRequired": "School name *",
-    "schoolLogoUrl": "School logo URL (optional)",
+    "schoolLogoUrl": "School logo (optional)",
     "schoolLogoUrlPlaceholder": "https://example.com/logo.png",
-    "schoolLogoUrlHint": "Paste an HTTPS image URL (you can use Firebase Storage or Cloudinary)."
+    "schoolLogoUrlHint": "Upload a square image (JPEG, PNG, or WebP, max 5 MB) or paste an HTTPS URL.",
+    "logoUpload": "Upload logo",
+    "logoUploaded": "Logo uploaded.",
+    "logoPendingSave": "Logo will upload when you save the school.",
+    "logoRemove": "Remove logo",
+    "logoRemoveTitle": "Remove logo?",
+    "logoRemoveConfirm": "This clears the logo from the form. Save the school to apply changes.",
+    "logoEmpty": "No logo yet",
+    "logoOrPasteUrl": "Or paste a URL",
+    "logoPermissionDenied": "Photo library access is required to pick a logo.",
+    "logoTooLarge": "Logo must be 5 MB or smaller.",
+    "logoStorageNotReady": "Registry storage is not configured. Check EXPO_PUBLIC_REGISTRY_STORAGE_BUCKET.",
+    "logoReadFailed": "Could not read the selected image.",
+    "logoStorageRules": "Upload denied by storage rules. Deploy registry.storage.rules and sign in as super admin.",
+    "logoStorageUnavailable": "Storage is temporarily unavailable. Try again.",
+    "logoUploadFailed": "Logo upload failed."
   }
 }

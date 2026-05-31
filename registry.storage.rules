@@ -1,0 +1,35 @@
+rules_version = '2';
+
+/**
+ * Registry Firebase Storage — school logos for the public school picker.
+ * Deploy to the **registry** project (same as firestore.rules):
+ *   firebase use <registry-project-id>
+ *   firebase deploy --only storage --config firebase.registry.json
+ *
+ * Or copy these rules into the Firebase console → Storage → Rules.
+ */
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn()
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == "superAdmin";
+    }
+
+    match /schoolLogos/{schoolId}/{fileName} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin()
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if isSuperAdmin();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

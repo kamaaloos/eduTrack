@@ -1013,8 +1013,23 @@
     "testingPeriodRequired": "Taariikhda dhamaadka muddada tijaabada waa lagama maarmaan.",
     "testingPeriodInvalid": "Taariikhda dhamaadka muddada tijaabada waa inay ahaataa YYYY-MM-DD.",
     "schoolNameRequired": "Magaca dugsiga *",
-    "schoolLogoUrl": "URL-ga astaanta dugsiga (ikhtiyaari)",
+    "schoolLogoUrl": "Astaanta dugsiga (ikhtiyaari)",
     "schoolLogoUrlPlaceholder": "https://example.com/logo.png",
-    "schoolLogoUrlHint": "Ku dheji URL sawir HTTPS ah (waxaad isticmaali kartaa Firebase Storage ama Cloudinary)."
+    "schoolLogoUrlHint": "Soo rar sawir laba jibaaran ah (JPEG, PNG ama WebP, ugu badnaan 5 MB) ama ku dheji URL HTTPS ah.",
+    "logoUpload": "Soo rar astaanta",
+    "logoUploaded": "Astaanta waa la soo raray.",
+    "logoPendingSave": "Astaanta waa la soo rari doonaa markaad keydiso dugsiga.",
+    "logoRemove": "Ka saar astaanta",
+    "logoRemoveTitle": "Ka saar astaanta?",
+    "logoRemoveConfirm": "Tani waxay ka tirtirtaa astaanta foomka. Keydi dugsiga si aad u dabaqdo isbeddelada.",
+    "logoEmpty": "Weli ma jirto astaan",
+    "logoOrPasteUrl": "Ama ku dheji URL",
+    "logoPermissionDenied": "Ogolaanshaha maktabadda sawirada ayaa loo baahan yahay si aad u doorato astaan.",
+    "logoTooLarge": "Astaantu waa inay ka yar tahay ama la mid tahay 5 MB.",
+    "logoStorageNotReady": "Kaydinta diiwaanka lama habayn. Hubi EXPO_PUBLIC_REGISTRY_STORAGE_BUCKET.",
+    "logoReadFailed": "Sawirka la doortay lama akhrin karin.",
+    "logoStorageRules": "Soo rarista waa la diiday xeerarka kaydinta. Daabac registry.storage.rules oo gal super-admin ahaan.",
+    "logoStorageUnavailable": "Kaydinta si ku meel gaar ah uma diyaarsana. Isku day mar kale.",
+    "logoUploadFailed": "Soo rarista astaanta way fashilantay."
   }
 }

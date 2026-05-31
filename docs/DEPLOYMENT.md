@@ -38,11 +38,28 @@ firebase deploy --only storage
 
 Ensure each school Firebase web app config includes a valid `storageBucket` (same as in `schoolRegistry` / `.env`).
 
+### Registry project — school logos
+
+School logos for the public school picker are stored in the **registry** project at `schoolLogos/{schoolId}/logo.{jpg|png|webp}`. Rules are in `registry.storage.rules` (public read; super-admin write).
+
+Enable **Firebase Storage** on the registry project, then deploy:
+
+```bash
+firebase use <registry-project-id>
+# Paste rules from registry.storage.rules in the Firebase console → Storage → Rules,
+# or add firebase.registry.json pointing at registry.storage.rules and run:
+firebase deploy --only storage --config firebase.registry.json
+```
+
+Set `EXPO_PUBLIC_REGISTRY_STORAGE_BUCKET` in `.env` and EAS secrets so the super-admin app can upload logos.
+
 ### Checklist
 
 - [ ] Registry project rules allow read of active `schoolRegistry` entries (as configured for your setup)
 - [ ] Each school project has the same (or school-appropriate) `firestore.rules`
 - [ ] Storage rules deployed to each school project
+- [ ] Registry project Storage enabled; `registry.storage.rules` deployed for school logos
+- [ ] `EXPO_PUBLIC_REGISTRY_STORAGE_BUCKET` set for app builds
 - [ ] Rules tested with admin, teacher, student, and parent test accounts
 - [ ] Student/teacher can upload a profile photo; parent can see linked child photo on dashboard
 

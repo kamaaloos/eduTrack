@@ -60,6 +60,7 @@ if (!hasValidConfig(effectiveRegistryConfig)) {
 type RegistryFirebase = {
   db: Firestore;
   auth: Auth;
+  storage: FirebaseStorage;
 };
 
 let lastSchoolFirebaseConfig: SchoolFirebaseConfig | null = null;
@@ -122,13 +123,13 @@ function createRegistryFirebase(): RegistryFirebase | null {
   }
 
   try {
-    const app = initializeApp(
-      effectiveRegistryConfig as SchoolFirebaseConfig,
-      "EduTrackRegistry",
-    );
+    const config = effectiveRegistryConfig as SchoolFirebaseConfig;
+    const app = initializeApp(config, "EduTrackRegistry");
+    const bucket = config.storageBucket?.trim();
     return {
       db: getFirestore(app),
       auth: initAuthForApp(app),
+      storage: bucket ? getStorage(app, bucket) : getStorage(app),
     };
   } catch (err) {
     console.error("Registry Firebase init failed:", err);
@@ -140,9 +141,10 @@ const registryFirebase = createRegistryFirebase();
 
 export const registryDb = registryFirebase?.db ?? null;
 export const registryAuth = registryFirebase?.auth ?? null;
+export const registryStorage = registryFirebase?.storage ?? null;
 
 export function isRegistryFirebaseReady(): boolean {
-  return registryDb !== null && registryAuth !== null;
+  return registryDb !== null && registryAuth !== null && registryStorage !== null;
 }
 
 export function isFirebaseConfigured(): boolean {

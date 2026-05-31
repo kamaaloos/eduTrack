@@ -1013,8 +1013,23 @@
     "testingPeriodRequired": "Testausjakson päättymispäivä on pakollinen.",
     "testingPeriodInvalid": "Testausjakson päättymispäivän on oltava muodossa VVVV-KK-PP.",
     "schoolNameRequired": "Koulun nimi *",
-    "schoolLogoUrl": "Koulun logon URL (valinnainen)",
+    "schoolLogoUrl": "Koulun logo (valinnainen)",
     "schoolLogoUrlPlaceholder": "https://example.com/logo.png",
-    "schoolLogoUrlHint": "Liitä HTTPS-kuvan URL (voit käyttää Firebase Storagea tai Cloudinarya)."
+    "schoolLogoUrlHint": "Lataa neliön muotoinen kuva (JPEG, PNG tai WebP, enintään 5 MB) tai liitä HTTPS-URL.",
+    "logoUpload": "Lataa logo",
+    "logoUploaded": "Logo ladattu.",
+    "logoPendingSave": "Logo ladataan, kun tallennat koulun.",
+    "logoRemove": "Poista logo",
+    "logoRemoveTitle": "Poistetaanko logo?",
+    "logoRemoveConfirm": "Tämä tyhjentää logon lomakkeelta. Tallenna koulu muutosten voimaan saattamiseksi.",
+    "logoEmpty": "Ei logoa vielä",
+    "logoOrPasteUrl": "Tai liitä URL",
+    "logoPermissionDenied": "Kuvavalikoimaan tarvitaan lupa logon valitsemiseen.",
+    "logoTooLarge": "Logon on oltava enintään 5 MB.",
+    "logoStorageNotReady": "Rekisterin tallennustilaa ei ole määritetty. Tarkista EXPO_PUBLIC_REGISTRY_STORAGE_BUCKET.",
+    "logoReadFailed": "Valittua kuvaa ei voitu lukea.",
+    "logoStorageRules": "Lataus estettiin tallennussäännöillä. Ota registry.storage.rules käyttöön ja kirjaudu super-adminina.",
+    "logoStorageUnavailable": "Tallennustila ei ole juuri nyt käytettävissä. Yritä uudelleen.",
+    "logoUploadFailed": "Logon lataus epäonnistui."
   }
 }

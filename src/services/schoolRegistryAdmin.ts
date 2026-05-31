@@ -133,3 +133,19 @@ export async function updateSchoolUsagePeriod(
   });
 }
 
+export async function updateSchoolLogoUrl(
+  schoolId: string,
+  logoUrl: string | null,
+): Promise<void> {
+  const trimmed = logoUrl?.trim() ?? "";
+  if (trimmed && !/^https?:\/\//i.test(trimmed)) {
+    throw new Error("School logo URL must start with http:// or https://.");
+  }
+
+  const db = requireRegistryDb();
+  await updateDoc(doc(db, COLLECTION, schoolId), {
+    logoUrl: trimmed || null,
+    updatedAt: serverTimestamp(),
+  });
+}
+

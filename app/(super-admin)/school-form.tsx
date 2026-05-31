@@ -14,13 +14,16 @@ import {
   View,
 } from "react-native";
 import { SuperAdminScreenShell } from "../../components/superAdmin/SuperAdminScreenShell";
+import { SchoolLogoField } from "../../components/superAdmin/SchoolLogoField";
 import {
   createSchoolRecord,
   getSchoolForAdmin,
+  updateSchoolLogoUrl,
   updateSchoolRecord,
   validateSchoolInput,
   type SchoolRegistryInput,
 } from "../../src/services/schoolRegistryAdmin";
+import { uploadSchoolLogo } from "../../src/services/schoolLogo";
 import { parseOptionalUserCount } from "../../src/services/schoolRegistryValidation";
 import type { SchoolFirebaseConfig } from "../../src/types/school";
 
@@ -49,6 +52,7 @@ export default function SuperAdminSchoolFormScreen() {
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [pendingLogoUri, setPendingLogoUri] = useState<string | null>(null);
   const [active, setActive] = useState(true);
   const [testingExpiresAt, setTestingExpiresAt] = useState(defaultUsageExpiryDate());
   const [usageExpiresAt, setUsageExpiresAt] = useState("");
@@ -121,11 +125,19 @@ export default function SuperAdminSchoolFormScreen() {
 
     setSaving(true);
     try {
+      let savedSchoolId = id ? String(id) : undefined;
+
       if (isEdit && id) {
         await updateSchoolRecord(String(id), input);
       } else {
-        await createSchoolRecord(input);
+        savedSchoolId = await createSchoolRecord(input);
       }
+
+      if (pendingLogoUri && savedSchoolId) {
+        const downloadUrl = await uploadSchoolLogo(pendingLogoUri, savedSchoolId);
+        await updateSchoolLogoUrl(savedSchoolId, downloadUrl);
+      }
+
       router.back();
     } catch (err) {
       Alert.alert(
@@ -190,17 +202,14 @@ export default function SuperAdminSchoolFormScreen() {
             placeholderTextColor="#94A3B8"
           />
 
-          <Text style={styles.label}>{t("superAdmin.schoolLogoUrl")}</Text>
-          <TextInput
-            style={styles.input}
-            value={logoUrl}
-            onChangeText={setLogoUrl}
-            placeholder={t("superAdmin.schoolLogoUrlPlaceholder")}
-            placeholderTextColor="#94A3B8"
-            autoCapitalize="none"
-            autoCorrect={false}
+          <SchoolLogoField
+            schoolId={id ? String(id) : undefined}
+            logoUrl={logoUrl}
+            pendingLogoUri={pendingLogoUri}
+            onLogoUrlChange={setLogoUrl}
+            onPendingLogoUriChange={setPendingLogoUri}
+            disabled={saving}
           />
-          <Text style={styles.hint}>{t("superAdmin.schoolLogoUrlHint")}</Text>
 
           <Text style={styles.label}>{t("superAdmin.testingExpiresAt")}</Text>
           <TextInput
