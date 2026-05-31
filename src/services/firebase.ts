@@ -23,25 +23,30 @@ type EnvFirebaseConfig = {
   appId?: string;
 };
 
-function configFromEnv(prefix: string): EnvFirebaseConfig {
-  return {
-    apiKey: process.env[`${prefix}_API_KEY`],
-    authDomain: process.env[`${prefix}_AUTH_DOMAIN`],
-    projectId: process.env[`${prefix}_PROJECT_ID`],
-    storageBucket: process.env[`${prefix}_STORAGE_BUCKET`],
-    messagingSenderId: process.env[`${prefix}_MESSAGING_SENDER_ID`],
-    appId: process.env[`${prefix}_APP_ID`],
-  };
-}
-
 function hasValidConfig(
   config: EnvFirebaseConfig | SchoolFirebaseConfig | null | undefined,
 ): config is SchoolFirebaseConfig {
   return Boolean(config?.apiKey && config?.projectId);
 }
 
-const registryConfig = configFromEnv("EXPO_PUBLIC_REGISTRY");
-const defaultConfig = configFromEnv("EXPO_PUBLIC_FIREBASE");
+/** Static env reads only — Metro inlines EXPO_PUBLIC_* at build time; dynamic keys stay undefined in release APKs. */
+const registryConfig: EnvFirebaseConfig = {
+  apiKey: process.env.EXPO_PUBLIC_REGISTRY_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_REGISTRY_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_REGISTRY_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_REGISTRY_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_REGISTRY_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_REGISTRY_APP_ID,
+};
+
+const defaultConfig: EnvFirebaseConfig = {
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+};
 const effectiveRegistryConfig = hasValidConfig(registryConfig)
   ? registryConfig
   : defaultConfig;
