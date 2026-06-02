@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { getPreviewText } from "../../src/utils/dashboardUi";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
+import { DashboardSlideRow } from "./DashboardSlideRow";
 import { dashboardStyles as styles } from "./dashboardStyles";
 import type { StudentDashboardNavigation } from "./studentDashboardTypes";
 
@@ -27,7 +28,8 @@ export function DashboardAnnouncementsSection({
   return (
     <View style={styles.section}>
       <DashboardSectionHeader
-        title={`📢 ${t("common.announcements")}`}
+        title={t("common.announcements")}
+        icon="megaphone-outline"
         route={listRoute}
         viewAllLabel={t("common.seeAll")}
       />
@@ -37,7 +39,7 @@ export function DashboardAnnouncementsSection({
           <Text style={styles.emptyText}>{t("common.noData")}</Text>
         </View>
       ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <DashboardSlideRow>
           {messages.map((item: any) => {
             const fullBody = item.text || item.message || "";
             const { preview } = getPreviewText(fullBody);
@@ -93,7 +95,7 @@ export function DashboardAnnouncementsSection({
               </View>
             );
           })}
-        </ScrollView>
+        </DashboardSlideRow>
       )}
     </View>
   );

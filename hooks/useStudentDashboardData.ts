@@ -14,11 +14,6 @@ import {
   onFirestoreClosing,
 } from "../src/services/firestoreSession";
 import { getExamResultsForStudent } from "../src/services/examResults";
-import {
-  filterSchedulesForDay,
-  getTodayDayKey,
-  type ScheduleSlot,
-} from "../src/utils/scheduleFormat";
 
 export function useStudentDashboardData(
   studentId: string | undefined,
@@ -132,10 +127,7 @@ export function useStudentDashboardData(
     unsubs.push(
       onSnapshot(
         collection(db, "classes", classId, "schedules"),
-        (s) => {
-          const all = mapDocs(s) as ScheduleSlot[];
-          setSchedule(filterSchedulesForDay(all, getTodayDayKey()));
-        },
+        (s) => setSchedule(mapDocs(s)),
         onError("schedules"),
       ),
     );

@@ -2,13 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
+  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { SelectChips } from "../teachers/SelectChips";
 import {
   addClassScheduleSlot,
@@ -16,7 +16,14 @@ import {
   loadClassScheduleForDay,
   type ClassScheduleEntry,
 } from "../../src/services/classSchedule";
+import {
+  confirmAction,
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
+import { ClassScheduleBulkImport } from "./ClassScheduleBulkImport";
 import { ScheduleTimePicker } from "./ScheduleTimePicker";
+import { db } from "../../src/services/firebase";
 import {
   getTodayDayKey,
   getWeekdayLabel,
@@ -27,22 +34,30 @@ import {
 } from "../../src/utils/scheduleFormat";
 
 type ClassOption = { id: string; name: string };
+type TeacherOption = { id: string; name: string };
+type TeacherSubjectAssignment = { teacherId: string; subject: string };
 
 type ClassScheduleCardProps = {
   classes: ClassOption[];
+  teachers: TeacherOption[];
 };
 
-export function ClassScheduleCard({ classes }: ClassScheduleCardProps) {
+export function ClassScheduleCard({ classes, teachers }: ClassScheduleCardProps) {
   const { t } = useTranslation();
   const [classId, setClassId] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<WeekdayKey>(getTodayDayKey());
   const [slots, setSlots] = useState<ClassScheduleEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [assignmentsLoading, setAssignmentsLoading] = useState(false);
   const [startTime, setStartTime] = useState("08:00");
   const [endTime, setEndTime] = useState("09:00");
   const [subject, setSubject] = useState("");
-  const [teacherName, setTeacherName] = useState("");
+  const [selectedTeacherId, setSelectedTeacherId] = useState("");
+  const [teacherOptions, setTeacherOptions] = useState<TeacherOption[]>([]);
+  const [teacherSubjectAssignments, setTeacherSubjectAssignments] = useState<
+    TeacherSubjectAssignment[]
+  >([]);
 
   const todayKey = getTodayDayKey();
   const todayLabel = getWeekdayLabel(t, todayKey);
@@ -66,6 +81,26 @@ export function ClassScheduleCard({ classes }: ClassScheduleCardProps) {
     [t],
   );
 
+  const selectedTeacherSubjects = useMemo(() => {
+    if (!selectedTeacherId) return [];
+    const subjectSet = new Set<string>();
+    for (const row of teacherSubjectAssignments) {
+      if (row.teacherId === selectedTeacherId && row.subject.trim()) {
+        subjectSet.add(row.subject.trim());
+      }
+    }
+    return [...subjectSet].sort((a, b) => a.localeCompare(b));
+  }, [selectedTeacherId, teacherSubjectAssignments]);
+
+  const subjectOptions = useMemo(
+    () =>
+      selectedTeacherSubjects.map((item) => ({
+        value: item,
+        label: item,
+      })),
+    [selectedTeacherSubjects],
+  );
+
   const loadSlots = useCallback(async () => {
     if (!classId) {
       setSlots([]);
@@ -76,7 +111,7 @@ export function ClassScheduleCard({ classes }: ClassScheduleCardProps) {
       const list = await loadClassScheduleForDay(classId, dayOfWeek);
       setSlots(list);
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.scheduleLoadFailed"),
       );
@@ -96,31 +131,95 @@ export function ClassScheduleCard({ classes }: ClassScheduleCardProps) {
     void loadSlots();
   }, [loadSlots]);
 
+  const loadClassTeacherAssignments = useCallback(async () => {
+    if (!classId) {
+      setTeacherOptions([]);
+      setTeacherSubjectAssignments([]);
+      return;
+    }
+
+    setAssignmentsLoading(true);
+    try {
+      const [classTeachersSnap, teacherSubjectsSnap] = await Promise.all([
+        getDocs(query(collection(db, "teacherClasses"), where("classId", "==", classId))),
+        getDocs(query(collection(db, "teacherSubjects"), where("classId", "==", classId))),
+      ]);
+
+      const linkedTeacherIds = new Set<string>();
+      classTeachersSnap.docs.forEach((docSnap) => {
+        const teacherId = docSnap.data().teacherId as string | undefined;
+        if (teacherId) linkedTeacherIds.add(teacherId);
+      });
+
+      const subjects: TeacherSubjectAssignment[] = teacherSubjectsSnap.docs
+        .map((docSnap) => {
+          const data = docSnap.data();
+          const teacherId = data.teacherId as string | undefined;
+          const rowSubject = data.subject as string | undefined;
+          if (!teacherId || !rowSubject) return null;
+          linkedTeacherIds.add(teacherId);
+          return { teacherId, subject: rowSubject };
+        })
+        .filter((row): row is TeacherSubjectAssignment => row !== null);
+
+      const teacherById = new Map(teachers.map((teacher) => [teacher.id, teacher.name]));
+      const options = [...linkedTeacherIds]
+        .map((id) => ({
+          id,
+          name: teacherById.get(id) || t("common.teacher"),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      setTeacherOptions(options);
+      setTeacherSubjectAssignments(subjects);
+      setSelectedTeacherId((prev) =>
+        prev && options.some((item) => item.id === prev) ? prev : "",
+      );
+    } catch (err) {
+      showErrorAlert(
+        t("common.error"),
+        err instanceof Error ? err.message : t("admin.scheduleLoadFailed"),
+      );
+      setTeacherOptions([]);
+      setTeacherSubjectAssignments([]);
+    } finally {
+      setAssignmentsLoading(false);
+    }
+  }, [classId, t, teachers]);
+
+  useEffect(() => {
+    void loadClassTeacherAssignments();
+  }, [loadClassTeacherAssignments]);
+
+  useEffect(() => {
+    setSubject("");
+  }, [selectedTeacherId]);
+
   const handleAdd = async () => {
     if (!classId) {
-      Alert.alert(t("common.error"), t("admin.selectClassFirst"));
+      showErrorAlert(t("common.error"), t("admin.selectClassFirst"));
       return;
     }
     if (!startTime.trim() || !endTime.trim() || !subject.trim()) {
-      Alert.alert(t("common.error"), t("admin.fillTimeAndSubject"));
+      showErrorAlert(t("common.error"), t("admin.fillTimeAndSubject"));
       return;
     }
 
     setSaving(true);
     try {
-      const docId = await addClassScheduleSlot({
+      await addClassScheduleSlot({
         classId,
         dayOfWeek,
         startTime: startTime.trim(),
         endTime: endTime.trim(),
         subject: subject.trim(),
-        teacherName: teacherName.trim(),
+        teacherName:
+          teachers.find((item) => item.id === selectedTeacherId)?.name?.trim() || "",
         sortOrder: slots.length,
       });
-      setStartTime("");
-      setEndTime("");
+      setStartTime("08:00");
+      setEndTime("09:00");
       setSubject("");
-      setTeacherName("");
       await loadSlots();
       const visibilityNote =
         dayOfWeek === todayKey
@@ -129,12 +228,12 @@ export function ClassScheduleCard({ classes }: ClassScheduleCardProps) {
               day: selectedDayLabel,
               today: todayLabel,
             });
-      Alert.alert(
+      showSuccessAlert(
         t("admin.scheduleSavedTitle"),
-        `${t("admin.scheduleSavedPath", { classId, docId })}\n\n${t("admin.scheduleSavedDay", { day: selectedDayLabel })}\n${visibilityNote}`,
+        `${t("admin.scheduleSavedDay", { day: selectedDayLabel })}\n${visibilityNote}`,
       );
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.couldNotSaveSlot"),
       );
@@ -144,24 +243,25 @@ export function ClassScheduleCard({ classes }: ClassScheduleCardProps) {
   };
 
   const handleDelete = (entry: ClassScheduleEntry) => {
-    Alert.alert(t("admin.deleteSlotTitle"), formatScheduleLine(entry), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("common.delete"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await deleteClassScheduleSlot(classId, entry.id);
-            await loadSlots();
-          } catch (err) {
-            Alert.alert(
-              t("common.error"),
-              err instanceof Error ? err.message : t("admin.deleteFailed"),
-            );
-          }
-        },
-      },
-    ]);
+    void (async () => {
+      const confirmed = await confirmAction(
+        t("admin.deleteSlotTitle"),
+        formatScheduleLine(entry),
+        t("common.delete"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      try {
+        await deleteClassScheduleSlot(classId, entry.id);
+        await loadSlots();
+      } catch (err) {
+        showErrorAlert(
+          t("common.error"),
+          err instanceof Error ? err.message : t("admin.deleteFailed"),
+        );
+      }
+    })();
   };
 
   function formatScheduleLine(entry: ClassScheduleEntry) {
@@ -218,23 +318,58 @@ export function ClassScheduleCard({ classes }: ClassScheduleCardProps) {
               onChange={setEndTime}
             />
           </View>
-          <TextInput
-            style={styles.input}
-            placeholder={t("admin.scheduleSubjectPlaceholder")}
-            value={subject}
-            onChangeText={setSubject}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder={t("admin.teacherNamePlaceholder")}
-            value={teacherName}
-            onChangeText={setTeacherName}
-          />
+          <Text style={styles.label}>{t("common.teacher")}</Text>
+          {assignmentsLoading ? (
+            <ActivityIndicator style={styles.inlineLoader} color="#2563EB" />
+          ) : teacherOptions.length === 0 ? (
+            <Text style={styles.empty}>
+              {t("admin.scheduleNoTeachersForClass")}
+            </Text>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.horizontalChips}
+            >
+              <SelectChips
+                options={teacherOptions.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                }))}
+                selectedValue={selectedTeacherId}
+                onSelect={setSelectedTeacherId}
+              />
+            </ScrollView>
+          )}
+
+          <Text style={styles.label}>{t("common.subject")}</Text>
+          {!selectedTeacherId ? (
+            <Text style={styles.empty}>{t("admin.schedulePickTeacherFirst")}</Text>
+          ) : subjectOptions.length === 0 ? (
+            <Text style={styles.empty}>{t("admin.scheduleNoSubjectsForTeacher")}</Text>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.horizontalChips}
+            >
+              <SelectChips
+                options={subjectOptions}
+                selectedValue={subject}
+                onSelect={setSubject}
+              />
+            </ScrollView>
+          )}
 
           <TouchableOpacity
             style={[styles.addBtn, saving && styles.addBtnDisabled]}
             onPress={handleAdd}
-            disabled={saving}
+            disabled={
+              saving ||
+              assignmentsLoading ||
+              !selectedTeacherId ||
+              subjectOptions.length === 0
+            }
           >
             {saving ? (
               <ActivityIndicator color="#FFFFFF" />
@@ -264,12 +399,18 @@ export function ClassScheduleCard({ classes }: ClassScheduleCardProps) {
                     {scheduleSubjectTeacherLine(slot)}
                   </Text>
                 </View>
-                <TouchableOpacity onPress={() => handleDelete(slot)}>
+                <TouchableOpacity
+                  onPress={() => handleDelete(slot)}
+                  accessibilityRole="button"
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
                   <Text style={styles.deleteText}>{t("common.delete")}</Text>
                 </TouchableOpacity>
               </View>
             ))
           )}
+
+          <ClassScheduleBulkImport onImported={loadSlots} />
         </>
       )}
     </View>
@@ -310,16 +451,8 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: "row", alignItems: "center", gap: 8 },
   dash: { fontSize: 18, color: "#64748B", fontWeight: "600" },
-  input: {
-    backgroundColor: "#F1F5F9",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
+  horizontalChips: { marginBottom: 10, maxHeight: 44 },
+  inlineLoader: { marginVertical: 10 },
   addBtn: {
     backgroundColor: "#2563EB",
     paddingVertical: 14,

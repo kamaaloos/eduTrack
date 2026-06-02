@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { hasParentAttendanceResponse } from "../../src/services/parentAttendanceResponse";
 import {
   getAbsenceReasonLabel,
@@ -12,6 +12,7 @@ import {
   getRemarkColor,
 } from "../../src/utils/dashboardUi";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
+import { DashboardSlideRow } from "./DashboardSlideRow";
 import { dashboardStyles as styles } from "./dashboardStyles";
 import type { StudentDashboardNavigation } from "./studentDashboardTypes";
 
@@ -40,7 +41,9 @@ export function DashboardRemarksSection({
   return (
     <View style={styles.section}>
       <DashboardSectionHeader
-        title={`⭐ ${t("common.remarks")} & ${t("common.attendance")}`}
+        title={`${t("common.remarks")} & ${t("common.attendance")}`}
+        icon="chatbox-ellipses-outline"
+        iconColor="#059669"
         route={listRoute}
         viewAllLabel={t("common.seeAll")}
       />
@@ -50,7 +53,7 @@ export function DashboardRemarksSection({
           <Text style={styles.emptyText}>{t("student.noAttendance")}</Text>
         </View>
       ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <DashboardSlideRow>
           {remarksAndAttendance.map((item: any) => {
             if (item.feedType === "attendance") {
               const colors = getAttendanceColor(
@@ -221,7 +224,7 @@ export function DashboardRemarksSection({
               </TouchableOpacity>
             );
           })}
-        </ScrollView>
+        </DashboardSlideRow>
       )}
     </View>
   );

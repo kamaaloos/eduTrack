@@ -1,4 +1,6 @@
 import { RefreshControl, ScrollView, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { TeacherScreenShell } from "./TeacherScreenShell";
 import { StudentPickerModal } from "./attendance/StudentPickerModal";
 import { TeacherAttendanceHeader } from "./attendance/TeacherAttendanceHeader";
 import { TeacherAttendanceStudentSection } from "./attendance/TeacherAttendanceStudentSection";
@@ -34,8 +36,17 @@ export function TeacherAttendanceView({
   goPrevStudent,
   goNextStudent,
 }: TeacherAttendanceViewProps) {
+  const { t } = useTranslation();
+
   return (
-    <View style={styles.container}>
+    <TeacherScreenShell
+      title={t("teacher.attendance.title")}
+      subtitle={t("teacher.attendance.selectClass")}
+      scroll={false}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+    >
+      <View style={styles.container}>
       <TeacherAttendanceHeader
         classes={classes}
         classId={classId}
@@ -89,5 +100,6 @@ export function TeacherAttendanceView({
         onSelectStudent={selectStudent}
       />
     </View>
+    </TeacherScreenShell>
   );
 }

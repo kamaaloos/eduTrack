@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import {
   getTodayDayKey,
+  parseDayOfWeek,
   scheduleDateTimeLine,
   scheduleSubjectTeacherLine,
 } from "../../src/utils/scheduleFormat";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
+import { DashboardSlideRow } from "./DashboardSlideRow";
 import { dashboardStyles as styles } from "./dashboardStyles";
 
 type DashboardScheduleSectionProps = {
@@ -29,17 +31,20 @@ export function DashboardScheduleSection({
   return (
     <View style={styles.section}>
       <DashboardSectionHeader
-        title={`📅 ${t("common.today")} (${todayLabel})`}
+        title={t("dashboard.scheduleWeeklyTitle", { day: todayLabel })}
+        icon="calendar-outline"
         viewAllLabel={t("common.seeAll")}
       />
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.horizontalScrollContent}
-      >
+      <DashboardSlideRow variant="carousel">
         {visibleSchedule.length === 0 ? (
-          <View style={[styles.slideCard, styles.scheduleNoClassesCard]}>
+          <View
+            style={[
+              styles.slideCard,
+              styles.slideCardInCarousel,
+              styles.scheduleNoClassesCard,
+            ]}
+          >
             <Text style={styles.scheduleNoClassesTitle}>
               {t("common.noData")}
             </Text>
@@ -53,32 +58,35 @@ export function DashboardScheduleSection({
           </View>
         ) : (
           visibleSchedule.map((item: any) => {
-            const isCurrent = item.id === currentScheduleId;
+            const isToday = parseDayOfWeek(item.dayOfWeek || "") === todayKey;
+            const isCurrent = item.id === currentScheduleId && isToday;
             return (
               <View
                 key={item.id}
                 style={[
                   styles.slideCard,
+                  styles.slideCardInCarousel,
                   styles.scheduleSlideCard,
+                  isToday && styles.scheduleSlideCardToday,
                   isCurrent && styles.scheduleSlideCardCurrent,
                 ]}
               >
-                {isCurrent ? (
+                {isToday ? (
                   <Text style={styles.scheduleNowBadge}>{t("common.today")}</Text>
                 ) : null}
                 <Text
                   style={[
                     styles.scheduleDateTime,
-                    isCurrent && styles.scheduleDateTimeCurrent,
+                    isToday && styles.scheduleDateTimeToday,
                   ]}
                   numberOfLines={2}
                 >
-                  {scheduleDateTimeLine(item, todayKey)}
+                  {scheduleDateTimeLine(item)}
                 </Text>
                 <Text
                   style={[
                     styles.scheduleSubject,
-                    isCurrent && styles.scheduleSubjectCurrent,
+                    isToday && styles.scheduleSubjectToday,
                   ]}
                   numberOfLines={2}
                 >
@@ -88,7 +96,7 @@ export function DashboardScheduleSection({
             );
           })
         )}
-      </ScrollView>
+      </DashboardSlideRow>
     </View>
   );
 }

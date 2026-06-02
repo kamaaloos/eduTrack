@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import type { HomeworkSlide } from "../../src/utils/academicFilters";
 import { getHomeworkColor } from "../../src/utils/dashboardUi";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
+import { DashboardSlideRow } from "./DashboardSlideRow";
 import { dashboardStyles as styles } from "./dashboardStyles";
 import type { StudentDashboardNavigation } from "./studentDashboardTypes";
 
@@ -29,22 +30,19 @@ export function DashboardHomeworkSection({
   return (
     <View style={styles.section}>
       <DashboardSectionHeader
-        title={`📖 ${t("student.homework")}`}
+        title={t("student.homework")}
+        icon="book-outline"
         route={listRoute}
         viewAllLabel={t("common.seeAll")}
       />
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.horizontalScrollContent}
-      >
+      <DashboardSlideRow>
         {homeworkSlides.map((slide) => {
           if (slide.kind === "empty-all") {
             return (
               <View
                 key="hw-empty-all"
-                style={[styles.slideCard, styles.hwNoWorkCard]}
+                style={[styles.slideCard, styles.hwNoWorkCard, styles.slideCardFullWidth]}
               >
                 <Text style={styles.hwNoWorkTitle}>{t("student.noHomework")}</Text>
                 <Text style={styles.hwNoWorkText}>
@@ -110,7 +108,7 @@ export function DashboardHomeworkSection({
             </TouchableOpacity>
           );
         })}
-      </ScrollView>
+      </DashboardSlideRow>
     </View>
   );
 }

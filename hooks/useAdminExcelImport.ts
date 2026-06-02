@@ -1,5 +1,6 @@
 import * as DocumentPicker from "expo-document-picker";
 import { useCallback, useState } from "react";
+import { Platform } from "react-native";
 import {
   formatWorkbookPickHint,
   getImportableRowCount,
@@ -54,7 +55,11 @@ export const useAdminExcelImport = () => {
       setLoading(true);
 
       try {
-        const buffer = await readExcelArrayBuffer(asset.uri);
+        const webFile = (asset as { file?: Blob }).file;
+        const buffer =
+          Platform.OS === "web" && webFile
+            ? await webFile.arrayBuffer()
+            : await readExcelArrayBuffer(asset.uri);
         if (!buffer.byteLength) {
           throw new Error("File is empty");
         }

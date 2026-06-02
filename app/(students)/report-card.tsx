@@ -1,16 +1,16 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../src/context/authContext";
 import { ReportCardView } from "../../components/report/ReportCardView";
 import { generateReportCard } from "../../src/services/reportCardEngine";
 import type { ReportCardData } from "../../src/services/reportCardEngine";
+import { StudentScreenShell } from "../../components/students/StudentScreenShell";
+import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
 export default function ReportCardScreen() {
   const { t } = useTranslation();
   const { user, userData } = useContext(AuthContext);
-  const insets = useSafeAreaInsets();
   const [report, setReport] = useState<ReportCardData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,40 +43,28 @@ export default function ReportCardScreen() {
 
   if (!report && !error) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2563EB" />
-        <Text style={styles.loadingText}>{t("common.loading")}</Text>
-      </View>
+      <StudentScreenShell title={t("student.reportCard")} showMenu scroll={false}>
+        <View style={styles.loadingCenter}>
+          <ActivityIndicator size="large" color="#2563EB" />
+          <Text style={styles.loadingText}>{t("common.loading")}</Text>
+        </View>
+      </StudentScreenShell>
     );
   }
 
   if (error && !report?.exams.length && !report?.subjects.length) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorTitle}>{t("student.reportCard")}</Text>
-        <Text style={styles.error}>{error}</Text>
-      </View>
+      <StudentScreenShell title={t("student.reportCard")} showMenu>
+        <Text style={styles.emptyText}>{error}</Text>
+      </StudentScreenShell>
     );
   }
 
   if (!report) return null;
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top }}>
-      <ReportCardView report={report} />
-    </View>
+    <StudentScreenShell title={t("student.reportCard")} showMenu scroll={false}>
+      <ReportCardView report={report} embedded />
+    </StudentScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-    backgroundColor: "#EEF2FF",
-  },
-  loadingText: { marginTop: 12, color: "#64748B", fontSize: 15 },
-  errorTitle: { fontSize: 22, fontWeight: "800", marginBottom: 8 },
-  error: { color: "#DC2626", fontSize: 15, textAlign: "center" },
-});

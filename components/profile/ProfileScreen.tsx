@@ -17,6 +17,10 @@ import { UserAvatar } from "../common/UserAvatar";
 import { PasswordInput } from "../PasswordInput";
 import { AuthContext } from "../../src/context/authContext";
 import {
+  confirmDestructiveAction,
+  showErrorAlert,
+} from "../../src/utils/confirmDialog";
+import {
   getProfilePhotoErrorKey,
   pickProfileImageUri,
   removeProfilePhoto,
@@ -33,6 +37,8 @@ import { canUploadProfilePhoto } from "../../src/utils/userAvatar";
 type ProfileScreenProps = {
   roleLabel?: string;
   showBack?: boolean;
+  /** When rendered inside a role screen shell (tab profile). */
+  inScreenShell?: boolean;
 };
 
 function roleLabelKey(role: string | undefined): string | null {
@@ -52,7 +58,11 @@ function roleLabelKey(role: string | undefined): string | null {
   }
 }
 
-export function ProfileScreen({ roleLabel, showBack = false }: ProfileScreenProps) {
+export function ProfileScreen({
+  roleLabel,
+  showBack = false,
+  inScreenShell = false,
+}: ProfileScreenProps) {
   const { t } = useTranslation();
   const { user, userData, role, logout, refreshUserProfile } =
     useContext(AuthContext);
@@ -188,20 +198,21 @@ export function ProfileScreen({ roleLabel, showBack = false }: ProfileScreenProp
   };
 
   const handleLogout = () => {
-    Alert.alert(t("profile.signOutTitle"), t("profile.signOutConfirm"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("common.logout"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await logout();
-          } catch {
-            Alert.alert(t("common.error"), t("common.somethingWentWrong"));
-          }
-        },
-      },
-    ]);
+    void (async () => {
+      const confirmed = await confirmDestructiveAction(
+        t("profile.signOutTitle"),
+        t("profile.signOutConfirm"),
+        t("common.logout"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      try {
+        await logout();
+      } catch {
+        showErrorAlert(t("common.error"), t("common.somethingWentWrong"));
+      }
+    })();
   };
 
   return (
@@ -209,13 +220,16 @@ export function ProfileScreen({ roleLabel, showBack = false }: ProfileScreenProp
       <View
         style={[
           styles.fixedHero,
-          {
-            paddingTop: insets.top + 16,
-            paddingHorizontal: 20,
-          },
+          inScreenShell ? styles.fixedHeroEmbedded : null,
+          !inScreenShell
+            ? {
+                paddingTop: insets.top + 16,
+                paddingHorizontal: 20,
+              }
+            : null,
         ]}
       >
-        {showBack ? (
+        {showBack && !inScreenShell ? (
           <TouchableOpacity
             style={styles.backBtn}
             onPress={() => router.back()}
@@ -288,8 +302,8 @@ export function ProfileScreen({ roleLabel, showBack = false }: ProfileScreenProp
       <ScrollView
         style={styles.scrollBody}
         contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingBottom: insets.bottom + 120,
+          paddingHorizontal: inScreenShell ? 0 : 20,
+          paddingBottom: insets.bottom + (inScreenShell ? 32 : 120),
         }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -409,6 +423,11 @@ const styles = StyleSheet.create({
   fixedHero: {
     backgroundColor: "transparent",
     paddingBottom: 16,
+  },
+  fixedHeroEmbedded: {
+    paddingHorizontal: 0,
+    paddingTop: 0,
+    paddingBottom: 12,
   },
   scrollBody: { flex: 1 },
   firstCard: { marginTop: 16 },

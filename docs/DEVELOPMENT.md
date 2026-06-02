@@ -32,6 +32,7 @@ npm run dev          # Expo with clear cache
 npm run start        # without --clear
 npm run android
 npm run ios
+npm run web            # browser — see docs/WEB.md
 ```
 
 ## Quality checks (run before PR)

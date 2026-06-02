@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   ImageBackground,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -25,14 +26,16 @@ type BrandedSplashGateProps = {
 export function BrandedSplashGate({ children }: BrandedSplashGateProps) {
   const { t } = useTranslation();
   const { schoolReady, schoolsLoading, error } = useSchoolContext();
-  const [appUnlocked, setAppUnlocked] = useState(false);
-  const [overlayVisible, setOverlayVisible] = useState(true);
+  const isWeb = Platform.OS === "web";
+  const [appUnlocked, setAppUnlocked] = useState(isWeb);
+  const [overlayVisible, setOverlayVisible] = useState(!isWeb);
 
   useEffect(() => {
+    if (isWeb) return;
     void SplashScreen.hideAsync().catch(() => {
       /* ignore */
     });
-  }, []);
+  }, [isWeb]);
 
   useEffect(() => {
     if (schoolReady) {
@@ -41,15 +44,28 @@ export function BrandedSplashGate({ children }: BrandedSplashGateProps) {
   }, [schoolReady]);
 
   useEffect(() => {
+    if (isWeb) return;
     const timer = setTimeout(() => setAppUnlocked(true), 10000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isWeb]);
 
   useEffect(() => {
     if (!appUnlocked) return;
-    const timer = setTimeout(() => setOverlayVisible(false), 150);
+    const timer = setTimeout(() => setOverlayVisible(false), isWeb ? 0 : 150);
     return () => clearTimeout(timer);
-  }, [appUnlocked]);
+  }, [appUnlocked, isWeb]);
+
+  if (isWeb) {
+    if (!schoolReady) {
+      return (
+        <View style={styles.webLoading}>
+          <ActivityIndicator color="#FFFFFF" size="large" />
+          <Text style={styles.loadingText}>{t("common.loading")}</Text>
+        </View>
+      );
+    }
+    return <>{children}</>;
+  }
 
   return (
     <View style={styles.root}>
@@ -103,5 +119,12 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
+  },
+  webLoading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: "#6B9FD4",
   },
 });

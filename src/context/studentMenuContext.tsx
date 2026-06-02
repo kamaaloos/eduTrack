@@ -1,4 +1,3 @@
-import { useSegments } from "expo-router";
 import React, {
   createContext,
   useCallback,
@@ -9,7 +8,6 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { AdminSideMenu } from "../../components/admin/AdminSideMenu";
-import { MenuOverlayButton } from "../../components/navigation/MenuOverlayButton";
 import { useStudentSideMenuItems } from "../../hooks/useStudentSideMenuItems";
 import { AuthContext } from "./authContext";
 
@@ -25,7 +23,6 @@ export function StudentMenuProvider({ children }: { children: ReactNode }) {
   const { userData } = useContext(AuthContext);
   const [visible, setVisible] = useState(false);
   const menuItems = useStudentSideMenuItems();
-  const segments = useSegments();
 
   const openMenu = useCallback(() => setVisible(true), []);
   const closeMenu = useCallback(() => setVisible(false), []);
@@ -33,14 +30,10 @@ export function StudentMenuProvider({ children }: { children: ReactNode }) {
   const value = useMemo(() => ({ openMenu, closeMenu }), [openMenu, closeMenu]);
 
   const firstName = userData?.name?.split(" ")[0] ?? t("common.student");
-  const showMenuOverlay = segments.at(-1) !== "dashboard";
 
   return (
     <StudentMenuContext.Provider value={value}>
       {children}
-      {showMenuOverlay ? (
-        <MenuOverlayButton onPress={openMenu} align="right" />
-      ) : null}
       <AdminSideMenu
         visible={visible}
         onClose={closeMenu}

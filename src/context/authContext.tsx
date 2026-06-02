@@ -9,7 +9,6 @@ import { router } from "expo-router";
 import i18n from "../i18n";
 import { auth, db } from "../services/firebase";
 import { notifyFirestoreClosing } from "../services/firestoreSession";
-import { clearLocalSessionPreferences } from "../utils/authNavigation";
 import { isSchoolRole } from "../utils/schoolRoles";
 import { useSchoolContext } from "./schoolContext";
 
@@ -110,9 +109,8 @@ export const AuthProvider = ({ children }: any) => {
     notifyFirestoreClosing();
 
     if (!auth) {
-      await clearLocalSessionPreferences();
       await resetSchoolSession();
-      router.replace("/onboarding");
+      router.replace("/select-school");
       return;
     }
     try {
@@ -121,9 +119,8 @@ export const AuthProvider = ({ children }: any) => {
       setUser(null);
       setUserData(null);
       setRole(null);
-      await clearLocalSessionPreferences();
       await resetSchoolSession();
-      router.replace("/onboarding");
+      router.replace("/select-school");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Logout failed";
       setError(message);

@@ -8,10 +8,9 @@ import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
-  ImageBackground,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -23,10 +22,18 @@ import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PasswordInput } from "../components/PasswordInput";
 import { AuthAboutLink } from "../components/auth/AuthAboutLink";
+import { ScreenBackgroundLayer } from "../components/ScreenBackgroundLayer";
 import { useSchoolContext } from "../src/context/schoolContext";
 import { APP_COPYRIGHT } from "../src/constants/appTheme";
+import { webAuthContentStyle } from "../src/constants/webLayout";
+import { WEB_PAGE_ROOT_STYLE } from "../src/constants/webBackground";
 import { AuthContext } from "../src/context/authContext";
 import { auth } from "../src/services/firebase";
+import {
+  confirmAction,
+  showErrorAlert,
+  showSuccessAlert,
+} from "../src/utils/confirmDialog";
 import { validateEmail } from "../src/utils/validation";
 
 export default function Login() {
@@ -56,29 +63,27 @@ export default function Login() {
   }, [authError]);
 
   const handleChangeSchool = () => {
-    Alert.alert(
-      t("auth.login.changeSchoolTitle"),
-      t("auth.login.changeSchoolMsg"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("auth.login.changeSchool"),
-          onPress: async () => {
-            try {
-              await clearSchool();
-              router.replace("/select-school");
-            } catch (err) {
-              Alert.alert(
-                t("common.error"),
-                err instanceof Error
-                  ? err.message
-                  : t("common.somethingWentWrong"),
-              );
-            }
-          },
-        },
-      ],
-    );
+    void (async () => {
+      const confirmed = await confirmAction(
+        t("auth.login.changeSchoolTitle"),
+        t("auth.login.changeSchoolMsg"),
+        t("auth.login.changeSchool"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      try {
+        await clearSchool();
+        router.replace("/select-school");
+      } catch (err) {
+        showErrorAlert(
+          t("common.error"),
+          err instanceof Error
+            ? err.message
+            : t("common.somethingWentWrong"),
+        );
+      }
+    })();
   };
 
   const handleLogin = async () => {
@@ -135,17 +140,17 @@ export default function Login() {
 
   const handleForgotPassword = async () => {
     if (!auth) {
-      Alert.alert(t("common.error"), t("auth.login.schoolNotReady"));
+      showErrorAlert(t("common.error"), t("auth.login.schoolNotReady"));
       return;
     }
 
     if (!resetEmail) {
-      Alert.alert(t("common.error"), t("auth.login.enterEmailPassword"));
+      showErrorAlert(t("common.error"), t("auth.login.enterEmailPassword"));
       return;
     }
 
     if (!validateEmail(resetEmail)) {
-      Alert.alert(t("common.error"), t("auth.login.invalidEmail"));
+      showErrorAlert(t("common.error"), t("auth.login.invalidEmail"));
       return;
     }
 
@@ -153,15 +158,9 @@ export default function Login() {
 
     try {
       await sendPasswordResetEmail(auth, resetEmail.toLowerCase());
-      Alert.alert(t("common.success"), t("auth.login.resetSent"), [
-        {
-          text: t("common.confirm"),
-          onPress: () => {
-            setShowForgotPassword(false);
-            setResetEmail("");
-          },
-        },
-      ]);
+      showSuccessAlert(t("common.success"), t("auth.login.resetSent"));
+      setShowForgotPassword(false);
+      setResetEmail("");
     } catch (err) {
       let message = t("auth.login.resetFailed");
 
@@ -175,22 +174,25 @@ export default function Login() {
         }
       }
 
-      Alert.alert(t("common.error"), message);
+      showErrorAlert(t("common.error"), message);
     } finally {
       setResetLoading(false);
     }
   };
 
   return (
-    <ImageBackground
-      source={require("../assets/images/login-bg.png")}
-      style={styles.background}
-      resizeMode="cover"
-    >
+    <View style={[styles.background, WEB_PAGE_ROOT_STYLE]}>
+      <ScreenBackgroundLayer />
       <StatusBar style="dark" />
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={
+          Platform.OS === "ios"
+            ? "padding"
+            : Platform.OS === "android"
+              ? "height"
+              : undefined
+        }
       >
         <AuthAboutLink
           style={[
@@ -201,6 +203,7 @@ export default function Login() {
         <ScrollView
           contentContainerStyle={[
             styles.scrollContainer,
+            webAuthContentStyle(),
             {
               paddingTop: insets.top + 24,
               paddingBottom: insets.bottom + 56,
@@ -216,19 +219,25 @@ export default function Login() {
           <Text style={styles.subtitle}>{t("auth.login.subtitle")}</Text>
 
           {selectedSchool ? (
-            <TouchableOpacity
-              style={styles.schoolBanner}
-              onPress={handleChangeSchool}
-              activeOpacity={0.85}
-            >
+            <View style={styles.schoolBanner}>
               <Ionicons name="business" size={18} color="#1E3A8A" />
               <Text style={styles.schoolBannerText} numberOfLines={1}>
                 {selectedSchool.name}
               </Text>
-              <Text style={styles.schoolBannerAction}>
-                {t("auth.login.changeSchool")}
-              </Text>
-            </TouchableOpacity>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.schoolBannerActionBtn,
+                  pressed && styles.schoolBannerActionPressed,
+                ]}
+                onPress={handleChangeSchool}
+                accessibilityRole="button"
+                accessibilityLabel={t("auth.login.changeSchool")}
+              >
+                <Text style={styles.schoolBannerAction}>
+                  {t("auth.login.changeSchool")}
+                </Text>
+              </Pressable>
+            </View>
           ) : null}
         </View>
 
@@ -363,7 +372,7 @@ export default function Login() {
           {APP_COPYRIGHT}
         </Text>
       </KeyboardAvoidingView>
-    </ImageBackground>
+    </View>
   );
 }
 
@@ -372,6 +381,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
+    position: "relative",
   },
 
   container: {
@@ -452,6 +462,15 @@ const styles = StyleSheet.create({
     color: "#1E3A8A",
   },
 
+  schoolBannerActionBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    flexShrink: 0,
+  },
+  schoolBannerActionPressed: {
+    backgroundColor: "#EFF6FF",
+  },
   schoolBannerAction: {
     fontSize: 13,
     fontWeight: "700",

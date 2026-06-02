@@ -1,10 +1,12 @@
 import { useContext, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text } from "react-native";
+import { Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../src/context/authContext";
 import { db } from "../../src/services/firebase";
+import { StudentScreenShell } from "../../components/students/StudentScreenShell";
+import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
 export default function AnnouncementDetailScreen() {
   const { t } = useTranslation();
@@ -54,37 +56,24 @@ export default function AnnouncementDetailScreen() {
   }, [id, paramClassId, userData?.classId, paramTitle, paramBody, t]);
 
   const fullText = item?.text || item?.message || paramBody || "";
+  const screenTitle =
+    item?.title || paramTitle || t("common.announcements");
+
+  if (!item) {
+    return (
+      <StudentScreenShell title={screenTitle} showBack showMenu={false}>
+        <Text style={styles.loadingText}>{t("common.loading")}</Text>
+      </StudentScreenShell>
+    );
+  }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.icon}>{item?.icon || "📢"}</Text>
-      <Text style={styles.title}>
-        {item?.title || paramTitle || t("common.announcements")}
-      </Text>
-      <Text style={styles.body}>
-        {fullText || t("common.notAvailable")}
-      </Text>
-    </ScrollView>
+    <StudentScreenShell title={screenTitle} showBack showMenu={false}>
+      <View style={styles.detailCard}>
+        <Text style={styles.detailBody}>
+          {fullText || t("common.notAvailable")}
+        </Text>
+      </View>
+    </StudentScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 16,
-    backgroundColor: "transparent",
-  },
-  icon: { fontSize: 32, marginBottom: 12 },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#1F2937",
-    marginBottom: 16,
-  },
-  body: {
-    fontSize: 16,
-    lineHeight: 26,
-    color: "#374151",
-  },
-});

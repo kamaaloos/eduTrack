@@ -1,5 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -9,8 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ReportCardView } from "../../../components/report/ReportCardView";
+import { TeacherScreenShell } from "../../../components/teachers/TeacherScreenShell";
 import { AuthContext } from "../../../src/context/authContext";
 import { generateReportCard } from "../../../src/services/reportCardEngine";
 import type { ReportCardData } from "../../../src/services/reportCardEngine";
@@ -27,6 +26,8 @@ export default function TeacherStudentReportScreen() {
   const [report, setReport] = useState<ReportCardData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const displayName = name ? String(name) : report?.studentName;
 
   const load = useCallback(async () => {
     if (!id || !user?.uid) return;
@@ -47,60 +48,38 @@ export default function TeacherStudentReportScreen() {
   }, [id, user?.uid, paramClassId, name, t]);
 
   useEffect(() => {
-    load();
+    void load();
   }, [load]);
 
   return (
-    <SafeAreaView style={styles.wrap} edges={["top"]}>
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={22} color="#1E40AF" />
-          <Text style={styles.backText}>{t("teacher.studentReport.back")}</Text>
-        </TouchableOpacity>
-        <Text style={styles.topTitle} numberOfLines={1}>
-          {name
-            ? String(name)
-            : report?.studentName || t("teacher.studentReport.title")}
-        </Text>
-      </View>
-
+    <TeacherScreenShell
+      title={t("reportCard.heroEyebrow")}
+      subtitle={displayName || t("teacher.studentReport.title")}
+      showBack
+      scroll={false}
+    >
       {loading ? (
         <View style={styles.centered}>
           <ActivityIndicator size="large" color="#2563EB" />
-          <Text style={styles.loadingText}>{t("teacher.studentReport.loading")}</Text>
+          <Text style={styles.loadingText}>
+            {t("teacher.studentReport.loading")}
+          </Text>
         </View>
       ) : error ? (
         <View style={styles.centered}>
           <Text style={styles.error}>{error}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={load}>
+          <TouchableOpacity style={styles.retryBtn} onPress={() => void load()}>
             <Text style={styles.retryText}>{t("common.retry")}</Text>
           </TouchableOpacity>
         </View>
       ) : report ? (
-        <ReportCardView report={report} showParentSeen />
+        <ReportCardView report={report} showParentSeen embedded />
       ) : null}
-    </SafeAreaView>
+    </TeacherScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: "transparent" },
-  topBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingBottom: 10,
-    gap: 8,
-    backgroundColor: "transparent",
-  },
-  backBtn: { flexDirection: "row", alignItems: "center", gap: 2 },
-  backText: { color: "#1E40AF", fontWeight: "700", fontSize: 15 },
-  topTitle: {
-    flex: 1,
-    fontSize: 17,
-    fontWeight: "800",
-    color: "#0F172A",
-  },
   centered: {
     flex: 1,
     justifyContent: "center",

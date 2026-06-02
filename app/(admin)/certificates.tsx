@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,7 +11,7 @@ import {
 } from "react-native";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { SelectChips } from "../../components/teachers/SelectChips";
-import { useAdminDataContext } from "../../src/context/adminDataContext";
+import { useAdminData } from "../../src/context/adminDataContext";
 import { useSchoolContext } from "../../src/context/schoolContext";
 import {
   getPdfShareErrorKey,
@@ -23,10 +22,11 @@ import {
   formatAcademicYear,
   listAcademicYearStarts,
 } from "../../src/utils/academicYear";
+import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
 
 export default function AdminCertificatesScreen() {
   const { t } = useTranslation();
-  const { classes, classesLoading, loadClasses } = useAdminDataContext();
+  const { classes, classesLoading, loadClasses } = useAdminData();
   const { selectedSchool } = useSchoolContext();
   const [selectedClassId, setSelectedClassId] = useState("");
   const [academicYearStart, setAcademicYearStart] = useState(
@@ -66,7 +66,7 @@ export default function AdminCertificatesScreen() {
 
   const handleExport = useCallback(async () => {
     if (!selectedClassId || !selectedClass) {
-      Alert.alert(
+      showErrorAlert(
         t("certificates.selectClassTitle"),
         t("certificates.selectClassHint"),
       );
@@ -82,12 +82,12 @@ export default function AdminCertificatesScreen() {
         academicYearStart,
         getYearlyCertificateLabels(t),
       );
-      Alert.alert(
+      showSuccessAlert(
         t("certificates.exportReadyTitle"),
         t("certificates.exportReadyMessage", { count }),
       );
     } catch (err) {
-      Alert.alert(t("common.error"), t(getPdfShareErrorKey(err)));
+      showErrorAlert(t("common.error"), t(getPdfShareErrorKey(err)));
     } finally {
       setExporting(false);
     }

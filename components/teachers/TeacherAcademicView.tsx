@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import type { useTeacherAcademic } from "../../hooks/useTeacherAcademic";
+import { TeacherScreenShell } from "./TeacherScreenShell";
 import { TeacherAcademicClassCard } from "./academic/TeacherAcademicClassCard";
 import { TeacherAcademicTabs } from "./academic/TeacherAcademicTabs";
 import { TeacherAnnouncementForm } from "./academic/TeacherAnnouncementForm";
@@ -69,16 +70,12 @@ export function TeacherAcademicView(props: TeacherAcademicViewProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>
-          {t("teacher.academic.headerTitle")}
-        </Text>
-        <Text style={styles.headerSubtitle}>
-          {t("teacher.academic.headerSubtitle")}
-        </Text>
-      </View>
-
+    <TeacherScreenShell
+      title={t("teacher.academic.headerTitle")}
+      subtitle={t("teacher.academic.headerSubtitle")}
+      scroll={false}
+    >
+      <View style={styles.container}>
       <TeacherAcademicTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       <ScrollView
@@ -158,5 +155,6 @@ export function TeacherAcademicView(props: TeacherAcademicViewProps) {
         <View style={styles.scrollBottomSpacer} />
       </ScrollView>
     </View>
+    </TeacherScreenShell>
   );
 }

@@ -1,9 +1,11 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../src/context/authContext";
 import { db } from "../../src/services/firebase";
+import { StudentScreenShell } from "../../components/students/StudentScreenShell";
+import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
 export default function RemarksScreen() {
   const { t } = useTranslation();
@@ -17,8 +19,8 @@ export default function RemarksScreen() {
       const snap = await getDocs(
         query(
           collection(db, "classes", userData.classId, "remarks"),
-          where("studentId", "==", user.uid)
-        )
+          where("studentId", "==", user.uid),
+        ),
       );
       setRemarks(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as any));
     };
@@ -27,30 +29,20 @@ export default function RemarksScreen() {
   }, [user?.uid, userData?.classId]);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>{t("common.remarks")}</Text>
-
-      {remarks.map((r) => (
-        <View key={r.id} style={styles.card}>
-          <Text style={styles.name}>{r.text || r.remark}</Text>
-          <Text>
-            {t("common.teacher")}:{" "}
-            {r.teacherEmail || r.teacher || t("common.unknown")}
-          </Text>
-        </View>
-      ))}
-    </ScrollView>
+    <StudentScreenShell title={t("common.remarks")} showBack showMenu={false}>
+      {remarks.length === 0 ? (
+        <Text style={styles.emptyText}>{t("common.noData")}</Text>
+      ) : (
+        remarks.map((r) => (
+          <View key={r.id} style={styles.listCard}>
+            <Text style={styles.listCardTitle}>{r.text || r.remark}</Text>
+            <Text style={styles.listCardBody}>
+              {t("common.teacher")}:{" "}
+              {r.teacherEmail || r.teacher || t("common.unknown")}
+            </Text>
+          </View>
+        ))
+      )}
+    </StudentScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#F5F7FA" },
-  title: { fontSize: 28, fontWeight: "bold", marginTop: 50, marginBottom: 20 },
-  card: {
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 10,
-  },
-  name: { fontWeight: "600" },
-});

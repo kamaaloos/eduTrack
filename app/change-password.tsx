@@ -13,13 +13,19 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AppScreenBackground } from "../components/AppScreenBackground";
 import { PasswordInput } from "../components/PasswordInput";
+import { webAuthContentStyle } from "../src/constants/webLayout";
 import { AuthContext } from "../src/context/authContext";
 import {
   completeRequiredPasswordChange,
   mapAuthError,
 } from "../src/services/userProfile";
 import { getPostLoginRoute } from "../src/utils/authNavigation";
+import {
+  confirmDestructiveAction,
+  showErrorAlert,
+} from "../src/utils/confirmDialog";
 import {
   isBlockedPassword,
   userMustChangePassword,
@@ -86,44 +92,45 @@ export default function ChangePasswordScreen() {
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      t("auth.changePassword.logoutTitle"),
-      t("auth.changePassword.logoutMsg"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.logout"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await logout();
-            } catch {
-              Alert.alert(t("common.error"), t("common.somethingWentWrong"));
-            }
-          },
-        },
-      ],
-    );
+    void (async () => {
+      const confirmed = await confirmDestructiveAction(
+        t("auth.changePassword.logoutTitle"),
+        t("auth.changePassword.logoutMsg"),
+        t("common.logout"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      try {
+        await logout();
+      } catch {
+        showErrorAlert(t("common.error"), t("common.somethingWentWrong"));
+      }
+    })();
   };
 
   if (loading || !user) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2563EB" />
-      </View>
+      <AppScreenBackground showCopyright={false}>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#2563EB" />
+        </View>
+      </AppScreenBackground>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={[
-          styles.container,
-          { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
-        ]}
+    <AppScreenBackground showCopyright={false}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={[
+            styles.container,
+            webAuthContentStyle(),
+            { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
+          ]}
         keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.title}>{t("auth.changePassword.title")}</Text>
@@ -172,18 +179,18 @@ export default function ChangePasswordScreen() {
         <TouchableOpacity style={styles.secondaryBtn} onPress={handleLogout}>
           <Text style={styles.secondaryBtnText}>{t("common.logout")}</Text>
         </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </AppScreenBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: "#F8FAFC" },
+  flex: { flex: 1, backgroundColor: "transparent" },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F8FAFC",
   },
   container: {
     flexGrow: 1,

@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -11,6 +10,12 @@ import {
 } from "react-native";
 import { AuthContext } from "../../src/context/authContext";
 import { publishAnnouncementToAllClasses } from "../../src/services/adminAnnouncements";
+import {
+  confirmAction,
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
+import { platformShadow } from "../../src/utils/platformShadow";
 
 interface BroadcastAnnouncementCardProps {
   classCount: number;
@@ -26,67 +31,63 @@ export const BroadcastAnnouncementCard: React.FC<
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!title.trim() || !message.trim()) {
-      Alert.alert(t("common.error"), t("admin.broadcastMissingFields"));
+      showErrorAlert(t("common.error"), t("admin.broadcastMissingFields"));
       return;
     }
 
     if (classCount === 0) {
-      Alert.alert(t("common.error"), t("admin.broadcastNoClasses"));
+      showErrorAlert(t("common.error"), t("admin.broadcastNoClasses"));
       return;
     }
 
-    Alert.alert(
+    const confirmed = await confirmAction(
       t("admin.broadcastConfirmTitle"),
       t("admin.broadcastConfirmMessage", { count: classCount }),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.send"),
-          onPress: async () => {
-            setLoading(true);
-            setError(null);
-            try {
-              const result = await publishAnnouncementToAllClasses({
-                title: title.trim(),
-                text: message.trim(),
-                adminId: user?.uid,
-                adminName: userData?.name ?? t("common.admin"),
-              });
-
-              const errNote =
-                result.errors.length > 0
-                  ? t("admin.broadcastErrors", {
-                      errors: result.errors.slice(0, 3).join("\n"),
-                    })
-                  : "";
-
-              Alert.alert(
-                t("admin.announcementSent"),
-                t("admin.announcementSentDetail", {
-                  published: result.published,
-                  total: result.classCount,
-                  errors: errNote,
-                }),
-              );
-
-              if (result.published > 0) {
-                setTitle("");
-                setMessage("");
-              }
-            } catch (err) {
-              const msg =
-                err instanceof Error ? err.message : t("admin.broadcastFailed");
-              setError(msg);
-              Alert.alert(t("common.error"), msg);
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ],
+      t("common.send"),
+      t("common.cancel"),
     );
+    if (!confirmed) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await publishAnnouncementToAllClasses({
+        title: title.trim(),
+        text: message.trim(),
+        adminId: user?.uid,
+        adminName: userData?.name ?? t("common.admin"),
+      });
+
+      const errNote =
+        result.errors.length > 0
+          ? t("admin.broadcastErrors", {
+              errors: result.errors.slice(0, 3).join("\n"),
+            })
+          : "";
+
+      showSuccessAlert(
+        t("admin.announcementSent"),
+        t("admin.announcementSentDetail", {
+          published: result.published,
+          total: result.classCount,
+          errors: errNote,
+        }),
+      );
+
+      if (result.published > 0) {
+        setTitle("");
+        setMessage("");
+      }
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : t("admin.broadcastFailed");
+      setError(msg);
+      showErrorAlert(t("common.error"), msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -123,7 +124,7 @@ export const BroadcastAnnouncementCard: React.FC<
           styles.button,
           (loading || classCount === 0) && styles.buttonDisabled,
         ]}
-        onPress={handleSend}
+        onPress={() => void handleSend()}
         disabled={loading || classCount === 0}
       >
         {loading ? (
@@ -144,10 +145,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    ...platformShadow("md"),
   },
   sectionTitle: {
     fontSize: 22,

@@ -10,7 +10,7 @@ import { useAdminData } from "../../src/context/adminDataContext";
 
 export default function AdminClassesScreen() {
   const { t } = useTranslation();
-  const { refreshAll, classes } = useAdminData();
+  const { refreshAll, classes, teachers } = useAdminData();
 
   useFocusEffect(
     useCallback(() => {
@@ -38,6 +38,10 @@ export default function AdminClassesScreen() {
               classes={classes.map((c) => ({
                 id: c.id,
                 name: c.name || t("common.class"),
+              }))}
+              teachers={teachers.map((teacher) => ({
+                id: teacher.id,
+                name: teacher.name || teacher.email || t("common.teacher"),
               }))}
             />
           </View>

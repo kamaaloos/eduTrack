@@ -1,6 +1,6 @@
+import { useTranslation } from "react-i18next";
 import { ProfileScreen } from "../../components/profile/ProfileScreen";
 import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
-import { useTranslation } from "react-i18next";
 
 export default function ParentAccountScreen() {
   const { t } = useTranslation();
@@ -9,8 +9,9 @@ export default function ParentAccountScreen() {
     <ParentScreenShell
       title={t("tabs.parent.profile")}
       showNotifications={false}
+      scroll={false}
     >
-      <ProfileScreen roleLabel="Parent" />
+      <ProfileScreen roleLabel="Parent" inScreenShell />
     </ParentScreenShell>
   );
 }

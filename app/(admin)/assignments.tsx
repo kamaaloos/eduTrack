@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
@@ -8,6 +8,7 @@ import { ClassSubjectsCard } from "../../components/admin/ClassSubjectsCard";
 import { RelationsCard } from "../../components/admin/RelationsCard";
 import { TeacherSubjectAssignmentCard } from "../../components/admin/TeacherSubjectAssignmentCard";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
 
 export default function AdminAssignmentsScreen() {
   const { t } = useTranslation();
@@ -30,9 +31,9 @@ export default function AdminAssignmentsScreen() {
   const onRepairLinks = async () => {
     try {
       const message = await repairParentStudentLinks();
-      Alert.alert(t("admin.linksRepaired"), message);
+      showSuccessAlert(t("admin.linksRepaired"), message);
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("admin.repairFailed"),
         err instanceof Error ? err.message : t("common.unknown"),
       );

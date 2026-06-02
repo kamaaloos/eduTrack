@@ -1,5 +1,7 @@
 import { File } from "expo-file-system";
 import * as FileSystem from "expo-file-system/legacy";
+import { Platform } from "react-native";
+import { readUriAsArrayBuffer } from "./webFileDownload";
 
 /** MIME types + wildcard so .xlsx is selectable on Android, iOS, and Windows. */
 export const EXCEL_DOCUMENT_PICKER_TYPES = [
@@ -41,6 +43,10 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
  * Tries the modern File API first, then legacy base64 read (more reliable on some devices).
  */
 export async function readExcelArrayBuffer(uri: string): Promise<ArrayBuffer> {
+  if (Platform.OS === "web") {
+    return readUriAsArrayBuffer(uri);
+  }
+
   try {
     const file = new File(uri);
     return await file.arrayBuffer();

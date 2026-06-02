@@ -1,30 +1,23 @@
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+  formatTimeHHmm,
+  normalizeTimeHHmm,
+  parseHHmmToMinutes,
+} from "../../src/utils/scheduleFormat";
 
 function parseTime(value: string): Date {
   const d = new Date();
-  const match = /^(\d{1,2}):(\d{2})$/.exec(value.trim());
-  if (match) {
-    d.setHours(Number(match[1]), Number(match[2]), 0, 0);
+  const minutes = parseHHmmToMinutes(value);
+  if (minutes != null) {
+    d.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
     return d;
   }
   d.setHours(8, 0, 0, 0);
   return d;
-}
-
-export function formatTimeHHmm(date: Date): string {
-  const h = String(date.getHours()).padStart(2, "0");
-  const m = String(date.getMinutes()).padStart(2, "0");
-  return `${h}:${m}`;
 }
 
 type ScheduleTimePickerProps = {
@@ -32,6 +25,36 @@ type ScheduleTimePickerProps = {
   value: string;
   onChange: (time: string) => void;
 };
+
+function WebTimeInput({ label, value, onChange }: ScheduleTimePickerProps) {
+  const htmlValue = normalizeTimeHHmm(value || "08:00");
+
+  return (
+    <View style={styles.wrap}>
+      <Text style={styles.label}>{label}</Text>
+      {React.createElement("input", {
+        type: "time",
+        value: htmlValue,
+        onChange: (e: { target: { value: string } }) => {
+          const next = e.target.value;
+          if (next) onChange(next);
+        },
+        style: {
+          width: "100%",
+          fontSize: 16,
+          fontWeight: 700,
+          padding: "12px 14px",
+          borderRadius: 12,
+          border: "1px solid #E2E8F0",
+          backgroundColor: "#F1F5F9",
+          color: "#0F172A",
+          boxSizing: "border-box",
+          fontFamily: "inherit",
+        },
+      })}
+    </View>
+  );
+}
 
 export function ScheduleTimePicker({
   label,
@@ -41,7 +64,11 @@ export function ScheduleTimePicker({
   const [open, setOpen] = useState(false);
   const [internal, setInternal] = useState(() => parseTime(value));
 
-  const display = value.trim() || "Tap to set";
+  useEffect(() => {
+    setInternal(parseTime(value));
+  }, [value]);
+
+  const display = value.trim() ? normalizeTimeHHmm(value) : "Tap to set";
 
   const onPickerChange = (event: DateTimePickerEvent, date?: Date) => {
     if (Platform.OS === "android") {
@@ -51,6 +78,10 @@ export function ScheduleTimePicker({
     setInternal(date);
     onChange(formatTimeHHmm(date));
   };
+
+  if (Platform.OS === "web") {
+    return <WebTimeInput label={label} value={value} onChange={onChange} />;
+  }
 
   return (
     <View style={styles.wrap}>
@@ -83,6 +114,8 @@ export function ScheduleTimePicker({
     </View>
   );
 }
+
+export { formatTimeHHmm } from "../../src/utils/scheduleFormat";
 
 const styles = StyleSheet.create({
   wrap: { flex: 1, minWidth: 0 },

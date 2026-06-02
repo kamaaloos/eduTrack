@@ -6,9 +6,9 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import type { useTeacherExamReports } from "../../hooks/useTeacherExamReports";
 import { SelectChips } from "./SelectChips";
+import { TeacherScreenShell } from "./TeacherScreenShell";
 import {
   ExamReportsGradeFixedHeader,
   ExamReportsGradeStudentList,
@@ -64,22 +64,39 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
     showMoreReportStudents,
   } = props;
 
+  const shellTitle = t("teacher.examReports.pageTitle");
+  const shellSubtitle = t("teacher.examReports.pageSub");
+
   if (classesLoading || (loading && classes.length === 0)) {
     return (
-      <SafeAreaView style={styles.centered} edges={["top"]}>
-        <ActivityIndicator size="large" color="#2563EB" />
-      </SafeAreaView>
+      <TeacherScreenShell
+        title={shellTitle}
+        subtitle={shellSubtitle}
+        scroll={false}
+      >
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#2563EB" />
+        </View>
+      </TeacherScreenShell>
     );
   }
 
   if (classes.length === 0) {
     return (
-      <SafeAreaView style={styles.centered} edges={["top"]}>
-        <Text style={styles.emptyTitle}>
-          {t("teacher.examReports.noClassesAssigned")}
-        </Text>
-        <Text style={styles.emptySub}>{t("teacher.examReports.noClassesSub")}</Text>
-      </SafeAreaView>
+      <TeacherScreenShell
+        title={shellTitle}
+        subtitle={shellSubtitle}
+        scroll={false}
+      >
+        <View style={styles.centered}>
+          <Text style={styles.emptyTitle}>
+            {t("teacher.examReports.noClassesAssigned")}
+          </Text>
+          <Text style={styles.emptySub}>
+            {t("teacher.examReports.noClassesSub")}
+          </Text>
+        </View>
+      </TeacherScreenShell>
     );
   }
 
@@ -87,78 +104,83 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
   const showReportStudents = mode === "reports";
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top"]}>
-      <View style={styles.fixedTop}>
-        <Text style={styles.pageTitle}>{t("teacher.examReports.pageTitle")}</Text>
-        <Text style={styles.pageSub}>{t("teacher.examReports.pageSub")}</Text>
-
-        <Text style={styles.label}>{t("common.class")}</Text>
-        <SelectChips
-          options={classOptions}
-          selectedValue={selectedClassId}
-          onSelect={setSelectedClassId}
-        />
-
-        <ExamReportsModeTabs mode={mode} onModeChange={setMode} />
-
-        {loading ? (
-          <ActivityIndicator style={styles.loader} color="#2563EB" />
-        ) : mode === "grade" ? (
-          <ExamReportsGradeFixedHeader
-            exams={exams}
-            examChipOptions={examChipOptions}
-            selectedExamId={selectedExamId}
-            onSelectExam={setSelectedExamId}
-            selectedExam={selectedExam}
-            maxMarks={maxMarks}
-            gradedCount={gradedCount}
-            classAverage={classAverage}
-            studentsInClass={studentsInClass}
-            onExportAllCertificates={() => void exportAllCertificates()}
-            exportingAllCertificates={exportingAllCertificates}
+    <TeacherScreenShell
+      title={shellTitle}
+      subtitle={shellSubtitle}
+      scroll={false}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+    >
+      <View style={styles.container}>
+        <View style={styles.fixedTop}>
+          <Text style={styles.label}>{t("common.class")}</Text>
+          <SelectChips
+            options={classOptions}
+            selectedValue={selectedClassId}
+            onSelect={setSelectedClassId}
           />
-        ) : (
-          <ExamReportsReportsSearch
-            reportSearch={reportSearch}
-            onReportSearchChange={setReportSearch}
-          />
-        )}
-      </View>
 
-      {!loading && (showGradeStudents || showReportStudents) ? (
-        <ScrollView
-          style={styles.studentScroll}
-          contentContainerStyle={styles.studentScrollContent}
-          showsVerticalScrollIndicator
-          keyboardShouldPersistTaps="handled"
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          {mode === "grade" ? (
-            <ExamReportsGradeStudentList
-              studentsInClass={studentsInClass}
-              visibleGradeStudents={visibleGradeStudents}
-              resultByStudent={resultByStudent}
+          <ExamReportsModeTabs mode={mode} onModeChange={setMode} />
+
+          {loading ? (
+            <ActivityIndicator style={styles.loader} color="#2563EB" />
+          ) : mode === "grade" ? (
+            <ExamReportsGradeFixedHeader
+              exams={exams}
+              examChipOptions={examChipOptions}
+              selectedExamId={selectedExamId}
+              onSelectExam={setSelectedExamId}
+              selectedExam={selectedExam}
               maxMarks={maxMarks}
-              scoreDrafts={scoreDrafts}
-              savingId={savingId}
-              onScoreChange={updateScoreDraft}
-              onSaveScore={saveScore}
-              onOpenReport={openReport}
-              onExportCertificate={exportCertificate}
-              onShowMore={showMoreGradeStudents}
+              gradedCount={gradedCount}
+              classAverage={classAverage}
+              studentsInClass={studentsInClass}
+              onExportAllCertificates={() => void exportAllCertificates()}
+              exportingAllCertificates={exportingAllCertificates}
             />
           ) : (
-            <ExamReportsReportsStudentList
-              filteredReportStudents={filteredReportStudents}
-              visibleReportStudents={visibleReportStudents}
-              onOpenReport={openReport}
-              onShowMore={showMoreReportStudents}
+            <ExamReportsReportsSearch
+              reportSearch={reportSearch}
+              onReportSearchChange={setReportSearch}
             />
           )}
-        </ScrollView>
-      ) : null}
-    </SafeAreaView>
+        </View>
+
+        {!loading && (showGradeStudents || showReportStudents) ? (
+          <ScrollView
+            style={styles.studentScroll}
+            contentContainerStyle={styles.studentScrollContent}
+            showsVerticalScrollIndicator
+            keyboardShouldPersistTaps="handled"
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            {mode === "grade" ? (
+              <ExamReportsGradeStudentList
+                studentsInClass={studentsInClass}
+                visibleGradeStudents={visibleGradeStudents}
+                resultByStudent={resultByStudent}
+                maxMarks={maxMarks}
+                scoreDrafts={scoreDrafts}
+                savingId={savingId}
+                onScoreChange={updateScoreDraft}
+                onSaveScore={saveScore}
+                onOpenReport={openReport}
+                onExportCertificate={exportCertificate}
+                onShowMore={showMoreGradeStudents}
+              />
+            ) : (
+              <ExamReportsReportsStudentList
+                filteredReportStudents={filteredReportStudents}
+                visibleReportStudents={visibleReportStudents}
+                onOpenReport={openReport}
+                onShowMore={showMoreReportStudents}
+              />
+            )}
+          </ScrollView>
+        ) : null}
+      </View>
+    </TeacherScreenShell>
   );
 }

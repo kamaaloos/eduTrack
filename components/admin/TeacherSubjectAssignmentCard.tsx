@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,6 +11,12 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { useAdminData } from "../../src/context/adminDataContext";
 import type { TeacherSubjectLink } from "../../hooks/useAdminRelations";
+import {
+  confirmDestructiveAction,
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
+import { platformShadow } from "../../src/utils/platformShadow";
 import { Selector } from "./Selector";
 
 export function TeacherSubjectAssignmentCard() {
@@ -74,7 +79,7 @@ export function TeacherSubjectAssignmentCard() {
 
   const handleAssign = async () => {
     if (!selectedTeacherId || !selectedClassId || !selectedSubject) {
-      Alert.alert(t("common.error"), t("admin.teacherSubjectMissing"));
+      showErrorAlert(t("common.error"), t("admin.teacherSubjectMissing"));
       return;
     }
 
@@ -84,12 +89,12 @@ export function TeacherSubjectAssignmentCard() {
         selectedClassId,
         selectedSubject,
       );
-      Alert.alert(t("common.success"), t("admin.teacherSubjectAssigned"));
+      showSuccessAlert(t("common.success"), t("admin.teacherSubjectAssigned"));
       setSelectedSubject("");
       await loadAssignments();
       await refreshAll();
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.assignmentFailed"),
       );
@@ -97,31 +102,28 @@ export function TeacherSubjectAssignmentCard() {
   };
 
   const handleRemove = (row: TeacherSubjectLink) => {
-    Alert.alert(
-      t("admin.removeAssignmentTitle"),
-      t("admin.removeAssignmentMessage", {
-        teacher: resolveTeacherName(row.teacherId),
-        subject: subjectLabel(row),
-      }),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.remove"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await removeTeacherSubjectAssignment(row.id);
-              await loadAssignments();
-            } catch (err) {
-              Alert.alert(
-                t("common.error"),
-                err instanceof Error ? err.message : t("admin.couldNotRemove"),
-              );
-            }
-          },
-        },
-      ],
-    );
+    void (async () => {
+      const confirmed = await confirmDestructiveAction(
+        t("admin.removeAssignmentTitle"),
+        t("admin.removeAssignmentMessage", {
+          teacher: resolveTeacherName(row.teacherId),
+          subject: subjectLabel(row),
+        }),
+        t("common.remove"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      try {
+        await removeTeacherSubjectAssignment(row.id);
+        await loadAssignments();
+      } catch (err) {
+        showErrorAlert(
+          t("common.error"),
+          err instanceof Error ? err.message : t("admin.couldNotRemove"),
+        );
+      }
+    })();
   };
 
   const busy = relationsLoading || loadingList;
@@ -209,10 +211,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    ...platformShadow("md"),
   },
   sectionTitle: { fontSize: 22, fontWeight: "700", marginBottom: 8 },
   hint: { fontSize: 13, color: "#64748B", lineHeight: 18, marginBottom: 12 },

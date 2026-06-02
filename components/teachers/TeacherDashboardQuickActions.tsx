@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -17,13 +18,16 @@ export function TeacherDashboardQuickActions({
       <TouchableOpacity
         style={styles.actionCard}
         onPress={() => router.push("/(teachers)/attendance")}
+        activeOpacity={0.85}
       >
         {pendingAbsenceCount > 0 ? (
           <View style={styles.actionBadge}>
             <Text style={styles.actionBadgeText}>{pendingAbsenceCount}</Text>
           </View>
         ) : null}
-        <Text style={styles.actionEmoji}>📝</Text>
+        <View style={styles.actionIconWrap}>
+          <Ionicons name="calendar-outline" size={22} color="#1E3A8A" />
+        </View>
         <Text style={styles.actionTitle}>
           {t("teacher.dashboard.attendance")}
         </Text>
@@ -37,8 +41,11 @@ export function TeacherDashboardQuickActions({
       <TouchableOpacity
         style={styles.actionCard}
         onPress={() => router.push("/(teachers)/academic")}
+        activeOpacity={0.85}
       >
-        <Text style={styles.actionEmoji}>📚</Text>
+        <View style={styles.actionIconWrap}>
+          <Ionicons name="book-outline" size={22} color="#1E3A8A" />
+        </View>
         <Text style={styles.actionTitle}>
           {t("teacher.dashboard.academic")}
         </Text>
@@ -52,8 +59,11 @@ export function TeacherDashboardQuickActions({
             params: { tab: "remarks" },
           })
         }
+        activeOpacity={0.85}
       >
-        <Text style={styles.actionEmoji}>⭐</Text>
+        <View style={styles.actionIconWrap}>
+          <Ionicons name="chatbox-ellipses-outline" size={22} color="#1E3A8A" />
+        </View>
         <Text style={styles.actionTitle}>
           {t("teacher.dashboard.remarks")}
         </Text>

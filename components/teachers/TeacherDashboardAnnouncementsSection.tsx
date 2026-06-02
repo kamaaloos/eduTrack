@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import { DashboardSlideRow } from "../dashboard/DashboardSlideRow";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 type TeacherDashboardAnnouncementsSectionProps = {
@@ -19,7 +20,7 @@ export function TeacherDashboardAnnouncementsSection({
         </Text>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <DashboardSlideRow>
         {announcements.length === 0 ? (
           <View style={styles.announcementCard}>
             <Text style={styles.cardTitle}>
@@ -35,13 +36,13 @@ export function TeacherDashboardAnnouncementsSection({
               <Text style={styles.cardTitle}>
                 {item.title || t("common.announcements")}
               </Text>
-              <Text style={styles.cardText}>
+              <Text style={styles.cardText} numberOfLines={4}>
                 {item.text || item.message || ""}
               </Text>
             </View>
           ))
         )}
-      </ScrollView>
+      </DashboardSlideRow>
     </View>
   );
 }

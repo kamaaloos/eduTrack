@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,6 +18,12 @@ import {
   ImportKind,
   ImportSummary,
 } from "../../src/services/adminExcelImport";
+import {
+  confirmAction,
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
+import { platformShadow } from "../../src/utils/platformShadow";
 
 interface ExcelImportCardProps {
   onImportComplete?: () => void | Promise<void>;
@@ -64,7 +69,7 @@ export const ExcelImportCard: React.FC<ExcelImportCardProps> = ({
     try {
       await downloadTemplate(mode, mode === "sheet" ? selectedKind : undefined);
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.couldNotDownloadTemplate"),
       );
@@ -75,47 +80,43 @@ export const ExcelImportCard: React.FC<ExcelImportCardProps> = ({
     try {
       await pickExcelFile(mode, mode === "sheet" ? selectedKind : undefined);
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.couldNotReadFile"),
       );
     }
   };
 
-  const handleImport = () => {
-    Alert.alert(
+  const handleImport = async () => {
+    const confirmed = await confirmAction(
       t("admin.excelConfirmTitle"),
       mode === "workbook"
         ? t("admin.excelConfirmWorkbook")
         : t("admin.excelConfirmSheet", { kind: selectedKind }),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.import"),
-          onPress: async () => {
-            try {
-              if (mode === "workbook") {
-                const results = await importWorkbook();
-                const msg = results.map(formatSummary).join("\n\n");
-                Alert.alert(
-                  t("admin.importCompleted"),
-                  msg || t("admin.importNoRows"),
-                );
-              } else {
-                const result = await importSheet(selectedKind);
-                Alert.alert(t("admin.importCompleted"), formatSummary(result));
-              }
-              await onImportComplete?.();
-            } catch (err) {
-              Alert.alert(
-                t("common.error"),
-                err instanceof Error ? err.message : t("admin.importFailed"),
-              );
-            }
-          },
-        },
-      ],
+      t("common.import"),
+      t("common.cancel"),
     );
+    if (!confirmed) return;
+
+    try {
+      if (mode === "workbook") {
+        const results = await importWorkbook();
+        const msg = results.map(formatSummary).join("\n\n");
+        showSuccessAlert(
+          t("admin.importCompleted"),
+          msg || t("admin.importNoRows"),
+        );
+      } else {
+        const result = await importSheet(selectedKind);
+        showSuccessAlert(t("admin.importCompleted"), formatSummary(result));
+      }
+      await onImportComplete?.();
+    } catch (err) {
+      showErrorAlert(
+        t("common.error"),
+        err instanceof Error ? err.message : t("admin.importFailed"),
+      );
+    }
   };
 
   const sheetPreview = parsed
@@ -254,7 +255,7 @@ export const ExcelImportCard: React.FC<ExcelImportCardProps> = ({
             styles.button,
             (!canImport || loading) && styles.buttonDisabled,
           ]}
-          onPress={handleImport}
+          onPress={() => void handleImport()}
           disabled={!canImport || loading}
         >
           <Text style={styles.buttonText}>{t("admin.runImport")}</Text>
@@ -270,10 +271,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    ...platformShadow("md"),
   },
   sectionTitle: {
     fontSize: 22,

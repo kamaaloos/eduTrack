@@ -1,6 +1,8 @@
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import * as XLSX from "xlsx";
+import { Platform } from "react-native";
+import { downloadBase64AsFile } from "../utils/webFileDownload";
 import {
   ImportKind,
   WORKBOOK_SHEET_ORDER,
@@ -11,7 +13,16 @@ export const IMPORT_TEMPLATE_FILENAME = "eduTrack-import-template.xlsx";
 /** Header row per sheet (must match import column names). */
 export const TEMPLATE_SHEET_HEADERS: Record<ImportKind, string[]> = {
   classes: ["name"],
-  users: ["email", "password", "name", "role"],
+  schedule: [
+    "className",
+    "dayOfWeek",
+    "startTime",
+    "endTime",
+    "subject",
+    "teacherName",
+    "sortOrder",
+  ],
+  users: ["email", "password", "name", "role", "phone"],
   student_class: ["studentEmail", "className"],
   teacher_class: ["teacherEmail", "className"],
   parent_student: ["parentEmail", "studentEmail"],
@@ -24,7 +35,22 @@ export const TEMPLATE_SHEET_HEADERS: Record<ImportKind, string[]> = {
 /** Optional example row (delete before import if you use real data). */
 const TEMPLATE_EXAMPLE_ROWS: Partial<Record<ImportKind, string[]>> = {
   classes: ["Grade 10A"],
-  users: ["student@school.com", "changeme123", "Jane Student", "student"],
+  schedule: [
+    "Grade 10A",
+    "monday",
+    "08:00",
+    "08:45",
+    "Mathematics",
+    "Ahmed",
+    "0",
+  ],
+  users: [
+    "student@school.com",
+    "changeme123",
+    "Jane Student",
+    "student",
+    "+252612345678",
+  ],
   student_class: ["student@school.com", "Grade 10A"],
   teacher_class: ["teacher@school.com", "Grade 10A"],
   parent_student: ["parent@school.com", "student@school.com"],
@@ -60,6 +86,17 @@ export function buildImportTemplateBase64(
 export async function shareImportTemplate(
   kinds?: ImportKind[],
 ): Promise<void> {
+  const base64 = buildImportTemplateBase64(kinds);
+
+  if (Platform.OS === "web") {
+    downloadBase64AsFile(
+      base64,
+      IMPORT_TEMPLATE_FILENAME,
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+    return;
+  }
+
   const canShare = await Sharing.isAvailableAsync();
   if (!canShare) {
     throw new Error("Sharing is not available on this device");
@@ -70,7 +107,6 @@ export async function shareImportTemplate(
     throw new Error("Cache directory is not available");
   }
 
-  const base64 = buildImportTemplateBase64(kinds);
   const path = `${cacheDir}${IMPORT_TEMPLATE_FILENAME}`;
 
   await FileSystem.writeAsStringAsync(path, base64, {

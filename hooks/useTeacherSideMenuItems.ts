@@ -53,6 +53,7 @@ export function useTeacherSideMenuItems(): AdminSideMenuItem[] {
         label: t("common.logout"),
         icon: "log-out-outline",
         onPress: handleLogout,
+        destructive: true,
       },
     ],
     [t, handleLogout],

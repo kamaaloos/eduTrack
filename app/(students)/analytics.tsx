@@ -1,12 +1,5 @@
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { attendanceHistoryLabel } from "../../src/constants/attendanceHistory";
@@ -22,6 +15,8 @@ import {
   buildGradeDisplayFromReport,
   extractRemarkText,
 } from "../../src/utils/gradeAnalytics";
+import { StudentScreenShell } from "../../components/students/StudentScreenShell";
+import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
 type AnalyticsData = {
   attendancePercent: number | null;
@@ -37,7 +32,6 @@ type AnalyticsData = {
 export default function StudentAnalyticsScreen() {
   const { t } = useTranslation();
   const { user, userData } = useContext(AuthContext);
-  const insets = useSafeAreaInsets();
 
   const empty = useMemo<AnalyticsData>(
     () => ({
@@ -173,53 +167,44 @@ export default function StudentAnalyticsScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.loadingWrap, { paddingTop: insets.top }]}>
-        <ActivityIndicator size="large" color="#2563EB" />
-        <Text style={styles.loadingText}>{t("common.loading")}</Text>
-      </View>
+      <StudentScreenShell title={t("student.performanceAnalytics")} showMenu scroll={false}>
+        <View style={styles.loadingCenter}>
+          <ActivityIndicator size="large" color="#2563EB" />
+          <Text style={styles.loadingText}>{t("common.loading")}</Text>
+        </View>
+      </StudentScreenShell>
     );
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[
-        styles.content,
-        { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 120 },
-      ]}
-      showsVerticalScrollIndicator={false}
-    >
-      <Text style={styles.title}>{t("student.performanceAnalytics")}</Text>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{t("common.attendance")}</Text>
-        <Text style={styles.bigNumber}>
-          {data.attendancePercent != null
-            ? `${data.attendancePercent}%`
-            : "—"}
+    <StudentScreenShell title={t("student.performanceAnalytics")} showMenu>
+      <View style={styles.metricCard}>
+        <Text style={styles.metricTitle}>{t("common.attendance")}</Text>
+        <Text style={styles.metricValue}>
+          {data.attendancePercent != null ? `${data.attendancePercent}%` : "—"}
         </Text>
-        <Text style={styles.sub}>{data.attendanceSummary}</Text>
+        <Text style={styles.metricSub}>{data.attendanceSummary}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{t("student.gradeAverage")}</Text>
-        <Text style={styles.bigNumber}>{data.gradeAverage}</Text>
-        <Text style={styles.sub}>{data.gradeSummary}</Text>
+      <View style={styles.metricCard}>
+        <Text style={styles.metricTitle}>{t("student.gradeAverage")}</Text>
+        <Text style={styles.metricValue}>{data.gradeAverage}</Text>
+        <Text style={styles.metricSub}>{data.gradeSummary}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{t("student.homework")}</Text>
-        <Text style={styles.bigNumber}>{data.homeworkCount}</Text>
-        <Text style={styles.sub}>{data.homeworkSummary}</Text>
+      <View style={styles.metricCard}>
+        <Text style={styles.metricTitle}>{t("student.homework")}</Text>
+        <Text style={styles.metricValue}>{data.homeworkCount}</Text>
+        <Text style={styles.metricSub}>{data.homeworkSummary}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{t("student.upcomingExams")}</Text>
+      <View style={styles.metricCard}>
+        <Text style={styles.metricTitle}>{t("student.upcomingExams")}</Text>
         {data.upcomingExams.length === 0 ? (
-          <Text style={styles.sub}>{t("student.noExams")}</Text>
+          <Text style={styles.metricSub}>{t("student.noExams")}</Text>
         ) : (
           data.upcomingExams.map((exam, index) => (
-            <Text key={index} style={styles.exam}>
+            <Text key={index} style={[styles.metricSub, { marginTop: index === 0 ? 8 : 4 }]}>
               {exam.label}
             </Text>
           ))
@@ -230,80 +215,6 @@ export default function StudentAnalyticsScreen() {
         <Text style={styles.highlightTitle}>{t("student.teacherInsight")}</Text>
         <Text style={styles.highlightText}>{data.latestRemark}</Text>
       </View>
-    </ScrollView>
+    </StudentScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F4F7FB",
-  },
-  content: {
-    paddingHorizontal: 20,
-  },
-  loadingWrap: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F4F7FB",
-  },
-  loadingText: {
-    marginTop: 12,
-    color: "#6B7280",
-    fontSize: 15,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "800",
-    marginBottom: 20,
-    color: "#111827",
-  },
-  card: {
-    backgroundColor: "white",
-    padding: 22,
-    borderRadius: 22,
-    marginBottom: 18,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#111827",
-  },
-  bigNumber: {
-    fontSize: 42,
-    fontWeight: "bold",
-    color: "#2563EB",
-    marginTop: 12,
-  },
-  sub: {
-    color: "#64748B",
-    marginTop: 10,
-    lineHeight: 22,
-    fontSize: 15,
-  },
-  exam: {
-    marginTop: 12,
-    fontSize: 15,
-    color: "#334155",
-    lineHeight: 22,
-  },
-  highlightCard: {
-    backgroundColor: "#2563EB",
-    padding: 24,
-    borderRadius: 24,
-    marginTop: 4,
-  },
-  highlightTitle: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 12,
-  },
-  highlightText: {
-    color: "white",
-    lineHeight: 26,
-    fontSize: 16,
-    flexShrink: 1,
-  },
-});

@@ -15,6 +15,7 @@ import {
   getAbsenceReasonLabel,
   getAttendanceStatusLabel,
 } from "../../src/utils/attendanceLabels";
+import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 
 export default function ParentDetailScreen() {
   const { t } = useTranslation();
@@ -195,85 +196,79 @@ export default function ParentDetailScreen() {
   );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{title}</Text>
+    <ParentScreenShell title={t("common.details")} subtitle={title} showBack>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {paramTeacher ? (
+          <Text style={styles.meta}>
+            {t("common.teacher")}: {paramTeacher}
+          </Text>
+        ) : null}
+        {paramType ? (
+          <Text style={styles.meta}>
+            {t("common.status")}: {paramType}
+          </Text>
+        ) : null}
+        {paramDate ? (
+          <Text style={styles.meta}>
+            {t("common.date")}: {paramDate}
+          </Text>
+        ) : null}
+        {attendanceStatus ? (
+          <Text style={styles.meta}>
+            {t("common.status")}: {attendanceStatusLabel}
+          </Text>
+        ) : null}
+        {parentReasonLabel ? (
+          <Text style={styles.meta}>
+            {t("parent.reportAbsenceReason")}: {parentReasonLabel}
+          </Text>
+        ) : null}
 
-      {paramTeacher ? (
-        <Text style={styles.meta}>
-          {t("common.teacher")}: {paramTeacher}
-        </Text>
-      ) : null}
-      {paramType ? (
-        <Text style={styles.meta}>
-          {t("common.status")}: {paramType}
-        </Text>
-      ) : null}
-      {paramDate ? (
-        <Text style={styles.meta}>
-          {t("common.date")}: {paramDate}
-        </Text>
-      ) : null}
-      {attendanceStatus ? (
-        <Text style={styles.meta}>
-          {t("common.status")}: {attendanceStatusLabel}
-        </Text>
-      ) : null}
-      {parentReasonLabel ? (
-        <Text style={styles.meta}>
-          {t("parent.reportAbsenceReason")}: {parentReasonLabel}
-        </Text>
-      ) : null}
+        {attendanceNeedsResponse ? (
+          <TouchableOpacity
+            style={styles.ctaButton}
+            onPress={() =>
+              router.push({
+                pathname: "/(parent)/respond-attendance",
+                params: {
+                  attendanceId: id,
+                  date: paramDate,
+                  studentName: paramTitle || undefined,
+                },
+              })
+            }
+          >
+            <Text style={styles.ctaText}>{t("parent.respondExplain")}</Text>
+          </TouchableOpacity>
+        ) : null}
 
-      {attendanceNeedsResponse ? (
-        <TouchableOpacity
-          style={styles.ctaButton}
-          onPress={() =>
-            router.push({
-              pathname: "/(parent)/respond-attendance",
-              params: {
-                attendanceId: id,
-                date: paramDate,
-                studentName: paramTitle || undefined,
-              },
-            })
-          }
-        >
-          <Text style={styles.ctaText}>{t("parent.respondExplain")}</Text>
-        </TouchableOpacity>
-      ) : null}
+        {item?.subject ? (
+          <Text style={styles.meta}>
+            {t("common.subject")}: {String(item.subject)}
+          </Text>
+        ) : null}
+        {item?.daysLeft != null ? (
+          <Text style={styles.meta}>
+            {t("student.dueDate", { date: String(item.daysLeft) })}
+          </Text>
+        ) : null}
+        {item?.marks != null ? (
+          <Text style={styles.meta}>
+            {t("common.score")}: {String(item.marks)}
+          </Text>
+        ) : null}
 
-      {item?.subject ? (
-        <Text style={styles.meta}>
-          {t("common.subject")}: {String(item.subject)}
-        </Text>
-      ) : null}
-      {item?.daysLeft != null ? (
-        <Text style={styles.meta}>
-          {t("student.dueDate", { date: String(item.daysLeft) })}
-        </Text>
-      ) : null}
-      {item?.marks != null ? (
-        <Text style={styles.meta}>
-          {t("common.score")}: {String(item.marks)}
-        </Text>
-      ) : null}
-
-      <View style={styles.bodyCard}>
-        <Text style={styles.body}>{body || t("common.notAvailable")}</Text>
-      </View>
-    </ScrollView>
+        <View style={styles.bodyCard}>
+          <Text style={styles.body}>{body || t("common.notAvailable")}</Text>
+        </View>
+      </ScrollView>
+    </ParentScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "transparent" },
   content: { padding: 20, paddingBottom: 40 },
-  title: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: "#0F172A",
-    marginBottom: 12,
-  },
   meta: { fontSize: 15, color: "#64748B", marginBottom: 6 },
   bodyCard: {
     backgroundColor: "#FFFFFF",

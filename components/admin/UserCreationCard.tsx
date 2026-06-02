@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -12,6 +11,8 @@ import {
 import { PasswordInput } from "../PasswordInput";
 import { UserRole } from "../../hooks/useAdminUsers";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
+import { platformShadow } from "../../src/utils/platformShadow";
 
 const ROLES: UserRole[] = ["student", "teacher", "parent", "admin"];
 
@@ -25,6 +26,7 @@ export const UserCreationCard: React.FC<UserCreationCardProps> = ({
   const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState(
     () => t("admin.defaultPassword"),
   );
@@ -34,9 +36,9 @@ export const UserCreationCard: React.FC<UserCreationCardProps> = ({
 
   const handleCreateUser = async () => {
     try {
-      await createUser({ name, email, password, role });
+      await createUser({ name, email, password, role, phone: phone.trim() });
       await onUserCreated?.();
-      Alert.alert(
+      showSuccessAlert(
         t("common.success"),
         t("admin.userCreatedSuccess", {
           role: t(`common.${role}`),
@@ -44,12 +46,13 @@ export const UserCreationCard: React.FC<UserCreationCardProps> = ({
       );
       setName("");
       setEmail("");
+      setPhone("");
       setPassword(t("admin.defaultPassword"));
       setRole("student");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : t("admin.createUserFailed");
-      Alert.alert(t("common.error"), message);
+      showErrorAlert(t("common.error"), message);
     }
   };
 
@@ -72,6 +75,15 @@ export const UserCreationCard: React.FC<UserCreationCardProps> = ({
         style={styles.input}
         autoCapitalize="none"
         keyboardType="email-address"
+        editable={!loading}
+      />
+
+      <TextInput
+        placeholder={t("admin.phonePlaceholder")}
+        value={phone}
+        onChangeText={setPhone}
+        style={styles.input}
+        keyboardType="phone-pad"
         editable={!loading}
       />
 
@@ -127,10 +139,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    ...platformShadow("md"),
   },
   sectionTitle: {
     fontSize: 22,

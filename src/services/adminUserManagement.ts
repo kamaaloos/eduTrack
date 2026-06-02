@@ -14,11 +14,13 @@ import type { UserRole } from "../../hooks/useAdminUsers";
 
 export async function updateUserProfile(
   userId: string,
-  updates: { name?: string; email?: string },
+  updates: { name?: string; email?: string; phone?: string; feePaid?: boolean },
 ): Promise<void> {
-  const payload: Record<string, string> = {};
+  const payload: Record<string, string | boolean> = {};
   if (updates.name?.trim()) payload.name = updates.name.trim();
   if (updates.email?.trim()) payload.email = updates.email.trim().toLowerCase();
+  if (updates.phone !== undefined) payload.phone = updates.phone.trim();
+  if (updates.feePaid !== undefined) payload.feePaid = updates.feePaid;
   if (Object.keys(payload).length === 0) {
     throw new Error("Nothing to update");
   }

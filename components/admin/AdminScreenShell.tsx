@@ -1,12 +1,17 @@
 import { router } from "expo-router";
 import React, { useContext, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { useAdminSideMenuItems } from "../../hooks/useAdminSideMenuItems";
 import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { AuthContext } from "../../src/context/authContext";
 import { useSchoolContext } from "../../src/context/schoolContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
+import {
+  webAdminContentStyle,
+  webAdminPagePaddingStyle,
+} from "../../src/constants/webLayout";
+import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { AdminScreenHeader } from "./AdminScreenHeader";
 import { AdminSideMenu } from "./AdminSideMenu";
 
@@ -36,6 +41,7 @@ export function AdminScreenShell({
 
   return (
     <View style={styles.screen}>
+      <ScreenBackgroundLayer />
       <AdminScreenHeader
         title={title}
         subtitle={subtitle}
@@ -56,7 +62,11 @@ export function AdminScreenShell({
         subtitleTone="accent"
         items={menuItems}
       />
-      {children}
+      <View style={styles.body}>
+        <View style={[styles.bodyInner, webAdminContentStyle(), webAdminPagePaddingStyle()]}>
+          {children}
+        </View>
+      </View>
     </View>
   );
 }
@@ -65,5 +75,13 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: APP_SCREEN_BACKGROUND,
+  },
+  body: {
+    flex: 1,
+    backgroundColor: APP_SCREEN_BACKGROUND,
+  },
+  bodyInner: {
+    flex: 1,
+    width: "100%",
   },
 });

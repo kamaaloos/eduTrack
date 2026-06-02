@@ -10,6 +10,7 @@ import { getAttendanceStatusLabel } from "../../src/utils/attendanceLabels";
 type ReportCardViewProps = {
   report: ReportCardData;
   showParentSeen?: boolean;
+  embedded?: boolean;
 };
 
 function gradeColor(letter: string) {
@@ -23,13 +24,17 @@ function gradeColor(letter: string) {
 export function ReportCardView({
   report,
   showParentSeen = true,
+  embedded = false,
 }: ReportCardViewProps) {
   const { t } = useTranslation();
 
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        embedded ? styles.contentEmbedded : null,
+      ]}
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.hero}>
@@ -231,6 +236,10 @@ export function ReportCardView({
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "transparent" },
   content: { padding: 20, paddingBottom: FLOATING_TAB_BAR_INSET },
+  contentEmbedded: {
+    padding: 0,
+    paddingBottom: 32,
+  },
   hero: {
     backgroundColor: "#1E3A8A",
     borderRadius: 20,

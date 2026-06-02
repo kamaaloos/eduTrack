@@ -4,7 +4,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,6 +14,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../../src/services/firebase";
+import { showSuccessAlert } from "../../src/utils/confirmDialog";
 
 export default function AdminTeachersScreen() {
   const { t } = useTranslation();
@@ -36,7 +36,7 @@ export default function AdminTeachersScreen() {
   const removeTeacher = async (id: string) => {
     try {
       await deleteDoc(doc(db, "users", id));
-      Alert.alert(t("admin.teacherRemoved"));
+      showSuccessAlert(t("admin.teacherRemoved"), "");
       void loadTeachers();
     } catch (error) {
       console.log(error);

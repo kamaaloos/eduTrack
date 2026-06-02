@@ -4,11 +4,12 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Image,
+  Platform,
   Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -22,6 +23,11 @@ import { useSuperAdminAuth } from "../src/context/superAdminAuthContext";
 import { useSchoolContext } from "../src/context/schoolContext";
 import type { SchoolRecord } from "../src/types/school";
 import { clearLocalSessionPreferences } from "../src/utils/authNavigation";
+import { webAuthContentStyle } from "../src/constants/webLayout";
+import {
+  confirmDestructiveAction,
+  showErrorAlert,
+} from "../src/utils/confirmDialog";
 
 const PLATFORM_ADMIN_LINK_VISIBLE =
   process.env.EXPO_PUBLIC_SHOW_PLATFORM_ADMIN_LINK === "true";
@@ -97,30 +103,61 @@ export default function SelectSchoolScreen() {
   };
 
   const handleSuperAdminLogout = () => {
-    Alert.alert(t("superAdmin.signOutTitle"), t("superAdmin.signOutConfirm"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("common.logout"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await superAdminLogout();
-          } catch (err) {
-            Alert.alert(
-              t("common.error"),
-              err instanceof Error
-                ? err.message
-                : t("superAdmin.signOutFailed"),
-            );
-          }
-        },
-      },
-    ]);
+    void (async () => {
+      const confirmed = await confirmDestructiveAction(
+        t("superAdmin.signOutTitle"),
+        t("superAdmin.signOutConfirm"),
+        t("common.logout"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      try {
+        await superAdminLogout();
+      } catch (err) {
+        showErrorAlert(
+          t("common.error"),
+          err instanceof Error ? err.message : t("superAdmin.signOutFailed"),
+        );
+      }
+    })();
   };
 
+  const isWeb = Platform.OS === "web";
+  const Frame = AppScreenBackground;
+  const frameProps = { showCopyright: false };
+  const contentColumn = webAuthContentStyle();
+
+  const renderSchoolCard = (item: SchoolRecord) => (
+    <TouchableOpacity
+      key={item.id}
+      style={styles.schoolCard}
+      onPress={() => void handleSelect(item)}
+      disabled={connecting}
+      activeOpacity={0.85}
+    >
+      {item.logoUrl ? (
+        <Image source={{ uri: item.logoUrl }} style={styles.schoolLogo} />
+      ) : (
+        <View style={styles.schoolIcon}>
+          <Ionicons name="business" size={24} color="#1E3A8A" />
+        </View>
+      )}
+      <View style={styles.schoolInfo}>
+        <Text style={styles.schoolName}>{item.name}</Text>
+        {item.city ? (
+          <Text style={styles.schoolMeta}>{item.city}</Text>
+        ) : (
+          <Text style={styles.schoolMeta}>{t("common.continue")}</Text>
+        )}
+      </View>
+      <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+    </TouchableOpacity>
+  );
+
   return (
-    <AppScreenBackground>
-    <View style={styles.screen}>
+    <Frame {...frameProps}>
+    <View style={[styles.screen, isWeb && styles.screenWeb]}>
       <StatusBar style="dark" />
       <AuthAboutLink
         style={[
@@ -129,7 +166,76 @@ export default function SelectSchoolScreen() {
         ]}
       />
 
-      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
+      {isWeb ? (
+        <ScrollView
+          contentContainerStyle={[
+            styles.webScroll,
+            contentColumn,
+            { paddingTop: insets.top + 20, paddingBottom: Math.max(insets.bottom, 24) + 24 },
+          ]}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <View style={styles.header}>
+            <Pressable
+              style={styles.logo}
+              onPress={handleLogoPress}
+              accessibilityRole="image"
+              accessibilityLabel={t("selectSchool.title")}
+            >
+              <Text style={styles.logoText}>🎓</Text>
+            </Pressable>
+            <Text style={styles.title}>{t("selectSchool.title")}</Text>
+            <Text style={styles.subtitle}>{t("selectSchool.subtitle")}</Text>
+            <TouchableOpacity
+              style={styles.secondaryLink}
+              onPress={() => void handleBackToOnboarding()}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="arrow-back" size={16} color="#475569" />
+              <Text style={styles.secondaryLinkText}>
+                {t("selectSchool.backToOnboarding")}
+              </Text>
+            </TouchableOpacity>
+            {superAdminUser && superAdminRole === "superAdmin" ? (
+              <TouchableOpacity
+                style={styles.secondaryLink}
+                onPress={handleSuperAdminLogout}
+                activeOpacity={0.85}
+              >
+                <Ionicons name="log-out-outline" size={16} color="#475569" />
+                <Text style={styles.secondaryLinkText}>
+                  {t("selectSchool.signOutPlatformAdmin")}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+
+          {(error || selectError) ? (
+            <View style={styles.errorBox}>
+              <Text style={styles.errorText}>{selectError || error}</Text>
+            </View>
+          ) : null}
+
+          {schoolsLoading && !refreshing ? (
+            <View style={styles.centeredInline}>
+              <ActivityIndicator size="large" color="#1E3A8A" />
+              <Text style={styles.loadingText}>{t("selectSchool.loading")}</Text>
+            </View>
+          ) : schools.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Ionicons name="school-outline" size={40} color="#94A3B8" />
+              <Text style={styles.emptyText}>{t("selectSchool.empty")}</Text>
+            </View>
+          ) : (
+            <View style={styles.list}>{schools.map(renderSchoolCard)}</View>
+          )}
+        </ScrollView>
+      ) : (
+        <>
+      <View style={[styles.header, contentColumn, { paddingTop: insets.top + 20 }]}>
         <Pressable
           style={styles.logo}
           onPress={handleLogoPress}
@@ -181,6 +287,7 @@ export default function SelectSchoolScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={[
             styles.list,
+            contentColumn,
             { paddingBottom: Math.max(insets.bottom, 20) + 16 },
           ]}
           refreshControl={
@@ -192,32 +299,10 @@ export default function SelectSchoolScreen() {
               <Text style={styles.emptyText}>{t("selectSchool.empty")}</Text>
             </View>
           }
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.schoolCard}
-              onPress={() => void handleSelect(item)}
-              disabled={connecting}
-              activeOpacity={0.85}
-            >
-              {item.logoUrl ? (
-                <Image source={{ uri: item.logoUrl }} style={styles.schoolLogo} />
-              ) : (
-                <View style={styles.schoolIcon}>
-                  <Ionicons name="business" size={24} color="#1E3A8A" />
-                </View>
-              )}
-              <View style={styles.schoolInfo}>
-                <Text style={styles.schoolName}>{item.name}</Text>
-                {item.city ? (
-                  <Text style={styles.schoolMeta}>{item.city}</Text>
-                ) : (
-                  <Text style={styles.schoolMeta}>{t("common.continue")}</Text>
-                )}
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
-            </TouchableOpacity>
-          )}
+          renderItem={({ item }) => renderSchoolCard(item)}
         />
+      )}
+        </>
       )}
 
       {connecting ? (
@@ -237,7 +322,7 @@ export default function SelectSchoolScreen() {
         </TouchableOpacity>
       ) : null}
     </View>
-    </AppScreenBackground>
+    </Frame>
   );
 }
 
@@ -245,6 +330,11 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: "transparent",
+  },
+  webScroll: {
+    flexGrow: 1,
+    width: "100%",
+    paddingHorizontal: 20,
   },
   aboutLink: {
     position: "absolute",
@@ -296,8 +386,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
   },
+  centeredInline: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    paddingVertical: 32,
+  },
   errorBox: {
-    marginHorizontal: 20,
     marginBottom: 8,
     backgroundColor: "#FEE2E2",
     borderRadius: 12,
@@ -309,8 +404,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   list: {
-    paddingHorizontal: 20,
     paddingTop: 8,
+    gap: 12,
   },
   schoolCard: {
     flexDirection: "row",

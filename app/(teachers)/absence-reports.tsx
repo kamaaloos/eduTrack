@@ -10,8 +10,8 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { SelectChips } from "../../components/teachers/SelectChips";
+import { TeacherScreenShell } from "../../components/teachers/TeacherScreenShell";
 import { useTeacherClassesContext } from "../../src/context/teacherClassesContext";
 import {
   loadAbsenceReportsForTeacher,
@@ -113,84 +113,80 @@ export default function TeacherAbsenceReportsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.screen} edges={["top"]}>
-      <Text style={styles.pageTitle}>{t("teacher.absenceReports.pageTitle")}</Text>
-      <Text style={styles.intro}>{t("teacher.absenceReports.intro")}</Text>
+    <TeacherScreenShell
+      title={t("teacher.absenceReports.pageTitle")}
+      subtitle={t("teacher.absenceReports.intro")}
+      scroll={false}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+    >
+      <View style={styles.body}>
+        {loadingClasses ? (
+          <ActivityIndicator style={styles.loader} color="#1E40AF" />
+        ) : (
+          <SelectChips
+            options={classOptions}
+            selectedValue={selectedClassId}
+            onSelect={setSelectedClassId}
+            emptyMessage={t("teacher.absenceReports.noClassesAssigned")}
+          />
+        )}
 
-      {loadingClasses ? (
-        <ActivityIndicator style={styles.loader} color="#1E40AF" />
-      ) : (
-        <SelectChips
-          options={classOptions}
-          selectedValue={selectedClassId}
-          onSelect={setSelectedClassId}
-          emptyMessage={t("teacher.absenceReports.noClassesAssigned")}
-        />
-      )}
+        {error ? (
+          <View style={styles.errorBox}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : null}
 
-      {error ? (
-        <View style={styles.errorBox}>
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
-      ) : null}
-
-      {loading && !refreshing ? (
-        <ActivityIndicator style={styles.loader} size="large" color="#1E40AF" />
-      ) : (
-        <FlatList
-          data={reports}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.list}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          ListEmptyComponent={
-            !loading ? (
-              <View style={styles.empty}>
-                <Ionicons name="document-text-outline" size={48} color="#94A3B8" />
-                <Text style={styles.emptyTitle}>
-                  {t("teacher.absenceReports.emptyTitle")}
-                </Text>
-                <Text style={styles.emptyText}>
-                  {t("teacher.absenceReports.emptyText")}
-                </Text>
-              </View>
-            ) : null
-          }
-        />
-      )}
-    </SafeAreaView>
+        {loading && !refreshing ? (
+          <ActivityIndicator style={styles.loader} size="large" color="#1E40AF" />
+        ) : (
+          <FlatList
+            style={styles.listScroll}
+            data={reports}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            ListEmptyComponent={
+              !loading ? (
+                <View style={styles.empty}>
+                  <Ionicons name="document-text-outline" size={48} color="#94A3B8" />
+                  <Text style={styles.emptyTitle}>
+                    {t("teacher.absenceReports.emptyTitle")}
+                  </Text>
+                  <Text style={styles.emptyText}>
+                    {t("teacher.absenceReports.emptyText")}
+                  </Text>
+                </View>
+              ) : null
+            }
+          />
+        )}
+      </View>
+    </TeacherScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
+  body: {
     flex: 1,
-    backgroundColor: "transparent",
-    paddingHorizontal: 16,
-  },
-  pageTitle: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#0F172A",
-    marginBottom: 6,
-  },
-  intro: {
-    fontSize: 14,
-    color: "#64748B",
-    marginBottom: 14,
-    lineHeight: 20,
+    paddingTop: 4,
   },
   loader: { marginVertical: 24 },
-  list: { paddingBottom: 120, gap: 12 },
+  listScroll: { flex: 1 },
+  list: { paddingBottom: 24, gap: 12 },
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 16,
     borderLeftWidth: 4,
     borderLeftColor: "#1E40AF",
-    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   cardHeader: {
     flexDirection: "row",
@@ -201,7 +197,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     width: 40,
     height: 40,
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: "#EFF6FF",
     alignItems: "center",
     justifyContent: "center",
@@ -251,6 +247,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FECACA",
   },
   errorText: { color: "#B91C1C", fontWeight: "600" },
 });

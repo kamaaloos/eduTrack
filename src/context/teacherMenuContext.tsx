@@ -1,4 +1,3 @@
-import { useSegments } from "expo-router";
 import React, {
   createContext,
   useCallback,
@@ -9,7 +8,6 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { AdminSideMenu } from "../../components/admin/AdminSideMenu";
-import { MenuOverlayButton } from "../../components/navigation/MenuOverlayButton";
 import { useTeacherSideMenuItems } from "../../hooks/useTeacherSideMenuItems";
 import { AuthContext } from "./authContext";
 
@@ -32,13 +30,10 @@ export function TeacherMenuProvider({ children }: { children: ReactNode }) {
   const value = useMemo(() => ({ openMenu, closeMenu }), [openMenu, closeMenu]);
 
   const firstName = userData?.name?.split(" ")[0] ?? t("common.teacher");
-  const segments = useSegments();
-  const showMenuOverlay = segments.at(-1) !== "dashboard";
 
   return (
     <TeacherMenuContext.Provider value={value}>
       {children}
-      {showMenuOverlay ? <MenuOverlayButton onPress={openMenu} /> : null}
       <AdminSideMenu
         visible={visible}
         onClose={closeMenu}

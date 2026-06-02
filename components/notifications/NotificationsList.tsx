@@ -25,6 +25,8 @@ type NotificationsListProps = {
   onMarkAllRead: () => void;
   onRefresh?: () => void;
   refreshing?: boolean;
+  /** Hide built-in header when wrapped in a screen shell. */
+  embedded?: boolean;
 };
 
 const EMPTY_MESSAGE_KEYS: Record<NotificationAudience, string> = {
@@ -56,6 +58,7 @@ export function NotificationsList({
   onMarkAllRead,
   onRefresh,
   refreshing = false,
+  embedded = false,
 }: NotificationsListProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -64,15 +67,17 @@ export function NotificationsList({
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <View style={styles.screen}>
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <Text style={styles.title}>{title}</Text>
-        {unreadCount > 0 ? (
-          <TouchableOpacity style={styles.markAllBtn} onPress={onMarkAllRead}>
-            <Text style={styles.markAllText}>{t("notifications.markRead")}</Text>
-          </TouchableOpacity>
-        ) : null}
-      </View>
+    <View style={[styles.screen, embedded && styles.screenEmbedded]}>
+      {!embedded ? (
+        <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+          <Text style={styles.title}>{title}</Text>
+          {unreadCount > 0 ? (
+            <TouchableOpacity style={styles.markAllBtn} onPress={onMarkAllRead}>
+              <Text style={styles.markAllText}>{t("notifications.markRead")}</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      ) : null}
 
       {loading && notifications.length === 0 ? (
         <View style={styles.centered}>
@@ -82,7 +87,8 @@ export function NotificationsList({
         <ScrollView
           contentContainerStyle={[
             styles.list,
-            { paddingBottom: insets.bottom + 120 },
+            embedded ? styles.listEmbedded : null,
+            { paddingBottom: insets.bottom + (embedded ? 32 : 120) },
           ]}
           refreshControl={
             onRefresh ? (
@@ -130,6 +136,7 @@ export function NotificationsList({
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "transparent" },
+  screenEmbedded: { width: "100%" },
   header: {
     paddingHorizontal: 20,
     paddingBottom: 12,
@@ -160,6 +167,10 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 16,
     paddingTop: 4,
+  },
+  listEmbedded: {
+    paddingHorizontal: 0,
+    paddingTop: 0,
   },
   centered: {
     flex: 1,

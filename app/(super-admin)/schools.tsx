@@ -4,9 +4,10 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Image,
+  Platform,
+  Pressable,
   RefreshControl,
   StyleSheet,
   Switch,
@@ -23,6 +24,11 @@ import {
 } from "../../src/services/schoolRegistryAdmin";
 import { refreshSchoolUserCounts } from "../../src/services/schoolUserCountSync";
 import type { SchoolRecord } from "../../src/types/school";
+import {
+  confirmDestructiveAction,
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
 
 export default function SuperAdminSchoolsScreen() {
   const { t } = useTranslation();
@@ -65,17 +71,19 @@ export default function SuperAdminSchoolsScreen() {
     try {
       const result = await refreshSchoolUserCounts();
       if ("failed" in result && result.failed > 0) {
-        Alert.alert(
+        showErrorAlert(
           t("superAdmin.syncPartialTitle"),
           t("superAdmin.syncPartialMessage", {
             synced: result.synced,
             failed: result.failed,
           }),
         );
+      } else {
+        showSuccessAlert(t("common.success"), t("superAdmin.syncAllUserCounts"));
       }
       await load();
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("superAdmin.syncUserCountsFailed"),
       );
@@ -92,7 +100,7 @@ export default function SuperAdminSchoolsScreen() {
         prev.map((item) => (item.id === school.id ? { ...item, active } : item)),
       );
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("superAdmin.updateStatusFailed"),
       );
@@ -102,31 +110,28 @@ export default function SuperAdminSchoolsScreen() {
   };
 
   const confirmDelete = (school: SchoolRecord) => {
-    Alert.alert(
-      t("superAdmin.deleteSchoolTitle"),
-      t("superAdmin.deleteSchoolMessage", { name: school.name }),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: async () => {
-            setBusyId(school.id);
-            try {
-              await deleteSchoolRecord(school.id);
-              setSchools((prev) => prev.filter((item) => item.id !== school.id));
-            } catch (err) {
-              Alert.alert(
-                t("common.error"),
-                err instanceof Error ? err.message : t("superAdmin.deleteSchoolFailed"),
-              );
-            } finally {
-              setBusyId(null);
-            }
-          },
-        },
-      ],
-    );
+    void (async () => {
+      const confirmed = await confirmDestructiveAction(
+        t("superAdmin.deleteSchoolTitle"),
+        t("superAdmin.deleteSchoolMessage", { name: school.name }),
+        t("common.delete"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      setBusyId(school.id);
+      try {
+        await deleteSchoolRecord(school.id);
+        setSchools((prev) => prev.filter((item) => item.id !== school.id));
+      } catch (err) {
+        showErrorAlert(
+          t("common.error"),
+          err instanceof Error ? err.message : t("superAdmin.deleteSchoolFailed"),
+        );
+      } finally {
+        setBusyId(null);
+      }
+    })();
   };
 
   const openSchool = (schoolId: string) => {
@@ -148,18 +153,42 @@ export default function SuperAdminSchoolsScreen() {
       ) : null}
 
       {schools.length > 0 ? (
-        <TouchableOpacity
-          style={styles.syncBar}
-          onPress={() => void syncAllUserCounts()}
-          disabled={syncing}
-        >
-          {syncing ? (
-            <ActivityIndicator size="small" color="#1E3A8A" />
-          ) : (
-            <Ionicons name="refresh-outline" size={18} color="#1E3A8A" />
-          )}
-          <Text style={styles.syncBarText}>{t("superAdmin.syncAllUserCounts")}</Text>
-        </TouchableOpacity>
+        <View style={styles.toolbar}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.toolbarBtn,
+              styles.toolbarBtnSecondary,
+              pressed && styles.toolbarBtnPressed,
+            ]}
+            onPress={() => void syncAllUserCounts()}
+            disabled={syncing}
+          >
+            {syncing ? (
+              <ActivityIndicator size="small" color="#1E3A8A" />
+            ) : (
+              <Ionicons name="refresh-outline" size={18} color="#1E3A8A" />
+            )}
+            <Text style={styles.toolbarBtnSecondaryText}>
+              {t("superAdmin.syncAllUserCounts")}
+            </Text>
+          </Pressable>
+
+          {Platform.OS === "web" ? (
+            <Pressable
+              style={({ pressed }) => [
+                styles.toolbarBtn,
+                styles.toolbarBtnPrimary,
+                pressed && styles.toolbarBtnPressed,
+              ]}
+              onPress={() => router.push("/(super-admin)/school-form" as never)}
+            >
+              <Ionicons name="add" size={20} color="#FFFFFF" />
+              <Text style={styles.toolbarBtnPrimaryText}>
+                {t("superAdmin.addSchool")}
+              </Text>
+            </Pressable>
+          ) : null}
+        </View>
       ) : null}
 
       {loading && !refreshing ? (
@@ -168,6 +197,7 @@ export default function SuperAdminSchoolsScreen() {
         </View>
       ) : (
         <FlatList
+          style={styles.listScroll}
           data={schools}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
@@ -217,7 +247,7 @@ export default function SuperAdminSchoolsScreen() {
                   <Text style={styles.tapHint}>{t("superAdmin.tapForDetails")}</Text>
                 </TouchableOpacity>
 
-                <View style={styles.cardRow}>
+                <View style={styles.cardFooter}>
                   <View
                     style={[
                       styles.badge,
@@ -233,14 +263,17 @@ export default function SuperAdminSchoolsScreen() {
                       {item.active ? t("superAdmin.active") : t("superAdmin.hidden")}
                     </Text>
                   </View>
-                  <Text style={styles.rowLabel}>{t("superAdmin.showInApp")}</Text>
-                  <Switch
-                    value={item.active}
-                    onValueChange={(value) => void toggleActive(item, value)}
-                    disabled={busy}
-                    trackColor={{ false: "#CBD5E1", true: "#93C5FD" }}
-                    thumbColor={item.active ? "#1E3A8A" : "#F8FAFC"}
-                  />
+
+                  <View style={styles.switchRow}>
+                    <Text style={styles.rowLabel}>{t("superAdmin.showInApp")}</Text>
+                    <Switch
+                      value={item.active}
+                      onValueChange={(value) => void toggleActive(item, value)}
+                      disabled={busy}
+                      trackColor={{ false: "#CBD5E1", true: "#93C5FD" }}
+                      thumbColor={item.active ? "#1E3A8A" : "#F8FAFC"}
+                    />
+                  </View>
                 </View>
 
                 <View style={styles.actions}>
@@ -273,21 +306,69 @@ export default function SuperAdminSchoolsScreen() {
         />
       )}
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => router.push("/(super-admin)/school-form" as never)}
-        accessibilityLabel={t("superAdmin.addSchool")}
-      >
-        <Ionicons name="add" size={28} color="#FFFFFF" />
-      </TouchableOpacity>
+      {Platform.OS !== "web" ? (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => router.push("/(super-admin)/school-form" as never)}
+          accessibilityLabel={t("superAdmin.addSchool")}
+        >
+          <Ionicons name="add" size={28} color="#FFFFFF" />
+        </TouchableOpacity>
+      ) : null}
     </SuperAdminScreenShell>
   );
 }
 
+const isWeb = Platform.OS === "web";
+
 const styles = StyleSheet.create({
+  listScroll: {
+    flex: 1,
+  },
   list: {
-    padding: 16,
-    paddingBottom: 100,
+    paddingTop: isWeb ? 12 : 8,
+    paddingBottom: isWeb ? 32 : 100,
+  },
+  toolbar: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: isWeb ? 12 : 8,
+    marginBottom: 12,
+  },
+  toolbarBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    minHeight: 42,
+  },
+  toolbarBtnSecondary: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    flexGrow: isWeb ? 0 : 1,
+    flex: isWeb ? undefined : 1,
+  },
+  toolbarBtnPrimary: {
+    backgroundColor: "#1E3A8A",
+    marginLeft: isWeb ? "auto" : 0,
+  },
+  toolbarBtnPressed: {
+    opacity: 0.9,
+  },
+  toolbarBtnSecondaryText: {
+    color: "#1E3A8A",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  toolbarBtnPrimaryText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 14,
   },
   centered: {
     flex: 1,
@@ -295,11 +376,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   errorBox: {
-    marginHorizontal: 16,
     marginTop: 12,
     backgroundColor: "#FEE2E2",
     borderRadius: 12,
     padding: 12,
+    borderWidth: 1,
+    borderColor: "#FECACA",
   },
   errorText: {
     color: "#B91C1C",
@@ -307,24 +389,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   syncBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    marginHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 4,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    backgroundColor: "#EFF6FF",
-    borderWidth: 1,
-    borderColor: "#BFDBFE",
+    display: "none",
   },
   syncBarText: {
-    color: "#1E3A8A",
-    fontWeight: "700",
-    fontSize: 14,
+    display: "none",
   },
   emptyCard: {
     alignItems: "center",
@@ -349,7 +417,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: isWeb ? 12 : 16,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
@@ -418,27 +486,31 @@ const styles = StyleSheet.create({
   badgeTextInactive: {
     color: "#64748B",
   },
-  cardRow: {
+  cardFooter: {
     marginTop: 14,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-end",
-    gap: 10,
+    justifyContent: "space-between",
+    gap: 12,
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: "#F1F5F9",
   },
+  switchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexShrink: 0,
+  },
   rowLabel: {
-    flex: 1,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
     color: "#475569",
-    textAlign: "right",
   },
   actions: {
     flexDirection: "row",
     gap: 10,
-    marginTop: 14,
+    marginTop: 12,
   },
   editButton: {
     flex: 1,
@@ -446,23 +518,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    backgroundColor: "#EFF6FF",
-    borderRadius: 12,
-    paddingVertical: 12,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 10,
+    paddingVertical: 11,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   editButtonText: {
     color: "#1E3A8A",
     fontWeight: "700",
   },
   deleteButton: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
     backgroundColor: "#FEF2F2",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderRadius: 10,
+    paddingVertical: 11,
+    borderWidth: 1,
+    borderColor: "#FECACA",
   },
   deleteButtonText: {
     color: "#B91C1C",

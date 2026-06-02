@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { RefreshControl, ScrollView, View } from "react-native";
+import { Platform, RefreshControl, ScrollView, View } from "react-native";
+import { webDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
 import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { AuthContext } from "../../src/context/authContext";
 import { getTodayDayKey, getWeekdayLabel } from "../../src/utils/scheduleFormat";
@@ -11,6 +12,7 @@ import { DashboardHeader, useDashboardLogout } from "./DashboardHeader";
 import { DashboardHomeworkSection } from "./DashboardHomeworkSection";
 import { DashboardRemarksSection } from "./DashboardRemarksSection";
 import { DashboardScheduleSection } from "./DashboardScheduleSection";
+import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { dashboardStyles as styles } from "./dashboardStyles";
 import type { StudentDashboardViewProps } from "./studentDashboardTypes";
 import { useStudentDashboardDerivedData } from "./useStudentDashboardDerivedData";
@@ -67,9 +69,12 @@ export function StudentDashboardView({
     gradedExamIds,
   });
 
-  const firstName = (
-    displayName?.split(" ")[0] || t("common.student")
-  ).toUpperCase();
+  const rawFirstName = displayName?.split(" ")[0] || t("common.student");
+  const firstName =
+    Platform.OS === "web"
+      ? rawFirstName.charAt(0).toUpperCase() +
+        rawFirstName.slice(1).toLowerCase()
+      : rawFirstName.toUpperCase();
   const initials =
     displayName
       ?.split(" ")
@@ -83,6 +88,7 @@ export function StudentDashboardView({
 
   return (
     <View style={styles.mainContainer}>
+      <ScreenBackgroundLayer />
       <DashboardHeader
         initials={initials}
         displayName={displayName}
@@ -101,7 +107,7 @@ export function StudentDashboardView({
 
       <ScrollView
         style={styles.container}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, webDashboardContentStyle()]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

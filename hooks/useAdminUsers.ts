@@ -19,7 +19,11 @@ export interface UserData {
     email: string;
     role: UserRole;
     classId?: string;
-    [key: string]: any;
+    phone?: string;
+    feePaid?: boolean;
+    feeMonths?: Record<string, boolean>;
+    linkedStudentIds?: string[];
+    [key: string]: unknown;
 }
 
 interface CreateUserParams {
@@ -27,6 +31,7 @@ interface CreateUserParams {
     password: string;
     name: string;
     role: UserRole;
+    phone?: string;
 }
 
 export const useAdminUsers = () => {
@@ -60,7 +65,7 @@ export const useAdminUsers = () => {
 
     const createUser = useCallback(
         async (params: CreateUserParams): Promise<string> => {
-            const { email, password, name, role } = params;
+            const { email, password, name, role, phone } = params;
 
             if (!email || !password || !name) {
                 throw new Error("Email, password, and name are required");
@@ -90,13 +95,17 @@ export const useAdminUsers = () => {
                     password,
                 );
 
-                await setDoc(doc(db, "users", userCred.user.uid), {
+                const profile: Record<string, unknown> = {
                     name,
                     email,
                     role,
                     mustChangePassword: true,
                     createdAt: new Date(),
-                });
+                };
+                const phoneTrimmed = phone?.trim();
+                if (phoneTrimmed) profile.phone = phoneTrimmed;
+
+                await setDoc(doc(db, "users", userCred.user.uid), profile);
 
                 await signOut(secondaryAuth).catch(() => {});
 
@@ -117,7 +126,12 @@ export const useAdminUsers = () => {
     const updateUser = useCallback(
         async (
             userId: string,
-            updates: { name?: string; email?: string },
+            updates: {
+                name?: string;
+                email?: string;
+                phone?: string;
+                feePaid?: boolean;
+            },
         ): Promise<void> => {
             setLoading(true);
             setError(null);

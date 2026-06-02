@@ -1,9 +1,11 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { Text, View } from "react-native";
 import { useEffect, useState, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../src/services/firebase";
 import { AuthContext } from "../../src/context/authContext";
+import { StudentScreenShell } from "../../components/students/StudentScreenShell";
+import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
 export default function HomeworkScreen() {
   const { t } = useTranslation();
@@ -15,33 +17,28 @@ export default function HomeworkScreen() {
       if (!userData?.classId) return;
 
       const snap = await getDocs(
-        collection(db, "classes", userData.classId, "homework")
+        collection(db, "classes", userData.classId, "homework"),
       );
-      const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-      setHomeworks(data);
+      setHomeworks(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     };
 
     load();
   }, [userData?.classId]);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>{t("student.homework")}</Text>
-
-      {homeworks.map(h => (
-        <View key={h.id} style={styles.card}>
-          <Text style={styles.name}>{h.title}</Text>
-          <Text>{h.details || h.description || t("common.details")}</Text>
-        </View>
-      ))}
-    </ScrollView>
+    <StudentScreenShell title={t("student.homework")} showBack showMenu={false}>
+      {homeworks.length === 0 ? (
+        <Text style={styles.emptyText}>{t("student.noHomework")}</Text>
+      ) : (
+        homeworks.map((h) => (
+          <View key={h.id} style={styles.listCard}>
+            <Text style={styles.listCardTitle}>{h.title}</Text>
+            <Text style={styles.listCardBody}>
+              {h.details || h.description || t("common.details")}
+            </Text>
+          </View>
+        ))
+      )}
+    </StudentScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#F5F7FA" },
-  title: { fontSize: 28, fontWeight: "bold", marginTop: 50, marginBottom: 20 },
-  card: { backgroundColor: "white", padding: 15, borderRadius: 12, marginBottom: 10 },
-  name: { fontWeight: "700", fontSize: 16 }
-});

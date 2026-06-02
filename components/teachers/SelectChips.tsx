@@ -63,8 +63,8 @@ export function SelectChips({
     />
   ));
 
-  // iOS: avoid horizontal ScrollView inside parent ScrollView (breaks touches)
-  if (Platform.OS === "ios") {
+  // Nested horizontal ScrollView breaks taps on web/iOS — use wrapped chips instead.
+  if (Platform.OS === "ios" || Platform.OS === "web") {
     return <View style={styles.wrapRow}>{chips}</View>;
   }
 

@@ -1,9 +1,11 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { Text, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../src/services/firebase";
 import { AuthContext } from "../../src/context/authContext";
+import { StudentScreenShell } from "../../components/students/StudentScreenShell";
+import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
 export default function ExamsScreen() {
   const { t } = useTranslation();
@@ -14,32 +16,27 @@ export default function ExamsScreen() {
     const load = async () => {
       if (!userData?.classId) return;
       const snap = await getDocs(
-        collection(db, "classes", userData.classId, "exams")
+        collection(db, "classes", userData.classId, "exams"),
       );
-      setExams(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setExams(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     };
     load();
   }, [userData?.classId]);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>{t("common.exams")}</Text>
-
-      {exams.map(e => (
-        <View key={e.id} style={styles.card}>
-          <Text style={styles.name}>{e.subject}</Text>
-          <Text>
-            {t("common.date")}: {e.date}
-          </Text>
-        </View>
-      ))}
-    </ScrollView>
+    <StudentScreenShell title={t("common.exams")} showBack showMenu={false}>
+      {exams.length === 0 ? (
+        <Text style={styles.emptyText}>{t("student.noExams")}</Text>
+      ) : (
+        exams.map((e) => (
+          <View key={e.id} style={styles.listCard}>
+            <Text style={styles.listCardTitle}>{e.subject}</Text>
+            <Text style={styles.listCardBody}>
+              {t("common.date")}: {e.date}
+            </Text>
+          </View>
+        ))
+      )}
+    </StudentScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#F5F7FA" },
-  title: { fontSize: 28, fontWeight: "bold", marginTop: 50, marginBottom: 20 },
-  card: { backgroundColor: "white", padding: 15, borderRadius: 12, marginBottom: 10 },
-  name: { fontWeight: "700" }
-});

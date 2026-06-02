@@ -7,6 +7,12 @@ export const SHELL_SCENE_CONTAINER_STYLE = {
   backgroundColor: "transparent" as const,
 };
 
+/** Full-screen stack content (web teacher/parent navigators). */
+export const WEB_SHELL_CONTENT_STYLE = {
+  flex: 1,
+  backgroundColor: "transparent" as const,
+};
+
 export const hiddenTabBarStyle = {
   display: "none" as const,
 };

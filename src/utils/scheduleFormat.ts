@@ -32,6 +32,30 @@ export function getTodayDayKey(): WeekdayKey {
   return WEEKDAY_KEYS[new Date().getDay()];
 }
 
+const DAY_ALIASES: Record<string, WeekdayKey> = {
+  sun: "sunday",
+  sunday: "sunday",
+  mon: "monday",
+  monday: "monday",
+  tue: "tuesday",
+  tuesday: "tuesday",
+  wed: "wednesday",
+  wednesday: "wednesday",
+  thu: "thursday",
+  thursday: "thursday",
+  fri: "friday",
+  friday: "friday",
+  sat: "saturday",
+  saturday: "saturday",
+};
+
+/** Parse Excel / import day column to a weekday key. */
+export function parseDayOfWeek(raw: string): WeekdayKey | null {
+  const key = raw.trim().toLowerCase().replace(/\s+/g, "");
+  if (!key) return null;
+  return DAY_ALIASES[key] ?? null;
+}
+
 /** e.g. "Mohammed" → "Moh", "Cal" → "Cal" */
 export function teacherInitials(teacherName: string): string {
   const trimmed = teacherName.trim();
@@ -118,6 +142,19 @@ export function filterSchedulesForDay(
     .sort(compareScheduleSlots);
 }
 
+function slotDayKey(slot: ScheduleSlot): WeekdayKey {
+  return parseDayOfWeek(slot.dayOfWeek || "") ?? "monday";
+}
+
+function weekdayDistanceFromToday(
+  day: WeekdayKey,
+  date: Date = new Date(),
+): number {
+  const today = date.getDay();
+  const target = WEEKDAY_KEYS.indexOf(day);
+  return (target - today + 7) % 7;
+}
+
 /** Minutes since midnight from "08:15" */
 export function parseHHmmToMinutes(time: string): number | null {
   const match = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
@@ -126,6 +163,22 @@ export function parseHHmmToMinutes(time: string): number | null {
   const m = Number(match[2]);
   if (h < 0 || h > 23 || m < 0 || m > 59) return null;
   return h * 60 + m;
+}
+
+export function formatTimeHHmm(date: Date): string {
+  const h = String(date.getHours()).padStart(2, "0");
+  const m = String(date.getMinutes()).padStart(2, "0");
+  return `${h}:${m}`;
+}
+
+export function normalizeTimeHHmm(value: string, fallback = "08:00"): string {
+  const trimmed = value.trim();
+  if (!trimmed) return fallback;
+  const minutes = parseHHmmToMinutes(trimmed);
+  if (minutes == null) return fallback;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 export function getNowMinutes(date: Date = new Date()): number {
@@ -176,9 +229,43 @@ export function filterUpcomingScheduleSlots(
   return slots.filter((s) => !isScheduleSlotEnded(s, date));
 }
 
+/**
+ * Weekly order starting from today; hides periods that already ended today.
+ * If today is over, tomorrow naturally becomes first.
+ */
+export function orderUpcomingWeeklyScheduleSlots(
+  slots: ScheduleSlot[],
+  date: Date = new Date(),
+): ScheduleSlot[] {
+  return [...slots]
+    .filter((slot) => {
+      const day = slotDayKey(slot);
+      if (day !== getTodayDayKey()) return true;
+      return !isScheduleSlotEnded(slot, date);
+    })
+    .sort((a, b) => {
+      const dayA = slotDayKey(a);
+      const dayB = slotDayKey(b);
+      const distA = weekdayDistanceFromToday(dayA, date);
+      const distB = weekdayDistanceFromToday(dayB, date);
+      if (distA !== distB) return distA - distB;
+      return compareScheduleSlots(a, b);
+    });
+}
+
 export function findCurrentScheduleSlotId(
   slots: ScheduleSlot[],
   date: Date = new Date(),
 ): string | undefined {
   return slots.find((s) => isScheduleSlotCurrent(s, date))?.id;
+}
+
+/** Current active slot from today's periods only. */
+export function findCurrentTodayScheduleSlotId(
+  slots: ScheduleSlot[],
+  date: Date = new Date(),
+): string | undefined {
+  const today = getTodayDayKey();
+  return slots.find((s) => slotDayKey(s) === today && isScheduleSlotCurrent(s, date))
+    ?.id;
 }

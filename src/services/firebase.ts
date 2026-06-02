@@ -1,8 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Platform } from "react-native";
 import { deleteApp, getApp, getApps, initializeApp } from "firebase/app";
 import {
-  getReactNativePersistence,
   getAuth,
   initializeAuth,
   inMemoryPersistence,
@@ -12,6 +9,7 @@ import { getFirestore, terminate, type Firestore } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 import type { SchoolFirebaseConfig } from "../types/school";
 import { normalizeSchoolFirebaseConfig } from "../utils/firebaseConfig";
+import { initAuthForApp } from "./firebaseAuthInit";
 import { notifyFirestoreClosing } from "./firestoreSession";
 
 type EnvFirebaseConfig = {
@@ -64,40 +62,6 @@ type RegistryFirebase = {
 };
 
 let lastSchoolFirebaseConfig: SchoolFirebaseConfig | null = null;
-
-function initAuthForApp(app: ReturnType<typeof initializeApp>): Auth {
-  if (Platform.OS === "web") {
-    try {
-      return initializeAuth(app);
-    } catch (err) {
-      if (
-        err &&
-        typeof err === "object" &&
-        "code" in err &&
-        err.code === "auth/already-initialized"
-      ) {
-        return getAuth(app);
-      }
-      throw err;
-    }
-  }
-
-  try {
-    return initializeAuth(app, {
-      persistence: getReactNativePersistence(AsyncStorage),
-    });
-  } catch (err) {
-    if (
-      err &&
-      typeof err === "object" &&
-      "code" in err &&
-      err.code === "auth/already-initialized"
-    ) {
-      return getAuth(app);
-    }
-    throw err;
-  }
-}
 
 function initAdminCreateAuth(app: ReturnType<typeof initializeApp>): Auth {
   try {
@@ -217,7 +181,7 @@ export async function connectToSchool(
     } catch {
       /* fall through to full reconnect */
     }
-    if (storage) {
+    if (storage && auth) {
       return { auth, db };
     }
   }
@@ -248,14 +212,15 @@ export async function connectToSchool(
   }
 
   lastSchoolFirebaseConfig = config;
-  auth = initAuthForApp(schoolApp);
+  const schoolAuth = initAuthForApp(schoolApp);
+  auth = schoolAuth;
   db = getFirestore(schoolApp);
   const bucket = config.storageBucket.trim();
   storage = bucket ? getStorage(schoolApp, bucket) : getStorage(schoolApp);
   adminCreateAuth = null;
 
   connectedSchoolProjectId = projectId;
-  return { auth, db };
+  return { auth: schoolAuth, db };
 }
 
 export function getDefaultFirebaseConfig(): EnvFirebaseConfig {

@@ -1,14 +1,13 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
+
+const isWeb = Platform.OS === "web";
 
 export const teacherAttendanceStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent",
   },
   fixedHeader: {
-    paddingHorizontal: 20,
-    paddingBottom: 14,
-    backgroundColor: "transparent",
+    paddingBottom: 8,
   },
   scrollBody: {
     flex: 1,
@@ -179,14 +178,25 @@ export const teacherAttendanceStyles = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
     backgroundColor: "rgba(15,23,42,0.45)",
-    justifyContent: "flex-end",
+    justifyContent: isWeb ? "center" : "flex-end",
+    alignItems: isWeb ? "center" : "stretch",
+    padding: isWeb ? 24 : 0,
   },
   modalSheet: {
     backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: "75%",
+    width: isWeb ? ("100%" as const) : undefined,
+    maxWidth: isWeb ? 480 : undefined,
+    alignSelf: isWeb ? "center" : undefined,
+    borderRadius: isWeb ? 16 : undefined,
+    borderTopLeftRadius: isWeb ? 16 : 20,
+    borderTopRightRadius: isWeb ? 16 : 20,
+    maxHeight: isWeb ? ("min(70vh, 560px)" as const) : "75%",
     paddingBottom: 24,
+    ...(isWeb
+      ? ({
+          boxShadow: "0 12px 40px rgba(15, 23, 42, 0.2)",
+        } as object)
+      : null),
   },
   modalHeader: {
     flexDirection: "row",

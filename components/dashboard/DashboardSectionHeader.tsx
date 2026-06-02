@@ -5,18 +5,29 @@ import { dashboardStyles as styles } from "./dashboardStyles";
 
 type DashboardSectionHeaderProps = {
   title: string;
+  icon?: keyof typeof Ionicons.glyphMap;
+  iconColor?: string;
   route?: string;
   viewAllLabel: string;
 };
 
 export function DashboardSectionHeader({
   title,
+  icon,
+  iconColor = "#2563EB",
   route,
   viewAllLabel,
 }: DashboardSectionHeaderProps) {
   return (
     <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.sectionTitleRow}>
+        {icon ? (
+          <View style={styles.sectionIconWrap}>
+            <Ionicons name={icon} size={16} color={iconColor} />
+          </View>
+        ) : null}
+        <Text style={styles.sectionTitle}>{title}</Text>
+      </View>
       {route ? (
         <TouchableOpacity
           style={styles.viewAllButton}

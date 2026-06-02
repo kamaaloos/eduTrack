@@ -1,4 +1,4 @@
-export const APP_COPYRIGHT = "© 2026 - MayleSoft school-app.";
+export const APP_COPYRIGHT = "© 2026 - MayleSoft school-app by eng. Hasan Kamaal.";
 
 /** Latest APK builds on Expo — used on the public About screen. */
 export const APP_BUILDS_URL =

@@ -3,8 +3,9 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   Modal,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -14,7 +15,15 @@ import {
 import type { UserData, UserRole } from "../../hooks/useAdminUsers";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
 import { useAdminData } from "../../src/context/adminDataContext";
+import {
+  confirmAction,
+  confirmDestructiveAction,
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
 import { DirectoryPagination } from "./DirectoryPagination";
+
+const isWeb = Platform.OS === "web";
 
 type UserDirectoryListProps = {
   role: UserRole;
@@ -37,6 +46,7 @@ export function UserDirectoryList({
   const [editing, setEditing] = useState<UserData | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
+  const [editPhone, setEditPhone] = useState("");
   const [saving, setSaving] = useState(false);
 
   const filtered = useMemo(() => {
@@ -45,7 +55,8 @@ export function UserDirectoryList({
     return users.filter(
       (u) =>
         u.name?.toLowerCase().includes(q) ||
-        u.email?.toLowerCase().includes(q),
+        u.email?.toLowerCase().includes(q) ||
+        (typeof u.phone === "string" && u.phone.toLowerCase().includes(q)),
     );
   }, [users, search]);
 
@@ -55,23 +66,29 @@ export function UserDirectoryList({
     setEditing(user);
     setEditName(user.name || "");
     setEditEmail(user.email || "");
+    setEditPhone(typeof user.phone === "string" ? user.phone : "");
   };
 
   const closeEdit = () => {
     setEditing(null);
     setEditName("");
     setEditEmail("");
+    setEditPhone("");
   };
 
   const saveEdit = async () => {
     if (!editing) return;
     setSaving(true);
     try {
-      await updateUser(editing.id, { name: editName, email: editEmail });
-      Alert.alert(t("common.saved"), t("admin.profileUpdated"));
+      await updateUser(editing.id, {
+        name: editName,
+        email: editEmail,
+        phone: editPhone,
+      });
+      showSuccessAlert(t("common.saved"), t("admin.profileUpdated"));
       closeEdit();
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.couldNotSave"),
       );
@@ -80,62 +97,53 @@ export function UserDirectoryList({
     }
   };
 
-  const onResetPassword = (user: UserData) => {
+  const onResetPassword = async (user: UserData) => {
     if (!user.email) {
-      Alert.alert(t("admin.noEmail"), t("admin.noEmailOnFile"));
+      showErrorAlert(t("admin.noEmail"), t("admin.noEmailOnFile"));
       return;
     }
-    Alert.alert(
+    const confirmed = await confirmAction(
       t("admin.resetPasswordTitle"),
       t("admin.resetPasswordMessage", { email: user.email }),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("admin.sendEmail"),
-          onPress: async () => {
-            try {
-              await resetUserPassword(user.email);
-              Alert.alert(t("admin.emailSent"), t("admin.resetPasswordHint"));
-            } catch (err) {
-              Alert.alert(
-                t("common.error"),
-                err instanceof Error ? err.message : t("common.connectionError"),
-              );
-            }
-          },
-        },
-      ],
+      t("admin.sendEmail"),
+      t("common.cancel"),
     );
+    if (!confirmed) return;
+
+    try {
+      await resetUserPassword(user.email);
+      showSuccessAlert(t("admin.emailSent"), t("admin.resetPasswordHint"));
+    } catch (err) {
+      showErrorAlert(
+        t("common.error"),
+        err instanceof Error ? err.message : t("common.connectionError"),
+      );
+    }
   };
 
-  const onRemove = (user: UserData) => {
-    Alert.alert(
+  const onRemove = async (user: UserData) => {
+    const confirmed = await confirmDestructiveAction(
       t("admin.removeUserTitle", { role: roleLabel }),
       t("admin.removeUserMessage", {
         name: user.name || user.email || t("common.unnamed"),
       }),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.remove"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await removeUser(user.id, role);
-              Alert.alert(
-                t("common.success"),
-                t("admin.userRemoved", { role: roleLabel }),
-              );
-            } catch (err) {
-              Alert.alert(
-                t("common.error"),
-                err instanceof Error ? err.message : t("admin.couldNotRemove"),
-              );
-            }
-          },
-        },
-      ],
+      t("common.remove"),
+      t("common.cancel"),
     );
+    if (!confirmed) return;
+
+    try {
+      await removeUser(user.id, role);
+      showSuccessAlert(
+        t("common.success"),
+        t("admin.userRemoved", { role: roleLabel }),
+      );
+    } catch (err) {
+      showErrorAlert(
+        t("common.error"),
+        err instanceof Error ? err.message : t("admin.couldNotRemove"),
+      );
+    }
   };
 
   return (
@@ -186,6 +194,11 @@ export function UserDirectoryList({
                   <Text style={styles.email} numberOfLines={1}>
                     {item.email || "—"}
                   </Text>
+                  {typeof item.phone === "string" && item.phone.trim() ? (
+                    <Text style={styles.meta} numberOfLines={1}>
+                      {item.phone.trim()}
+                    </Text>
+                  ) : null}
                   {item.classId ? (
                     <Text style={styles.meta}>
                       {t("admin.classIdLabel", { id: item.classId })}
@@ -204,7 +217,7 @@ export function UserDirectoryList({
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionBtn}
-                  onPress={() => onResetPassword(item)}
+                  onPress={() => void onResetPassword(item)}
                 >
                   <Ionicons name="key-outline" size={18} color="#D97706" />
                   <Text style={styles.actionReset}>
@@ -213,7 +226,7 @@ export function UserDirectoryList({
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionBtn}
-                  onPress={() => onRemove(item)}
+                  onPress={() => void onRemove(item)}
                 >
                   <Ionicons name="trash-outline" size={18} color="#DC2626" />
                   <Text style={styles.actionRemove}>{t("common.remove")}</Text>
@@ -224,11 +237,31 @@ export function UserDirectoryList({
         </>
       )}
 
-      <Modal visible={editing != null} animationType="slide" transparent>
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>{t("admin.editUser")}</Text>
-            <Text style={styles.modalHint}>{subtitle}</Text>
+      <Modal
+        visible={editing != null}
+        animationType={Platform.OS === "web" ? "fade" : "slide"}
+        transparent
+        onRequestClose={closeEdit}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={closeEdit}>
+          <Pressable
+            style={styles.modalCard}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View style={styles.modalHeader}>
+              <View style={styles.modalHeaderText}>
+                <Text style={styles.modalTitle}>{t("admin.editUser")}</Text>
+                <Text style={styles.modalHint}>{subtitle}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.modalCloseBtn}
+                onPress={closeEdit}
+                disabled={saving}
+                accessibilityLabel={t("common.close")}
+              >
+                <Ionicons name="close" size={22} color="#64748B" />
+              </TouchableOpacity>
+            </View>
 
             <Text style={styles.label}>{t("admin.fullNameLabel")}</Text>
             <TextInput
@@ -248,6 +281,16 @@ export function UserDirectoryList({
               editable={!saving}
             />
 
+            <Text style={styles.label}>{t("admin.phoneLabel")}</Text>
+            <TextInput
+              style={styles.input}
+              value={editPhone}
+              onChangeText={setEditPhone}
+              keyboardType="phone-pad"
+              editable={!saving}
+              placeholder={t("admin.phonePlaceholder")}
+            />
+
             <Text style={styles.note}>{t("admin.passwordResetNote")}</Text>
 
             <View style={styles.modalActions}>
@@ -260,7 +303,7 @@ export function UserDirectoryList({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.saveBtn, saving && styles.btnDisabled]}
-                onPress={saveEdit}
+                onPress={() => void saveEdit()}
                 disabled={saving}
               >
                 {saving ? (
@@ -270,8 +313,8 @@ export function UserDirectoryList({
                 )}
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
     </View>
   );
@@ -339,17 +382,44 @@ const styles = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
     backgroundColor: "rgba(15,23,42,0.45)",
-    justifyContent: "flex-end",
+    justifyContent: isWeb ? "center" : "flex-end",
+    alignItems: isWeb ? "center" : "stretch",
+    padding: isWeb ? 24 : 0,
   },
   modalCard: {
     backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderRadius: isWeb ? 16 : undefined,
+    borderTopLeftRadius: isWeb ? 16 : 20,
+    borderTopRightRadius: isWeb ? 16 : 20,
+    width: isWeb ? ("100%" as const) : undefined,
+    maxWidth: isWeb ? 480 : undefined,
     padding: 20,
-    paddingBottom: 32,
+    paddingBottom: isWeb ? 20 : 32,
+    ...(isWeb
+      ? ({
+          boxShadow: "0 12px 40px rgba(15, 23, 42, 0.2)",
+        } as object)
+      : null),
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 12,
+    marginBottom: 16,
+  },
+  modalHeaderText: { flex: 1, minWidth: 0 },
+  modalCloseBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "#F1F5F9",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
   },
   modalTitle: { fontSize: 20, fontWeight: "800", color: "#0F172A" },
-  modalHint: { fontSize: 13, color: "#64748B", marginTop: 4, marginBottom: 16 },
+  modalHint: { fontSize: 13, color: "#64748B", marginTop: 4 },
   label: { fontSize: 13, fontWeight: "600", color: "#374151", marginBottom: 6 },
   input: {
     borderWidth: 1,

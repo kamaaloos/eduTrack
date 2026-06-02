@@ -1,74 +1,81 @@
-import { Tabs, useSegments } from "expo-router";
+import { Stack, Tabs } from "expo-router";
+import { Platform } from "react-native";
 import { RoleGate } from "../../components/auth/RoleGate";
-import { AppScreenBackground } from "../../components/AppScreenBackground";
-import { MenuOverlayButton } from "../../components/navigation/MenuOverlayButton";
-import { ParentChildProvider } from "../../src/context/parentChildContext";
-import {
-  ParentMenuProvider,
-  useParentMenu,
-} from "../../src/context/parentMenuContext";
+import { RoleAppFrame } from "../../components/layout/RoleAppFrame";
 import {
   hiddenTabBarStyle,
   SHELL_SCENE_CONTAINER_STYLE,
+  WEB_SHELL_CONTENT_STYLE,
 } from "../../src/constants/tabBar";
+import { ParentChildProvider } from "../../src/context/parentChildContext";
+import { ParentMenuProvider } from "../../src/context/parentMenuContext";
 
-const PARENT_SHELL_ROUTES = new Set([
+const PARENT_STACK_SCREENS = [
   "dashboard",
   "report-card",
   "notifications",
   "account",
-]);
+  "student/[id]",
+  "report-absence",
+  "respond-attendance",
+  "detail",
+] as const;
 
-function ParentMenuOverlay() {
-  const { openMenu } = useParentMenu();
-  const segments = useSegments();
-  const route = segments.at(-1) ?? "";
-  const parentSegment = segments.at(-2) ?? "";
-  const onChildDashboard = parentSegment === "student";
-  const showOverlay = !PARENT_SHELL_ROUTES.has(route) && !onChildDashboard;
-
-  if (!showOverlay) return null;
-  return <MenuOverlayButton onPress={openMenu} />;
+function ParentWebStack() {
+  return (
+    <Stack
+      initialRouteName="dashboard"
+      screenOptions={{
+        headerShown: false,
+        animation: "fade",
+        contentStyle: WEB_SHELL_CONTENT_STYLE,
+      }}
+    >
+      {PARENT_STACK_SCREENS.map((name) => (
+        <Stack.Screen key={name} name={name} />
+      ))}
+    </Stack>
+  );
 }
 
 function ParentTabs() {
+  const sceneStyle =
+    Platform.OS === "web"
+      ? WEB_SHELL_CONTENT_STYLE
+      : SHELL_SCENE_CONTAINER_STYLE;
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        sceneStyle: SHELL_SCENE_CONTAINER_STYLE,
-        sceneContainerStyle: SHELL_SCENE_CONTAINER_STYLE,
+        lazy: true,
+        detachInactiveScreens: true,
+        sceneStyle,
+        sceneContainerStyle: sceneStyle,
         tabBarStyle: hiddenTabBarStyle,
       }}
     >
-      <Tabs.Screen name="dashboard" options={{ href: null, headerShown: false }} />
-      <Tabs.Screen name="report-card" options={{ href: null, headerShown: false }} />
-      <Tabs.Screen name="notifications" options={{ href: null, headerShown: false }} />
-      <Tabs.Screen name="account" options={{ href: null, headerShown: false }} />
-
-      <Tabs.Screen name="student/[id]" options={{ href: null, headerShown: false }} />
-      <Tabs.Screen
-        name="report-absence"
-        options={{ href: null, headerShown: false }}
-      />
-      <Tabs.Screen
-        name="respond-attendance"
-        options={{ href: null, headerShown: false }}
-      />
-      <Tabs.Screen name="detail" options={{ href: null, headerShown: false }} />
+      {PARENT_STACK_SCREENS.map((name) => (
+        <Tabs.Screen
+          key={name}
+          name={name}
+          options={{ href: null, headerShown: false }}
+        />
+      ))}
     </Tabs>
   );
 }
 
 export default function ParentLayout() {
+  const Navigator = Platform.OS === "web" ? ParentWebStack : ParentTabs;
+
   return (
     <RoleGate allowedRole="parent">
       <ParentChildProvider>
         <ParentMenuProvider>
-          <AppScreenBackground copyrightBottomOffset={8}>
-            <ParentTabs />
-            <ParentMenuOverlay />
-          </AppScreenBackground>
+          <RoleAppFrame copyrightBottomOffset={8}>
+            <Navigator />
+          </RoleAppFrame>
         </ParentMenuProvider>
       </ParentChildProvider>
     </RoleGate>

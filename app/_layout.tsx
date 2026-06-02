@@ -2,6 +2,8 @@ import "react-native-gesture-handler";
 import "../src/i18n";
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { WebAppShell } from "../components/layout/WebAppShell";
+import { WebIconFontGate } from "../components/layout/WebIconFontGate";
 import { BrandedSplashGate } from "../components/BrandedSplashGate";
 import { FirebaseBootstrapGate } from "../components/FirebaseBootstrapGate";
 import { MustChangePasswordGate } from "../components/auth/MustChangePasswordGate";
@@ -17,7 +19,9 @@ export default function RootLayout() {
       <LanguageProvider>
         <FirebaseBootstrapGate>
           <SchoolProvider>
-            <BrandedSplashGate>
+            <WebAppShell>
+              <WebIconFontGate>
+              <BrandedSplashGate>
               <ErrorBoundary>
                 <SuperAdminAuthProvider>
                   <AuthProvider>
@@ -27,7 +31,9 @@ export default function RootLayout() {
                   </AuthProvider>
                 </SuperAdminAuthProvider>
               </ErrorBoundary>
-            </BrandedSplashGate>
+              </BrandedSplashGate>
+              </WebIconFontGate>
+            </WebAppShell>
           </SchoolProvider>
         </FirebaseBootstrapGate>
       </LanguageProvider>

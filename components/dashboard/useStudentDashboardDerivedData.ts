@@ -4,8 +4,8 @@ import {
   filterUpcomingExams,
 } from "../../src/utils/academicFilters";
 import {
-  filterUpcomingScheduleSlots,
-  findCurrentScheduleSlotId,
+  findCurrentTodayScheduleSlotId,
+  orderUpcomingWeeklyScheduleSlots,
 } from "../../src/utils/scheduleFormat";
 
 type Options = {
@@ -31,12 +31,12 @@ export function useStudentDashboardDerivedData({
   }, []);
 
   const visibleSchedule = useMemo(
-    () => filterUpcomingScheduleSlots(schedule, scheduleNow),
+    () => orderUpcomingWeeklyScheduleSlots(schedule, scheduleNow),
     [schedule, scheduleNow],
   );
 
   const currentScheduleId = useMemo(
-    () => findCurrentScheduleSlotId(schedule, scheduleNow),
+    () => findCurrentTodayScheduleSlotId(schedule, scheduleNow),
     [schedule, scheduleNow],
   );
 

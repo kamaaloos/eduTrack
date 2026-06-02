@@ -1,4 +1,6 @@
 import { RefreshControl, ScrollView, View } from "react-native";
+import { webDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
+import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { TeacherDashboardAnnouncementsSection } from "./TeacherDashboardAnnouncementsSection";
 import { TeacherDashboardBanners } from "./TeacherDashboardBanners";
 import { TeacherDashboardClassesSection } from "./TeacherDashboardClassesSection";
@@ -47,6 +49,7 @@ export function TeacherDashboardView({
 }: TeacherDashboardViewProps) {
   return (
     <View style={styles.mainContainer}>
+      <ScreenBackgroundLayer />
       <TeacherDashboardHeader
         displayName={displayName}
         photoURL={photoURL}
@@ -57,21 +60,22 @@ export function TeacherDashboardView({
 
       <ScrollView
         style={styles.container}
+        contentContainerStyle={[styles.scrollContent, webDashboardContentStyle()]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <TeacherDashboardQuickActions
-          pendingAbsenceCount={pendingAbsenceCount}
-        />
+        <TeacherDashboardQuickActions />
 
         <TeacherDashboardBanners />
 
-        <TeacherDashboardStats
-          classCount={classCount}
-          studentCount={studentCount}
-        />
+        <View style={styles.section}>
+          <TeacherDashboardStats
+            classCount={classCount}
+            studentCount={studentCount}
+          />
+        </View>
 
         <TeacherDashboardClassesSection
           classChipOptions={classChipOptions}

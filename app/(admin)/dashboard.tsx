@@ -4,6 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -12,10 +13,12 @@ import {
   View,
 } from "react-native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
+import { AdminParentsOverview } from "../../components/admin/AdminParentsOverview";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { AuthContext } from "../../src/context/authContext";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { useSchoolContext } from "../../src/context/schoolContext";
+import { platformShadow } from "../../src/utils/platformShadow";
 import {
   notifySchoolTestingEnded,
   notifySchoolTestingExpiring,
@@ -256,6 +259,39 @@ export default function AdminDashboard() {
     }
   };
 
+  const isWeb = Platform.OS === "web";
+
+  const statItems = [
+    {
+      key: "students",
+      value: students.length,
+      label: t("admin.students"),
+      route: "/(admin)/user-directory/student" as DirectoryRoute,
+      style: styles.statCardBlue,
+    },
+    {
+      key: "teachers",
+      value: teachers.length,
+      label: t("admin.teachers"),
+      route: "/(admin)/user-directory/teacher" as DirectoryRoute,
+      style: styles.statCardGreen,
+    },
+    {
+      key: "parents",
+      value: parents.length,
+      label: t("admin.parents"),
+      route: "/(admin)/user-directory/parent" as DirectoryRoute,
+      style: styles.statCardPurple,
+    },
+    {
+      key: "classes",
+      value: classes.length,
+      label: t("admin.classes"),
+      route: "/(admin)/class-directory" as DirectoryRoute,
+      style: styles.statCardAmber,
+    },
+  ];
+
   return (
     <ErrorBoundary>
       <AdminScreenShell
@@ -296,42 +332,60 @@ export default function AdminDashboard() {
           ) : null}
 
           <View style={styles.statsSection}>
-            <View style={styles.statsRow}>
-              <TouchableOpacity
-                style={[styles.statCard, styles.statCardBlue]}
-                onPress={() => router.push("/(admin)/user-directory/student")}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.statValue}>{students.length}</Text>
-                <Text style={styles.statLabel}>{t("admin.students")}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.statCard, styles.statCardGreen]}
-                onPress={() => router.push("/(admin)/user-directory/teacher")}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.statValue}>{teachers.length}</Text>
-                <Text style={styles.statLabel}>{t("admin.teachers")}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.statsRow}>
-              <TouchableOpacity
-                style={[styles.statCard, styles.statCardPurple]}
-                onPress={() => router.push("/(admin)/user-directory/parent")}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.statValue}>{parents.length}</Text>
-                <Text style={styles.statLabel}>{t("admin.parents")}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.statCard, styles.statCardAmber]}
-                onPress={() => router.push("/(admin)/class-directory")}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.statValue}>{classes.length}</Text>
-                <Text style={styles.statLabel}>{t("admin.classes")}</Text>
-              </TouchableOpacity>
-            </View>
+            {isWeb ? (
+              <View style={styles.statsGridWeb}>
+                {statItems.map((item) => (
+                  <TouchableOpacity
+                    key={item.key}
+                    style={[styles.statCard, item.style, styles.statCardWeb]}
+                    onPress={() => router.push(item.route)}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.statValue}>{item.value}</Text>
+                    <Text style={styles.statLabel}>{item.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ) : (
+              <>
+                <View style={styles.statsRow}>
+                  <TouchableOpacity
+                    style={[styles.statCard, styles.statCardBlue]}
+                    onPress={() => router.push("/(admin)/user-directory/student")}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.statValue}>{students.length}</Text>
+                    <Text style={styles.statLabel}>{t("admin.students")}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.statCard, styles.statCardGreen]}
+                    onPress={() => router.push("/(admin)/user-directory/teacher")}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.statValue}>{teachers.length}</Text>
+                    <Text style={styles.statLabel}>{t("admin.teachers")}</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.statsRow}>
+                  <TouchableOpacity
+                    style={[styles.statCard, styles.statCardPurple]}
+                    onPress={() => router.push("/(admin)/user-directory/parent")}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.statValue}>{parents.length}</Text>
+                    <Text style={styles.statLabel}>{t("admin.parents")}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.statCard, styles.statCardAmber]}
+                    onPress={() => router.push("/(admin)/class-directory")}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.statValue}>{classes.length}</Text>
+                    <Text style={styles.statLabel}>{t("admin.classes")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </View>
 
           <View style={styles.insightsRow}>
@@ -351,13 +405,16 @@ export default function AdminDashboard() {
             </TouchableOpacity>
           </View>
 
+          <AdminParentsOverview />
+
           <Text style={styles.sectionLabel}>{t("admin.directories")}</Text>
           <Text style={styles.sectionHint}>{t("admin.directoriesHint")}</Text>
 
+          <View style={isWeb ? styles.menuGridWeb : undefined}>
           {directoryItems.map((item) => (
             <TouchableOpacity
               key={item.key}
-              style={styles.menuCard}
+              style={[styles.menuCard, isWeb && styles.menuCardWeb]}
               onPress={() => router.push(item.route)}
               activeOpacity={0.85}
             >
@@ -376,15 +433,17 @@ export default function AdminDashboard() {
               <Ionicons name="chevron-forward" size={22} color="#94A3B8" />
             </TouchableOpacity>
           ))}
+          </View>
 
           <Text style={[styles.sectionLabel, { marginTop: 8 }]}>
             {t("admin.management")}
           </Text>
 
+          <View style={isWeb ? styles.menuGridWeb : undefined}>
           {menuItems.map((item) => (
             <TouchableOpacity
               key={item.key}
-              style={styles.menuCard}
+              style={[styles.menuCard, isWeb && styles.menuCardWeb]}
               onPress={() => router.push(item.route)}
               activeOpacity={0.85}
             >
@@ -403,6 +462,7 @@ export default function AdminDashboard() {
               <Ionicons name="chevron-forward" size={22} color="#94A3B8" />
             </TouchableOpacity>
           ))}
+          </View>
 
           <View style={{ height: 32 }} />
         </ScrollView>
@@ -455,8 +515,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: Platform.OS === "web" ? 0 : 16,
+    paddingTop: Platform.OS === "web" ? 24 : 16,
+    paddingBottom: Platform.OS === "web" ? 32 : 0,
   },
   usageCard: {
     flexDirection: "row",
@@ -495,7 +556,12 @@ const styles = StyleSheet.create({
     color: "#64748B",
   },
   statsSection: {
-    marginBottom: 8,
+    marginBottom: Platform.OS === "web" ? 20 : 8,
+  },
+  statsGridWeb: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
   },
   statsRow: {
     flexDirection: "row",
@@ -505,13 +571,18 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    padding: 18,
-    borderRadius: 18,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    padding: Platform.OS === "web" ? 16 : 18,
+    borderRadius: Platform.OS === "web" ? 12 : 18,
+    ...platformShadow("sm"),
+    ...(Platform.OS === "web"
+      ? { borderWidth: 1, borderColor: "#E2E8F0" }
+      : null),
+  },
+  statCardWeb: {
+    flexGrow: 1,
+    flexBasis: "22%",
+    minWidth: 150,
+    maxWidth: 220,
   },
   statCardBlue: { borderLeftWidth: 4, borderLeftColor: "#2563EB" },
   statCardGreen: { borderLeftWidth: 4, borderLeftColor: "#16A34A" },
@@ -519,32 +590,33 @@ const styles = StyleSheet.create({
   statCardAmber: { borderLeftWidth: 4, borderLeftColor: "#D97706" },
   statValue: {
     color: "#0F172A",
-    fontSize: 28,
+    fontSize: Platform.OS === "web" ? 24 : 28,
     fontWeight: "800",
   },
   statLabel: {
     color: "#64748B",
-    marginTop: 6,
-    fontSize: 14,
+    marginTop: 4,
+    fontSize: 13,
     fontWeight: "600",
   },
   insightsRow: {
     flexDirection: "row",
     gap: 12,
-    marginBottom: 20,
+    marginBottom: Platform.OS === "web" ? 28 : 20,
   },
   insightCard: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    padding: 16,
-    borderRadius: 16,
+    padding: Platform.OS === "web" ? 14 : 16,
+    borderRadius: Platform.OS === "web" ? 12 : 16,
+    flexDirection: Platform.OS === "web" ? "row" : "column",
     alignItems: "center",
-    gap: 6,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    justifyContent: Platform.OS === "web" ? "flex-start" : "center",
+    gap: Platform.OS === "web" ? 10 : 6,
+    ...platformShadow("sm"),
+    ...(Platform.OS === "web"
+      ? { borderWidth: 1, borderColor: "#E2E8F0", minHeight: 56 }
+      : null),
   },
   insightTitle: {
     fontSize: 14,
@@ -552,39 +624,49 @@ const styles = StyleSheet.create({
     color: "#0F172A",
   },
   sectionLabel: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "700",
     color: "#64748B",
     textTransform: "uppercase",
     letterSpacing: 0.8,
-    marginBottom: 10,
-    marginLeft: 4,
+    marginBottom: 8,
+    marginLeft: Platform.OS === "web" ? 0 : 4,
   },
   sectionHint: {
     fontSize: 13,
     color: "#64748B",
     lineHeight: 18,
-    marginBottom: 12,
-    marginLeft: 4,
+    marginBottom: 14,
+    marginLeft: Platform.OS === "web" ? 0 : 4,
+  },
+  menuGridWeb: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginBottom: 4,
   },
   menuCard: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: Platform.OS === "web" ? 12 : 18,
+    padding: Platform.OS === "web" ? 14 : 16,
+    marginBottom: Platform.OS === "web" ? 0 : 12,
     gap: 14,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
+    ...platformShadow("sm"),
+    ...(Platform.OS === "web"
+      ? { borderWidth: 1, borderColor: "#E2E8F0" }
+      : null),
+  },
+  menuCardWeb: {
+    flexGrow: 1,
+    flexBasis: "48%",
+    minWidth: 280,
   },
   menuIconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
+    width: Platform.OS === "web" ? 44 : 48,
+    height: Platform.OS === "web" ? 44 : 48,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
@@ -594,14 +676,14 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   menuTitle: {
-    fontSize: 17,
+    fontSize: Platform.OS === "web" ? 15 : 17,
     fontWeight: "700",
     color: "#0F172A",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   menuDescription: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#64748B",
-    lineHeight: 18,
+    lineHeight: 16,
   },
 });

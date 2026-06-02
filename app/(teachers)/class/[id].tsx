@@ -4,6 +4,7 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
+import { TeacherScreenShell } from "../../../components/teachers/TeacherScreenShell";
 import { useSchoolContext } from "../../../src/context/schoolContext";
 import { useFirestoreListenerEffect } from "../../../hooks/useFirestoreListenerEffect";
 
@@ -35,7 +36,11 @@ export default function ClassPage() {
   }, [id, schoolKey]);
 
   return (
-    <View style={styles.container}>
+    <TeacherScreenShell
+      title={t("teacher.classDetail.title")}
+      subtitle={`${students.length} ${t("common.students")}`}
+      showBack
+    >
       {students.length === 0 ? (
         <Text style={styles.emptyText}>{t("teacher.classDetail.noStudents")}</Text>
       ) : (
@@ -46,16 +51,11 @@ export default function ClassPage() {
           </View>
         ))
       )}
-    </View>
+    </TeacherScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "transparent",
-  },
   emptyText: {
     fontSize: 15,
     color: "#64748B",
@@ -67,23 +67,17 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 14,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   studentName: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#1F2937",
-    marginBottom: 4,
+    color: "#0F172A",
   },
   studentEmail: {
-    fontSize: 13,
-    color: "#6B7280",
+    fontSize: 14,
+    color: "#64748B",
+    marginTop: 4,
   },
 });

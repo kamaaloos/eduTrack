@@ -22,6 +22,7 @@ type AdminDataContextValue = {
     password: string;
     name: string;
     role: UserRole;
+    phone?: string;
   }) => Promise<string>;
   createClass: (className: string) => Promise<string>;
   updateClassSubjects: (classId: string, subjects: string[]) => Promise<void>;
@@ -44,7 +45,12 @@ type AdminDataContextValue = {
   repairParentStudentLinks: () => Promise<string>;
   updateUser: (
     userId: string,
-    updates: { name?: string; email?: string },
+    updates: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      feePaid?: boolean;
+    },
   ) => Promise<void>;
   resetUserPassword: (email: string) => Promise<void>;
   removeUser: (userId: string, role: UserRole) => Promise<void>;

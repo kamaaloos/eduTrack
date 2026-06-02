@@ -19,6 +19,11 @@
       "package": "com.maylesoft.edutrack",
       "versionCode": 2
     },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/icon.png"
+    },
     "plugins": [
       "expo-router",
       [

@@ -13,9 +13,15 @@ import {
 import * as XLSX from "xlsx";
 import { db, ensureAdminCreateAuth } from "./firebase";
 import { upsertParentStudentLink } from "./parentStudentLinks";
+import {
+  normalizeTimeHHmm,
+  parseDayOfWeek,
+  parseHHmmToMinutes,
+} from "../utils/scheduleFormat";
 
 export type ImportKind =
   | "classes"
+  | "schedule"
   | "users"
   | "student_class"
   | "teacher_class"
@@ -27,6 +33,7 @@ export type ImportKind =
 
 export const IMPORT_KINDS: ImportKind[] = [
   "classes",
+  "schedule",
   "users",
   "student_class",
   "teacher_class",
@@ -39,6 +46,7 @@ export const IMPORT_KINDS: ImportKind[] = [
 
 export const WORKBOOK_SHEET_ORDER: ImportKind[] = [
   "classes",
+  "schedule",
   "users",
   "student_class",
   "teacher_class",
@@ -86,6 +94,10 @@ function normalizeSheetName(name: string): string {
 const SHEET_ALIASES: Record<string, ImportKind> = {
   class: "classes",
   classes: "classes",
+  schedule: "schedule",
+  schedules: "schedule",
+  timetable: "schedule",
+  class_schedule: "schedule",
   user: "users",
   users: "users",
   student_class: "student_class",
@@ -344,6 +356,7 @@ async function importUsers(
       | "parent"
       | "admin"
       | "";
+    const phone = cell(row, "phone", "phone_number", "phonenumber");
 
     if (!email || !password || !name || !role) {
       summary.skipped++;
@@ -375,13 +388,16 @@ async function importUsers(
         email,
         password,
       );
-      await setDoc(doc(db, "users", userCred.user.uid), {
+      const profile: Record<string, unknown> = {
         name,
         email,
         role,
         mustChangePassword: true,
         createdAt: new Date(),
-      });
+      };
+      if (phone) profile.phone = phone;
+
+      await setDoc(doc(db, "users", userCred.user.uid), profile);
       await signOut(secondaryAuth).catch(() => {});
       ctx.userByEmail.set(email, {
         id: userCred.user.uid,
@@ -754,11 +770,90 @@ async function importAnnouncements(
   return summary;
 }
 
+async function importSchedule(
+  rows: ImportRow[],
+  ctx: ImportContext,
+): Promise<ImportSummary> {
+  const summary: ImportSummary = {
+    kind: "schedule",
+    created: 0,
+    skipped: 0,
+    errors: [],
+  };
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rowNum = i + 2;
+    const classId = resolveClassId(ctx, row, rowNum, summary.errors);
+    if (!classId) continue;
+
+    const dayRaw = cell(row, "dayOfWeek", "day_of_week", "day");
+    const dayOfWeek = parseDayOfWeek(dayRaw);
+    if (!dayOfWeek) {
+      summary.errors.push(
+        `Row ${rowNum}: invalid dayOfWeek "${dayRaw}" (use monday, tuesday, …)`,
+      );
+      continue;
+    }
+
+    const startRaw = cell(row, "startTime", "start_time", "start");
+    const endRaw = cell(row, "endTime", "end_time", "end");
+    if (!startRaw || !endRaw) {
+      summary.errors.push(`Row ${rowNum}: startTime and endTime required`);
+      continue;
+    }
+
+    const startTime = normalizeTimeHHmm(startRaw);
+    const endTime = normalizeTimeHHmm(endRaw);
+    const startMin = parseHHmmToMinutes(startTime);
+    const endMin = parseHHmmToMinutes(endTime);
+    if (startMin == null || endMin == null) {
+      summary.errors.push(`Row ${rowNum}: times must be HH:mm (24-hour)`);
+      continue;
+    }
+    if (endMin <= startMin) {
+      summary.errors.push(`Row ${rowNum}: endTime must be after startTime`);
+      continue;
+    }
+
+    const subject = cell(row, "subject");
+    if (!subject) {
+      summary.errors.push(`Row ${rowNum}: subject required`);
+      continue;
+    }
+
+    const teacherName = cell(row, "teacherName", "teacher_name", "teacher");
+    const sortOrder = num(row, "sortOrder", "sort_order", "order") ?? 0;
+
+    try {
+      await addDoc(collection(db, "classes", classId, "schedules"), {
+        classId,
+        dayOfWeek,
+        startTime,
+        endTime,
+        subject,
+        teacherName,
+        sortOrder,
+        importedAt: serverTimestamp(),
+        createdAt: serverTimestamp(),
+      });
+      summary.created++;
+    } catch (e) {
+      summary.errors.push(
+        `Row ${rowNum}: ${e instanceof Error ? e.message : "failed"}`,
+      );
+    }
+  }
+
+  return summary;
+}
+
 const IMPORT_HANDLERS: Record<
   ImportKind,
   (rows: ImportRow[], ctx: ImportContext) => Promise<ImportSummary>
 > = {
   classes: importClasses,
+  schedule: importSchedule,
   users: importUsers,
   student_class: importStudentClass,
   teacher_class: importTeacherClass,
@@ -794,7 +889,10 @@ export async function runWorkbookImport(
 
 export const IMPORT_FORMAT_HINTS: Record<ImportKind, string> = {
   classes: "Columns: name",
-  users: "Columns: email, password, name, role (student|teacher|parent|admin)",
+  schedule:
+    "Columns: className, dayOfWeek, startTime, endTime, subject, teacherName (optional), sortOrder (optional)",
+  users:
+    "Columns: email, password, name, role (student|teacher|parent|admin), phone (optional)",
   student_class: "Columns: studentEmail, className",
   teacher_class: "Columns: teacherEmail, className",
   parent_student: "Columns: parentEmail, studentEmail",

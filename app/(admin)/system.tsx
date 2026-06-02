@@ -1,12 +1,13 @@
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { BroadcastAnnouncementCard } from "../../components/admin/BroadcastAnnouncementCard";
 import { ExcelImportCard } from "../../components/admin/ExcelImportCard";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
 
 export default function AdminSystemScreen() {
   const { t } = useTranslation();
@@ -26,10 +27,10 @@ export default function AdminSystemScreen() {
   const handleSyncClassIds = async () => {
     try {
       const result = await syncClassIdsFromAssignments();
-      Alert.alert(t("admin.syncComplete"), result.message);
+      showSuccessAlert(t("admin.syncComplete"), result.message);
       await loadUsers();
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.syncFailed"),
       );

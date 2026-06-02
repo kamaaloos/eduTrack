@@ -3,28 +3,9 @@ import { StyleSheet } from "react-native";
 export const teacherAcademicStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent",
-  },
-  header: {
-    backgroundColor: "#1E3A8A",
-    paddingTop: 55,
-    paddingBottom: 28,
-    paddingHorizontal: 20,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
-  },
-  headerTitle: {
-    color: "white",
-    fontSize: 28,
-    fontWeight: "700",
-  },
-  headerSubtitle: {
-    color: "#DBEAFE",
-    marginTop: 6,
-    fontSize: 14,
   },
   tabsRow: {
-    marginTop: 20,
+    marginTop: 4,
     paddingHorizontal: 16,
     maxHeight: 60,
   },

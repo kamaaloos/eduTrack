@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+import { DashboardSlideRow } from "../dashboard/DashboardSlideRow";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 type TeacherDashboardStudentsSectionProps = {
@@ -39,7 +40,7 @@ export function TeacherDashboardStudentsSection({
           {t("teacher.dashboard.noStudentsInClass")}
         </Text>
       ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <DashboardSlideRow>
           {filteredStudents.map((item: any) => (
             <TouchableOpacity
               key={item.id}
@@ -71,7 +72,7 @@ export function TeacherDashboardStudentsSection({
               </Text>
             </TouchableOpacity>
           ))}
-        </ScrollView>
+        </DashboardSlideRow>
       )}
     </View>
   );

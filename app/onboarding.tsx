@@ -1,21 +1,22 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Dimensions,
-  FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
+  Animated,
+  Easing,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../components/AppScreenBackground";
 import { LanguageSelector } from "../components/LanguageSelector";
+import { useLanguage } from "../src/context/languageContext";
+import { webAuthContentStyle } from "../src/constants/webLayout";
 import { markOnboardingComplete } from "../src/utils/onboardingStorage";
 
 type LanguageSlide = {
@@ -34,13 +35,13 @@ type ContentSlide = {
 
 type Slide = LanguageSlide | ContentSlide;
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
 export default function OnboardingScreen() {
   const { t } = useTranslation();
+  const { isRtl } = useLanguage();
   const insets = useSafeAreaInsets();
-  const listRef = useRef<FlatList<Slide>>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const fade = useRef(new Animated.Value(1)).current;
+  const slideX = useRef(new Animated.Value(0)).current;
 
   const slides = useMemo<Slide[]>(
     () => [
@@ -81,6 +82,30 @@ export default function OnboardingScreen() {
     [t],
   );
 
+  const currentSlide = slides[activeIndex];
+  const isLanguageSlide = currentSlide?.type === "language";
+  const isLastSlide = activeIndex === slides.length - 1;
+  const showSkip = activeIndex > 0 && !isLastSlide;
+
+  useEffect(() => {
+    fade.setValue(0);
+    slideX.setValue(isRtl ? -16 : 16);
+    Animated.parallel([
+      Animated.timing(fade, {
+        toValue: 1,
+        duration: 240,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideX, {
+        toValue: 0,
+        duration: 240,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [activeIndex, fade, isRtl, slideX]);
+
   const finishOnboarding = async () => {
     try {
       await markOnboardingComplete();
@@ -95,109 +120,125 @@ export default function OnboardingScreen() {
       void finishOnboarding();
       return;
     }
-    listRef.current?.scrollToIndex({ index: activeIndex + 1, animated: true });
+    setActiveIndex((index) => index + 1);
   };
 
-  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(event.nativeEvent.contentOffset.x / SCREEN_WIDTH);
-    if (index !== activeIndex && index >= 0 && index < slides.length) {
-      setActiveIndex(index);
-    }
-  };
+  const Frame = AppScreenBackground;
+  const frameProps = { showCopyright: false };
 
-  const isLanguageSlide = slides[activeIndex]?.type === "language";
-  const isLastSlide = activeIndex === slides.length - 1;
-  const showSkip = activeIndex > 0 && !isLastSlide;
+  const nextIcon = isLastSlide
+    ? "log-in-outline"
+    : isRtl
+      ? "arrow-back"
+      : "arrow-forward";
 
   return (
-    <AppScreenBackground>
-    <View style={styles.screen}>
-      <StatusBar style="dark" />
+    <Frame {...frameProps}>
+      <View style={styles.screen}>
+        <StatusBar style="dark" />
 
-      {showSkip ? (
-        <TouchableOpacity
-          style={[styles.skipButton, { top: insets.top + 8 }]}
-          onPress={() => void finishOnboarding()}
-          accessibilityLabel={t("onboarding.skipA11y")}
-        >
-          <Text style={styles.skipText}>{t("common.skip")}</Text>
-        </TouchableOpacity>
-      ) : (
-        <View style={[styles.skipPlaceholder, { top: insets.top + 8 }]} />
-      )}
+        {showSkip ? (
+          <Pressable
+            style={[
+              styles.skipButton,
+              isRtl ? styles.skipButtonRtl : styles.skipButtonLtr,
+              { top: insets.top + 8 },
+            ]}
+            onPress={() => void finishOnboarding()}
+            accessibilityLabel={t("onboarding.skipA11y")}
+          >
+            <Text style={styles.skipText}>{t("common.skip")}</Text>
+          </Pressable>
+        ) : (
+          <View
+            style={[
+              styles.skipPlaceholder,
+              isRtl ? styles.skipButtonRtl : styles.skipButtonLtr,
+              { top: insets.top + 8 },
+            ]}
+          />
+        )}
 
-      <FlatList
-        ref={listRef}
-        data={slides}
-        keyExtractor={(item) => item.id}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        scrollEventThrottle={16}
-        bounces={false}
-        renderItem={({ item }) => (
-          <View style={[styles.slide, { width: SCREEN_WIDTH }]}>
-            {item.type === "language" ? (
+        <View style={[styles.body, webAuthContentStyle()]}>
+          <Animated.View
+            style={[
+              styles.slide,
+              {
+                opacity: fade,
+                transform: [{ translateX: slideX }],
+              },
+            ]}
+          >
+            {currentSlide?.type === "language" ? (
               <>
                 <View style={[styles.iconCircle, styles.languageIconCircle]}>
-                  <Ionicons name="language" size={56} color="#1E3A8A" />
+                  <Ionicons name="language" size={52} color="#1E3A8A" />
                 </View>
-                <Text style={styles.languageHint}>
-                  English · العربية · Soomaali · Suomi
+                <Text style={[styles.title, isRtl && styles.titleRtl]}>
+                  {t("language.choose")}
+                </Text>
+                <Text style={[styles.languageHint, isRtl && styles.textRtl]}>
+                  {t("onboarding.languageHint")}
                 </Text>
                 <LanguageSelector compact showTitle={false} />
               </>
-            ) : (
+            ) : currentSlide?.type === "content" ? (
               <>
-                <View style={[styles.iconCircle, { backgroundColor: item.iconBg }]}>
-                  <Ionicons name={item.icon} size={56} color="#1E3A8A" />
+                <View
+                  style={[
+                    styles.iconCircle,
+                    { backgroundColor: currentSlide.iconBg },
+                  ]}
+                >
+                  <Ionicons name={currentSlide.icon} size={52} color="#1E3A8A" />
                 </View>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.description}>{item.description}</Text>
+                <Text style={[styles.title, isRtl && styles.titleRtl]}>
+                  {currentSlide.title}
+                </Text>
+                <Text style={[styles.description, isRtl && styles.textRtl]}>
+                  {currentSlide.description}
+                </Text>
               </>
-            )}
-          </View>
-        )}
-      />
-
-      <View
-        style={[
-          styles.footer,
-          { paddingBottom: Math.max(insets.bottom, 20) + 40 },
-        ]}
-      >
-        <View style={styles.dots}>
-          {slides.map((slide, index) => (
-            <View
-              key={slide.id}
-              style={[styles.dot, index === activeIndex && styles.dotActive]}
-            />
-          ))}
+            ) : null}
+          </Animated.View>
         </View>
 
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={goNext}
-          activeOpacity={0.85}
+        <View
+          style={[
+            styles.footer,
+            webAuthContentStyle(),
+            { paddingBottom: Math.max(insets.bottom, 16) + 24 },
+          ]}
         >
-          <Text style={styles.primaryButtonText}>
-            {isLastSlide
-              ? t("onboarding.getStarted")
-              : isLanguageSlide
-                ? t("onboarding.continue")
-                : t("onboarding.next")}
-          </Text>
-          <Ionicons
-            name={isLastSlide ? "log-in-outline" : "arrow-forward"}
-            size={20}
-            color="#FFFFFF"
-          />
-        </TouchableOpacity>
+          <View style={styles.dots}>
+            {slides.map((slide, index) => (
+              <View
+                key={slide.id}
+                style={[styles.dot, index === activeIndex && styles.dotActive]}
+              />
+            ))}
+          </View>
 
+          <Pressable
+            style={({ pressed }) => [
+              styles.primaryButton,
+              isRtl && styles.primaryButtonRtl,
+              pressed && styles.primaryButtonPressed,
+            ]}
+            onPress={goNext}
+          >
+            <Text style={styles.primaryButtonText}>
+              {isLastSlide
+                ? t("onboarding.getStarted")
+                : isLanguageSlide
+                  ? t("onboarding.continue")
+                  : t("onboarding.next")}
+            </Text>
+            <Ionicons name={nextIcon} size={20} color="#FFFFFF" />
+          </Pressable>
+        </View>
       </View>
-    </View>
-    </AppScreenBackground>
+    </Frame>
   );
 }
 
@@ -208,71 +249,93 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: "absolute",
-    right: 20,
     zIndex: 2,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.92)",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  skipButtonLtr: {
+    right: 20,
+  },
+  skipButtonRtl: {
+    left: 20,
   },
   skipPlaceholder: {
     position: "absolute",
-    right: 20,
     height: 36,
+    width: 72,
   },
   skipText: {
     color: "#64748B",
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "600",
   },
-  slide: {
+  body: {
     flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    width: "100%",
+  },
+  slide: {
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 32,
-    paddingTop: 80,
-    paddingBottom: 24,
+    paddingVertical: 16,
   },
   iconCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 112,
+    height: 112,
+    borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 32,
+    marginBottom: 28,
   },
   languageIconCircle: {
     backgroundColor: "#E0F2FE",
-    marginBottom: 20,
   },
   languageHint: {
-    fontSize: 15,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "500",
     color: "#64748B",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 16,
+    lineHeight: 22,
+    maxWidth: 320,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "800",
     color: "#1E3A8A",
     textAlign: "center",
-    marginBottom: 16,
+    marginBottom: 12,
+    lineHeight: 34,
+    maxWidth: 340,
+  },
+  titleRtl: {
+    writingDirection: "rtl",
   },
   description: {
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 26,
     color: "#475569",
     textAlign: "center",
-    maxWidth: 320,
+    maxWidth: 340,
+  },
+  textRtl: {
+    writingDirection: "rtl",
   },
   footer: {
     paddingHorizontal: 24,
     paddingTop: 8,
+    width: "100%",
   },
   dots: {
     flexDirection: "row",
     justifyContent: "center",
     gap: 8,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   dot: {
     width: 8,
@@ -281,26 +344,37 @@ const styles = StyleSheet.create({
     backgroundColor: "#CBD5E1",
   },
   dotActive: {
-    width: 24,
+    width: 22,
     backgroundColor: "#1E3A8A",
   },
   primaryButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    alignSelf: "center",
     gap: 8,
+    width: "100%",
+    maxWidth: 320,
     backgroundColor: "#1E3A8A",
-    borderRadius: 16,
-    paddingVertical: 16,
+    borderRadius: 14,
+    paddingVertical: 15,
+    paddingHorizontal: 24,
     shadowColor: "#1E3A8A",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
   },
+  primaryButtonRtl: {
+    flexDirection: "row-reverse",
+  },
+  primaryButtonPressed: {
+    opacity: 0.92,
+    transform: [{ scale: 0.99 }],
+  },
   primaryButtonText: {
     color: "#FFFFFF",
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "700",
   },
 });

@@ -159,8 +159,8 @@ export default function ParentDashboard() {
 
 const styles = StyleSheet.create({
   scroll: {
-    padding: 16,
     paddingBottom: 24,
+    flexGrow: 1,
   },
   centered: {
     flex: 1,

@@ -1,11 +1,14 @@
 import { Tabs } from "expo-router";
 
 import { Ionicons } from "@expo/vector-icons";
+import { Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import { RoleGate } from "../../components/auth/RoleGate";
-import { AppScreenBackground } from "../../components/AppScreenBackground";
+import { RoleAppFrame } from "../../components/layout/RoleAppFrame";
 import {
   floatingTabBarStyle,
+  tabBarItemStyle,
+  tabBarLabelStyle,
   tabSceneContainerStyle,
 } from "../../src/constants/tabBar";
 import { StudentMenuProvider } from "../../src/context/studentMenuContext";
@@ -16,21 +19,27 @@ export default function StudentLayout() {
   return (
     <RoleGate allowedRole="student">
     <StudentMenuProvider>
-    <AppScreenBackground copyrightBottomOffset={88}>
+    <RoleAppFrame copyrightBottomOffset={88}>
     <Tabs
       screenOptions={{
         headerShown: false,
         sceneStyle: tabSceneContainerStyle,
         sceneContainerStyle: tabSceneContainerStyle,
         tabBarShowLabel: true,
-        tabBarActiveTintColor: "#2563EB",
-        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarActiveTintColor:
+          Platform.OS === "web" ? "#1D4ED8" : "#2563EB",
+        tabBarInactiveTintColor:
+          Platform.OS === "web" ? "#64748B" : "#9CA3AF",
         tabBarStyle: floatingTabBarStyle,
+        tabBarItemStyle: Platform.OS === "web" ? tabBarItemStyle : undefined,
 
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
-        },
+        tabBarLabelStyle:
+          Platform.OS === "web"
+            ? tabBarLabelStyle
+            : {
+                fontSize: 12,
+                fontWeight: "600",
+              },
       }}
     >
       <Tabs.Screen
@@ -115,7 +124,7 @@ export default function StudentLayout() {
 
       <Tabs.Screen name="attendance-detail" options={{ href: null, headerShown: false }} />
     </Tabs>
-    </AppScreenBackground>
+    </RoleAppFrame>
     </StudentMenuProvider>
     </RoleGate>
   );

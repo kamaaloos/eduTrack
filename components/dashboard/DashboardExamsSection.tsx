@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { getPreviewText } from "../../src/utils/dashboardUi";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
+import { DashboardSlideRow } from "./DashboardSlideRow";
 import { dashboardStyles as styles } from "./dashboardStyles";
 import type { StudentDashboardNavigation } from "./studentDashboardTypes";
 
@@ -28,18 +29,16 @@ export function DashboardExamsSection({
   return (
     <View style={styles.section}>
       <DashboardSectionHeader
-        title={`📝 ${t("common.exams")}`}
+        title={t("common.exams")}
+        icon="document-text-outline"
+        iconColor="#7C3AED"
         route={listRoute}
         viewAllLabel={t("common.seeAll")}
       />
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.horizontalScrollContent}
-      >
+      <DashboardSlideRow>
         {visibleExams.length === 0 ? (
-          <View style={[styles.slideCard, styles.examNoWorkCard]}>
+          <View style={[styles.slideCard, styles.examNoWorkCard, styles.slideCardFullWidth]}>
             <Text style={styles.hwNoWorkTitle}>{t("student.noExams")}</Text>
             <Text style={styles.hwNoWorkText}>
               {exams.length === 0
@@ -105,7 +104,7 @@ export function DashboardExamsSection({
             );
           })
         )}
-      </ScrollView>
+      </DashboardSlideRow>
     </View>
   );
 }

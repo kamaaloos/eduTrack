@@ -1,10 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -14,11 +12,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 import { ABSENCE_REASONS } from "../../src/constants/absenceReasons";
 import { AuthContext } from "../../src/context/authContext";
 import { submitParentAttendanceResponse } from "../../src/services/parentAttendanceResponse";
 import { getAbsenceReasonLabel } from "../../src/utils/attendanceLabels";
+import {
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
 
 export default function RespondAttendanceScreen() {
   const { t } = useTranslation();
@@ -36,25 +39,26 @@ export default function RespondAttendanceScreen() {
   const aid = String(attendanceId ?? "");
   const childName = studentName ? String(studentName) : t("common.student");
   const dateLabel = date ? String(date) : t("common.today");
+  const subtitle = `${childName} · ${dateLabel}`;
 
   const handleSubmit = async () => {
     if (!user?.uid) {
-      Alert.alert(t("common.error"), t("common.sessionExpired"));
+      showErrorAlert(t("common.error"), t("common.sessionExpired"));
       return;
     }
     if (!aid) {
-      Alert.alert(t("common.error"), t("common.notAvailable"));
+      showErrorAlert(t("common.error"), t("common.notAvailable"));
       return;
     }
     if (!reasonCode) {
-      Alert.alert(
+      showErrorAlert(
         t("parent.reportAbsenceReason"),
         t("parent.respondAttendanceSubtitle"),
       );
       return;
     }
     if (reasonCode === "other" && !notes.trim()) {
-      Alert.alert(
+      showErrorAlert(
         t("parent.reportAbsenceNotes"),
         t("parent.reportAbsenceReason"),
       );
@@ -69,13 +73,10 @@ export default function RespondAttendanceScreen() {
         reasonCode,
         notes: notes.trim() || undefined,
       });
-      Alert.alert(
-        t("common.success"),
-        t("parent.respondSuccess"),
-        [{ text: t("common.confirm"), onPress: () => router.back() }],
-      );
+      showSuccessAlert(t("common.success"), t("parent.respondSuccess"));
+      router.back();
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("parent.respondError"),
       );
@@ -85,137 +86,101 @@ export default function RespondAttendanceScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <SafeAreaView style={styles.header} edges={["top"]}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-            accessibilityLabel={t("common.back")}
-          >
-            <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <View style={styles.headerTitles}>
-            <Text style={styles.headerTitle}>
-              {t("parent.respondAttendanceTitle")}
-            </Text>
-            <Text style={styles.headerSubtitle} numberOfLines={1}>
-              {childName} · {dateLabel}
-            </Text>
-          </View>
-          <View style={styles.headerBadge}>
-            <Ionicons name="alert-circle" size={26} color="#FCA5A5" />
-          </View>
-        </View>
-      </SafeAreaView>
-
+    <ParentScreenShell
+      title={t("parent.respondAttendanceTitle")}
+      subtitle={subtitle}
+      showBack
+      showMenu={false}
+      scroll={false}
+    >
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView
+          style={styles.flex}
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.alertBox}>
-            <Text style={styles.alertText}>
-              {t("parent.respondAttendanceSubtitle")}
-            </Text>
-          </View>
-
-          <Text style={styles.label}>{t("parent.reportAbsenceReason")}</Text>
-          <View style={styles.reasonList}>
-            {ABSENCE_REASONS.map((item) => {
-              const active = reasonCode === item.value;
-              return (
-                <TouchableOpacity
-                  key={item.value}
-                  style={[styles.reasonRow, active && styles.reasonRowActive]}
-                  onPress={() => setReasonCode(item.value)}
-                  activeOpacity={0.8}
-                >
-                  <Ionicons
-                    name={active ? "radio-button-on" : "radio-button-off"}
-                    size={22}
-                    color={active ? "#1E40AF" : "#94A3B8"}
-                  />
-                  <Text
-                    style={[
-                      styles.reasonLabel,
-                      active && styles.reasonLabelActive,
-                    ]}
-                  >
-                    {getAbsenceReasonLabel(t, item.value)}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          <Text style={[styles.label, styles.notesLabel]}>
-            {t("parent.reportAbsenceNotes")} ({t("common.optional")})
-          </Text>
-          <TextInput
-            style={styles.notesInput}
-            placeholder={t("parent.reportAbsenceNotes")}
-            value={notes}
-            onChangeText={setNotes}
-            multiline
-            textAlignVertical="top"
-          />
-
-          <TouchableOpacity
-            style={[styles.submitBtn, submitting && styles.submitDisabled]}
-            onPress={handleSubmit}
-            disabled={submitting}
-          >
-            {submitting ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.submitText}>
-                {t("parent.respondExplain")}
+          <View style={styles.formCard}>
+            <View style={styles.alertBox}>
+              <Text style={styles.alertText}>
+                {t("parent.respondAttendanceSubtitle")}
               </Text>
-            )}
-          </TouchableOpacity>
+            </View>
+
+            <Text style={styles.label}>{t("parent.reportAbsenceReason")}</Text>
+            <View style={styles.reasonList}>
+              {ABSENCE_REASONS.map((item) => {
+                const active = reasonCode === item.value;
+                return (
+                  <TouchableOpacity
+                    key={item.value}
+                    style={[styles.reasonRow, active && styles.reasonRowActive]}
+                    onPress={() => setReasonCode(item.value)}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons
+                      name={active ? "radio-button-on" : "radio-button-off"}
+                      size={22}
+                      color={active ? "#1E40AF" : "#94A3B8"}
+                    />
+                    <Text
+                      style={[
+                        styles.reasonLabel,
+                        active && styles.reasonLabelActive,
+                      ]}
+                    >
+                      {getAbsenceReasonLabel(t, item.value)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <Text style={[styles.label, styles.notesLabel]}>
+              {t("parent.reportAbsenceNotes")} ({t("common.optional")})
+            </Text>
+            <TextInput
+              style={styles.notesInput}
+              placeholder={t("parent.reportAbsenceNotes")}
+              value={notes}
+              onChangeText={setNotes}
+              multiline
+              textAlignVertical="top"
+            />
+
+            <TouchableOpacity
+              style={[styles.submitBtn, submitting && styles.submitDisabled]}
+              onPress={() => void handleSubmit()}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.submitText}>
+                  {t("parent.respondExplain")}
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </ParentScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "transparent" },
   flex: { flex: 1 },
-  header: {
-    backgroundColor: "#1E40AF",
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    paddingBottom: 20,
+  content: { paddingBottom: 32 },
+  formCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    padding: 16,
   },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    gap: 8,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitles: { flex: 1, minWidth: 0 },
-  headerTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "800" },
-  headerSubtitle: { color: "#BFDBFE", fontSize: 13, marginTop: 4 },
-  headerBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: "rgba(220,38,38,0.25)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  content: { padding: 20, paddingBottom: 40 },
   alertBox: {
     backgroundColor: "#FEF2F2",
     borderRadius: 12,
@@ -225,14 +190,13 @@ const styles = StyleSheet.create({
     borderColor: "#FECACA",
   },
   alertText: { color: "#991B1B", fontSize: 14, lineHeight: 20 },
-  alertBold: { fontWeight: "800" },
   label: { fontSize: 16, fontWeight: "700", color: "#0F172A" },
   reasonList: { gap: 8, marginTop: 12 },
   reasonRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8FAFC",
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
@@ -248,7 +212,7 @@ const styles = StyleSheet.create({
   notesLabel: { marginTop: 24 },
   notesInput: {
     marginTop: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8FAFC",
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",

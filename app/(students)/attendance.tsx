@@ -1,18 +1,15 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
-
 import { useEffect, useState, useContext } from "react";
-
 import { fetchStudentAttendanceHistory } from "../../src/services/attendanceQueries";
 import { AuthContext } from "../../src/context/authContext";
 import { getAttendanceColor } from "../../src/utils/dashboardUi";
+import { StudentScreenShell } from "../../components/students/StudentScreenShell";
+import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
 export default function AttendanceScreen() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
-  const insets = useSafeAreaInsets();
-
   const [records, setRecords] = useState<any[]>([]);
 
   useEffect(() => {
@@ -32,93 +29,39 @@ export default function AttendanceScreen() {
   }, [user?.uid]);
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{
-        paddingTop: insets.top + 12,
-        paddingBottom: insets.bottom + 120,
-      }}
+    <StudentScreenShell
+      title={t("student.attendanceTitle")}
+      subtitle={t("common.last90Days")}
+      showMenu
     >
-      <Text style={styles.title}>{t("student.attendanceTitle")}</Text>
-      <Text style={styles.subtitle}>{t("common.last90Days")}</Text>
-
-      {records.length === 0 && (
-        <Text style={styles.empty}>{t("student.noAttendance")}</Text>
-      )}
-
-      {records.map((r) => {
-        const colors = getAttendanceColor(r.status, r.parentResponse);
-        return (
-          <View
-            key={r.id}
-            style={[styles.card, { borderLeftColor: colors.border }]}
-          >
-            <Text style={styles.date}>{r.date}</Text>
-
-            <Text style={[styles.status, { color: colors.text }]}>
-              {colors.label}
-            </Text>
-
-            {r.parentResponse?.reason ? (
-              <Text style={styles.remark}>
-                Parent: {r.parentResponse.reason}
+      {records.length === 0 ? (
+        <Text style={styles.emptyText}>{t("student.noAttendance")}</Text>
+      ) : (
+        records.map((r) => {
+          const colors = getAttendanceColor(r.status, r.parentResponse);
+          return (
+            <View
+              key={r.id}
+              style={[styles.listCard, { borderLeftWidth: 4, borderLeftColor: colors.border }]}
+            >
+              <Text style={styles.listCardTitle}>{r.date}</Text>
+              <Text style={[styles.listCardBody, { color: colors.text, fontWeight: "700" }]}>
+                {colors.label}
               </Text>
-            ) : null}
-            {r.remark && <Text style={styles.remark}>Remark: {r.remark}</Text>}
-          </View>
-        );
-      })}
-    </ScrollView>
+              {r.parentResponse?.reason ? (
+                <Text style={[styles.listCardBody, { marginTop: 6 }]}>
+                  {t("common.parent")}: {r.parentResponse.reason}
+                </Text>
+              ) : null}
+              {r.remark ? (
+                <Text style={[styles.listCardBody, { marginTop: 6 }]}>
+                  {t("common.remarks")}: {r.remark}
+                </Text>
+              ) : null}
+            </View>
+          );
+        })
+      )}
+    </StudentScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#F5F7FA",
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 6,
-  },
-
-  subtitle: {
-    fontSize: 14,
-    color: "#64748B",
-    marginBottom: 20,
-    fontWeight: "600",
-  },
-
-  card: {
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 12,
-    borderLeftWidth: 4,
-  },
-
-  date: {
-    fontSize: 16,
-    fontWeight: "700",
-  },
-
-  status: {
-    fontSize: 16,
-    marginTop: 5,
-    fontWeight: "600",
-  },
-
-  remark: {
-    marginTop: 5,
-    color: "#666",
-  },
-
-  empty: {
-    textAlign: "center",
-    marginTop: 40,
-    color: "#888",
-  },
-});

@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
+import { platformShadow } from "../../src/utils/platformShadow";
 import { SelectableItem, Selector } from "./Selector";
 
 interface RelationsCardProps {
@@ -43,7 +44,7 @@ export const RelationsCard: React.FC<RelationsCardProps> = ({
   const handleAssign = async () => {
     try {
       if (!selectedLeft || !selectedRight) {
-        Alert.alert(
+        showErrorAlert(
           t("common.error"),
           t("admin.selectBothFields", { left: leftLabel, right: rightLabel }),
         );
@@ -52,13 +53,13 @@ export const RelationsCard: React.FC<RelationsCardProps> = ({
 
       if (type === "student-class") {
         await assignStudentToClass(selectedLeft, selectedRight);
-        Alert.alert(t("common.success"), t("admin.studentAssigned"));
+        showSuccessAlert(t("common.success"), t("admin.studentAssigned"));
       } else if (type === "teacher-class") {
         await assignTeacherToClass(selectedLeft, selectedRight);
-        Alert.alert(t("common.success"), t("admin.teacherAssigned"));
+        showSuccessAlert(t("common.success"), t("admin.teacherAssigned"));
       } else if (type === "parent-student") {
         await linkParentToStudent(selectedLeft, selectedRight);
-        Alert.alert(t("common.success"), t("admin.parentLinked"));
+        showSuccessAlert(t("common.success"), t("admin.parentLinked"));
       }
 
       setSelectedLeft("");
@@ -67,7 +68,7 @@ export const RelationsCard: React.FC<RelationsCardProps> = ({
     } catch (err) {
       const message =
         err instanceof Error ? err.message : t("admin.operationFailed");
-      Alert.alert(t("common.error"), message);
+      showErrorAlert(t("common.error"), message);
     }
   };
 
@@ -112,10 +113,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    ...platformShadow("md"),
   },
   sectionTitle: {
     fontSize: 22,

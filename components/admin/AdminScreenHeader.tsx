@@ -3,12 +3,18 @@ import { router } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  webAdminContentStyle,
+  webAdminPagePaddingStyle,
+} from "../../src/constants/webLayout";
+import { platformShadow } from "../../src/utils/platformShadow";
 
 type AdminScreenHeaderProps = {
   title: string;
@@ -32,7 +38,8 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <View style={styles.header}>
-        <View style={styles.row}>
+        <View style={[styles.headerInner, webAdminContentStyle(), webAdminPagePaddingStyle()]}>
+          <View style={styles.row}>
           {showBack ? (
             <TouchableOpacity
               style={styles.sideButton}
@@ -86,6 +93,7 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
               </TouchableOpacity>
             ) : null}
           </View>
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -98,21 +106,22 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#1E3A8A",
-    paddingHorizontal: 16,
-    paddingBottom: 18,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
+    paddingBottom: Platform.OS === "web" ? 14 : 18,
+    borderBottomLeftRadius: Platform.OS === "web" ? 0 : 24,
+    borderBottomRightRadius: Platform.OS === "web" ? 0 : 24,
+    ...platformShadow("lg"),
+    ...(Platform.OS === "web"
+      ? { borderBottomWidth: 1, borderBottomColor: "#1E3A8A" }
+      : null),
+  },
+  headerInner: {
+    width: "100%",
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    minHeight: 52,
+    minHeight: Platform.OS === "web" ? 48 : 52,
   },
   sideButton: {
     width: 40,
@@ -139,7 +148,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#FFFFFF",
-    fontSize: 20,
+    fontSize: Platform.OS === "web" ? 18 : 20,
     fontWeight: "800",
     letterSpacing: 0.2,
   },

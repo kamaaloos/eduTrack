@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   FlatList,
   Modal,
+  Platform,
   Pressable,
   Text,
   TextInput,
@@ -40,7 +41,7 @@ export function StudentPickerModal({
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType={Platform.OS === "web" ? "fade" : "slide"}
       transparent
       onRequestClose={onClose}
     >

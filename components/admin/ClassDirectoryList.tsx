@@ -3,8 +3,9 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   Modal,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -14,7 +15,14 @@ import {
 import type { ClassData } from "../../hooks/useAdminClasses";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
 import { useAdminData } from "../../src/context/adminDataContext";
+import {
+  confirmAction,
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
 import { DirectoryPagination } from "./DirectoryPagination";
+
+const isWeb = Platform.OS === "web";
 
 export function ClassDirectoryList() {
   const { t } = useTranslation();
@@ -47,10 +55,10 @@ export function ClassDirectoryList() {
     setSaving(true);
     try {
       await updateClass(editing.id, editName);
-      Alert.alert(t("common.saved"), t("admin.classUpdated"));
+      showSuccessAlert(t("common.saved"), t("admin.classUpdated"));
       closeEdit();
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.couldNotSave"),
       );
@@ -60,28 +68,25 @@ export function ClassDirectoryList() {
   };
 
   const onDelete = (cls: ClassData) => {
-    Alert.alert(
-      t("admin.deleteClassTitle"),
-      t("admin.deleteClassMessage", { name: cls.name }),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteClass(cls.id);
-              Alert.alert(t("common.success"), t("admin.classRemoved"));
-            } catch (err) {
-              Alert.alert(
-                t("common.error"),
-                err instanceof Error ? err.message : t("admin.couldNotDelete"),
-              );
-            }
-          },
-        },
-      ],
-    );
+    void (async () => {
+      const confirmed = await confirmAction(
+        t("admin.deleteClassTitle"),
+        t("admin.deleteClassMessage", { name: cls.name }),
+        t("common.delete"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      try {
+        await deleteClass(cls.id);
+        showSuccessAlert(t("common.success"), t("admin.classRemoved"));
+      } catch (err) {
+        showErrorAlert(
+          t("common.error"),
+          err instanceof Error ? err.message : t("admin.couldNotDelete"),
+        );
+      }
+    })();
   };
 
   return (
@@ -159,10 +164,28 @@ export function ClassDirectoryList() {
         </>
       )}
 
-      <Modal visible={editing != null} animationType="slide" transparent>
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>{t("admin.renameClass")}</Text>
+      <Modal
+        visible={editing != null}
+        animationType={isWeb ? "fade" : "slide"}
+        transparent
+        onRequestClose={closeEdit}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={closeEdit}>
+          <Pressable
+            style={styles.modalCard}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t("admin.renameClass")}</Text>
+              <TouchableOpacity
+                style={styles.modalCloseBtn}
+                onPress={closeEdit}
+                disabled={saving}
+                accessibilityLabel={t("common.close")}
+              >
+                <Ionicons name="close" size={22} color="#64748B" />
+              </TouchableOpacity>
+            </View>
             <TextInput
               style={styles.input}
               value={editName}
@@ -180,7 +203,7 @@ export function ClassDirectoryList() {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.saveBtn, saving && styles.btnDisabled]}
-                onPress={saveEdit}
+                onPress={() => void saveEdit()}
                 disabled={saving}
               >
                 {saving ? (
@@ -190,8 +213,8 @@ export function ClassDirectoryList() {
                 )}
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
     </View>
   );
@@ -244,16 +267,41 @@ const styles = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
     backgroundColor: "rgba(15,23,42,0.45)",
-    justifyContent: "flex-end",
+    justifyContent: isWeb ? "center" : "flex-end",
+    alignItems: isWeb ? "center" : "stretch",
+    padding: isWeb ? 24 : 0,
   },
   modalCard: {
     backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderRadius: isWeb ? 16 : undefined,
+    borderTopLeftRadius: isWeb ? 16 : 20,
+    borderTopRightRadius: isWeb ? 16 : 20,
+    width: isWeb ? ("100%" as const) : undefined,
+    maxWidth: isWeb ? 480 : undefined,
     padding: 20,
-    paddingBottom: 32,
+    paddingBottom: isWeb ? 20 : 32,
+    ...(isWeb
+      ? ({
+          boxShadow: "0 12px 40px rgba(15, 23, 42, 0.2)",
+        } as object)
+      : null),
   },
-  modalTitle: { fontSize: 20, fontWeight: "800", marginBottom: 16 },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+    gap: 12,
+  },
+  modalCloseBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "#F1F5F9",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalTitle: { fontSize: 20, fontWeight: "800", color: "#0F172A", flex: 1 },
   input: {
     borderWidth: 1,
     borderColor: "#D1D5DB",
@@ -261,6 +309,7 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 15,
     marginBottom: 16,
+    backgroundColor: "#F9FAFB",
   },
   modalActions: { flexDirection: "row", gap: 10 },
   cancelBtn: {

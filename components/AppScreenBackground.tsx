@@ -1,5 +1,4 @@
 import {
-  ImageBackground,
   StyleSheet,
   Text,
   View,
@@ -7,6 +6,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { APP_COPYRIGHT } from "../src/constants/appTheme";
+import { WEB_PAGE_ROOT_STYLE } from "../src/constants/webBackground";
+import { ScreenBackgroundLayer } from "./ScreenBackgroundLayer";
 
 type AppScreenBackgroundProps = {
   children: React.ReactNode;
@@ -29,13 +30,8 @@ export function AppScreenBackground({
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.root, style]}>
-      <ImageBackground
-        source={require("../assets/images/login-bg.png")}
-        style={StyleSheet.absoluteFillObject}
-        resizeMode="cover"
-        pointerEvents="none"
-      />
+    <View style={[styles.root, WEB_PAGE_ROOT_STYLE, style]}>
+      <ScreenBackgroundLayer />
       {showCopyright ? (
         <Text
           style={[
@@ -59,6 +55,8 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
+    position: "relative",
+    overflow: "hidden",
   },
   content: {
     flex: 1,

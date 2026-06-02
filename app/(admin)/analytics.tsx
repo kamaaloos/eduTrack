@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Dimensions,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -11,6 +10,12 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { BarChart, PieChart } from "react-native-chart-kit";
+import {
+  adminChartConfig,
+  ChartCard,
+  ChartLegend,
+  useAdminChartWidth,
+} from "../../components/admin/adminChartHelpers";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import {
   chartValues,
@@ -18,16 +23,6 @@ import {
   type AdminAnalyticsStats,
 } from "../../src/services/adminAnalytics";
 import { ATTENDANCE_HISTORY_DAYS } from "../../src/constants/attendanceHistory";
-
-const screenWidth = Dimensions.get("window").width;
-
-const chartConfig = {
-  backgroundGradientFrom: "#ffffff",
-  backgroundGradientTo: "#ffffff",
-  decimalPlaces: 0,
-  color: (opacity = 1) => `rgba(37, 99, 235, ${opacity})`,
-  labelColor: (opacity = 1) => `rgba(15, 23, 42, ${opacity})`,
-};
 
 const EMPTY_STATS: AdminAnalyticsStats = {
   students: 0,
@@ -61,6 +56,7 @@ function attendanceHistoryLabelT(
 
 export default function AnalyticsScreen() {
   const { t } = useTranslation();
+  const chartWidth = useAdminChartWidth();
   const [stats, setStats] = useState<AdminAnalyticsStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -130,7 +126,24 @@ export default function AnalyticsScreen() {
   );
 
   const hasPie = pieData.length > 0;
-  const activityData = chartValues([s.students, s.teachers, s.homeworks, s.exams]);
+  const pieLegend = pieData.map((item) => ({
+    name: item.name,
+    color: item.color,
+    value: item.population,
+  }));
+
+  const activityItems = useMemo(
+    () =>
+      [
+        { label: t("admin.students"), value: s.students },
+        { label: t("admin.teachers"), value: s.teachers },
+        { label: t("admin.homeworkShort"), value: s.homeworks },
+        { label: t("common.exams"), value: s.exams },
+      ].filter((item) => item.value > 0),
+    [s.students, s.teachers, s.homeworks, s.exams, t],
+  );
+
+  const hasActivityChart = activityItems.length > 0;
   const avgGradeDisplay = s.gradesCount > 0 ? `${s.avgGrade}%` : "—";
 
   if (loading && !stats) {
@@ -188,40 +201,52 @@ export default function AnalyticsScreen() {
         {hasPie ? (
           <>
             <Text style={styles.section}>{t("admin.userActivityOverview")}</Text>
-            <PieChart
-              data={pieData}
-              width={screenWidth - 40}
-              height={220}
-              chartConfig={chartConfig}
-              accessor="population"
-              backgroundColor="transparent"
-              paddingLeft="12"
-              absolute
-            />
+            <ChartCard>
+                <PieChart
+                  data={pieData}
+                  width={chartWidth}
+                  height={200}
+                  chartConfig={adminChartConfig}
+                  accessor="population"
+                  backgroundColor="transparent"
+                  paddingLeft="0"
+                  hasLegend={false}
+                  absolute
+                />
+              <ChartLegend items={pieLegend} />
+            </ChartCard>
           </>
         ) : (
           <Text style={styles.emptyChart}>{t("admin.noChartData")}</Text>
         )}
 
-        <Text style={styles.section}>{t("admin.activitySummary")}</Text>
-        <BarChart
-          data={{
-            labels: [
-              t("admin.students"),
-              t("admin.teachers"),
-              t("admin.homeworkShort"),
-              t("common.exams"),
-            ],
-            datasets: [{ data: activityData }],
-          }}
-          width={screenWidth - 40}
-          height={220}
-          yAxisLabel=""
-          yAxisSuffix=""
-          chartConfig={chartConfig}
-          style={styles.chart}
-          fromZero
-        />
+        {hasActivityChart ? (
+          <ChartCard title={t("admin.activitySummary")}>
+            <BarChart
+              data={{
+                labels: activityItems.map((item) => item.label),
+                datasets: [{ data: chartValues(activityItems.map((i) => i.value)) }],
+              }}
+              width={chartWidth}
+              height={220}
+              yAxisLabel=""
+              yAxisSuffix=""
+              chartConfig={adminChartConfig}
+              style={styles.chart}
+              fromZero
+              showValuesOnTopOfBars
+            />
+            <ChartLegend
+              items={activityItems.map((item, index) => ({
+                name: item.label,
+                value: item.value,
+                color: ["#16A34A", "#2563EB", "#D97706", "#7C3AED"][index % 4],
+              }))}
+            />
+          </ChartCard>
+        ) : (
+          <Text style={styles.emptyChart}>{t("admin.noChartData")}</Text>
+        )}
 
         <View style={styles.card}>
           <Text style={styles.cardLabel}>{t("admin.attendanceRate")}</Text>
@@ -273,7 +298,6 @@ function Stat({
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "transparent" },
   scroll: { flex: 1 },
   content: { padding: 20, paddingBottom: 40 },
   centered: {
@@ -347,7 +371,6 @@ const styles = StyleSheet.create({
   },
   chart: {
     borderRadius: 12,
-    marginBottom: 8,
   },
   card: {
     backgroundColor: "#FFFFFF",

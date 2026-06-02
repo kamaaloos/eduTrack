@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -10,6 +9,8 @@ import {
   View,
 } from "react-native";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
+import { platformShadow } from "../../src/utils/platformShadow";
 import { Selector } from "./Selector";
 
 export function ClassSubjectsCard() {
@@ -45,7 +46,7 @@ export function ClassSubjectsCard() {
 
   const persistSubjects = async (nextSubjects: string[]) => {
     if (!selectedClassId) {
-      Alert.alert(t("common.error"), t("admin.selectClassFirst"));
+      showErrorAlert(t("common.error"), t("admin.selectClassFirst"));
       return;
     }
     setSaving(true);
@@ -54,7 +55,7 @@ export function ClassSubjectsCard() {
       await refreshAll();
       setLocalSubjects(nextSubjects);
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.couldNotSaveSubjects"),
       );
@@ -68,14 +69,14 @@ export function ClassSubjectsCard() {
     const trimmed = newSubject.trim();
     if (!trimmed) return;
     if (!selectedClassId) {
-      Alert.alert(t("common.error"), t("admin.selectClassFirst"));
+      showErrorAlert(t("common.error"), t("admin.selectClassFirst"));
       return;
     }
     const exists = localSubjects.some(
       (s) => s.toLowerCase() === trimmed.toLowerCase(),
     );
     if (exists) {
-      Alert.alert(t("admin.duplicateSubject"), t("admin.subjectAlreadyInList"));
+      showErrorAlert(t("admin.duplicateSubject"), t("admin.subjectAlreadyInList"));
       return;
     }
     const next = [...localSubjects, trimmed];
@@ -100,7 +101,7 @@ export function ClassSubjectsCard() {
   const saveSubjects = async () => {
     try {
       await persistSubjects(localSubjects);
-      Alert.alert(t("common.saved"), t("admin.classSubjectsUpdated"));
+      showSuccessAlert(t("common.saved"), t("admin.classSubjectsUpdated"));
     } catch {
       // Error alert shown in persistSubjects
     }
@@ -183,10 +184,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    ...platformShadow("md"),
   },
   sectionTitle: { fontSize: 22, fontWeight: "700", marginBottom: 8 },
   hint: { fontSize: 13, color: "#64748B", lineHeight: 18, marginBottom: 12 },

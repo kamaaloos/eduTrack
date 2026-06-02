@@ -2,19 +2,15 @@ import { StyleSheet } from "react-native";
 import { FLOATING_TAB_BAR_INSET } from "../../../src/constants/tabBar";
 
 export const examReportsStyles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "transparent" },
-  container: { flex: 1, backgroundColor: "transparent" },
-  content: { padding: 20, paddingTop: 8 },
+  container: { flex: 1 },
+  content: { paddingTop: 8 },
   fixedTop: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
     paddingBottom: 8,
   },
   studentScroll: {
     flex: 1,
   },
   studentScrollContent: {
-    paddingHorizontal: 20,
     paddingTop: 4,
     paddingBottom: FLOATING_TAB_BAR_INSET,
   },
@@ -24,15 +20,6 @@ export const examReportsStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
-    backgroundColor: "transparent",
-  },
-  pageTitle: { fontSize: 24, fontWeight: "800", color: "#0F172A" },
-  pageSub: {
-    fontSize: 14,
-    color: "#64748B",
-    lineHeight: 20,
-    marginTop: 6,
-    marginBottom: 20,
   },
   label: {
     fontSize: 14,

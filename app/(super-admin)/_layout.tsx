@@ -1,7 +1,8 @@
 import { Stack, router } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { AppScreenBackground } from "../../components/AppScreenBackground";
+import { RoleAppFrame } from "../../components/layout/RoleAppFrame";
+import { ScreenBackgroundLayer } from "../../components/ScreenBackgroundLayer";
 import { useSuperAdminAuth } from "../../src/context/superAdminAuthContext";
 
 function SuperAdminGate({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,7 @@ function SuperAdminGate({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ScreenBackgroundLayer />
         <ActivityIndicator size="large" color="#1E3A8A" />
       </View>
     );
@@ -31,7 +33,7 @@ function SuperAdminGate({ children }: { children: React.ReactNode }) {
 export default function SuperAdminLayout() {
   return (
     <SuperAdminGate>
-      <AppScreenBackground copyrightBottomOffset={8}>
+      <RoleAppFrame copyrightBottomOffset={8}>
         <Stack
           screenOptions={{
             headerShown: false,
@@ -43,7 +45,7 @@ export default function SuperAdminLayout() {
           <Stack.Screen name="school/[id]" />
           <Stack.Screen name="school-form" />
         </Stack>
-      </AppScreenBackground>
+      </RoleAppFrame>
     </SuperAdminGate>
   );
 }

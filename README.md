@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/kamaaloos/eduTrack/actions/workflows/ci.yml/badge.svg)](https://github.com/kamaaloos/eduTrack/actions/workflows/ci.yml)
 
-Multi-role school management app built with **Expo (React Native)** and **Firebase**. Supports students, teachers, parents, school admins, and platform super-admin across multiple schools.
+Multi-role school management app built with **Expo (React Native + Web)** and **Firebase**. Supports students, teachers, parents, school admins, and platform super-admin across multiple schools — **mobile and browser**.
 
 ## Features
 
@@ -20,7 +20,7 @@ cp .env.example .env   # fill in Firebase keys — see docs/DEVELOPMENT.md
 npm run dev
 ```
 
-Scan the QR code with Expo Go or run on a simulator (`npm run android` / `npm run ios`).
+Scan the QR code with Expo Go or run on a simulator (`npm run android` / `npm run ios`), or use the browser (`npm run web`).
 
 ## Scripts
 
@@ -32,6 +32,10 @@ Scan the QR code with Expo Go or run on a simulator (`npm run android` / `npm ru
 | `npm run lint` | ESLint (Expo) |
 | `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
 | `npm run ci` | `test` + `lint` + `typecheck` (same as CI locally) |
+| `npm run android` | Run on Android emulator/device |
+| `npm run ios` | Run on iOS simulator/device |
+| `npm run web` | Start Expo web dev server (browser) |
+| `npm run build:web` | Static web export to `dist/` |
 | `npm run build:android:preview` | EAS cloud build → Android APK (pilot) |
 | `npm run build:android:production` | EAS cloud build → Android APK (production profile) |
 
@@ -47,6 +51,7 @@ Quick path: `eas login` → `eas init` → set `EXPO_PUBLIC_REGISTRY_*` secrets 
 |-----|----------|
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Multi-school Firebase layout, app layers, roles |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Env vars, local setup, project layout |
+| [docs/WEB.md](docs/WEB.md) | Browser dev, static export, Firebase Auth domains |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Firestore rules, indexes, multi-project deploy |
 | [SECURITY.md](SECURITY.md) | Secrets, rules, admin scripts |
 

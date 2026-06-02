@@ -1,10 +1,12 @@
 import { useContext, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text } from "react-native";
+import { Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../src/context/authContext";
 import { db } from "../../src/services/firebase";
+import { StudentScreenShell } from "../../components/students/StudentScreenShell";
+import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
 export default function RemarkDetailScreen() {
   const { t } = useTranslation();
@@ -63,60 +65,26 @@ export default function RemarkDetailScreen() {
   }, [id, classId, paramBody, paramTeacher, paramType]);
 
   const fullText = item?.text || item?.remark || paramBody || "";
+  const screenTitle =
+    item?.teacherName || item?.teacher || paramTeacher || t("common.remarks");
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.badge}>{t("common.remarks")}</Text>
-      <Text style={styles.title}>
-        {item?.teacherName || item?.teacher || paramTeacher || t("common.teacher")}
-      </Text>
-
+    <StudentScreenShell title={screenTitle} showBack showMenu={false}>
       {item?.type || paramType ? (
-        <Text style={styles.type}>{item?.type || paramType}</Text>
+        <Text style={styles.detailSubtitle}>{item?.type || paramType}</Text>
       ) : null}
 
       {item?.rating ? (
-        <Text style={styles.rating}>
-          {"⭐".repeat(Math.min(5, Number(item.rating)))}
+        <Text style={[styles.detailBody, { marginBottom: 12 }]}>
+          {"★".repeat(Math.min(5, Number(item.rating)))}
         </Text>
       ) : null}
 
-      <Text style={styles.body}>{fullText || t("common.notAvailable")}</Text>
-    </ScrollView>
+      <View style={styles.detailCard}>
+        <Text style={styles.detailBody}>
+          {fullText || t("common.notAvailable")}
+        </Text>
+      </View>
+    </StudentScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 16,
-    backgroundColor: "transparent",
-  },
-  badge: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#6B7280",
-    textTransform: "uppercase",
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#1F2937",
-    marginBottom: 6,
-  },
-  type: {
-    fontSize: 15,
-    color: "#2563EB",
-    fontWeight: "600",
-    marginBottom: 12,
-    textTransform: "capitalize",
-  },
-  rating: { fontSize: 18, marginBottom: 16 },
-  body: {
-    fontSize: 16,
-    lineHeight: 26,
-    color: "#374151",
-  },
-});

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { submitParentAbsenceReport } from "../../src/services/parentAbsence";
+import {
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
 import { dashboardStyles as styles } from "./dashboardStyles";
 
@@ -21,7 +25,7 @@ export function DashboardAbsenceReportSection({
 
   const submitAbsence = async () => {
     if (!reason.trim()) {
-      Alert.alert(t("parent.reportAbsenceReason"));
+      showErrorAlert(t("parent.reportAbsenceReason"), "");
       return;
     }
     try {
@@ -33,9 +37,9 @@ export function DashboardAbsenceReportSection({
         classId: classId || undefined,
       });
       setReason("");
-      Alert.alert(t("common.success"), t("parent.reportAbsenceSuccess"));
+      showSuccessAlert(t("common.success"), t("parent.reportAbsenceSuccess"));
     } catch (err) {
-      Alert.alert(
+      showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("parent.reportAbsenceError"),
       );
@@ -45,7 +49,9 @@ export function DashboardAbsenceReportSection({
   return (
     <View style={styles.section}>
       <DashboardSectionHeader
-        title={`📋 ${t("parent.reportAbsenceTitle")}`}
+        title={t("parent.reportAbsenceTitle")}
+        icon="medkit-outline"
+        iconColor="#DC2626"
         viewAllLabel={t("common.seeAll")}
       />
       <View style={styles.absenceCard}>
