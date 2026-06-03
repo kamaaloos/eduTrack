@@ -31,6 +31,8 @@
     "src/utils/readImageBytes.ts",
     "src/utils/academicFilters.ts",
     "src/utils/scheduleFormat.ts",
+    "src/services/parentFeePayments.ts",
+    "src/services/adminParentsOverview.ts",
     "src/services/schoolRegistryMappers.ts",
     "src/services/schoolRegistryValidation.ts",
     "tests/**/*.ts"

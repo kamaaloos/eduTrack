@@ -3,7 +3,10 @@ import type { UserData } from "../../hooks/useAdminUsers";
 import { db } from "./firebase";
 import {
   countPaidMonthsInYear,
+  effectiveFeeMonthsForYear,
+  feeStatusFromMonths,
   parseFeeMonths,
+  type FeeMonthsMap,
 } from "./parentFeePayments";
 
 export type ParentOverviewRow = {
@@ -64,9 +67,35 @@ export function buildParentOverviewRows(
       linkedStudentCount: linkedCount(parent, counts),
       feePaid: parent.feePaid === true,
       paidMonthsThisYear: countPaidMonthsInYear(
-        parseFeeMonths(parent.feeMonths),
+        effectiveFeeMonthsForYear(
+          parseFeeMonths(parent.feeMonths),
+          currentYear(),
+          parent.feePaid,
+        ),
         currentYear(),
       ),
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function patchOverviewRowFromFeeMonths(
+  row: ParentOverviewRow,
+  feeMonths: FeeMonthsMap,
+  year: number = currentYear(),
+): ParentOverviewRow {
+  return {
+    ...row,
+    ...feeStatusFromMonths(feeMonths, year),
+  };
+}
+
+/** Optimistic UI while saving the current calendar month toggle. */
+export function optimisticToggleCurrentMonthFee(
+  row: ParentOverviewRow,
+): ParentOverviewRow {
+  const nextPaid = !row.feePaid;
+  let paidMonthsThisYear = row.paidMonthsThisYear;
+  if (nextPaid) paidMonthsThisYear += 1;
+  else paidMonthsThisYear = Math.max(0, paidMonthsThisYear - 1);
+  return { ...row, feePaid: nextPaid, paidMonthsThisYear };
 }

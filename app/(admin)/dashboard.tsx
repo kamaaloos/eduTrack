@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: Platform.OS === "web" ? 0 : 16,
     paddingTop: Platform.OS === "web" ? 24 : 16,
-    paddingBottom: Platform.OS === "web" ? 32 : 0,
+    paddingBottom: Platform.OS === "web" ? 32 : 20,
   },
   usageCard: {
     flexDirection: "row",

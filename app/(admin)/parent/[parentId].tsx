@@ -13,6 +13,9 @@ import { AdminScreenShell } from "../../../components/admin/AdminScreenShell";
 import { ParentPaymentCalendar } from "../../../components/admin/ParentPaymentCalendar";
 import { useAdminData } from "../../../src/context/adminDataContext";
 import {
+  applyMonthToFeeMap,
+  countPaidMonthsInYear,
+  effectiveFeeMonthsForYear,
   loadParentFeeMonths,
   setParentFeeMonthPaid,
   type FeeMonthsMap,
@@ -23,7 +26,7 @@ export default function AdminParentPaymentScreen() {
   const { t } = useTranslation();
   const { parentId: parentIdParam } = useLocalSearchParams<{ parentId: string }>();
   const parentId = String(parentIdParam ?? "");
-  const { parents } = useAdminData();
+  const { parents, loadUsers } = useAdminData();
 
   const parent = useMemo(
     () => parents.find((item) => item.id === parentId),
@@ -40,7 +43,12 @@ export default function AdminParentPaymentScreen() {
     setLoading(true);
     try {
       const map = await loadParentFeeMonths(parentId);
-      setFeeMonths(map);
+      const legacyFeePaid = parents.find((item) => item.id === parentId)?.feePaid;
+      const merged =
+        countPaidMonthsInYear(map, year) === 0 && legacyFeePaid === true
+          ? effectiveFeeMonthsForYear(map, year, true)
+          : map;
+      setFeeMonths(merged);
     } catch (err) {
       showErrorAlert(
         t("common.error"),
@@ -49,7 +57,7 @@ export default function AdminParentPaymentScreen() {
     } finally {
       setLoading(false);
     }
-  }, [parentId, t]);
+  }, [parentId, year, t]);
 
   useEffect(() => {
     void loadMonths();
@@ -57,11 +65,15 @@ export default function AdminParentPaymentScreen() {
 
   const handleToggleMonth = async (month: number, paid: boolean) => {
     if (!parentId) return;
+    const previous = feeMonths;
+    setFeeMonths((current) => applyMonthToFeeMap(current, year, month, paid));
     setSaving(true);
     try {
       const next = await setParentFeeMonthPaid(parentId, year, month, paid);
       setFeeMonths(next);
+      void loadUsers();
     } catch (err) {
+      setFeeMonths(previous);
       showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.parentFeeUpdateFailed"),

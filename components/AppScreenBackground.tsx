@@ -5,7 +5,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { APP_COPYRIGHT } from "../src/constants/appTheme";
+import { APP_COPYRIGHT, copyrightFooterInset } from "../src/constants/appTheme";
 import { WEB_PAGE_ROOT_STYLE } from "../src/constants/webBackground";
 import { ScreenBackgroundLayer } from "./ScreenBackgroundLayer";
 
@@ -28,6 +28,9 @@ export function AppScreenBackground({
   style,
 }: AppScreenBackgroundProps) {
   const insets = useSafeAreaInsets();
+  const footerInset = showCopyright
+    ? copyrightFooterInset(insets.bottom, copyrightBottomOffset)
+    : 0;
 
   return (
     <View style={[styles.root, WEB_PAGE_ROOT_STYLE, style]}>
@@ -43,7 +46,10 @@ export function AppScreenBackground({
           {APP_COPYRIGHT}
         </Text>
       ) : null}
-      <View style={styles.content} pointerEvents="box-none">
+      <View
+        style={[styles.content, footerInset > 0 && { paddingBottom: footerInset }]}
+        pointerEvents="box-none"
+      >
         {children}
       </View>
     </View>
@@ -71,6 +77,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "rgba(12, 74, 110, 0.75)",
     letterSpacing: 0.3,
-    zIndex: 0,
+    zIndex: 2,
   },
 });

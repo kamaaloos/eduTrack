@@ -24,9 +24,56 @@ export function countPaidMonthsInYear(map: FeeMonthsMap, year: number): number {
   return count;
 }
 
+/**
+ * feePaid means “current calendar month is paid”. Older records may only have feePaid
+ * without feeMonths — treat the current month as paid for counts and the calendar.
+ */
+export function effectiveFeeMonthsForYear(
+  map: FeeMonthsMap,
+  year: number,
+  feePaid?: boolean,
+  referenceDate: Date = new Date(),
+): FeeMonthsMap {
+  const merged = { ...map };
+  if (feePaid !== true || year !== referenceDate.getFullYear()) {
+    return merged;
+  }
+  merged[feeMonthKey(year, referenceDate.getMonth() + 1)] = true;
+  return merged;
+}
+
 export function isCurrentCalendarMonth(year: number, month: number): boolean {
   const now = new Date();
   return year === now.getFullYear() && month === now.getMonth() + 1;
+}
+
+/** Derive dashboard fee flag and yearly count from a feeMonths map. */
+export function feeStatusFromMonths(
+  map: FeeMonthsMap,
+  year: number,
+  referenceDate: Date = new Date(),
+): { feePaid: boolean; paidMonthsThisYear: number } {
+  const currentKey = feeMonthKey(
+    referenceDate.getFullYear(),
+    referenceDate.getMonth() + 1,
+  );
+  return {
+    feePaid: map[currentKey] === true,
+    paidMonthsThisYear: countPaidMonthsInYear(map, year),
+  };
+}
+
+export function applyMonthToFeeMap(
+  map: FeeMonthsMap,
+  year: number,
+  month: number,
+  paid: boolean,
+): FeeMonthsMap {
+  const key = feeMonthKey(year, month);
+  const next = { ...map };
+  if (paid) next[key] = true;
+  else delete next[key];
+  return next;
 }
 
 export async function loadParentFeeMonths(parentId: string): Promise<FeeMonthsMap> {

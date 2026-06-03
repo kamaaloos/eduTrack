@@ -16,6 +16,8 @@ import { usePaginatedList } from "../../hooks/usePaginatedList";
 import {
   buildParentOverviewRows,
   loadParentStudentCounts,
+  optimisticToggleCurrentMonthFee,
+  patchOverviewRowFromFeeMonths,
   type ParentOverviewRow,
 } from "../../src/services/adminParentsOverview";
 import { setParentFeeMonthPaid } from "../../src/services/parentFeePayments";
@@ -26,7 +28,7 @@ type FeeFilter = "all" | "yes" | "no";
 
 export function AdminParentsOverview() {
   const { t } = useTranslation();
-  const { parents, usersLoading } = useAdminData();
+  const { parents, usersLoading, loadUsers } = useAdminData();
   const [search, setSearch] = useState("");
   const [feeFilter, setFeeFilter] = useState<FeeFilter>("all");
   const [rows, setRows] = useState<ParentOverviewRow[]>([]);
@@ -91,17 +93,36 @@ export function AdminParentsOverview() {
   };
 
   const toggleFee = async (row: ParentOverviewRow) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const nextPaid = !row.feePaid;
+
+    setRows((prev) =>
+      prev.map((item) =>
+        item.id === row.id ? optimisticToggleCurrentMonthFee(item) : item,
+      ),
+    );
     setTogglingId(row.id);
     try {
-      const now = new Date();
-      await setParentFeeMonthPaid(
+      const feeMonths = await setParentFeeMonthPaid(
         row.id,
-        now.getFullYear(),
-        now.getMonth() + 1,
-        !row.feePaid,
+        year,
+        month,
+        nextPaid,
       );
-      await loadOverview();
+      setRows((prev) =>
+        prev.map((item) =>
+          item.id === row.id
+            ? patchOverviewRowFromFeeMonths(item, feeMonths, year)
+            : item,
+        ),
+      );
+      void loadUsers();
     } catch (err) {
+      setRows((prev) =>
+        prev.map((item) => (item.id === row.id ? row : item)),
+      );
       showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("admin.parentFeeUpdateFailed"),
@@ -212,24 +233,16 @@ export function AdminParentsOverview() {
           {pagination.pageItems.map((row) => (
             <View key={row.id} style={[styles.row, isWeb && styles.rowWeb]}>
               <Pressable
-                style={styles.rowMain}
+                style={[styles.rowMain, !isWeb && styles.rowMainMobile]}
                 onPress={() => openParentDetail(row.id)}
               >
-                <View style={styles.colName}>
+                <View style={[styles.colName, !isWeb && styles.colNameMobile]}>
                   <Text style={styles.name} numberOfLines={1}>
                     {row.name}
                   </Text>
                   {!isWeb ? (
                     <Text style={styles.meta} numberOfLines={2}>
                       {row.contact}
-                    </Text>
-                  ) : null}
-                  {!isWeb ? (
-                    <Text style={styles.monthsMeta}>
-                      {t("admin.parentMonthsPaidShort", {
-                        paid: row.paidMonthsThisYear,
-                        year,
-                      })}
                     </Text>
                   ) : null}
                 </View>
@@ -240,9 +253,11 @@ export function AdminParentsOverview() {
                   </Text>
                 ) : null}
 
-                <Text style={[styles.students, styles.colStudents]}>
-                  {row.linkedStudentCount}
-                </Text>
+                {isWeb ? (
+                  <Text style={[styles.students, styles.colStudents]}>
+                    {row.linkedStudentCount}
+                  </Text>
+                ) : null}
 
                 {isWeb ? (
                   <Text style={[styles.months, styles.colMonths]}>
@@ -251,11 +266,23 @@ export function AdminParentsOverview() {
                 ) : null}
               </Pressable>
 
+              {!isWeb ? (
+                <View style={styles.mobileStatsRow}>
+                  <Text style={styles.mobileStat}>
+                    {t("admin.parentStudentsColumn")}: {row.linkedStudentCount}
+                  </Text>
+                  <Text style={styles.mobileStatMonths}>
+                    {year}: {row.paidMonthsThisYear}/12
+                  </Text>
+                </View>
+              ) : null}
+
               <TouchableOpacity
                 style={[
                   styles.feeBtn,
                   row.feePaid ? styles.feeBtnYes : styles.feeBtnNo,
                   styles.colFee,
+                  !isWeb && styles.feeBtnMobile,
                 ]}
                 onPress={() => void toggleFee(row)}
                 disabled={togglingId === row.id}
@@ -414,6 +441,34 @@ const styles = StyleSheet.create({
     gap: 8,
     minWidth: 0,
   },
+  rowMainMobile: {
+    flexDirection: "column",
+    alignItems: "stretch",
+  },
+  colNameMobile: {
+    flex: undefined,
+    width: "100%",
+  },
+  mobileStatsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingLeft: 2,
+  },
+  mobileStat: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  mobileStatMonths: {
+    fontSize: 14,
+    fontWeight: "800",
+    color: "#6D28D9",
+  },
+  feeBtnMobile: {
+    alignSelf: "flex-end",
+  },
   colName: { flex: Platform.OS === "web" ? 1.2 : undefined, minWidth: 0 },
   colContact: { flex: Platform.OS === "web" ? 1.4 : undefined, minWidth: 0 },
   colStudents: {
@@ -430,7 +485,6 @@ const styles = StyleSheet.create({
   },
   name: { fontSize: 15, fontWeight: "700", color: "#0F172A" },
   meta: { fontSize: 13, color: "#64748B", marginTop: 2, lineHeight: 18 },
-  monthsMeta: { fontSize: 12, color: "#6D28D9", marginTop: 4, fontWeight: "600" },
   students: {
     fontSize: 15,
     fontWeight: "700",

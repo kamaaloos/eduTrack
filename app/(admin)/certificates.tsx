@@ -3,12 +3,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { SelectChips } from "../../components/teachers/SelectChips";
 import { useAdminData } from "../../src/context/adminDataContext";
@@ -22,10 +24,12 @@ import {
   formatAcademicYear,
   listAcademicYearStarts,
 } from "../../src/utils/academicYear";
+import { copyrightFooterInset } from "../../src/constants/appTheme";
 import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
 
 export default function AdminCertificatesScreen() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { classes, classesLoading, loadClasses } = useAdminData();
   const { selectedSchool } = useSchoolContext();
   const [selectedClassId, setSelectedClassId] = useState("");
@@ -84,7 +88,12 @@ export default function AdminCertificatesScreen() {
       );
       showSuccessAlert(
         t("certificates.exportReadyTitle"),
-        t("certificates.exportReadyMessage", { count }),
+        t(
+          Platform.OS === "web"
+            ? "certificates.exportReadyMessageWeb"
+            : "certificates.exportReadyMessage",
+          { count },
+        ),
       );
     } catch (err) {
       showErrorAlert(t("common.error"), t(getPdfShareErrorKey(err)));
@@ -105,7 +114,12 @@ export default function AdminCertificatesScreen() {
       subtitle={t("certificates.adminSubtitle")}
     >
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingBottom: copyrightFooterInset(insets.bottom, 8) + 16,
+          },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.card}>
@@ -159,7 +173,6 @@ export default function AdminCertificatesScreen() {
 const styles = StyleSheet.create({
   content: {
     padding: 16,
-    paddingBottom: 40,
   },
   card: {
     backgroundColor: "#FFFFFF",

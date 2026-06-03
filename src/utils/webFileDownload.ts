@@ -34,6 +34,29 @@ export function downloadBase64AsFile(
   URL.revokeObjectURL(url);
 }
 
+/** Download a PDF (or other blob) produced by expo-print on web. */
+export async function downloadBlobFromUri(uri: string, filename: string): Promise<void> {
+  if (typeof document === "undefined") {
+    throw new Error("File download is not supported on this platform");
+  }
+
+  const response = await fetch(uri);
+  if (!response.ok) {
+    throw new Error(`Failed to read file (${response.status})`);
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename.endsWith(".pdf") ? filename : `${filename}.pdf`;
+  anchor.style.display = "none";
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
+}
+
 /** Read a picked file URI on web (blob:, data:, http(s):). */
 export async function readUriAsArrayBuffer(uri: string): Promise<ArrayBuffer> {
   const response = await fetch(uri);
