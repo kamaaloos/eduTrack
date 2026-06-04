@@ -240,7 +240,27 @@ service cloud.firestore {
           && resource.data.studentId != null
           && parentOwnsStudent(resource.data.studentId)
         )
-        || (isTeacher() && teacherOwnsClass(resource.data.classId));
+        || (
+          isTeacher()
+          && (
+            (
+              resource.data.classId != null
+              && teacherOwnsClass(resource.data.classId)
+            )
+            || (
+              resource.data.studentId != null
+              && teacherOwnsStudent(resource.data.studentId)
+            )
+            || (
+              resource.data.classId != null
+              && resource.data.studentId != null
+              && teacherOwnsStudentInClass(
+                resource.data.studentId,
+                resource.data.classId
+              )
+            )
+          )
+        );
 
       allow create: if isAdmin()
         || (

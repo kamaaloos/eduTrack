@@ -36,104 +36,109 @@ function toDate(value: unknown): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-async function queryAbsenceByStudentIds(
-  studentIds: string[],
+/** One query per class so Firestore rules (teacherOwnsClass) can authorize the list. */
+async function queryAbsenceByClassIds(
+  classIds: string[],
+  allowedStudentIds: Set<string>,
 ): Promise<TeacherAbsenceReport[]> {
-  if (!db || studentIds.length === 0) return [];
+  if (!db || classIds.length === 0) return [];
 
   const reports: TeacherAbsenceReport[] = [];
-  const chunkSize = 10;
 
-  for (let i = 0; i < studentIds.length; i += chunkSize) {
-    const chunk = studentIds.slice(i, i + chunkSize);
-    if (chunk.length === 0) continue;
+  await Promise.all(
+    classIds.map(async (classId) => {
+      try {
+        const snap = await getDocs(
+          query(
+            collection(db, "parentRemarks"),
+            where("type", "==", "absence"),
+            where("classId", "==", classId),
+          ),
+        );
 
-    try {
-      const snap = await getDocs(
-        query(
-          collection(db, "parentRemarks"),
-          where("type", "==", "absence"),
-          where("studentId", "in", chunk),
-        ),
-      );
+        snap.docs.forEach((d) => {
+          const data = d.data();
+          const studentId = String(data.studentId ?? "");
+          if (!studentId || !allowedStudentIds.has(studentId)) return;
 
-      snap.docs.forEach((d) => {
-        const data = d.data();
-        reports.push({
-          id: d.id,
-          studentId: String(data.studentId ?? ""),
-          studentName: "",
-          classId: (data.classId as string) || null,
-          reason: String(data.reason ?? "Absence"),
-          reasonCode: data.reasonCode as string | undefined,
-          notes: (data.notes as string) || null,
-          createdAt: toDate(data.createdAt),
+          reports.push({
+            id: d.id,
+            studentId,
+            studentName: "",
+            classId: (data.classId as string) || null,
+            reason: String(data.reason ?? "Absence"),
+            reasonCode: data.reasonCode as string | undefined,
+            notes: (data.notes as string) || null,
+            createdAt: toDate(data.createdAt),
+          });
         });
-      });
-    } catch (err) {
-      console.warn("parentRemarks query failed for chunk", err);
-    }
-  }
+      } catch (err) {
+        console.warn("parentRemarks query failed for class", classId, err);
+      }
+    }),
+  );
 
   return reports;
 }
 
-/** Parent replies to teacher-marked absence (stored on attendance.parentResponse). */
+/** Parent replies on attendance — query per class for teacher security rules. */
 async function queryAttendanceParentResponses(
-  studentIds: string[],
-  filterClassId?: string,
+  classIds: string[],
+  allowedStudentIds: Set<string>,
 ): Promise<TeacherAbsenceReport[]> {
-  if (!db || studentIds.length === 0) return [];
+  if (!db || classIds.length === 0) return [];
 
   const sinceDate = getAttendanceHistorySinceDate();
   const reports: TeacherAbsenceReport[] = [];
-  const chunkSize = 10;
 
-  for (let i = 0; i < studentIds.length; i += chunkSize) {
-    const chunk = studentIds.slice(i, i + chunkSize);
-    if (chunk.length === 0) continue;
+  await Promise.all(
+    classIds.map(async (classId) => {
+      try {
+        const snap = await getDocs(
+          query(
+            collection(db, "attendance"),
+            where("classId", "==", classId),
+            where("date", ">=", sinceDate),
+          ),
+        );
 
-    try {
-      const snap = await getDocs(
-        query(
-          collection(db, "attendance"),
-          where("studentId", "in", chunk),
-          where("date", ">=", sinceDate),
-        ),
-      );
+        snap.docs.forEach((d) => {
+          const data = d.data();
+          const record = { id: d.id, ...data };
+          if (data.status !== "absent" || !hasParentAttendanceResponse(record)) {
+            return;
+          }
 
-      snap.docs.forEach((d) => {
-        const data = d.data();
-        const record = { id: d.id, ...data };
-        if (data.status !== "absent" || !hasParentAttendanceResponse(record)) {
-          return;
-        }
+          const studentId = String(data.studentId ?? "");
+          if (!studentId || !allowedStudentIds.has(studentId)) return;
 
-        const classId = (data.classId as string) || null;
-        if (filterClassId && classId !== filterClassId) return;
+          const pr = data.parentResponse as {
+            reason?: string;
+            reasonCode?: string;
+            notes?: string | null;
+            respondedAt?: unknown;
+          };
 
-        const pr = data.parentResponse as {
-          reason?: string;
-          reasonCode?: string;
-          notes?: string | null;
-          respondedAt?: unknown;
-        };
-
-        reports.push({
-          id: `att_${d.id}`,
-          studentId: String(data.studentId ?? ""),
-          studentName: "",
-          classId,
-          reason: String(pr?.reason ?? "Absence"),
-          reasonCode: pr?.reasonCode,
-          notes: pr?.notes ?? null,
-          createdAt: toDate(pr?.respondedAt),
+          reports.push({
+            id: `att_${d.id}`,
+            studentId,
+            studentName: "",
+            classId: (data.classId as string) || classId,
+            reason: String(pr?.reason ?? "Absence"),
+            reasonCode: pr?.reasonCode,
+            notes: pr?.notes ?? null,
+            createdAt: toDate(pr?.respondedAt),
+          });
         });
-      });
-    } catch (err) {
-      console.warn("attendance parentResponse query failed for chunk", err);
-    }
-  }
+      } catch (err) {
+        console.warn(
+          "attendance parentResponse query failed for class",
+          classId,
+          err,
+        );
+      }
+    }),
+  );
 
   return reports;
 }
@@ -180,10 +185,11 @@ export async function loadAbsenceReportsForTeacher(
     : students;
 
   const studentIds = scopedStudents.map((s) => s.id);
+  const allowedStudentIds = new Set(studentIds);
 
   const [byRemarks, byAttendanceResponses] = await Promise.all([
-    queryAbsenceByStudentIds(studentIds),
-    queryAttendanceParentResponses(studentIds, filterClassId),
+    queryAbsenceByClassIds(scopedClassIds, allowedStudentIds),
+    queryAttendanceParentResponses(scopedClassIds, allowedStudentIds),
   ]);
 
   const byId = new Map<string, TeacherAbsenceReport>();
