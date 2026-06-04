@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { getPreviewText } from "../../src/utils/dashboardUi";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
 import { DashboardSlideRow } from "./DashboardSlideRow";
-import { dashboardStyles as styles } from "./dashboardStyles";
+import { dashboardStyles as styles, studentSlideCardStyle } from "./dashboardStyles";
 import type { StudentDashboardNavigation } from "./studentDashboardTypes";
 
 type DashboardExamsSectionProps = {
@@ -36,9 +36,11 @@ export function DashboardExamsSection({
         viewAllLabel={t("common.seeAll")}
       />
 
-      <DashboardSlideRow>
+      <DashboardSlideRow variant="carousel">
         {visibleExams.length === 0 ? (
-          <View style={[styles.slideCard, styles.examNoWorkCard, styles.slideCardFullWidth]}>
+          <View
+            style={studentSlideCardStyle(styles.examNoWorkCard)}
+          >
             <Text style={styles.hwNoWorkTitle}>{t("student.noExams")}</Text>
             <Text style={styles.hwNoWorkText}>
               {exams.length === 0
@@ -64,7 +66,7 @@ export function DashboardExamsSection({
             return (
               <TouchableOpacity
                 key={item.id}
-                style={[styles.slideCard, styles.examCardAccent]}
+                style={studentSlideCardStyle(styles.examCardAccent)}
                 activeOpacity={0.85}
                 onPress={() =>
                   useParentRoutes

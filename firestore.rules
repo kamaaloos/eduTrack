@@ -189,6 +189,14 @@ service cloud.firestore {
               && (resource.data.role == "student" || resource.data.role == "teacher")
             )
             || (
+              request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(["expoPushToken", "pushTokenUpdatedAt", "pushPlatform"])
+            )
+            || (
+              request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(["expoPushToken", "pushTokenUpdatedAt"])
+            )
+            || (
               resource.data.mustChangePassword == true
               && request.resource.data.mustChangePassword == false
               && request.resource.data.diff(resource.data).affectedKeys()

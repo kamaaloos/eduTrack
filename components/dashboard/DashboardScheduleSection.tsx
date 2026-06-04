@@ -1,10 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 import {
+  getScheduleDayBadgeLabel,
   getTodayDayKey,
   parseDayOfWeek,
   scheduleDateTimeLine,
   scheduleSubjectTeacherLine,
+  weekdayDistanceFromToday,
 } from "../../src/utils/scheduleFormat";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
 import { DashboardSlideRow } from "./DashboardSlideRow";
@@ -16,6 +18,7 @@ type DashboardScheduleSectionProps = {
   currentScheduleId: string | null;
   classId: string | null;
   todayLabel: string;
+  scheduleNow?: Date;
 };
 
 export function DashboardScheduleSection({
@@ -24,6 +27,7 @@ export function DashboardScheduleSection({
   currentScheduleId,
   classId,
   todayLabel,
+  scheduleNow = new Date(),
 }: DashboardScheduleSectionProps) {
   const { t } = useTranslation();
   const todayKey = getTodayDayKey();
@@ -58,8 +62,17 @@ export function DashboardScheduleSection({
           </View>
         ) : (
           visibleSchedule.map((item: any) => {
-            const isToday = parseDayOfWeek(item.dayOfWeek || "") === todayKey;
+            const dayKey = parseDayOfWeek(item.dayOfWeek || "");
+            const isToday = dayKey === todayKey;
+            const dayDistance = dayKey
+              ? weekdayDistanceFromToday(dayKey, scheduleNow)
+              : null;
+            const isTomorrow = dayDistance === 1;
             const isCurrent = item.id === currentScheduleId && isToday;
+            const dayBadge =
+              dayKey != null
+                ? getScheduleDayBadgeLabel(t, dayKey, scheduleNow)
+                : null;
             return (
               <View
                 key={item.id}
@@ -68,20 +81,34 @@ export function DashboardScheduleSection({
                   styles.slideCardInCarousel,
                   styles.scheduleSlideCard,
                   isToday && styles.scheduleSlideCardToday,
+                  isTomorrow && !isToday && styles.scheduleSlideCardTomorrow,
                   isCurrent && styles.scheduleSlideCardCurrent,
                 ]}
               >
-                {isToday ? (
-                  <Text style={styles.scheduleNowBadge}>{t("common.today")}</Text>
+                {dayBadge ? (
+                  <Text
+                    style={[
+                      styles.scheduleDayBadge,
+                      isToday && styles.scheduleDayBadgeToday,
+                      isTomorrow && styles.scheduleDayBadgeTomorrow,
+                    ]}
+                  >
+                    {dayBadge}
+                  </Text>
                 ) : null}
                 <Text
                   style={[
                     styles.scheduleDateTime,
                     isToday && styles.scheduleDateTimeToday,
+                    isTomorrow && styles.scheduleDateTimeTomorrow,
                   ]}
-                  numberOfLines={2}
+                  numberOfLines={3}
                 >
-                  {scheduleDateTimeLine(item)}
+                  {scheduleDateTimeLine(item, {
+                    dayKey: dayKey ?? undefined,
+                    t,
+                    referenceDate: scheduleNow,
+                  })}
                 </Text>
                 <Text
                   style={[

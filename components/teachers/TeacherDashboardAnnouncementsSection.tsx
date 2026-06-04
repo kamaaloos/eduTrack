@@ -20,7 +20,7 @@ export function TeacherDashboardAnnouncementsSection({
         </Text>
       </View>
 
-      <DashboardSlideRow>
+      <DashboardSlideRow variant="carousel">
         {announcements.length === 0 ? (
           <View style={styles.announcementCard}>
             <Text style={styles.cardTitle}>

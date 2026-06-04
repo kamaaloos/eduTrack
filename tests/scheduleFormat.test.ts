@@ -1,9 +1,11 @@
 import {
   formatTimeHHmm,
+  getScheduleDayBadgeLabel,
   orderUpcomingWeeklyScheduleSlots,
   normalizeTimeHHmm,
   parseDayOfWeek,
   parseHHmmToMinutes,
+  scheduleDateTimeLine,
   scheduleSubjectTeacherLine,
 } from "../src/utils/scheduleFormat";
 
@@ -40,7 +42,7 @@ describe("parseDayOfWeek", () => {
 
 describe("orderUpcomingWeeklyScheduleSlots", () => {
   it("drops ended today and puts next day first", () => {
-    const now = new Date("2026-06-02T15:00:00"); // Tuesday
+    const now = new Date(2026, 5, 2, 15, 0, 0); // Tuesday (local)
     const ordered = orderUpcomingWeeklyScheduleSlots(
       [
         { id: "tue-past", dayOfWeek: "tuesday", startTime: "08:00", endTime: "09:00" },
@@ -50,6 +52,36 @@ describe("orderUpcomingWeeklyScheduleSlots", () => {
       now,
     );
     expect(ordered.map((s) => s.id)).toEqual(["wed-1", "fri-1"]);
+  });
+});
+
+describe("scheduleDateTimeLine with i18n", () => {
+  const t = (key: string) =>
+    key === "common.tomorrow"
+      ? "Tomorrow"
+      : key === "common.today"
+        ? "Today"
+        : key;
+
+  it("includes Tomorrow and calendar date for next day", () => {
+    const now = new Date(2026, 5, 2, 10, 0, 0); // Tuesday (local)
+    const line = scheduleDateTimeLine(
+      {
+        dayOfWeek: "wednesday",
+        startTime: "08:00",
+        endTime: "09:00",
+      },
+      { t, referenceDate: now },
+    );
+    expect(line).toContain("Tomorrow");
+    expect(line).toContain("08:00 - 09:00");
+  });
+
+  it("badge label is Tomorrow one day ahead", () => {
+    const now = new Date(2026, 5, 2, 10, 0, 0);
+    expect(getScheduleDayBadgeLabel(t as never, "wednesday", now)).toBe(
+      "Tomorrow",
+    );
   });
 });
 

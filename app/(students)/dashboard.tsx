@@ -18,7 +18,13 @@ export default function StudentDashboard() {
     gradedExamIds,
     refreshing,
     onRefresh,
-  } = useStudentDashboardData(user?.uid, userData?.classId);
+  } = useStudentDashboardData(
+    user?.uid,
+    userData?.classId,
+    user?.uid
+      ? { userId: user.uid, role: "student", studentId: user.uid }
+      : undefined,
+  );
 
   return (
     <StudentDashboardView

@@ -4,7 +4,7 @@ import type { HomeworkSlide } from "../../src/utils/academicFilters";
 import { getHomeworkColor } from "../../src/utils/dashboardUi";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
 import { DashboardSlideRow } from "./DashboardSlideRow";
-import { dashboardStyles as styles } from "./dashboardStyles";
+import { dashboardStyles as styles, studentSlideCardStyle } from "./dashboardStyles";
 import type { StudentDashboardNavigation } from "./studentDashboardTypes";
 
 type DashboardHomeworkSectionProps = {
@@ -36,13 +36,13 @@ export function DashboardHomeworkSection({
         viewAllLabel={t("common.seeAll")}
       />
 
-      <DashboardSlideRow>
+      <DashboardSlideRow variant="carousel">
         {homeworkSlides.map((slide) => {
           if (slide.kind === "empty-all") {
             return (
               <View
                 key="hw-empty-all"
-                style={[styles.slideCard, styles.hwNoWorkCard, styles.slideCardFullWidth]}
+                style={studentSlideCardStyle(styles.hwNoWorkCard)}
               >
                 <Text style={styles.hwNoWorkTitle}>{t("student.noHomework")}</Text>
                 <Text style={styles.hwNoWorkText}>
@@ -60,7 +60,7 @@ export function DashboardHomeworkSection({
           return (
             <TouchableOpacity
               key={item.id}
-              style={styles.slideCard}
+              style={studentSlideCardStyle()}
               activeOpacity={0.85}
               onPress={() =>
                 useParentRoutes

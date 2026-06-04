@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { getPreviewText } from "../../src/utils/dashboardUi";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
 import { DashboardSlideRow } from "./DashboardSlideRow";
-import { dashboardStyles as styles } from "./dashboardStyles";
+import { dashboardStyles as styles, studentSlideCardStyle } from "./dashboardStyles";
 import type { StudentDashboardNavigation } from "./studentDashboardTypes";
 
 type DashboardAnnouncementsSectionProps = {
@@ -39,7 +39,7 @@ export function DashboardAnnouncementsSection({
           <Text style={styles.emptyText}>{t("common.noData")}</Text>
         </View>
       ) : (
-        <DashboardSlideRow>
+        <DashboardSlideRow variant="carousel">
           {messages.map((item: any) => {
             const fullBody = item.text || item.message || "";
             const { preview } = getPreviewText(fullBody);
@@ -47,7 +47,7 @@ export function DashboardAnnouncementsSection({
             return (
               <View
                 key={item.id}
-                style={[styles.slideCard, styles.messageCardAccent]}
+                style={studentSlideCardStyle(styles.messageCardAccent)}
               >
                 <View style={styles.slideCardTop}>
                   <View style={styles.messageIconWrap}>

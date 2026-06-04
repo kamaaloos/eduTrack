@@ -59,6 +59,8 @@ See `src/utils/schoolSelection.ts` and `SchoolProvider` in `src/context/schoolCo
 
 In-app notifications live in each **school** project (`notifications` collection), targeted by `targetUserId` and `targetRole`. Usage-expiry warnings are created when an admin opens the dashboard with ≤7 days remaining (client-side, deduped per 24h).
 
+**Push notifications** (mobile, native builds): when a notification document is created, the school Cloud Function sends an Expo push with the default system sound. See [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md).
+
 ## Security
 
 Authorization is enforced primarily in **`firestore.rules`** on each school project (and registry rules for `schoolRegistry`). Client `RoleGate` is UX only — never rely on it alone.

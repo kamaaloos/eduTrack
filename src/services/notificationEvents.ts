@@ -134,6 +134,29 @@ export async function notifyAnnouncementPublished(params: {
   });
 }
 
+export async function notifyDirectMessage(params: {
+  classId: string;
+  title: string;
+  message: string;
+  targetRole: "student" | "parent";
+  targetUserId: string;
+  studentId: string;
+  actorId?: string | null;
+}): Promise<void> {
+  await createNotifications([
+    {
+      title: params.title,
+      message: params.message,
+      type: "announcement",
+      targetRole: params.targetRole,
+      targetUserId: params.targetUserId,
+      studentId: params.studentId,
+      classId: params.classId,
+      actorId: params.actorId ?? null,
+    },
+  ]);
+}
+
 export async function notifyRemarkPublished(params: {
   classId: string;
   studentId: string;

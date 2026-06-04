@@ -15,9 +15,15 @@ import {
 } from "../src/services/firestoreSession";
 import { getExamResultsForStudent } from "../src/services/examResults";
 
+import {
+  filterAnnouncementsForViewer,
+  type AnnouncementViewer,
+} from "../src/utils/announcementVisibility";
+
 export function useStudentDashboardData(
   studentId: string | undefined,
   profileClassId?: string | null,
+  viewer?: AnnouncementViewer,
 ) {
   const { selectedSchool } = useSchoolContext();
   const schoolKey = selectedSchool?.id ?? null;
@@ -240,6 +246,14 @@ export function useStudentDashboardData(
     );
   }, [remarks, attendance]);
 
+  const visibleMessages = useMemo(() => {
+    if (!viewer) return messages;
+    return filterAnnouncementsForViewer(messages, {
+      ...viewer,
+      studentId: viewer.studentId ?? studentId,
+    });
+  }, [messages, viewer, studentId]);
+
   const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => setRefreshing(false), 1200);
@@ -247,7 +261,7 @@ export function useStudentDashboardData(
 
   return {
     classId,
-    messages,
+    messages: visibleMessages,
     homework,
     exams,
     schedule,

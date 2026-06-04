@@ -1,6 +1,9 @@
+import { useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import type { useTeacherAcademic } from "../../hooks/useTeacherAcademic";
+import { DirectMessageCard } from "../messaging/DirectMessageCard";
+import { AuthContext } from "../../src/context/authContext";
 import { TeacherScreenShell } from "./TeacherScreenShell";
 import { TeacherAcademicClassCard } from "./academic/TeacherAcademicClassCard";
 import { TeacherAcademicTabs } from "./academic/TeacherAcademicTabs";
@@ -14,6 +17,7 @@ export type TeacherAcademicViewProps = ReturnType<typeof useTeacherAcademic>;
 
 export function TeacherAcademicView(props: TeacherAcademicViewProps) {
   const { t } = useTranslation();
+  const { user, userData } = useContext(AuthContext);
   const {
     activeTab,
     setActiveTab,
@@ -68,6 +72,15 @@ export function TeacherAcademicView(props: TeacherAcademicViewProps) {
     const match = students.find((s) => s.id === id);
     setSelectedStudentName(match?.name || match?.email || "");
   };
+
+  const directMessageStudentOptions = useMemo(
+    () =>
+      studentSelectorItems.map((s) => ({
+        value: s.id,
+        label: s.name,
+      })),
+    [studentSelectorItems],
+  );
 
   return (
     <TeacherScreenShell
@@ -143,13 +156,26 @@ export function TeacherAcademicView(props: TeacherAcademicViewProps) {
         ) : null}
 
         {activeTab === "announcements" ? (
-          <TeacherAnnouncementForm
-            announcementTitle={announcementTitle}
-            onAnnouncementTitleChange={setAnnouncementTitle}
-            announcementText={announcementText}
-            onAnnouncementTextChange={setAnnouncementText}
-            onPublish={publishAnnouncement}
-          />
+          <>
+            <TeacherAnnouncementForm
+              announcementTitle={announcementTitle}
+              onAnnouncementTitleChange={setAnnouncementTitle}
+              announcementText={announcementText}
+              onAnnouncementTextChange={setAnnouncementText}
+              onPublish={publishAnnouncement}
+            />
+            <DirectMessageCard
+              classOptions={classOptions}
+              selectedClassId={selectedClassId}
+              onClassChange={setSelectedClassId}
+              students={directMessageStudentOptions}
+              loadingStudents={loadingStudents}
+              senderRole="teacher"
+              senderId={user?.uid}
+              senderName={userData?.name ?? t("common.teacher")}
+              hideClassPicker
+            />
+          </>
         ) : null}
 
         <View style={styles.scrollBottomSpacer} />

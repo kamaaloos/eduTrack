@@ -6,16 +6,18 @@ import { useTranslation } from "react-i18next";
 import { useParentChild } from "../../src/context/parentChildContext";
 import {
   ActivityIndicator,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import { UserAvatar } from "../../components/common/UserAvatar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ParentChildrenList } from "../../components/parent/ParentChildrenList";
 import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 import { AuthContext } from "../../src/context/authContext";
+import { copyrightFooterInset } from "../../src/constants/appTheme";
 import {
   loadParentChildrenDetailed,
   type ParentChild,
@@ -23,6 +25,7 @@ import {
 
 export default function ParentDashboard() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { user, userData } = useContext(AuthContext);
   const { setSelectedChild } = useParentChild();
   const [children, setChildren] = useState<ParentChild[]>([]);
@@ -100,7 +103,13 @@ export default function ParentDashboard() {
         </View>
       ) : (
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={[
+            styles.scroll,
+            {
+              paddingBottom: copyrightFooterInset(insets.bottom, 8) + 16,
+            },
+          ]}
+          showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -124,33 +133,9 @@ export default function ParentDashboard() {
             </View>
           ) : null}
 
-          {children.map((child) => (
-            <TouchableOpacity
-              key={child.id}
-              style={styles.childCard}
-              onPress={() => openChild(child)}
-              activeOpacity={0.85}
-            >
-              <UserAvatar
-                name={child.name}
-                email={child.email}
-                photoURL={child.photoURL}
-                size={52}
-                textColor="#1E3A8A"
-                backgroundColor="#EFF6FF"
-              />
-              <View style={styles.childInfo}>
-                <Text style={styles.childName}>{child.name}</Text>
-                <Text style={styles.childMeta}>
-                  {child.className || child.classId || t("common.class")}
-                </Text>
-                {child.email ? (
-                  <Text style={styles.childEmail}>{child.email}</Text>
-                ) : null}
-              </View>
-              <Ionicons name="chevron-forward" size={24} color="#94A3B8" />
-            </TouchableOpacity>
-          ))}
+          {children.length > 0 ? (
+            <ParentChildrenList children={children} onSelect={openChild} />
+          ) : null}
         </ScrollView>
       )}
     </ParentScreenShell>
@@ -159,71 +144,40 @@ export default function ParentDashboard() {
 
 const styles = StyleSheet.create({
   scroll: {
-    paddingBottom: 24,
     flexGrow: 1,
+    paddingTop: Platform.OS === "web" ? 8 : 4,
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  childCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    gap: 14,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  childIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 14,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  childInfo: {
-    flex: 1,
-    minWidth: 0,
-  },
-  childName: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: "#0F172A",
-  },
-  childMeta: {
-    fontSize: 13,
-    color: "#64748B",
-    marginTop: 4,
-  },
-  childEmail: {
-    fontSize: 12,
-    color: "#94A3B8",
-    marginTop: 2,
-  },
   emptyBox: {
     alignItems: "center",
     padding: 32,
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    maxWidth: 480,
+    alignSelf: "center",
+    width: "100%",
   },
   emptyTitle: {
     fontSize: 18,
     fontWeight: "700",
     color: "#0F172A",
     marginTop: 12,
+    textAlign: "center",
   },
   errorBox: {
     backgroundColor: "#FEF2F2",
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
+    maxWidth: 680,
+    alignSelf: "center",
+    width: "100%",
   },
   errorText: {
     color: "#B91C1C",
@@ -234,6 +188,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
+    maxWidth: 680,
+    alignSelf: "center",
+    width: "100%",
   },
   warnText: {
     color: "#92400E",

@@ -187,15 +187,19 @@ export const dashboardStyles = StyleSheet.create({
   },
   scheduleSlideCard: {
     backgroundColor: "#1F2937",
-    height: 118,
+    minHeight: 118,
+    paddingVertical: 10,
     justifyContent: "center",
-    gap: 10,
+    gap: 6,
     borderLeftWidth: 4,
     borderLeftColor: "#38BDF8",
   },
   scheduleSlideCardToday: {
     backgroundColor: "#065F46",
     borderLeftColor: "#34D399",
+  },
+  scheduleSlideCardTomorrow: {
+    borderLeftColor: "#38BDF8",
   },
   scheduleSlideCardCurrent: {
     backgroundColor: "#047857",
@@ -206,10 +210,10 @@ export const dashboardStyles = StyleSheet.create({
     borderColor: "#34D399",
     ...platformShadowAccent("#34D399"),
   },
-  scheduleNowBadge: {
+  scheduleDayBadge: {
     alignSelf: "flex-start",
-    backgroundColor: "#34D399",
-    color: "#064E3B",
+    backgroundColor: "#334155",
+    color: "#E2E8F0",
     fontSize: 11,
     fontWeight: "800",
     paddingHorizontal: 8,
@@ -220,6 +224,14 @@ export const dashboardStyles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
+  scheduleDayBadgeToday: {
+    backgroundColor: "#34D399",
+    color: "#064E3B",
+  },
+  scheduleDayBadgeTomorrow: {
+    backgroundColor: "#38BDF8",
+    color: "#0C4A6E",
+  },
   scheduleDateTime: {
     color: "#94A3B8",
     fontSize: 13,
@@ -227,6 +239,7 @@ export const dashboardStyles = StyleSheet.create({
     lineHeight: 18,
   },
   scheduleDateTimeToday: { color: "#A7F3D0" },
+  scheduleDateTimeTomorrow: { color: "#BAE6FD" },
   scheduleSubject: {
     color: "#F8FAFC",
     fontSize: 17,
@@ -377,3 +390,11 @@ export const dashboardStyles = StyleSheet.create({
   absenceButtonText: { color: "#FFFFFF", fontWeight: "700", fontSize: 15 },
   scrollBottomSpacer: { height: isWeb ? 24 : 120 },
 });
+
+/** Mobile: original slideCard only. Web carousel: fixed-width slideCardInCarousel. */
+export function studentSlideCardStyle(...extras: ViewStyle[]): ViewStyle[] {
+  if (isWeb) {
+    return [dashboardStyles.slideCard, dashboardStyles.slideCardInCarousel, ...extras];
+  }
+  return [dashboardStyles.slideCard, ...extras];
+}

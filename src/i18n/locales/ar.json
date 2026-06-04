@@ -40,6 +40,7 @@
     "late": "متأخر",
     "excused": "معذور",
     "today": "اليوم",
+    "tomorrow": "غداً",
     "yesterday": "أمس",
     "daysAgo": "منذ {{count}} يوم",
     "last90Days": "آخر 90 يومًا",
@@ -143,6 +144,29 @@
     "getStarted": "ابدأ الآن",
     "next": "التالي",
     "continue": "متابعة"
+  },
+  "directMessage": {
+    "title": "رسالة مباشرة",
+    "hint": "أرسل إشعارًا خاصًا لطالب واحد أو ولي أمره. يراه المستلم فقط في لوحة التحكم والإشعارات.",
+    "classLabel": "الصف",
+    "recipientType": "الإرسال إلى",
+    "recipientStudent": "طالب",
+    "recipientParent": "ولي أمر",
+    "studentLabel": "الطالب",
+    "parentLabel": "حساب ولي الأمر",
+    "titlePlaceholder": "عنوان الإشعار",
+    "messagePlaceholder": "اكتب رسالتك…",
+    "send": "إرسال الرسالة",
+    "sent": "تم إرسال الرسالة إلى المستلم.",
+    "sendFailed": "تعذّر إرسال الرسالة.",
+    "missingFields": "أدخل عنوانًا ورسالة.",
+    "selectClass": "اختر صفًا.",
+    "selectClassFirst": "اختر صفًا أولًا.",
+    "selectStudent": "اختر طالبًا.",
+    "selectParent": "اختر حساب ولي أمر.",
+    "noClasses": "لا توجد صفوف.",
+    "noStudents": "لا يوجد طلاب في هذا الصف.",
+    "noParentLinked": "لا يوجد ولي أمر مرتبط بهذا الطالب."
   },
   "auth": {
     "login": {

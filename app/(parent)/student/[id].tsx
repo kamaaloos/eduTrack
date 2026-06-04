@@ -44,7 +44,13 @@ export default function ParentStudentDashboard() {
     gradedExamIds,
     refreshing,
     onRefresh,
-  } = useStudentDashboardData(studentId, resolvedClassId);
+  } = useStudentDashboardData(
+    studentId,
+    resolvedClassId,
+    user?.uid
+      ? { userId: user.uid, role: "parent", studentId }
+      : undefined,
+  );
 
   useEffect(() => {
     if (!studentId) return;

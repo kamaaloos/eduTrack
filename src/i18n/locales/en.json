@@ -40,6 +40,7 @@
     "late": "Late",
     "excused": "Excused",
     "today": "Today",
+    "tomorrow": "Tomorrow",
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago",
     "last90Days": "Last 90 days",
@@ -144,6 +145,29 @@
     "getStarted": "Get started",
     "next": "Next",
     "continue": "Continue"
+  },
+  "directMessage": {
+    "title": "Direct message",
+    "hint": "Send a private notice to one student or their linked parent. Only the recipient sees it on their dashboard and in notifications.",
+    "classLabel": "Class",
+    "recipientType": "Send to",
+    "recipientStudent": "Student",
+    "recipientParent": "Parent",
+    "studentLabel": "Student",
+    "parentLabel": "Parent account",
+    "titlePlaceholder": "Notice title",
+    "messagePlaceholder": "Write your message…",
+    "send": "Send message",
+    "sent": "Message sent to recipient.",
+    "sendFailed": "Could not send message.",
+    "missingFields": "Enter a title and message.",
+    "selectClass": "Select a class.",
+    "selectClassFirst": "Select a class first.",
+    "selectStudent": "Select a student.",
+    "selectParent": "Select a parent account.",
+    "noClasses": "No classes available.",
+    "noStudents": "No students in this class.",
+    "noParentLinked": "No parent linked to this student."
   },
   "auth": {
     "login": {

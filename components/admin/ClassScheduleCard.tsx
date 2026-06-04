@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { SelectChips } from "../teachers/SelectChips";
+import { SelectChips, SelectList } from "../teachers/SelectChips";
 import {
   addClassScheduleSlot,
   deleteClassScheduleSlot,
@@ -325,21 +326,24 @@ export function ClassScheduleCard({ classes, teachers }: ClassScheduleCardProps)
             <Text style={styles.empty}>
               {t("admin.scheduleNoTeachersForClass")}
             </Text>
+          ) : Platform.OS === "web" ? (
+            <SelectChips
+              options={teacherOptions.map((item) => ({
+                value: item.id,
+                label: item.name,
+              }))}
+              selectedValue={selectedTeacherId}
+              onSelect={setSelectedTeacherId}
+            />
           ) : (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.horizontalChips}
-            >
-              <SelectChips
-                options={teacherOptions.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                }))}
-                selectedValue={selectedTeacherId}
-                onSelect={setSelectedTeacherId}
-              />
-            </ScrollView>
+            <SelectList
+              options={teacherOptions.map((item) => ({
+                value: item.id,
+                label: item.name,
+              }))}
+              selectedValue={selectedTeacherId}
+              onSelect={setSelectedTeacherId}
+            />
           )}
 
           <Text style={styles.label}>{t("common.subject")}</Text>
@@ -347,18 +351,18 @@ export function ClassScheduleCard({ classes, teachers }: ClassScheduleCardProps)
             <Text style={styles.empty}>{t("admin.schedulePickTeacherFirst")}</Text>
           ) : subjectOptions.length === 0 ? (
             <Text style={styles.empty}>{t("admin.scheduleNoSubjectsForTeacher")}</Text>
+          ) : Platform.OS === "web" ? (
+            <SelectChips
+              options={subjectOptions}
+              selectedValue={subject}
+              onSelect={setSubject}
+            />
           ) : (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.horizontalChips}
-            >
-              <SelectChips
-                options={subjectOptions}
-                selectedValue={subject}
-                onSelect={setSubject}
-              />
-            </ScrollView>
+            <SelectList
+              options={subjectOptions}
+              selectedValue={subject}
+              onSelect={setSubject}
+            />
           )}
 
           <TouchableOpacity
@@ -451,7 +455,6 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: "row", alignItems: "center", gap: 8 },
   dash: { fontSize: 18, color: "#64748B", fontWeight: "600" },
-  horizontalChips: { marginBottom: 10, maxHeight: 44 },
   inlineLoader: { marginVertical: 10 },
   addBtn: {
     backgroundColor: "#2563EB",

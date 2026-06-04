@@ -40,6 +40,7 @@
     "late": "Myöhässä",
     "excused": "Hyväksytty poissaolo",
     "today": "Tänään",
+    "tomorrow": "Huomenna",
     "yesterday": "Eilen",
     "daysAgo": "{{count}} päivää sitten",
     "last90Days": "Viimeiset 90 päivää",
@@ -143,6 +144,29 @@
     "getStarted": "Aloita",
     "next": "Seuraava",
     "continue": "Jatka"
+  },
+  "directMessage": {
+    "title": "Suora viesti",
+    "hint": "Lähetä yksityinen ilmoitus yhdelle oppilaalle tai hänen huoltajalleen. Vain vastaanottaja näkee sen hallintapaneelissa ja ilmoituksissa.",
+    "classLabel": "Luokka",
+    "recipientType": "Lähetä",
+    "recipientStudent": "Oppilas",
+    "recipientParent": "Huoltaja",
+    "studentLabel": "Oppilas",
+    "parentLabel": "Huoltajan tili",
+    "titlePlaceholder": "Ilmoituksen otsikko",
+    "messagePlaceholder": "Kirjoita viestisi…",
+    "send": "Lähetä viesti",
+    "sent": "Viesti lähetetty vastaanottajalle.",
+    "sendFailed": "Viestin lähetys epäonnistui.",
+    "missingFields": "Syötä otsikko ja viesti.",
+    "selectClass": "Valitse luokka.",
+    "selectClassFirst": "Valitse luokka ensin.",
+    "selectStudent": "Valitse oppilas.",
+    "selectParent": "Valitse huoltajan tili.",
+    "noClasses": "Ei luokkia saatavilla.",
+    "noStudents": "Ei oppilaita tässä luokassa.",
+    "noParentLinked": "Tähän oppilaaseen ei ole linkitetty huoltajaa."
   },
   "auth": {
     "login": {

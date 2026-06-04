@@ -157,22 +157,26 @@ const styles = StyleSheet.create({
   list: {},
   listItem: {
     backgroundColor: "#F3F4F6",
-    padding: 12,
+    paddingVertical: Platform.OS === "web" ? 12 : 14,
+    paddingHorizontal: 14,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E5E7EB",
     marginBottom: 8,
+    minHeight: Platform.OS === "web" ? undefined : 48,
   },
   listItemActive: {
     backgroundColor: "#EFF6FF",
     borderColor: "#2563EB",
   },
   listItemText: {
-    fontSize: 15,
+    fontSize: Platform.OS === "web" ? 15 : 16,
     fontWeight: "600",
     color: "#374151",
+    lineHeight: Platform.OS === "web" ? 20 : 22,
   },
   listItemTextActive: {
     color: "#1D4ED8",
+    fontWeight: "700",
   },
 });

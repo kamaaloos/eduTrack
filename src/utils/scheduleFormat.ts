@@ -28,8 +28,8 @@ export function getWeekdayLabel(t: TFunction, key: WeekdayKey): string {
   return translated !== `weekdays.${key}` ? translated : WEEKDAY_LABELS[key];
 }
 
-export function getTodayDayKey(): WeekdayKey {
-  return WEEKDAY_KEYS[new Date().getDay()];
+export function getTodayDayKey(date: Date = new Date()): WeekdayKey {
+  return WEEKDAY_KEYS[date.getDay()];
 }
 
 const DAY_ALIASES: Record<string, WeekdayKey> = {
@@ -89,15 +89,52 @@ function formatScheduleDisplayDate(day: WeekdayKey): string {
   return WEEKDAY_LABELS[day];
 }
 
-/** Line 1: Wed, May 20 · 08:15 - 09:45 */
+export type ScheduleDateTimeOptions = {
+  dayKey?: WeekdayKey;
+  t?: TFunction;
+  referenceDate?: Date;
+};
+
+function buildScheduleDatePart(
+  day: WeekdayKey,
+  t?: TFunction,
+  referenceDate: Date = new Date(),
+): string {
+  if (!t) {
+    if (day === getTodayDayKey(referenceDate)) {
+      return formatScheduleDisplayDate(day);
+    }
+    return WEEKDAY_LABELS[day];
+  }
+
+  const calendar = getScheduleSlotCalendarDate(day, referenceDate);
+  const dist = weekdayDistanceFromToday(day, referenceDate);
+  if (dist === 0) return calendar;
+  if (dist === 1) return `${t("common.tomorrow")} · ${calendar}`;
+  return `${getWeekdayLabel(t, day)} · ${calendar}`;
+}
+
+/** Line 1: Tomorrow · Wed, Jun 4 · 08:15 - 09:45 (when t is passed) */
 export function scheduleDateTimeLine(
   slot: ScheduleSlot,
-  dayKey?: WeekdayKey,
+  dayKeyOrOptions?: WeekdayKey | ScheduleDateTimeOptions,
 ): string {
+  let dayKey: WeekdayKey | undefined;
+  let t: TFunction | undefined;
+  let referenceDate = new Date();
+
+  if (typeof dayKeyOrOptions === "string") {
+    dayKey = dayKeyOrOptions;
+  } else if (dayKeyOrOptions) {
+    dayKey = dayKeyOrOptions.dayKey;
+    t = dayKeyOrOptions.t;
+    referenceDate = dayKeyOrOptions.referenceDate ?? referenceDate;
+  }
+
   const day =
     dayKey ||
-    ((slot.dayOfWeek as WeekdayKey | undefined) ?? getTodayDayKey());
-  const datePart = formatScheduleDisplayDate(day);
+    (parseDayOfWeek(slot.dayOfWeek || "") ?? getTodayDayKey());
+  const datePart = buildScheduleDatePart(day, t, referenceDate);
 
   if (slot.startTime && slot.endTime) {
     return `${datePart} · ${slot.startTime} - ${slot.endTime}`;
@@ -146,13 +183,45 @@ function slotDayKey(slot: ScheduleSlot): WeekdayKey {
   return parseDayOfWeek(slot.dayOfWeek || "") ?? "monday";
 }
 
-function weekdayDistanceFromToday(
+export function weekdayDistanceFromToday(
   day: WeekdayKey,
   date: Date = new Date(),
 ): number {
   const today = date.getDay();
   const target = WEEKDAY_KEYS.indexOf(day);
   return (target - today + 7) % 7;
+}
+
+function nextOccurrenceDate(day: WeekdayKey, reference: Date = new Date()): Date {
+  const dist = weekdayDistanceFromToday(day, reference);
+  const d = new Date(reference);
+  d.setHours(12, 0, 0, 0);
+  d.setDate(d.getDate() + dist);
+  return d;
+}
+
+/** Short calendar date for the next occurrence of that weekday (e.g. Wed, Jun 4). */
+export function getScheduleSlotCalendarDate(
+  day: WeekdayKey,
+  reference: Date = new Date(),
+): string {
+  return nextOccurrenceDate(day, reference).toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+/** Badge text: Today, Tomorrow, or weekday name. */
+export function getScheduleDayBadgeLabel(
+  t: TFunction,
+  day: WeekdayKey,
+  reference: Date = new Date(),
+): string {
+  const dist = weekdayDistanceFromToday(day, reference);
+  if (dist === 0) return t("common.today");
+  if (dist === 1) return t("common.tomorrow");
+  return getWeekdayLabel(t, day);
 }
 
 /** Minutes since midnight from "08:15" */
@@ -237,10 +306,11 @@ export function orderUpcomingWeeklyScheduleSlots(
   slots: ScheduleSlot[],
   date: Date = new Date(),
 ): ScheduleSlot[] {
+  const todayKey = getTodayDayKey(date);
   return [...slots]
     .filter((slot) => {
       const day = slotDayKey(slot);
-      if (day !== getTodayDayKey()) return true;
+      if (day !== todayKey) return true;
       return !isScheduleSlotEnded(slot, date);
     })
     .sort((a, b) => {
@@ -265,7 +335,7 @@ export function findCurrentTodayScheduleSlotId(
   slots: ScheduleSlot[],
   date: Date = new Date(),
 ): string | undefined {
-  const today = getTodayDayKey();
+  const today = getTodayDayKey(date);
   return slots.find((s) => slotDayKey(s) === today && isScheduleSlotCurrent(s, date))
     ?.id;
 }

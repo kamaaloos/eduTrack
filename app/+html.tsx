@@ -38,6 +38,11 @@ export default function Root({ children }: PropsWithChildren) {
               input, textarea {
                 outline-color: #2563EB;
               }
+              .dashboard-hide-scrollbar::-webkit-scrollbar {
+                display: none;
+                width: 0;
+                height: 0;
+              }
             `,
           }}
         />

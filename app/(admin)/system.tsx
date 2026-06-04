@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -6,17 +6,46 @@ import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { BroadcastAnnouncementCard } from "../../components/admin/BroadcastAnnouncementCard";
 import { ExcelImportCard } from "../../components/admin/ExcelImportCard";
+import { DirectMessageCard } from "../../components/messaging/DirectMessageCard";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { AuthContext } from "../../src/context/authContext";
 import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
 
 export default function AdminSystemScreen() {
   const { t } = useTranslation();
+  const { user, userData } = useContext(AuthContext);
   const {
     classes,
+    students,
     refreshAll,
     syncClassIdsFromAssignments,
     loadUsers,
   } = useAdminData();
+  const [directMessageClassId, setDirectMessageClassId] = useState("");
+
+  const classOptions = useMemo(
+    () =>
+      classes.map((cls) => ({
+        value: cls.id,
+        label: cls.name || cls.id,
+      })),
+    [classes],
+  );
+
+  const studentOptions = useMemo(() => {
+    if (!directMessageClassId) return [];
+    return students
+      .filter((s) => s.classId === directMessageClassId)
+      .map((s) => ({
+        value: s.id,
+        label: s.name || s.email || s.id.slice(0, 8),
+      }));
+  }, [students, directMessageClassId]);
+
+  useEffect(() => {
+    if (directMessageClassId || classOptions.length === 0) return;
+    setDirectMessageClassId(classOptions[0].value);
+  }, [classOptions, directMessageClassId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -65,6 +94,17 @@ export default function AdminSystemScreen() {
           </View>
 
           <BroadcastAnnouncementCard classCount={classes.length} />
+
+          <DirectMessageCard
+            classOptions={classOptions}
+            selectedClassId={directMessageClassId}
+            onClassChange={setDirectMessageClassId}
+            students={studentOptions}
+            senderRole="admin"
+            senderId={user?.uid}
+            senderName={userData?.name ?? t("common.admin")}
+          />
+
           <ExcelImportCard onImportComplete={handleImportComplete} />
         </ScrollView>
       </AdminScreenShell>

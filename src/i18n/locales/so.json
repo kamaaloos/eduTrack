@@ -40,6 +40,7 @@
     "late": "Daahay",
     "excused": "La cafiyay",
     "today": "Maanta",
+    "tomorrow": "Berri",
     "yesterday": "Shalay",
     "daysAgo": "{{count}} maalmood ka hor",
     "last90Days": "90 maalmood ee u dambeeyay",
@@ -143,6 +144,29 @@
     "getStarted": "Bilow",
     "next": "Xigta",
     "continue": "Sii wad"
+  },
+  "directMessage": {
+    "title": "Fariin toos ah",
+    "hint": "U dir ogeysiis gaar ah hal arday ama waalidkiisa. Qofka helaya ayaa keliya ku arki doona dashboard-ka iyo ogeysiisyada.",
+    "classLabel": "Fasalka",
+    "recipientType": "U dir",
+    "recipientStudent": "Arday",
+    "recipientParent": "Waalid",
+    "studentLabel": "Arday",
+    "parentLabel": "Akoonka waalidka",
+    "titlePlaceholder": "Cinwaanka ogeysiiska",
+    "messagePlaceholder": "Qor fariintaada…",
+    "send": "Dir fariinta",
+    "sent": "Fariinta waa loo diray qofka helaya.",
+    "sendFailed": "Fariinta lama diri karin.",
+    "missingFields": "Geli cinwaan iyo fariin.",
+    "selectClass": "Dooro fasal.",
+    "selectClassFirst": "Marka hore dooro fasal.",
+    "selectStudent": "Dooro arday.",
+    "selectParent": "Dooro akoon waalid.",
+    "noClasses": "Ma jiraan fasallo.",
+    "noStudents": "Ma jiraan arday fasalkan.",
+    "noParentLinked": "Ardaygan lama xirin waalid."
   },
   "auth": {
     "login": {

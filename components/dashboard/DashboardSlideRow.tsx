@@ -20,7 +20,13 @@ const webSlideRowStyle: ViewStyle =
 const localStyles = StyleSheet.create({
   webHorizontalScroll: {
     width: "100%",
-    overflow: "scroll",
+    ...(Platform.OS === "web"
+      ? ({
+          overflowX: "auto",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        } as ViewStyle)
+      : null),
   },
 });
 
@@ -28,7 +34,7 @@ type DashboardSlideRowProps = {
   children: React.ReactNode;
   contentStyle?: ViewStyle;
   /**
-   * carousel — horizontal slides (mobile default; use for schedule on web).
+   * carousel — horizontal slides on web (student/parent/teacher). Native: horizontal unless grid.
    * grid — wrapped cards on web only.
    */
   variant?: "carousel" | "grid";
@@ -40,25 +46,27 @@ export function DashboardSlideRow({
   contentStyle,
   variant,
 }: DashboardSlideRowProps) {
+  // Mobile: horizontal slides by default (unchanged). Web: carousel only when requested.
   const useCarousel =
-    variant === "carousel" || (variant !== "grid" && Platform.OS !== "web");
+    Platform.OS === "web" ? variant === "carousel" : variant !== "grid";
 
   if (!useCarousel) {
-    return (
-      <View style={[webSlideRowStyle, contentStyle]}>{children}</View>
-    );
+    return <View style={[webSlideRowStyle, contentStyle]}>{children}</View>;
   }
 
   return (
     <ScrollView
       horizontal
-      showsHorizontalScrollIndicator={Platform.OS === "web"}
+      showsHorizontalScrollIndicator={false}
       contentContainerStyle={[
         dashboardStyles.horizontalScrollContent,
         contentStyle,
       ]}
       nestedScrollEnabled
       style={Platform.OS === "web" ? localStyles.webHorizontalScroll : undefined}
+      {...(Platform.OS === "web"
+        ? ({ className: "dashboard-hide-scrollbar" } as object)
+        : null)}
     >
       {children}
     </ScrollView>

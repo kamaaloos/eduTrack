@@ -9,6 +9,7 @@ import { router } from "expo-router";
 import i18n from "../i18n";
 import { auth, db } from "../services/firebase";
 import { notifyFirestoreClosing } from "../services/firestoreSession";
+import { clearPushTokenFromProfile } from "../services/pushNotifications";
 import { isSchoolRole } from "../utils/schoolRoles";
 import { useSchoolContext } from "./schoolContext";
 
@@ -115,6 +116,10 @@ export const AuthProvider = ({ children }: any) => {
     }
     try {
       setError(null);
+      const uid = auth.currentUser?.uid;
+      if (uid) {
+        await clearPushTokenFromProfile(uid);
+      }
       await signOut(auth);
       setUser(null);
       setUserData(null);

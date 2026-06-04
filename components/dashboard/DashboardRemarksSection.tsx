@@ -13,7 +13,7 @@ import {
 } from "../../src/utils/dashboardUi";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
 import { DashboardSlideRow } from "./DashboardSlideRow";
-import { dashboardStyles as styles } from "./dashboardStyles";
+import { dashboardStyles as styles, studentSlideCardStyle } from "./dashboardStyles";
 import type { StudentDashboardNavigation } from "./studentDashboardTypes";
 
 type DashboardRemarksSectionProps = {
@@ -53,7 +53,7 @@ export function DashboardRemarksSection({
           <Text style={styles.emptyText}>{t("student.noAttendance")}</Text>
         </View>
       ) : (
-        <DashboardSlideRow>
+        <DashboardSlideRow variant="carousel">
           {remarksAndAttendance.map((item: any) => {
             if (item.feedType === "attendance") {
               const colors = getAttendanceColor(
@@ -77,14 +77,11 @@ export function DashboardRemarksSection({
               return (
                 <TouchableOpacity
                   key={`attendance-${item.id}`}
-                  style={[
-                    styles.slideCard,
-                    {
-                      backgroundColor: colors.bg,
-                      borderTopColor: colors.border,
-                      borderTopWidth: 3,
-                    },
-                  ]}
+                  style={studentSlideCardStyle({
+                    backgroundColor: colors.bg,
+                    borderTopColor: colors.border,
+                    borderTopWidth: 3,
+                  })}
                   activeOpacity={0.85}
                   onPress={() => {
                     if (needsParentResponse) {
@@ -164,14 +161,11 @@ export function DashboardRemarksSection({
             return (
               <TouchableOpacity
                 key={`remark-${item.id}`}
-                style={[
-                  styles.slideCard,
-                  {
-                    backgroundColor: colors.bg,
-                    borderTopColor: colors.border,
-                    borderTopWidth: 3,
-                  },
-                ]}
+                style={studentSlideCardStyle({
+                  backgroundColor: colors.bg,
+                  borderTopColor: colors.border,
+                  borderTopWidth: 3,
+                })}
                 activeOpacity={0.85}
                 onPress={() =>
                   useParentRoutes

@@ -137,7 +137,11 @@ export default function SelectSchoolScreen() {
       activeOpacity={0.85}
     >
       {item.logoUrl ? (
-        <Image source={{ uri: item.logoUrl }} style={styles.schoolLogo} />
+        <Image
+          source={{ uri: item.logoUrl }}
+          style={styles.schoolLogo}
+          resizeMode="cover"
+        />
       ) : (
         <View style={styles.schoolIcon}>
           <Ionicons name="business" size={24} color="#1E3A8A" />
@@ -271,7 +275,7 @@ export default function SelectSchoolScreen() {
       </View>
 
       {(error || selectError) && (
-        <View style={styles.errorBox}>
+        <View style={[styles.errorBox, styles.errorBoxNative]}>
           <Text style={styles.errorText}>{selectError || error}</Text>
         </View>
       )}
@@ -287,7 +291,7 @@ export default function SelectSchoolScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={[
             styles.list,
-            contentColumn,
+            styles.listNative,
             { paddingBottom: Math.max(insets.bottom, 20) + 16 },
           ]}
           refreshControl={
@@ -299,7 +303,9 @@ export default function SelectSchoolScreen() {
               <Text style={styles.emptyText}>{t("selectSchool.empty")}</Text>
             </View>
           }
-          renderItem={({ item }) => renderSchoolCard(item)}
+          renderItem={({ item }) => (
+            <View style={styles.schoolCardWrap}>{renderSchoolCard(item)}</View>
+          )}
         />
       )}
         </>
@@ -398,6 +404,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
   },
+  errorBoxNative: {
+    marginHorizontal: 24,
+  },
   errorText: {
     color: "#B91C1C",
     fontSize: 14,
@@ -407,13 +416,26 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     gap: 12,
   },
+  listNative: {
+    paddingHorizontal: 24,
+    width: "100%",
+    maxWidth: "100%",
+    alignSelf: "center",
+  },
+  schoolCardWrap: {
+    width: "100%",
+    maxWidth: "100%",
+    alignSelf: "center",
+  },
   schoolCard: {
     flexDirection: "row",
     alignItems: "center",
+    alignSelf: "stretch",
+    width: "100%",
+    maxWidth: "100%",
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     gap: 14,
@@ -425,12 +447,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFF6FF",
     alignItems: "center",
     justifyContent: "center",
+    flexShrink: 0,
   },
   schoolLogo: {
     width: 48,
     height: 48,
     borderRadius: 14,
     backgroundColor: "#EFF6FF",
+    flexShrink: 0,
   },
   schoolInfo: {
     flex: 1,

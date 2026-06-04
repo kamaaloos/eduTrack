@@ -77,6 +77,18 @@ Super-admin accounts live in the **registry** project. They manage schools via `
 
 School **admin** usage notifications are written to the **school** project’s `notifications` collection.
 
+## Push notifications (mobile)
+
+Deploy per **school** project (not the registry):
+
+```bash
+cd school-functions && npm install && npm run build && cd ..
+firebase use <school-project-id>
+firebase deploy --config firebase.school.json --only functions:school:sendPushOnNotificationCreated,firestore:rules
+```
+
+See [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md) for EAS build requirements and testing.
+
 ## Usage expiry (`usageExpiresAt`)
 
 - Stored on `schoolRegistry/{schoolId}` as `YYYY-MM-DD`.

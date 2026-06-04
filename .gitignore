@@ -3,6 +3,7 @@
 # dependencies
 node_modules/
 functions/lib/
+school-functions/lib/
 
 # env files
 .env

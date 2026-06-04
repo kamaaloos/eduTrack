@@ -60,6 +60,7 @@ export function StudentDashboardView({
   const {
     visibleSchedule,
     currentScheduleId,
+    scheduleNow,
     homeworkSlides,
     visibleExams,
   } = useStudentDashboardDerivedData({
@@ -127,6 +128,7 @@ export function StudentDashboardView({
           currentScheduleId={currentScheduleId}
           classId={classId}
           todayLabel={todayLabel}
+          scheduleNow={scheduleNow}
         />
 
         <DashboardHomeworkSection
