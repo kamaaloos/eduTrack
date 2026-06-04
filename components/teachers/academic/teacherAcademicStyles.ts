@@ -38,6 +38,9 @@ export const teacherAcademicStyles = StyleSheet.create({
     borderRadius: 24,
     padding: 20,
   },
+  announcementsBetweenGap: {
+    height: 32,
+  },
   classCard: {
     marginBottom: 20,
   },

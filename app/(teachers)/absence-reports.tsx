@@ -124,12 +124,14 @@ export default function TeacherAbsenceReportsScreen() {
         {loadingClasses ? (
           <ActivityIndicator style={styles.loader} color="#1E40AF" />
         ) : (
-          <SelectChips
-            options={classOptions}
-            selectedValue={selectedClassId}
-            onSelect={setSelectedClassId}
-            emptyMessage={t("teacher.absenceReports.noClassesAssigned")}
-          />
+          <View style={styles.chipBar}>
+            <SelectChips
+              options={classOptions}
+              selectedValue={selectedClassId}
+              onSelect={setSelectedClassId}
+              emptyMessage={t("teacher.absenceReports.noClassesAssigned")}
+            />
+          </View>
         )}
 
         {error ? (
@@ -175,6 +177,11 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     paddingTop: 4,
+  },
+  chipBar: {
+    flexGrow: 0,
+    flexShrink: 0,
+    marginBottom: 8,
   },
   loader: { marginVertical: 24 },
   listScroll: { flex: 1 },

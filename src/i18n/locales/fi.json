@@ -166,7 +166,24 @@
     "selectParent": "Valitse huoltajan tili.",
     "noClasses": "Ei luokkia saatavilla.",
     "noStudents": "Ei oppilaita tässä luokassa.",
-    "noParentLinked": "Tähän oppilaaseen ei ole linkitetty huoltajaa."
+    "noParentLinked": "Tähän oppilaaseen ei ole linkitetty huoltajaa.",
+    "chooseClass": "Valitse luokka",
+    "chooseStudent": "Valitse oppilas",
+    "chooseParent": "Valitse huoltajan tili",
+    "pickerClassTitle": "Valitse luokka",
+    "pickerStudentTitle": "Valitse oppilas",
+    "pickerParentTitle": "Valitse huoltaja",
+    "search": "Hae…",
+    "noMatch": "Ei tuloksia"
+  },
+  "announcement": {
+    "personalMessage": "Henkilökohtainen viesti",
+    "personalFromTeacher": "Opettajalta {{name}} (sinulle)",
+    "personalFromAdmin": "Ylläpidolta {{name}} (sinulle)",
+    "personalFromSender": "Lähettäjältä {{name}} (sinulle)",
+    "fromTeacher": "Opettaja {{name}}",
+    "fromAdmin": "Ylläpito {{name}}",
+    "fromSender": "{{name}}"
   },
   "auth": {
     "login": {

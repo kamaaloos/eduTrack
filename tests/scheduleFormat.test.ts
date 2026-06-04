@@ -71,7 +71,7 @@ describe("scheduleDateTimeLine with i18n", () => {
         startTime: "08:00",
         endTime: "09:00",
       },
-      { t, referenceDate: now },
+      { t: t as never, referenceDate: now },
     );
     expect(line).toContain("Tomorrow");
     expect(line).toContain("08:00 - 09:00");

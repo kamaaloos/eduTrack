@@ -9,7 +9,7 @@ import {
     sendUserPasswordReset,
     updateUserProfile,
 } from "../src/services/adminUserManagement";
-import { db, ensureAdminCreateAuth } from "../src/services/firebase";
+import { ensureAdminCreateAuth, requireSchoolDb } from "../src/services/firebase";
 
 export type UserRole = "student" | "teacher" | "parent" | "admin";
 
@@ -45,7 +45,7 @@ export const useAdminUsers = () => {
         setLoading(true);
         setError(null);
         try {
-            const usersSnapshot = await getDocs(collection(db, "users"));
+            const usersSnapshot = await getDocs(collection(requireSchoolDb(), "users"));
             const usersData = usersSnapshot.docs.map((docSnap) => ({
                 id: docSnap.id,
                 ...docSnap.data(),
@@ -105,7 +105,7 @@ export const useAdminUsers = () => {
                 const phoneTrimmed = phone?.trim();
                 if (phoneTrimmed) profile.phone = phoneTrimmed;
 
-                await setDoc(doc(db, "users", userCred.user.uid), profile);
+                await setDoc(doc(requireSchoolDb(), "users", userCred.user.uid), profile);
 
                 await signOut(secondaryAuth).catch(() => {});
 

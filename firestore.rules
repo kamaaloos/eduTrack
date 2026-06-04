@@ -76,6 +76,28 @@ service cloud.firestore {
         );
     }
 
+    /** Parent profile linkedStudentIds[index] when index is in range. */
+    function teacherOwnsParentLinkedAt(parentData, index) {
+      return parentData.keys().hasAll(["linkedStudentIds"])
+        && parentData.linkedStudentIds.size() > index
+        && teacherOwnsStudent(parentData.linkedStudentIds[index]);
+    }
+
+    /** Teachers may read a parent user linked to at least one student they teach. */
+    function teacherCanReadParentUser(parentId) {
+      let parentPath = /databases/$(database)/documents/users/$(parentId);
+      return isTeacher()
+        && exists(parentPath)
+        && get(parentPath).data.role == "parent"
+        && (
+          teacherOwnsParentLinkedAt(get(parentPath).data, 0)
+          || teacherOwnsParentLinkedAt(get(parentPath).data, 1)
+          || teacherOwnsParentLinkedAt(get(parentPath).data, 2)
+          || teacherOwnsParentLinkedAt(get(parentPath).data, 3)
+          || teacherOwnsParentLinkedAt(get(parentPath).data, 4)
+        );
+    }
+
     function studentProfileClassId(studentId) {
       let studentPath = /databases/$(database)/documents/users/$(studentId);
       return exists(studentPath)
@@ -146,6 +168,7 @@ service cloud.firestore {
       allow get: if isAdmin()
         || request.auth.uid == userId
         || (isParent() && parentOwnsStudent(userId))
+        || teacherCanReadParentUser(userId)
         || (
           isTeacher()
           && resource.data.role == "student"
@@ -541,7 +564,12 @@ service cloud.firestore {
 
     match /parentStudents/{docId} {
       allow read: if isAdmin()
-        || (isParent() && resource.data.parentId == request.auth.uid);
+        || (isParent() && resource.data.parentId == request.auth.uid)
+        || (
+          isTeacher()
+          && resource.data.studentId != null
+          && teacherOwnsStudent(resource.data.studentId)
+        );
 
       allow write: if isAdmin();
     }

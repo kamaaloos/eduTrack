@@ -23,6 +23,8 @@ import {
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
 
+const isWeb = Platform.OS === "web";
+
 export default function ReportAbsenceScreen() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
@@ -110,19 +112,22 @@ export default function ReportAbsenceScreen() {
             <Text style={styles.label}>{t("parent.reportAbsenceReason")}</Text>
             <Text style={styles.hint}>{t("parent.reportAbsenceSubtitle")}</Text>
 
-            <View style={styles.reasonList}>
+            <View style={styles.reasonGrid}>
               {ABSENCE_REASONS.map((item) => {
                 const active = reasonCode === item.value;
                 return (
                   <TouchableOpacity
                     key={item.value}
-                    style={[styles.reasonRow, active && styles.reasonRowActive]}
+                    style={[
+                      styles.reasonChip,
+                      active && styles.reasonChipActive,
+                    ]}
                     onPress={() => setReasonCode(item.value)}
                     activeOpacity={0.8}
                   >
                     <Ionicons
                       name={active ? "radio-button-on" : "radio-button-off"}
-                      size={22}
+                      size={18}
                       color={active ? "#1E40AF" : "#94A3B8"}
                     />
                     <Text
@@ -130,6 +135,7 @@ export default function ReportAbsenceScreen() {
                         styles.reasonLabel,
                         active && styles.reasonLabelActive,
                       ]}
+                      numberOfLines={2}
                     >
                       {getAbsenceReasonLabel(t, item.value)}
                     </Text>
@@ -174,8 +180,11 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: {
     paddingBottom: 32,
+    alignItems: isWeb ? "center" : "stretch",
   },
   formCard: {
+    width: "100%",
+    maxWidth: isWeb ? 520 : undefined,
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     borderWidth: 1,
@@ -193,32 +202,40 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 14,
   },
-  reasonList: { gap: 8 },
-  reasonRow: {
+  reasonGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    justifyContent: "flex-start",
+  },
+  reasonChip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 8,
+    width: isWeb ? "100%" : "48%",
+    minHeight: 48,
     backgroundColor: "#F8FAFC",
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    paddingVertical: 14,
-    paddingHorizontal: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
   },
-  reasonRowActive: {
+  reasonChipActive: {
     borderColor: "#1E40AF",
     backgroundColor: "#EFF6FF",
   },
   reasonLabel: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
     color: "#334155",
+    lineHeight: 18,
   },
   reasonLabelActive: {
     color: "#1E3A8A",
     fontWeight: "600",
   },
-  notesLabel: { marginTop: 24 },
+  notesLabel: { marginTop: 20 },
   notesInput: {
     marginTop: 10,
     backgroundColor: "#F8FAFC",
@@ -226,14 +243,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E2E8F0",
     padding: 14,
-    minHeight: 100,
+    minHeight: 88,
     fontSize: 15,
     color: "#0F172A",
   },
   submitBtn: {
-    marginTop: 28,
+    marginTop: 24,
     backgroundColor: "#1E40AF",
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
   },

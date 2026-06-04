@@ -16,6 +16,29 @@ export const studentScreenStyles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    borderLeftWidth: 4,
+    borderLeftColor: "#2563EB",
+  },
+  listCardDirect: {
+    borderLeftColor: "#7C3AED",
+  },
+  listCardBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "#EDE9FE",
+    color: "#6D28D9",
+    fontSize: 11,
+    fontWeight: "700",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    marginBottom: 6,
+    overflow: "hidden",
+  },
+  listCardSender: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#7C3AED",
+    marginBottom: 6,
   },
   listCardTitle: {
     fontSize: 16,
@@ -84,6 +107,12 @@ export const studentScreenStyles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: "#E2E8F0",
+  },
+  detailSender: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#7C3AED",
+    marginBottom: 12,
   },
   detailMetaRow: {
     flexDirection: "row",

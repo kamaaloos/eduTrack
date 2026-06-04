@@ -166,7 +166,24 @@
     "selectParent": "اختر حساب ولي أمر.",
     "noClasses": "لا توجد صفوف.",
     "noStudents": "لا يوجد طلاب في هذا الصف.",
-    "noParentLinked": "لا يوجد ولي أمر مرتبط بهذا الطالب."
+    "noParentLinked": "لا يوجد ولي أمر مرتبط بهذا الطالب.",
+    "chooseClass": "اختر الصف",
+    "chooseStudent": "اختر الطالب",
+    "chooseParent": "اختر حساب ولي الأمر",
+    "pickerClassTitle": "اختر الصف",
+    "pickerStudentTitle": "اختر الطالب",
+    "pickerParentTitle": "اختر ولي الأمر",
+    "search": "بحث…",
+    "noMatch": "لا توجد نتائج"
+  },
+  "announcement": {
+    "personalMessage": "رسالة شخصية",
+    "personalFromTeacher": "من المعلم {{name}} (لك)",
+    "personalFromAdmin": "من الإدارة {{name}} (لك)",
+    "personalFromSender": "من {{name}} (لك)",
+    "fromTeacher": "من المعلم {{name}}",
+    "fromAdmin": "من الإدارة {{name}}",
+    "fromSender": "من {{name}}"
   },
   "auth": {
     "login": {

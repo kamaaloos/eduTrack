@@ -2,6 +2,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
 import { getPreviewText } from "../../src/utils/dashboardUi";
+import {
+  getAnnouncementSenderLine,
+  isDirectAnnouncement,
+} from "../../src/utils/announcementDisplay";
 import { DashboardSectionHeader } from "./DashboardSectionHeader";
 import { DashboardSlideRow } from "./DashboardSlideRow";
 import { dashboardStyles as styles, studentSlideCardStyle } from "./dashboardStyles";
@@ -43,12 +47,29 @@ export function DashboardAnnouncementsSection({
           {messages.map((item: any) => {
             const fullBody = item.text || item.message || "";
             const { preview } = getPreviewText(fullBody);
+            const senderLine = getAnnouncementSenderLine(item, t);
+            const isDirect = isDirectAnnouncement(item);
 
             return (
               <View
                 key={item.id}
-                style={studentSlideCardStyle(styles.messageCardAccent)}
+                style={studentSlideCardStyle(
+                  styles.messageCardAccent,
+                  ...(isDirect ? [styles.messageCardDirect] : []),
+                )}
               >
+                {isDirect ? (
+                  <View style={styles.messagePersonalBadge}>
+                    <Text style={styles.messagePersonalBadgeText}>
+                      {t("announcement.personalMessage")}
+                    </Text>
+                  </View>
+                ) : null}
+                {senderLine ? (
+                  <Text style={styles.messageSenderLine} numberOfLines={1}>
+                    {senderLine}
+                  </Text>
+                ) : null}
                 <View style={styles.slideCardTop}>
                   <View style={styles.messageIconWrap}>
                     <Ionicons

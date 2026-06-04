@@ -13,12 +13,12 @@ import { platformShadow } from "../../src/utils/platformShadow";
 import { UserAvatar } from "../common/UserAvatar";
 
 type ParentChildrenListProps = {
-  children: ParentChild[];
+  childList: ParentChild[];
   onSelect: (child: ParentChild) => void;
 };
 
 export function ParentChildrenList({
-  children,
+  childList,
   onSelect,
 }: ParentChildrenListProps) {
   const { t } = useTranslation();
@@ -73,12 +73,12 @@ export function ParentChildrenList({
       <View style={styles.sectionHead}>
         <Text style={styles.sectionTitle}>{t("parent.selectChild")}</Text>
         <View style={styles.countPill}>
-          <Text style={styles.countPillText}>{children.length}</Text>
+          <Text style={styles.countPillText}>{childList.length}</Text>
         </View>
       </View>
 
       {isWeb ? (
-        <View style={styles.webGrid}>{children.map(renderCard)}</View>
+        <View style={styles.webGrid}>{childList.map(renderCard)}</View>
       ) : (
         <ScrollView
           horizontal
@@ -89,7 +89,7 @@ export function ParentChildrenList({
             ? ({ className: "dashboard-hide-scrollbar" } as object)
             : null)}
         >
-          {children.map(renderCard)}
+          {childList.map(renderCard)}
         </ScrollView>
       )}
     </View>

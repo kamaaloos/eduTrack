@@ -9,7 +9,7 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { requireSchoolAuth, requireSchoolDb } from "./firebase";
 import type { UserRole } from "../../hooks/useAdminUsers";
 
 export async function updateUserProfile(
@@ -24,13 +24,13 @@ export async function updateUserProfile(
   if (Object.keys(payload).length === 0) {
     throw new Error("Nothing to update");
   }
-  await setDoc(doc(db, "users", userId), payload, { merge: true });
+  await setDoc(doc(requireSchoolDb(), "users", userId), payload, { merge: true });
 }
 
 export async function sendUserPasswordReset(email: string): Promise<void> {
   const normalized = email.trim().toLowerCase();
   if (!normalized) throw new Error("Email is required");
-  await sendPasswordResetEmail(auth, normalized);
+  await sendPasswordResetEmail(requireSchoolAuth(), normalized);
 }
 
 async function deleteQueryDocs(
@@ -38,12 +38,13 @@ async function deleteQueryDocs(
   field: string,
   value: string,
 ): Promise<void> {
+  const schoolDb = requireSchoolDb();
   const snap = await getDocs(
-    query(collection(db, collectionName), where(field, "==", value)),
+    query(collection(schoolDb, collectionName), where(field, "==", value)),
   );
   if (snap.empty) return;
 
-  const batch = writeBatch(db);
+  const batch = writeBatch(schoolDb);
   snap.docs.forEach((d) => batch.delete(d.ref));
   await batch.commit();
 }
@@ -73,7 +74,7 @@ export async function removeUserAndLinks(
     ]);
   }
 
-  await deleteDoc(doc(db, "users", userId));
+  await deleteDoc(doc(requireSchoolDb(), "users", userId));
 }
 
 export async function updateClassRecord(
@@ -85,7 +86,7 @@ export async function updateClassRecord(
   if (Object.keys(payload).length === 0) {
     throw new Error("Nothing to update");
   }
-  await setDoc(doc(db, "classes", classId), payload, { merge: true });
+  await setDoc(doc(requireSchoolDb(), "classes", classId), payload, { merge: true });
 }
 
 export async function removeClass(classId: string): Promise<void> {
@@ -94,5 +95,5 @@ export async function removeClass(classId: string): Promise<void> {
     deleteQueryDocs("teacherClasses", "classId", classId),
     deleteQueryDocs("teacherSubjects", "classId", classId),
   ]);
-  await deleteDoc(doc(db, "classes", classId));
+  await deleteDoc(doc(requireSchoolDb(), "classes", classId));
 }

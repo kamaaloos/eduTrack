@@ -9,9 +9,10 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
-import { BarChart, PieChart } from "react-native-chart-kit";
+import { BarChart } from "react-native-chart-kit";
 import {
   adminChartConfig,
+  AdminPieChart,
   ChartCard,
   ChartLegend,
   useAdminChartWidth,
@@ -202,17 +203,7 @@ export default function AnalyticsScreen() {
           <>
             <Text style={styles.section}>{t("admin.userActivityOverview")}</Text>
             <ChartCard>
-                <PieChart
-                  data={pieData}
-                  width={chartWidth}
-                  height={200}
-                  chartConfig={adminChartConfig}
-                  accessor="population"
-                  backgroundColor="transparent"
-                  paddingLeft="0"
-                  hasLegend={false}
-                  absolute
-                />
+              <AdminPieChart data={pieData} chartWidth={chartWidth} />
               <ChartLegend items={pieLegend} />
             </ChartCard>
           </>

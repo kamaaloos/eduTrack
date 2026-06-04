@@ -140,6 +140,20 @@ async function shutdownFirebaseApp(
 /**
  * Secondary Auth used only when admins create/import users (in-memory session).
  */
+export function requireSchoolDb(): Firestore {
+  if (!db) {
+    throw new Error("School connection is not ready");
+  }
+  return db;
+}
+
+export function requireSchoolAuth(): Auth {
+  if (!auth) {
+    throw new Error("School connection is not ready");
+  }
+  return auth;
+}
+
 export function ensureAdminCreateAuth(): Auth | null {
   if (!lastSchoolFirebaseConfig || !connectedSchoolProjectId) {
     return null;

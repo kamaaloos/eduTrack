@@ -327,6 +327,9 @@ export function useTeacherAcademic() {
         icon: "📢",
         classId: selectedClassId,
         teacherId: user!.uid,
+        senderRole: "teacher",
+        senderId: user!.uid,
+        senderName: userData?.name || user?.email || t("common.teacher"),
         createdAt: serverTimestamp(),
       });
 

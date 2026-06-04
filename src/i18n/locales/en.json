@@ -167,7 +167,24 @@
     "selectParent": "Select a parent account.",
     "noClasses": "No classes available.",
     "noStudents": "No students in this class.",
-    "noParentLinked": "No parent linked to this student."
+    "noParentLinked": "No parent linked to this student.",
+    "chooseClass": "Choose class",
+    "chooseStudent": "Choose student",
+    "chooseParent": "Choose parent account",
+    "pickerClassTitle": "Choose class",
+    "pickerStudentTitle": "Choose student",
+    "pickerParentTitle": "Choose parent",
+    "search": "Search…",
+    "noMatch": "No matches"
+  },
+  "announcement": {
+    "personalMessage": "Personal message",
+    "personalFromTeacher": "From teacher {{name}} (for you)",
+    "personalFromAdmin": "From admin {{name}} (for you)",
+    "personalFromSender": "From {{name}} (for you)",
+    "fromTeacher": "From teacher {{name}}",
+    "fromAdmin": "From admin {{name}}",
+    "fromSender": "From {{name}}"
   },
   "auth": {
     "login": {

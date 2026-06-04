@@ -166,7 +166,24 @@
     "selectParent": "Dooro akoon waalid.",
     "noClasses": "Ma jiraan fasallo.",
     "noStudents": "Ma jiraan arday fasalkan.",
-    "noParentLinked": "Ardaygan lama xirin waalid."
+    "noParentLinked": "Ardaygan lama xirin waalid.",
+    "chooseClass": "Dooro fasal",
+    "chooseStudent": "Dooro arday",
+    "chooseParent": "Dooro akoon waalid",
+    "pickerClassTitle": "Dooro fasal",
+    "pickerStudentTitle": "Dooro arday",
+    "pickerParentTitle": "Dooro waalid",
+    "search": "Raadi…",
+    "noMatch": "Natiijo ma jirto"
+  },
+  "announcement": {
+    "personalMessage": "Fariin shaqsiyeed",
+    "personalFromTeacher": "Macallin {{name}} (adiga)",
+    "personalFromAdmin": "Maamulka {{name}} (adiga)",
+    "personalFromSender": "{{name}} (adiga)",
+    "fromTeacher": "Macallin {{name}}",
+    "fromAdmin": "Maamulka {{name}}",
+    "fromSender": "{{name}}"
   },
   "auth": {
     "login": {

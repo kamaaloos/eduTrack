@@ -3,6 +3,10 @@ import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../src/services/firebase";
+import {
+  getAnnouncementSenderLine,
+  isDirectAnnouncement,
+} from "../../src/utils/announcementDisplay";
 import { filterAnnouncementsForViewer } from "../../src/utils/announcementVisibility";
 import { AuthContext } from "../../src/context/authContext";
 import { StudentScreenShell } from "../../components/students/StudentScreenShell";
@@ -41,12 +45,30 @@ export default function MessagesScreen() {
       {messages.length === 0 ? (
         <Text style={styles.emptyText}>{t("common.noData")}</Text>
       ) : (
-        messages.map((m) => (
-          <View key={m.id} style={styles.listCard}>
-            <Text style={styles.listCardTitle}>{m.title}</Text>
-            <Text style={styles.listCardBody}>{m.text || m.message}</Text>
-          </View>
-        ))
+        messages.map((m) => {
+          const senderLine = getAnnouncementSenderLine(m, t);
+          const isDirect = isDirectAnnouncement(m);
+          return (
+            <View
+              key={m.id}
+              style={[
+                styles.listCard,
+                isDirect && styles.listCardDirect,
+              ]}
+            >
+              {isDirect ? (
+                <Text style={styles.listCardBadge}>
+                  {t("announcement.personalMessage")}
+                </Text>
+              ) : null}
+              {senderLine ? (
+                <Text style={styles.listCardSender}>{senderLine}</Text>
+              ) : null}
+              <Text style={styles.listCardTitle}>{m.title}</Text>
+              <Text style={styles.listCardBody}>{m.text || m.message}</Text>
+            </View>
+          );
+        })
       )}
     </StudentScreenShell>
   );

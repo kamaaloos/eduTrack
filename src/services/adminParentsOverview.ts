@@ -1,6 +1,6 @@
 import { collection, getDocs } from "firebase/firestore";
 import type { UserData } from "../../hooks/useAdminUsers";
-import { db } from "./firebase";
+import { requireSchoolDb } from "./firebase";
 import {
   countPaidMonthsInYear,
   effectiveFeeMonthsForYear,
@@ -21,7 +21,7 @@ export type ParentOverviewRow = {
 const currentYear = () => new Date().getFullYear();
 
 export async function loadParentStudentCounts(): Promise<Map<string, number>> {
-  const snap = await getDocs(collection(db, "parentStudents"));
+  const snap = await getDocs(collection(requireSchoolDb(), "parentStudents"));
   const counts = new Map<string, number>();
 
   for (const linkDoc of snap.docs) {

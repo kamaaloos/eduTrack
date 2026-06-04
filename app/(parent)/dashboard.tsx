@@ -134,7 +134,7 @@ export default function ParentDashboard() {
           ) : null}
 
           {children.length > 0 ? (
-            <ParentChildrenList children={children} onSelect={openChild} />
+            <ParentChildrenList childList={children} onSelect={openChild} />
           ) : null}
         </ScrollView>
       )}

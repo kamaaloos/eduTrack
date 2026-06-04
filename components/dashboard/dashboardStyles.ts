@@ -159,6 +159,26 @@ export const dashboardStyles = StyleSheet.create({
   slideCardText: { color: "#6B7280", fontSize: 13, lineHeight: 18 },
   slideCardAction: { color: "#2563EB", fontWeight: "700", fontSize: 12 },
   messageCardAccent: { borderLeftWidth: 4, borderLeftColor: "#2563EB" },
+  messageCardDirect: { borderLeftColor: "#7C3AED" },
+  messageSenderLine: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#7C3AED",
+    marginBottom: 4,
+  },
+  messagePersonalBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "#EDE9FE",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    marginBottom: 6,
+  },
+  messagePersonalBadgeText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#6D28D9",
+  },
   messageIconWrap: {
     width: 32,
     height: 32,
@@ -388,7 +408,7 @@ export const dashboardStyles = StyleSheet.create({
     alignItems: "center",
   },
   absenceButtonText: { color: "#FFFFFF", fontWeight: "700", fontSize: 15 },
-  scrollBottomSpacer: { height: isWeb ? 24 : 120 },
+  scrollBottomSpacer: { height: isWeb ? 24 : 72 },
 });
 
 /** Mobile: original slideCard only. Web carousel: fixed-width slideCardInCarousel. */

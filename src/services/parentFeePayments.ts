@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import { requireSchoolDb } from "./firebase";
 
 export type FeeMonthsMap = Record<string, boolean>;
 
@@ -77,7 +77,7 @@ export function applyMonthToFeeMap(
 }
 
 export async function loadParentFeeMonths(parentId: string): Promise<FeeMonthsMap> {
-  const snap = await getDoc(doc(db, "users", parentId));
+  const snap = await getDoc(doc(requireSchoolDb(), "users", parentId));
   if (!snap.exists()) return {};
   return parseFeeMonths(snap.data().feeMonths);
 }
@@ -89,7 +89,7 @@ export async function saveParentFeeMonths(
   const now = new Date();
   const currentKey = feeMonthKey(now.getFullYear(), now.getMonth() + 1);
   await setDoc(
-    doc(db, "users", parentId),
+    doc(requireSchoolDb(), "users", parentId),
     {
       feeMonths,
       feePaid: feeMonths[currentKey] === true,

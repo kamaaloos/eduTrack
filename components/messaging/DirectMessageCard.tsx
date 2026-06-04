@@ -1,14 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { SelectChips, SelectList, type ChipOption } from "../teachers/SelectChips";
+import { SelectChips, type ChipOption } from "../teachers/SelectChips";
 import { sendDirectMessage } from "../../src/services/directMessages";
 import { getParentIdsForStudent } from "../../src/services/notificationTargets";
 import { doc, getDoc } from "firebase/firestore";
@@ -18,6 +20,7 @@ import {
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
+import { OptionPickerModal } from "./OptionPickerModal";
 
 export type DirectMessageRecipientRole = "student" | "parent";
 
@@ -56,6 +59,45 @@ async function loadParentOptions(studentId: string): Promise<ChipOption[]> {
   return options;
 }
 
+function PickerField({
+  label,
+  placeholder,
+  value,
+  disabled,
+  onPress,
+}: {
+  label: string;
+  placeholder: string;
+  value: string;
+  disabled?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <View style={pickerStyles.field}>
+      <Text style={pickerStyles.label}>{label}</Text>
+      <Pressable
+        style={[pickerStyles.trigger, disabled && pickerStyles.triggerDisabled]}
+        onPress={onPress}
+        disabled={disabled}
+      >
+        <View style={pickerStyles.triggerInner}>
+          <Ionicons name="person-outline" size={20} color="#1E40AF" />
+          <Text
+            style={[
+              pickerStyles.triggerText,
+              !value && pickerStyles.triggerPlaceholder,
+            ]}
+            numberOfLines={1}
+          >
+            {value || placeholder}
+          </Text>
+        </View>
+        <Ionicons name="chevron-down" size={20} color="#64748B" />
+      </Pressable>
+    </View>
+  );
+}
+
 export function DirectMessageCard({
   classOptions,
   selectedClassId,
@@ -74,9 +116,14 @@ export function DirectMessageCard({
   const [selectedParentId, setSelectedParentId] = useState("");
   const [parentOptions, setParentOptions] = useState<ChipOption[]>([]);
   const [loadingParents, setLoadingParents] = useState(false);
+  const [parentsLoadedForStudentId, setParentsLoadedForStudentId] = useState("");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [classPickerOpen, setClassPickerOpen] = useState(false);
+  const [studentPickerOpen, setStudentPickerOpen] = useState(false);
+  const [parentPickerOpen, setParentPickerOpen] = useState(false);
 
   const recipientRoleOptions = useMemo<ChipOption[]>(
     () => [
@@ -90,40 +137,109 @@ export function DirectMessageCard({
     setSelectedStudentId("");
     setSelectedParentId("");
     setParentOptions([]);
+    setParentsLoadedForStudentId("");
   }, [selectedClassId]);
 
-  useEffect(() => {
-    setSelectedParentId("");
-    if (recipientRole !== "parent" || !selectedStudentId) {
-      setParentOptions([]);
-      return;
-    }
-
-    let cancelled = false;
-    setLoadingParents(true);
-
-    void loadParentOptions(selectedStudentId)
-      .then((options) => {
-        if (cancelled) return;
-        setParentOptions(options);
-        if (options.length === 1) {
-          setSelectedParentId(options[0].value);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setParentOptions([]);
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingParents(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [recipientRole, selectedStudentId]);
+  const selectedClassLabel =
+    classOptions.find((c) => c.value === selectedClassId)?.label ?? "";
 
   const selectedStudentLabel =
     students.find((s) => s.value === selectedStudentId)?.label ?? "";
+
+  const selectedParentLabel =
+    parentOptions.find((p) => p.value === selectedParentId)?.label ?? "";
+
+  const fetchParents = useCallback(async (studentId: string) => {
+    setLoadingParents(true);
+    try {
+      const options = await loadParentOptions(studentId);
+      setParentOptions(options);
+      setParentsLoadedForStudentId(studentId);
+      if (options.length === 1) {
+        setSelectedParentId(options[0].value);
+      }
+      return options;
+    } catch {
+      setParentOptions([]);
+      setParentsLoadedForStudentId(studentId);
+      return [];
+    } finally {
+      setLoadingParents(false);
+    }
+  }, []);
+
+  const openStudentPicker = useCallback(() => {
+    if (!selectedClassId) {
+      showErrorAlert(t("common.error"), t("directMessage.selectClassFirst"));
+      return;
+    }
+    if (loadingStudents) return;
+    if (students.length === 0) {
+      showErrorAlert(t("common.error"), t("directMessage.noStudents"));
+      return;
+    }
+    setStudentPickerOpen(true);
+  }, [loadingStudents, selectedClassId, students.length, t]);
+
+  const openParentPicker = useCallback(async () => {
+    if (!selectedStudentId) {
+      showErrorAlert(t("common.error"), t("directMessage.selectStudent"));
+      openStudentPicker();
+      return;
+    }
+
+    setParentPickerOpen(true);
+
+    if (parentsLoadedForStudentId !== selectedStudentId) {
+      setSelectedParentId("");
+      await fetchParents(selectedStudentId);
+    }
+  }, [
+    fetchParents,
+    openStudentPicker,
+    parentsLoadedForStudentId,
+    selectedStudentId,
+    t,
+  ]);
+
+  const handleRecipientRoleSelect = (value: string) => {
+    const role = value as DirectMessageRecipientRole;
+    setRecipientRole(role);
+    setSelectedParentId("");
+
+    if (!selectedClassId) {
+      showErrorAlert(t("common.error"), t("directMessage.selectClassFirst"));
+      return;
+    }
+
+    if (role === "student") {
+      openStudentPicker();
+      return;
+    }
+
+    if (!selectedStudentId) {
+      openStudentPicker();
+      return;
+    }
+
+    void openParentPicker();
+  };
+
+  const handleStudentSelect = (studentId: string) => {
+    setSelectedStudentId(studentId);
+    setStudentPickerOpen(false);
+    setSelectedParentId("");
+    setParentOptions([]);
+    setParentsLoadedForStudentId("");
+
+    if (recipientRole === "parent") {
+      void fetchParents(studentId).then((options) => {
+        if (options.length > 0) {
+          setParentPickerOpen(true);
+        }
+      });
+    }
+  };
 
   const handleSend = async () => {
     if (!selectedClassId) {
@@ -186,62 +302,49 @@ export function DirectMessageCard({
       <Text style={styles.hint}>{t("directMessage.hint")}</Text>
 
       {!hideClassPicker ? (
-        <>
-          <Text style={styles.label}>{t("directMessage.classLabel")}</Text>
-          {classOptions.length === 0 ? (
-            <Text style={styles.empty}>{t("directMessage.noClasses")}</Text>
-          ) : (
-            <SelectList
-              options={classOptions}
-              selectedValue={selectedClassId}
-              onSelect={onClassChange}
-              emptyMessage={t("directMessage.noClasses")}
-            />
-          )}
-        </>
+        <PickerField
+          label={t("directMessage.classLabel")}
+          placeholder={t("directMessage.chooseClass")}
+          value={selectedClassLabel}
+          disabled={classOptions.length === 0}
+          onPress={() => {
+            if (classOptions.length === 0) {
+              showErrorAlert(t("common.error"), t("directMessage.noClasses"));
+              return;
+            }
+            setClassPickerOpen(true);
+          }}
+        />
       ) : null}
 
-      <Text style={styles.label}>{t("directMessage.recipientType")}</Text>
+      <Text style={styles.recipientTypeLabel}>
+        {t("directMessage.recipientType")}
+      </Text>
       <SelectChips
         options={recipientRoleOptions}
         selectedValue={recipientRole}
-        onSelect={(value) =>
-          setRecipientRole(value as DirectMessageRecipientRole)
-        }
+        onSelect={handleRecipientRoleSelect}
       />
 
-      <Text style={styles.label}>{t("directMessage.studentLabel")}</Text>
+      <PickerField
+        label={t("directMessage.studentLabel")}
+        placeholder={t("directMessage.chooseStudent")}
+        value={selectedStudentLabel}
+        disabled={!selectedClassId || loadingStudents}
+        onPress={openStudentPicker}
+      />
       {loadingStudents ? (
-        <ActivityIndicator color="#1E3A8A" style={styles.loader} />
-      ) : !selectedClassId ? (
-        <Text style={styles.empty}>{t("directMessage.selectClassFirst")}</Text>
-      ) : students.length === 0 ? (
-        <Text style={styles.empty}>{t("directMessage.noStudents")}</Text>
-      ) : (
-        <SelectList
-          options={students}
-          selectedValue={selectedStudentId}
-          onSelect={setSelectedStudentId}
-          emptyMessage={t("directMessage.noStudents")}
-        />
-      )}
+        <ActivityIndicator color="#1E3A8A" style={styles.inlineLoader} />
+      ) : null}
 
-      {recipientRole === "parent" && selectedStudentId ? (
-        <>
-          <Text style={styles.label}>{t("directMessage.parentLabel")}</Text>
-          {loadingParents ? (
-            <ActivityIndicator color="#1E3A8A" style={styles.loader} />
-          ) : parentOptions.length === 0 ? (
-            <Text style={styles.empty}>{t("directMessage.noParentLinked")}</Text>
-          ) : (
-            <SelectList
-              options={parentOptions}
-              selectedValue={selectedParentId}
-              onSelect={setSelectedParentId}
-              emptyMessage={t("directMessage.noParentLinked")}
-            />
-          )}
-        </>
+      {recipientRole === "parent" ? (
+        <PickerField
+          label={t("directMessage.parentLabel")}
+          placeholder={t("directMessage.chooseParent")}
+          value={selectedParentLabel}
+          disabled={!selectedStudentId}
+          onPress={() => void openParentPicker()}
+        />
       ) : null}
 
       <TextInput
@@ -273,16 +376,98 @@ export function DirectMessageCard({
           <Text style={styles.buttonText}>{t("directMessage.send")}</Text>
         )}
       </TouchableOpacity>
+
+      <OptionPickerModal
+        visible={classPickerOpen}
+        title={t("directMessage.pickerClassTitle")}
+        options={classOptions}
+        selectedValue={selectedClassId}
+        onSelect={(id) => {
+          onClassChange(id);
+          setClassPickerOpen(false);
+        }}
+        onClose={() => setClassPickerOpen(false)}
+        emptyMessage={t("directMessage.noClasses")}
+      />
+
+      <OptionPickerModal
+        visible={studentPickerOpen}
+        title={t("directMessage.pickerStudentTitle")}
+        options={students}
+        selectedValue={selectedStudentId}
+        onSelect={handleStudentSelect}
+        onClose={() => setStudentPickerOpen(false)}
+        loading={loadingStudents}
+        emptyMessage={t("directMessage.noStudents")}
+      />
+
+      <OptionPickerModal
+        visible={parentPickerOpen}
+        title={t("directMessage.pickerParentTitle")}
+        options={parentOptions}
+        selectedValue={selectedParentId}
+        onSelect={(id) => {
+          setSelectedParentId(id);
+          setParentPickerOpen(false);
+        }}
+        onClose={() => setParentPickerOpen(false)}
+        loading={loadingParents}
+        emptyMessage={t("directMessage.noParentLinked")}
+      />
     </View>
   );
 }
+
+const pickerStyles = StyleSheet.create({
+  field: {
+    marginBottom: 12,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 8,
+    marginTop: 4,
+  },
+  trigger: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#F8FAFC",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+  },
+  triggerDisabled: {
+    opacity: 0.55,
+  },
+  triggerInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    flex: 1,
+    minWidth: 0,
+  },
+  triggerText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#0F172A",
+    flex: 1,
+  },
+  triggerPlaceholder: {
+    color: "#64748B",
+    fontWeight: "500",
+  },
+});
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "white",
     padding: 20,
     borderRadius: 16,
-    marginBottom: 20,
+    marginBottom: 0,
     ...platformShadow("md"),
   },
   sectionTitle: {
@@ -296,20 +481,16 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     lineHeight: 20,
   },
-  label: {
+  recipientTypeLabel: {
     fontSize: 14,
     fontWeight: "600",
     color: "#374151",
     marginBottom: 8,
     marginTop: 4,
   },
-  empty: {
-    color: "#6B7280",
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  loader: {
-    marginVertical: 12,
+  inlineLoader: {
+    marginTop: -4,
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,

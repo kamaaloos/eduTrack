@@ -1,11 +1,4 @@
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  Pressable,
-  View,
-} from "react-native";
+import { Platform, StyleSheet, Text, Pressable, View } from "react-native";
 
 export type ChipOption = {
   value: string;
@@ -63,21 +56,9 @@ export function SelectChips({
     />
   ));
 
-  // Nested horizontal ScrollView breaks taps on web/iOS — use wrapped chips instead.
-  if (Platform.OS === "ios" || Platform.OS === "web") {
-    return <View style={styles.wrapRow}>{chips}</View>;
-  }
-
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.row}
-      nestedScrollEnabled
-    >
-      {chips}
-    </ScrollView>
-  );
+  // Wrapped row on all platforms — horizontal ScrollView inside flex:1 layouts stretches
+  // chips to full screen height on Android; nested horizontal scroll also breaks taps on web/iOS.
+  return <View style={styles.wrapRow}>{chips}</View>;
 }
 
 /** Vertical list — reliable on iOS inside ScrollView */
@@ -118,14 +99,13 @@ export function SelectList({
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    paddingVertical: 4,
-  },
   wrapRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     paddingVertical: 4,
+    flexGrow: 0,
+    alignSelf: "flex-start",
+    width: "100%",
   },
   chip: {
     paddingHorizontal: 14,
@@ -134,6 +114,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#E5E7EB",
     marginRight: 8,
     marginBottom: 8,
+    alignSelf: "flex-start",
   },
   chipActive: {
     backgroundColor: "#2563EB",

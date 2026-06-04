@@ -247,10 +247,28 @@ export function useStudentDashboardData(
   }, [remarks, attendance]);
 
   const visibleMessages = useMemo(() => {
-    if (!viewer) return messages;
-    return filterAnnouncementsForViewer(messages, {
-      ...viewer,
-      studentId: viewer.studentId ?? studentId,
+    const filtered = !viewer
+      ? messages
+      : filterAnnouncementsForViewer(messages, {
+          ...viewer,
+          studentId: viewer.studentId ?? studentId,
+        });
+    return [...filtered].sort((a, b) => {
+      const aDirect = a.direct === true ? 1 : 0;
+      const bDirect = b.direct === true ? 1 : 0;
+      if (aDirect !== bDirect) return bDirect - aDirect;
+      const toMs = (v: unknown) => {
+        if (!v) return 0;
+        if (typeof v === "object" && v !== null && "toDate" in v) {
+          return (v as { toDate: () => Date }).toDate().getTime();
+        }
+        if (typeof v === "object" && v !== null && "seconds" in v) {
+          return (v as { seconds: number }).seconds * 1000;
+        }
+        const parsed = new Date(String(v)).getTime();
+        return Number.isNaN(parsed) ? 0 : parsed;
+      };
+      return toMs(b.createdAt) - toMs(a.createdAt);
     });
   }, [messages, viewer, studentId]);
 

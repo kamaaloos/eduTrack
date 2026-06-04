@@ -19,7 +19,7 @@ export default function StudentLayout() {
   return (
     <RoleGate allowedRole="student">
     <StudentMenuProvider>
-    <RoleAppFrame copyrightBottomOffset={88}>
+    <RoleAppFrame copyrightBottomOffset={64}>
     <Tabs
       screenOptions={{
         headerShown: false,

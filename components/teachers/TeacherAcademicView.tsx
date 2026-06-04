@@ -164,17 +164,18 @@ export function TeacherAcademicView(props: TeacherAcademicViewProps) {
               onAnnouncementTextChange={setAnnouncementText}
               onPublish={publishAnnouncement}
             />
+            <View style={styles.announcementsBetweenGap} />
             <DirectMessageCard
-              classOptions={classOptions}
-              selectedClassId={selectedClassId}
-              onClassChange={setSelectedClassId}
-              students={directMessageStudentOptions}
-              loadingStudents={loadingStudents}
-              senderRole="teacher"
-              senderId={user?.uid}
-              senderName={userData?.name ?? t("common.teacher")}
-              hideClassPicker
-            />
+                classOptions={classOptions}
+                selectedClassId={selectedClassId}
+                onClassChange={setSelectedClassId}
+                students={directMessageStudentOptions}
+                loadingStudents={loadingStudents}
+                senderRole="teacher"
+                senderId={user?.uid}
+                senderName={userData?.name ?? t("common.teacher")}
+                hideClassPicker
+              />
           </>
         ) : null}
 

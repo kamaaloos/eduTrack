@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../src/context/authContext";
 import { db } from "../../src/services/firebase";
+import { getAnnouncementSenderLine } from "../../src/utils/announcementDisplay";
 import { StudentScreenShell } from "../../components/students/StudentScreenShell";
 import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
@@ -58,6 +59,7 @@ export default function AnnouncementDetailScreen() {
   const fullText = item?.text || item?.message || paramBody || "";
   const screenTitle =
     item?.title || paramTitle || t("common.announcements");
+  const senderLine = item ? getAnnouncementSenderLine(item, t) : null;
 
   if (!item) {
     return (
@@ -70,6 +72,9 @@ export default function AnnouncementDetailScreen() {
   return (
     <StudentScreenShell title={screenTitle} showBack showMenu={false}>
       <View style={styles.detailCard}>
+        {senderLine ? (
+          <Text style={styles.detailSender}>{senderLine}</Text>
+        ) : null}
         <Text style={styles.detailBody}>
           {fullText || t("common.notAvailable")}
         </Text>
