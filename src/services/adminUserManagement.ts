@@ -1,5 +1,6 @@
 import { sendPasswordResetEmail } from "firebase/auth";
 import {
+  arrayRemove,
   collection,
   deleteDoc,
   doc,
@@ -55,12 +56,32 @@ export async function removeUserAndLinks(
   role: UserRole,
 ): Promise<void> {
   if (role === "student") {
+    const schoolDb = requireSchoolDb();
+    const parentLinkSnap = await getDocs(
+      query(
+        collection(schoolDb, "parentStudents"),
+        where("studentId", "==", userId),
+      ),
+    );
+    const parentIds = new Set<string>();
+    for (const linkDoc of parentLinkSnap.docs) {
+      const parentId = linkDoc.data().parentId as string | undefined;
+      if (parentId) parentIds.add(parentId);
+    }
+
     await Promise.all([
       deleteQueryDocs("studentClasses", "studentId", userId),
       deleteQueryDocs("parentStudents", "studentId", userId),
       deleteQueryDocs("attendance", "studentId", userId),
       deleteQueryDocs("grades", "studentId", userId),
       deleteQueryDocs("examResults", "studentId", userId),
+      ...[...parentIds].map((parentId) =>
+        setDoc(
+          doc(schoolDb, "users", parentId),
+          { linkedStudentIds: arrayRemove(userId) },
+          { merge: true },
+        ),
+      ),
     ]);
   } else if (role === "teacher") {
     await Promise.all([

@@ -119,17 +119,14 @@ export async function upsertParentStudentLink(
   await syncParentClassAccess(parentId, studentId);
 }
 
-/** Collects all student IDs linked to a parent (query + profile). */
+/**
+ * Student IDs linked to a parent. Uses parentStudents as source of truth so stale
+ * entries left in users.linkedStudentIds (e.g. after a student was removed) are ignored.
+ */
 export async function collectLinkedStudentIds(parentId: string): Promise<string[]> {
-  const ids = new Set<string>();
+  if (!db) return [];
 
-  const parentSnap = await getDoc(doc(db, "users", parentId));
-  const fromProfile = parentSnap.data()?.linkedStudentIds;
-  if (Array.isArray(fromProfile)) {
-    for (const id of fromProfile) {
-      if (typeof id === "string" && id) ids.add(id);
-    }
-  }
+  const ids = new Set<string>();
 
   const linkSnap = await getDocs(
     query(
@@ -139,7 +136,33 @@ export async function collectLinkedStudentIds(parentId: string): Promise<string[
   );
   for (const linkDoc of linkSnap.docs) {
     const studentId = linkDoc.data().studentId as string | undefined;
-    if (studentId) ids.add(studentId);
+    if (studentId) {
+      ids.add(studentId);
+      continue;
+    }
+    const prefix = `${parentId}_`;
+    if (linkDoc.id.startsWith(prefix) && linkDoc.id.length > prefix.length) {
+      ids.add(linkDoc.id.slice(prefix.length));
+    }
+  }
+
+  const legacySnap = await getDoc(doc(db, "parentStudents", parentId));
+  if (legacySnap.exists()) {
+    const legacyStudentId = legacySnap.data()?.studentId as string | undefined;
+    if (legacyStudentId) ids.add(legacyStudentId);
+  }
+
+  if (ids.size > 0) {
+    return [...ids];
+  }
+
+  // No link docs — fall back to profile list (older schools before reconcile).
+  const parentSnap = await getDoc(doc(db, "users", parentId));
+  const fromProfile = parentSnap.data()?.linkedStudentIds;
+  if (Array.isArray(fromProfile)) {
+    for (const id of fromProfile) {
+      if (typeof id === "string" && id) ids.add(id);
+    }
   }
 
   return [...ids];

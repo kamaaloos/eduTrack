@@ -6,7 +6,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { requireSchoolDb } from "./firebase";
 import { syncParentClassAccess } from "./parentClassAccess";
 import { collectLinkedStudentIds } from "./parentStudentLinks";
 
@@ -58,7 +58,7 @@ export async function loadParentChildrenDetailed(
       if (!classId) {
         const scSnap = await getDocs(
           query(
-            collection(db, "studentClasses"),
+            collection(schoolDb, "studentClasses"),
             where("studentId", "==", studentId),
           ),
         );
@@ -69,7 +69,7 @@ export async function loadParentChildrenDetailed(
 
       if (classId) {
         await syncParentClassAccess(parentId, studentId);
-        const classSnap = await getDoc(doc(db, "classes", classId));
+        const classSnap = await getDoc(doc(schoolDb, "classes", classId));
         if (classSnap.exists()) {
           className = classSnap.data().name as string;
         }
