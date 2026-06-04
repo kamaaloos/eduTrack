@@ -233,13 +233,22 @@
   },
   "selectSchool": {
     "title": "اختر مدرستك",
-    "subtitle": "اختر المدرسة المسجّلة من قِبل مسؤولك. ستسجّل الدخول بعد ذلك إلى قاعدة بيانات حسابات تلك المدرسة.",
+    "subtitle": "اختر بلدك، ثم مدينتك، ثم مدرستك.",
     "loading": "جارٍ تحميل المدارس…",
     "empty": "لا توجد مدارس متاحة بعد. تواصل مع مسؤولك.",
     "connectError": "تعذّر الاتصال بهذه المدرسة",
     "superAdminLink": "تسجيل دخول مسؤول المنصة",
     "backToOnboarding": "العودة إلى البدء",
-    "signOutPlatformAdmin": "تسجيل خروج مسؤول المنصة"
+    "signOutPlatformAdmin": "تسجيل خروج مسؤول المنصة",
+    "pickCountry": "اختر البلد",
+    "pickCity": "اختر المدينة",
+    "pickSchool": "اختر المدرسة",
+    "unspecifiedCountry": "أخرى / غير محدد",
+    "unspecifiedCity": "المدينة غير محددة",
+    "noSchoolsInCity": "لا توجد مدرسة مسجّلة في هذه المدينة بعد. تواصل مع مسؤولك أو جرّب مدينة أخرى.",
+    "noCitiesInCountry": "لا توجد مدن مدرجة لهذا البلد بعد.",
+    "changeCountry": "تغيير البلد",
+    "changeCity": "تغيير المدينة"
   },
   "index": {
     "loading": "جارٍ التحميل…"
@@ -1040,6 +1049,7 @@
     "hidden": "مخفي",
     "schoolFormSubtitle": "إعداد تطبيق الويب Firebase لهذا المشروع",
     "schoolDetails": "تفاصيل المدرسة",
+    "country": "البلد",
     "city": "المدينة",
     "activeInPicker": "نشط في قائمة التطبيق",
     "activeInPickerHint": "المدارس المخفية تبقى في السجل لكن لا يمكن اختيارها.",

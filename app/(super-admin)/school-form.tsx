@@ -50,6 +50,7 @@ export default function SuperAdminSchoolFormScreen() {
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState("");
+  const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [pendingLogoUri, setPendingLogoUri] = useState<string | null>(null);
@@ -108,6 +109,7 @@ export default function SuperAdminSchoolFormScreen() {
 
     const input: SchoolRegistryInput = {
       name,
+      country,
       city,
       logoUrl,
       active,
@@ -193,12 +195,21 @@ export default function SuperAdminSchoolFormScreen() {
             placeholderTextColor="#94A3B8"
           />
 
+          <Text style={styles.label}>{t("superAdmin.country")}</Text>
+          <TextInput
+            style={styles.input}
+            value={country}
+            onChangeText={setCountry}
+            placeholder="Finland"
+            placeholderTextColor="#94A3B8"
+          />
+
           <Text style={styles.label}>{t("superAdmin.city")}</Text>
           <TextInput
             style={styles.input}
             value={city}
             onChangeText={setCity}
-            placeholder="Addis Ababa"
+            placeholder="Helsinki"
             placeholderTextColor="#94A3B8"
           />
 

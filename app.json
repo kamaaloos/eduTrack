@@ -14,10 +14,14 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundColor": "#E8F2FA"
+        "backgroundColor": "#000000"
       },
       "package": "com.maylesoft.edutrack",
-      "versionCode": 2
+      "versionCode": 2,
+      "navigationBar": {
+        "backgroundColor": "#E8F2FA",
+        "barStyle": "dark-content"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -29,20 +33,19 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash-screen.png",
           "resizeMode": "cover",
-          "backgroundColor": "#6B9FD4",
+          "backgroundColor": "#FFFFFF",
           "android": {
-            "image": "./assets/images/splash-icon.png",
+            "image": "./assets/images/splash-screen.png",
             "resizeMode": "cover",
-            "backgroundColor": "#6B9FD4",
+            "backgroundColor": "#FFFFFF",
             "enableFullScreenImage_legacy": true
           },
           "ios": {
-            "image": "./assets/images/splash-icon.png",
+            "image": "./assets/images/splash-screen.png",
             "resizeMode": "cover",
-            "backgroundColor": "#6B9FD4",
-            "enableFullScreenImage_legacy": true
+            "backgroundColor": "#FFFFFF"
           }
         }
       ],

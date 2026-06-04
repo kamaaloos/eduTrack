@@ -233,13 +233,22 @@
   },
   "selectSchool": {
     "title": "Dooro dugsigaaga",
-    "subtitle": "Dooro dugsiga uu diiwaangeliyay maamulahaaga. Waxaad ku soo geli doontaa xogta akoonnada dugsigaas marka xiga.",
+    "subtitle": "Dooro wadankaaga, magaaladaada, kadibna dugsigaaga.",
     "loading": "Dugsiyada waa la soo rarayaa…",
     "empty": "Weli ma jiraan dugsiyo la heli karo. La xiriir maamulahaaga.",
     "connectError": "Lama xiriiri karin dugsigan",
     "superAdminLink": "Soo gelitaanka maamulaha madasha",
     "backToOnboarding": "Ku laabo bilowga",
-    "signOutPlatformAdmin": "Ka bax maamulaha madasha"
+    "signOutPlatformAdmin": "Ka bax maamulaha madasha",
+    "pickCountry": "Dooro wadan",
+    "pickCity": "Dooro magaalo",
+    "pickSchool": "Dooro dugsi",
+    "unspecifiedCountry": "Kale / aan la qorin",
+    "unspecifiedCity": "Magaalo lama qorin",
+    "noSchoolsInCity": "Weli dugsi kuma diiwaangashna magaaladan. La xiriir maamulahaaga ama isku day magaalo kale.",
+    "noCitiesInCountry": "Weli magaalooyin looma liis gareyn wadankan.",
+    "changeCountry": "Beddel wadan",
+    "changeCity": "Beddel magaalo"
   },
   "index": {
     "loading": "Waa la soo rarayaa…"
@@ -1040,6 +1049,7 @@
     "hidden": "Qarsoon",
     "schoolFormSubtitle": "Dejinta web app Firebase ee mashruucan dugsiga",
     "schoolDetails": "Faahfaahinta dugsiga",
+    "country": "Wadan",
     "city": "Magaalo",
     "activeInPicker": "Firfircoon doorashada app-ka",
     "activeInPickerHint": "Dugsiyada qarsoon waxay ku jiraan diiwaanka laakiin lama dooran karo.",

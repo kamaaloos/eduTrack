@@ -51,6 +51,7 @@ export async function createSchoolRecord(
   const db = requireRegistryDb();
   const docRef = await addDoc(collection(db, COLLECTION), {
     name: input.name.trim(),
+    country: input.country?.trim() || null,
     city: input.city?.trim() || null,
     logoUrl: input.logoUrl?.trim() || null,
     active: input.active,
@@ -71,6 +72,7 @@ export async function updateSchoolRecord(
   const db = requireRegistryDb();
   await updateDoc(doc(db, COLLECTION, schoolId), {
     name: input.name.trim(),
+    country: input.country?.trim() || null,
     city: input.city?.trim() || null,
     logoUrl: input.logoUrl?.trim() || null,
     active: input.active,

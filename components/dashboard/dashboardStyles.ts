@@ -408,7 +408,7 @@ export const dashboardStyles = StyleSheet.create({
     alignItems: "center",
   },
   absenceButtonText: { color: "#FFFFFF", fontWeight: "700", fontSize: 15 },
-  scrollBottomSpacer: { height: isWeb ? 24 : 72 },
+  scrollBottomSpacer: { height: isWeb ? 24 : 24 },
 });
 
 /** Mobile: original slideCard only. Web carousel: fixed-width slideCardInCarousel. */

@@ -14,14 +14,14 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PasswordInput } from "../components/PasswordInput";
 import { AuthAboutLink } from "../components/auth/AuthAboutLink";
+import { AuthFormField } from "../components/auth/AuthFormField";
+import { AppLogo } from "../components/AppLogo";
 import { ScreenBackgroundLayer } from "../components/ScreenBackgroundLayer";
 import { useSchoolContext } from "../src/context/schoolContext";
 import { APP_COPYRIGHT } from "../src/constants/appTheme";
@@ -212,9 +212,7 @@ export default function Login() {
           showsVerticalScrollIndicator={false}
         >
         <View style={styles.logoContainer}>
-          <View style={styles.logo}>
-            <Text style={styles.logoText}>🎓</Text>
-          </View>
+          <AppLogo size={120} />
           <Text style={styles.title}>{t("auth.login.title")}</Text>
           <Text style={styles.subtitle}>{t("auth.login.subtitle")}</Text>
 
@@ -248,35 +246,33 @@ export default function Login() {
             </View>
           )}
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>{t("auth.login.email")}</Text>
-            <TextInput
-              placeholder={t("auth.login.email")}
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                setError(null);
-              }}
-              style={styles.input}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              editable={!loading}
-              placeholderTextColor="#9CA3AF"
-            />
-          </View>
+          <AuthFormField
+            label={t("auth.login.email")}
+            icon="person-outline"
+            placeholder={t("auth.login.email")}
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+              setError(null);
+            }}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            editable={!loading}
+          />
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>{t("auth.login.password")}</Text>
-            <PasswordInput
+          <View style={styles.passwordBlock}>
+            <AuthFormField
+              label={t("auth.login.password")}
+              icon="key-outline"
+              isPassword
               placeholder={t("auth.login.password")}
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
                 setError(null);
               }}
-              inputStyle={styles.input}
               editable={!loading}
-              placeholderTextColor="#9CA3AF"
+              containerStyle={styles.passwordField}
             />
             <TouchableOpacity
               style={styles.forgotPasswordLink}
@@ -318,19 +314,16 @@ export default function Login() {
               {t("auth.login.resetHint")}
             </Text>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>{t("auth.login.email")}</Text>
-              <TextInput
-                placeholder={t("auth.login.email")}
-                value={resetEmail}
-                onChangeText={setResetEmail}
-                style={styles.input}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                editable={!resetLoading}
-                placeholderTextColor="#9CA3AF"
-              />
-            </View>
+            <AuthFormField
+              label={t("auth.login.email")}
+              icon="person-outline"
+              placeholder={t("auth.login.email")}
+              value={resetEmail}
+              onChangeText={setResetEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              editable={!resetLoading}
+            />
 
             <View style={styles.forgotPasswordButtons}>
               <TouchableOpacity
@@ -404,25 +397,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: "center",
     marginBottom: 48,
-  },
-
-  logo: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#2563EB",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-    shadowColor: "#2563EB",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-
-  logoText: {
-    fontSize: 32,
+    gap: 16,
   },
 
   title: {
@@ -505,25 +480,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  inputContainer: {
-    marginBottom: 20,
+  passwordBlock: {
+    marginBottom: 0,
   },
 
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
-  },
-
-  input: {
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    backgroundColor: "#F9FAFB",
-    color: "#111827",
+  passwordField: {
+    marginBottom: 0,
   },
 
   button: {

@@ -3,12 +3,20 @@ export const APP_COPYRIGHT = "© 2026 - MayleSoft school-app by eng. Hasan Kamaa
 /** Approximate line height of the footer copyright label. */
 export const COPYRIGHT_TEXT_HEIGHT = 18;
 
+/** Distance from the physical bottom to the copyright baseline. */
+export function copyrightBarBottom(
+  safeAreaBottom: number,
+  bottomOffset = 0,
+): number {
+  return safeAreaBottom + (bottomOffset > 0 ? bottomOffset : 8);
+}
+
 /** Bottom inset so scroll/content does not cover the copyright bar. */
 export function copyrightFooterInset(
   safeAreaBottom: number,
   bottomOffset = 0,
 ): number {
-  return COPYRIGHT_TEXT_HEIGHT + safeAreaBottom + bottomOffset + 8;
+  return COPYRIGHT_TEXT_HEIGHT + copyrightBarBottom(safeAreaBottom, bottomOffset) + 4;
 }
 
 /** Latest APK builds on Expo — used on the public About screen. */

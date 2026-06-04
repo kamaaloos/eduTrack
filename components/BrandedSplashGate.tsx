@@ -11,6 +11,9 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useSchoolContext } from "../src/context/schoolContext";
 
+/** Full-screen splash artwork (logo, decorative shapes, loading tagline). */
+export const APP_SPLASH = require("../assets/images/splash-screen.png");
+
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* Expo Go may reject; in-app splash still shows below. */
 });
@@ -55,12 +58,30 @@ export function BrandedSplashGate({ children }: BrandedSplashGateProps) {
     return () => clearTimeout(timer);
   }, [appUnlocked, isWeb]);
 
+  const splash = (
+    <ImageBackground
+      source={APP_SPLASH}
+      style={styles.background}
+      resizeMode="cover"
+      accessibilityLabel="eduTrack"
+    />
+  );
+
   if (isWeb) {
     if (!schoolReady) {
       return (
-        <View style={styles.webLoading}>
-          <ActivityIndicator color="#FFFFFF" size="large" />
-          <Text style={styles.loadingText}>{t("common.loading")}</Text>
+        <View style={styles.webRoot}>
+          {splash}
+          <View style={styles.webLoading}>
+            <ActivityIndicator color="#2563EB" size="large" />
+            <Text style={styles.webLoadingText}>
+              {schoolsLoading
+                ? t("common.loading")
+                : error
+                  ? t("common.error")
+                  : t("common.loading")}
+            </Text>
+          </View>
         </View>
       );
     }
@@ -70,27 +91,7 @@ export function BrandedSplashGate({ children }: BrandedSplashGateProps) {
   return (
     <View style={styles.root}>
       {appUnlocked ? children : null}
-      {overlayVisible ? (
-        <View style={styles.overlay}>
-          <ImageBackground
-            source={require("../assets/images/splash-icon.png")}
-            style={styles.background}
-            resizeMode="cover"
-            accessibilityLabel="eduTrack"
-          >
-            <View style={styles.loadingRow}>
-              <ActivityIndicator color="#FFFFFF" size="large" />
-              <Text style={styles.loadingText}>
-                {schoolsLoading
-                  ? t("common.loading")
-                  : error
-                    ? t("common.error")
-                    : t("common.loading")}
-              </Text>
-            </View>
-          </ImageBackground>
-        </View>
-      ) : null}
+      {overlayVisible ? <View style={styles.overlay}>{splash}</View> : null}
     </View>
   );
 }
@@ -101,30 +102,28 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#6B9FD4",
+    backgroundColor: "#FFFFFF",
     zIndex: 9999,
   },
   background: {
     flex: 1,
     width: "100%",
     height: "100%",
-    justifyContent: "flex-end",
-    paddingBottom: 48,
   },
-  loadingRow: {
-    alignItems: "center",
-    gap: 12,
-  },
-  loadingText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
+  webRoot: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
   },
   webLoading: {
-    flex: 1,
-    justifyContent: "center",
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "flex-end",
     alignItems: "center",
+    paddingBottom: 48,
     gap: 12,
-    backgroundColor: "#6B9FD4",
+  },
+  webLoadingText: {
+    color: "#64748B",
+    fontSize: 15,
+    fontWeight: "600",
   },
 });

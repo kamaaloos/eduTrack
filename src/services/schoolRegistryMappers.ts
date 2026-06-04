@@ -62,6 +62,7 @@ export function mapSchoolRegistryDoc(
       typeof data.logoUrl === "string" && data.logoUrl.trim()
         ? data.logoUrl.trim()
         : null,
+    country: data.country ? String(data.country) : null,
     city: data.city ? String(data.city) : null,
     userCount:
       typeof data.userCount === "number" && Number.isFinite(data.userCount)

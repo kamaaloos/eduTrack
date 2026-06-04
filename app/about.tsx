@@ -13,6 +13,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { AppLogo } from "../components/AppLogo";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { APP_BUILDS_URL } from "../src/constants/appTheme";
 import {
@@ -61,9 +62,7 @@ export default function AboutScreen() {
           </TouchableOpacity>
 
           <View style={styles.hero}>
-            <View style={styles.logo}>
-              <Text style={styles.logoText}>🎓</Text>
-            </View>
+            <AppLogo size={112} />
             <Text style={styles.appName}>{t("about.appName")}</Text>
             <Text style={styles.tagline}>{t("about.tagline")}</Text>
           </View>
@@ -125,18 +124,7 @@ const styles = StyleSheet.create({
   hero: {
     alignItems: "center",
     marginBottom: 24,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#2563EB",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 14,
-  },
-  logoText: {
-    fontSize: 32,
+    gap: 14,
   },
   appName: {
     fontSize: 28,

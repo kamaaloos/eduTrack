@@ -2,8 +2,19 @@
 
 export const WEB_TAB_BAR_MAX_WIDTH = 520;
 
+export const FLOATING_TAB_BAR_HEIGHT = 64;
+export const FLOATING_TAB_BAR_BOTTOM_MARGIN = 16;
+
 /** Space above the floating tab bar (bar height + bottom offset). */
 export const FLOATING_TAB_BAR_INSET = 96;
+
+export function floatingTabBarBottom(_safeAreaBottom: number): number {
+  return FLOATING_TAB_BAR_BOTTOM_MARGIN;
+}
+
+export function floatingTabBarStyleForSafeArea(_safeAreaBottom: number) {
+  return floatingTabBarStyle;
+}
 
 /** Stack/tab scene — transparent so RoleAppFrame gradient shows through. */
 export const WEB_SHELL_CONTENT_STYLE = {

@@ -17,6 +17,7 @@ export type SchoolRecord = {
   /** Registered usage subscription end date (YYYY-MM-DD). */
   usageExpiresAt?: string | null;
   logoUrl?: string | null;
+  country?: string | null;
   city?: string | null;
   /** Billable users — edited by super-admin or synced by registry Cloud Functions. */
   userCount?: number | null;

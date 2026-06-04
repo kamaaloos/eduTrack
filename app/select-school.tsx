@@ -4,8 +4,6 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  FlatList,
-  Image,
   Platform,
   Pressable,
   RefreshControl,
@@ -18,7 +16,9 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { AppLogo } from "../components/AppLogo";
 import { AuthAboutLink } from "../components/auth/AuthAboutLink";
+import { SelectSchoolLocationPicker } from "../components/auth/SelectSchoolLocationPicker";
 import { useSuperAdminAuth } from "../src/context/superAdminAuthContext";
 import { useSchoolContext } from "../src/context/schoolContext";
 import type { SchoolRecord } from "../src/types/school";
@@ -128,36 +128,23 @@ export default function SelectSchoolScreen() {
   const frameProps = { showCopyright: false };
   const contentColumn = webAuthContentStyle();
 
-  const renderSchoolCard = (item: SchoolRecord) => (
-    <TouchableOpacity
-      key={item.id}
-      style={styles.schoolCard}
-      onPress={() => void handleSelect(item)}
-      disabled={connecting}
-      activeOpacity={0.85}
-    >
-      {item.logoUrl ? (
-        <Image
-          source={{ uri: item.logoUrl }}
-          style={styles.schoolLogo}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={styles.schoolIcon}>
-          <Ionicons name="business" size={24} color="#1E3A8A" />
-        </View>
-      )}
-      <View style={styles.schoolInfo}>
-        <Text style={styles.schoolName}>{item.name}</Text>
-        {item.city ? (
-          <Text style={styles.schoolMeta}>{item.city}</Text>
-        ) : (
-          <Text style={styles.schoolMeta}>{t("common.continue")}</Text>
-        )}
-      </View>
-      <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
-    </TouchableOpacity>
-  );
+  const pickerBody =
+    schools.length > 0 ? (
+      <SelectSchoolLocationPicker
+        schools={schools}
+        connecting={connecting}
+        onSelectSchool={(school) => void handleSelect(school)}
+      />
+    ) : null;
+
+  const scrollContentStyle = [
+    isWeb ? styles.webScroll : styles.nativeScroll,
+    contentColumn,
+    {
+      paddingTop: insets.top + 20,
+      paddingBottom: Math.max(insets.bottom, 24) + 24,
+    },
+  ];
 
   return (
     <Frame {...frameProps}>
@@ -170,146 +157,68 @@ export default function SelectSchoolScreen() {
         ]}
       />
 
-      {isWeb ? (
-        <ScrollView
-          contentContainerStyle={[
-            styles.webScroll,
-            contentColumn,
-            { paddingTop: insets.top + 20, paddingBottom: Math.max(insets.bottom, 24) + 24 },
-          ]}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          <View style={styles.header}>
-            <Pressable
-              style={styles.logo}
-              onPress={handleLogoPress}
-              accessibilityRole="image"
-              accessibilityLabel={t("selectSchool.title")}
-            >
-              <Text style={styles.logoText}>🎓</Text>
-            </Pressable>
-            <Text style={styles.title}>{t("selectSchool.title")}</Text>
-            <Text style={styles.subtitle}>{t("selectSchool.subtitle")}</Text>
-            <TouchableOpacity
-              style={styles.secondaryLink}
-              onPress={() => void handleBackToOnboarding()}
-              activeOpacity={0.85}
-            >
-              <Ionicons name="arrow-back" size={16} color="#475569" />
-              <Text style={styles.secondaryLinkText}>
-                {t("selectSchool.backToOnboarding")}
-              </Text>
-            </TouchableOpacity>
-            {superAdminUser && superAdminRole === "superAdmin" ? (
-              <TouchableOpacity
-                style={styles.secondaryLink}
-                onPress={handleSuperAdminLogout}
-                activeOpacity={0.85}
-              >
-                <Ionicons name="log-out-outline" size={16} color="#475569" />
-                <Text style={styles.secondaryLinkText}>
-                  {t("selectSchool.signOutPlatformAdmin")}
-                </Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-
-          {(error || selectError) ? (
-            <View style={styles.errorBox}>
-              <Text style={styles.errorText}>{selectError || error}</Text>
-            </View>
-          ) : null}
-
-          {schoolsLoading && !refreshing ? (
-            <View style={styles.centeredInline}>
-              <ActivityIndicator size="large" color="#1E3A8A" />
-              <Text style={styles.loadingText}>{t("selectSchool.loading")}</Text>
-            </View>
-          ) : schools.length === 0 ? (
-            <View style={styles.emptyCard}>
-              <Ionicons name="school-outline" size={40} color="#94A3B8" />
-              <Text style={styles.emptyText}>{t("selectSchool.empty")}</Text>
-            </View>
-          ) : (
-            <View style={styles.list}>{schools.map(renderSchoolCard)}</View>
-          )}
-        </ScrollView>
-      ) : (
-        <>
-      <View style={[styles.header, contentColumn, { paddingTop: insets.top + 20 }]}>
-        <Pressable
-          style={styles.logo}
-          onPress={handleLogoPress}
-          accessibilityRole="image"
-          accessibilityLabel={t("selectSchool.title")}
-        >
-          <Text style={styles.logoText}>🎓</Text>
-        </Pressable>
-        <Text style={styles.title}>{t("selectSchool.title")}</Text>
-        <Text style={styles.subtitle}>{t("selectSchool.subtitle")}</Text>
-        <TouchableOpacity
-          style={styles.secondaryLink}
-          onPress={() => void handleBackToOnboarding()}
-          activeOpacity={0.85}
-        >
-          <Ionicons name="arrow-back" size={16} color="#475569" />
-          <Text style={styles.secondaryLinkText}>
-            {t("selectSchool.backToOnboarding")}
-          </Text>
-        </TouchableOpacity>
-        {superAdminUser && superAdminRole === "superAdmin" ? (
+      <ScrollView
+        contentContainerStyle={scrollContentStyle}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.header}>
+          <Pressable
+            style={styles.logo}
+            onPress={handleLogoPress}
+            accessibilityRole="image"
+            accessibilityLabel={t("selectSchool.title")}
+          >
+            <AppLogo size={88} />
+          </Pressable>
+          <Text style={styles.title}>{t("selectSchool.title")}</Text>
+          <Text style={styles.subtitle}>{t("selectSchool.subtitle")}</Text>
           <TouchableOpacity
             style={styles.secondaryLink}
-            onPress={handleSuperAdminLogout}
+            onPress={() => void handleBackToOnboarding()}
             activeOpacity={0.85}
           >
-            <Ionicons name="log-out-outline" size={16} color="#475569" />
+            <Ionicons name="arrow-back" size={16} color="#475569" />
             <Text style={styles.secondaryLinkText}>
-              {t("selectSchool.signOutPlatformAdmin")}
+              {t("selectSchool.backToOnboarding")}
             </Text>
           </TouchableOpacity>
+          {superAdminUser && superAdminRole === "superAdmin" ? (
+            <TouchableOpacity
+              style={styles.secondaryLink}
+              onPress={handleSuperAdminLogout}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="log-out-outline" size={16} color="#475569" />
+              <Text style={styles.secondaryLinkText}>
+                {t("selectSchool.signOutPlatformAdmin")}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
+        {(error || selectError) ? (
+          <View style={styles.errorBox}>
+            <Text style={styles.errorText}>{selectError || error}</Text>
+          </View>
         ) : null}
-      </View>
 
-      {(error || selectError) && (
-        <View style={[styles.errorBox, styles.errorBoxNative]}>
-          <Text style={styles.errorText}>{selectError || error}</Text>
-        </View>
-      )}
-
-      {schoolsLoading && !refreshing ? (
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#1E3A8A" />
-          <Text style={styles.loadingText}>{t("selectSchool.loading")}</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={schools}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={[
-            styles.list,
-            styles.listNative,
-            { paddingBottom: Math.max(insets.bottom, 20) + 16 },
-          ]}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          ListEmptyComponent={
-            <View style={styles.emptyCard}>
-              <Ionicons name="school-outline" size={40} color="#94A3B8" />
-              <Text style={styles.emptyText}>{t("selectSchool.empty")}</Text>
-            </View>
-          }
-          renderItem={({ item }) => (
-            <View style={styles.schoolCardWrap}>{renderSchoolCard(item)}</View>
-          )}
-        />
-      )}
-        </>
-      )}
+        {schoolsLoading && !refreshing ? (
+          <View style={styles.centeredInline}>
+            <ActivityIndicator size="large" color="#1E3A8A" />
+            <Text style={styles.loadingText}>{t("selectSchool.loading")}</Text>
+          </View>
+        ) : schools.length === 0 ? (
+          <View style={styles.emptyCard}>
+            <Ionicons name="school-outline" size={40} color="#94A3B8" />
+            <Text style={styles.emptyText}>{t("selectSchool.empty")}</Text>
+          </View>
+        ) : (
+          <View style={styles.list}>{pickerBody}</View>
+        )}
+      </ScrollView>
 
       {connecting ? (
         <View style={styles.connectingOverlay}>
@@ -342,6 +251,11 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 20,
   },
+  nativeScroll: {
+    flexGrow: 1,
+    width: "100%",
+    paddingHorizontal: 24,
+  },
   aboutLink: {
     position: "absolute",
     right: 16,
@@ -353,16 +267,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logo: {
-    width: 72,
-    height: 72,
-    borderRadius: 20,
-    backgroundColor: "#DBEAFE",
-    alignItems: "center",
-    justifyContent: "center",
     marginBottom: 16,
-  },
-  logoText: {
-    fontSize: 36,
   },
   title: {
     fontSize: 26,
@@ -404,9 +309,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
   },
-  errorBoxNative: {
-    marginHorizontal: 24,
-  },
   errorText: {
     color: "#B91C1C",
     fontSize: 14,
@@ -414,66 +316,6 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingTop: 8,
-    gap: 12,
-  },
-  listNative: {
-    paddingHorizontal: 24,
-    width: "100%",
-    maxWidth: "100%",
-    alignSelf: "center",
-  },
-  schoolCardWrap: {
-    width: "100%",
-    maxWidth: "100%",
-    alignSelf: "center",
-  },
-  schoolCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "stretch",
-    width: "100%",
-    maxWidth: "100%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    gap: 14,
-  },
-  schoolIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  },
-  schoolLogo: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: "#EFF6FF",
-    flexShrink: 0,
-  },
-  schoolInfo: {
-    flex: 1,
-    minWidth: 0,
-  },
-  schoolName: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: "#0F172A",
-  },
-  schoolMeta: {
-    marginTop: 4,
-    fontSize: 13,
-    color: "#64748B",
-  },
-  centered: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     gap: 12,
   },
   loadingText: {

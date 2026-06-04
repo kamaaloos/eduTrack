@@ -233,13 +233,22 @@
   },
   "selectSchool": {
     "title": "Valitse koulusi",
-    "subtitle": "Valitse ylläpitäjäsi rekisteröimä koulu. Kirjaudut seuraavaksi kyseisen koulun tietokantaan.",
+    "subtitle": "Valitse maa, kaupunki ja koulu.",
     "loading": "Ladataan kouluja…",
     "empty": "Kouluja ei ole vielä saatavilla. Ota yhteyttä ylläpitäjääsi.",
     "connectError": "Tähän kouluun ei saatu yhteyttä",
     "superAdminLink": "Alustan ylläpitäjän kirjautuminen",
     "backToOnboarding": "Takaisin aloitukseen",
-    "signOutPlatformAdmin": "Kirjaudu ulos alustan ylläpidosta"
+    "signOutPlatformAdmin": "Kirjaudu ulos alustan ylläpidosta",
+    "pickCountry": "Valitse maa",
+    "pickCity": "Valitse kaupunki",
+    "pickSchool": "Valitse koulu",
+    "unspecifiedCountry": "Muu / ei asetettu",
+    "unspecifiedCity": "Kaupunkia ei ole asetettu",
+    "noSchoolsInCity": "Tässä kaupungissa ei ole vielä rekisteröityä koulua. Ota yhteyttä ylläpitäjään tai kokeile toista kaupunkia.",
+    "noCitiesInCountry": "Tälle maalle ei ole vielä listattu kaupunkeja.",
+    "changeCountry": "Vaihda maata",
+    "changeCity": "Vaihda kaupunkia"
   },
   "index": {
     "loading": "Ladataan…"
@@ -1040,6 +1049,7 @@
     "hidden": "Piilotettu",
     "schoolFormSubtitle": "Firebase-verkkosovelluksen asetukset tälle kouluprojektille",
     "schoolDetails": "Koulun tiedot",
+    "country": "Maa",
     "city": "Kaupunki",
     "activeInPicker": "Aktiivinen sovelluksen valitsimessa",
     "activeInPickerHint": "Piilotetut koulut pysyvät rekisterissä, mutta niitä ei voi valita.",

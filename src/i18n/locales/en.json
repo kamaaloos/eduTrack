@@ -234,13 +234,22 @@
   },
   "selectSchool": {
     "title": "Choose your school",
-    "subtitle": "Select the school registered by your administrator. You will sign in to that school's account database next.",
+    "subtitle": "Pick your country, then your city, then your school.",
     "loading": "Loading schools…",
     "empty": "No schools are available yet. Contact your administrator.",
     "connectError": "Could not connect to this school",
     "superAdminLink": "Platform administrator sign in",
     "backToOnboarding": "Back to onboarding",
-    "signOutPlatformAdmin": "Sign out platform admin"
+    "signOutPlatformAdmin": "Sign out platform admin",
+    "pickCountry": "Select country",
+    "pickCity": "Select city",
+    "pickSchool": "Select school",
+    "unspecifiedCountry": "Other / not set",
+    "unspecifiedCity": "City not set",
+    "noSchoolsInCity": "No school is registered in this city yet. Contact your administrator or check another city.",
+    "noCitiesInCountry": "No cities are listed for this country yet.",
+    "changeCountry": "Change country",
+    "changeCity": "Change city"
   },
   "index": {
     "loading": "Loading…"
@@ -1060,6 +1069,7 @@
     "hidden": "Hidden",
     "schoolFormSubtitle": "Firebase web app config for this school project",
     "schoolDetails": "School details",
+    "country": "Country",
     "city": "City",
     "activeInPicker": "Active in app picker",
     "activeInPickerHint": "Hidden schools stay in the registry but users cannot select them.",

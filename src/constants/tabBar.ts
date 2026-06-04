@@ -1,5 +1,24 @@
-/** Space reserved above the floating tab bar (height + bottom offset + margin). */
-export const FLOATING_TAB_BAR_INSET = 82;
+export const FLOATING_TAB_BAR_HEIGHT = 58;
+export const FLOATING_TAB_BAR_BOTTOM_MARGIN = 10;
+const FLOATING_TAB_BAR_VERTICAL_PADDING = 6;
+
+/** Space reserved above the floating tab bar (height + bottom offset + padding). */
+export const FLOATING_TAB_BAR_INSET =
+  FLOATING_TAB_BAR_BOTTOM_MARGIN +
+  FLOATING_TAB_BAR_HEIGHT +
+  FLOATING_TAB_BAR_VERTICAL_PADDING * 2;
+
+/** Floating tab bar `bottom` — sits above the home indicator / nav bar. */
+export function floatingTabBarBottom(safeAreaBottom: number): number {
+  return safeAreaBottom + FLOATING_TAB_BAR_BOTTOM_MARGIN;
+}
+
+export function floatingTabBarStyleForSafeArea(safeAreaBottom: number) {
+  return {
+    ...floatingTabBarStyle,
+    bottom: floatingTabBarBottom(safeAreaBottom),
+  };
+}
 
 /** Scene padding when the tab bar is hidden (side menu is primary navigation). */
 export const SHELL_SCENE_CONTAINER_STYLE = {

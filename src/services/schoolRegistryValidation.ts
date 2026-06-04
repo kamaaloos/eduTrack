@@ -3,6 +3,7 @@ import { validateUsageExpiryDate } from "../utils/validation";
 
 export type SchoolRegistryInput = {
   name: string;
+  country?: string;
   city?: string;
   logoUrl?: string;
   active: boolean;
