@@ -61,7 +61,8 @@
           "color": "#1E3A8A",
           "defaultChannel": "default"
         }
-      ]
+      ],
+      "./plugins/withAdiRegistration"
     ],
     "experiments": {
       "typedRoutes": true

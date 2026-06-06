@@ -9,6 +9,9 @@ school-functions/lib/
 .env
 .env*.local
 
+# Google Android developer verification (package-specific snippet)
+assets/adi-registration.properties
+
 # Firebase / service account secrets (never commit)
 serviceAccountKey.json
 serviceAccount*.json
