@@ -8,9 +8,11 @@ import { router } from "expo-router";
 
 import i18n from "../i18n";
 import { auth, db } from "../services/firebase";
+import { getSchoolRegistryEntry } from "../services/schoolRegistry";
 import { notifyFirestoreClosing } from "../services/firestoreSession";
 import { clearPushTokenFromProfile } from "../services/pushNotifications";
 import { isSchoolRole } from "../utils/schoolRoles";
+import { isSchoolEntitled } from "../utils/schoolSubscriptionAccess";
 import { useSchoolContext } from "./schoolContext";
 
 export const AuthContext = createContext<any>(null);
@@ -66,6 +68,16 @@ export const AuthProvider = ({ children }: any) => {
           return;
         }
 
+        if (selectedSchool?.id && selectedSchool.id !== "default") {
+          const registryEntry = await getSchoolRegistryEntry(selectedSchool.id);
+          if (!registryEntry || !isSchoolEntitled(registryEntry)) {
+            await denyAccess(i18n.t("common.subscriptionExpired"));
+            await resetSchoolSession();
+            setLoading(false);
+            return;
+          }
+        }
+
         setUser(currentUser);
 
         const userRef = doc(db, "users", currentUser.uid);
@@ -104,7 +116,7 @@ export const AuthProvider = ({ children }: any) => {
     });
 
     return unsubscribe;
-  }, [schoolReady, selectedSchool]);
+  }, [schoolReady, selectedSchool, resetSchoolSession]);
 
   const logout = async () => {
     notifyFirestoreClosing();

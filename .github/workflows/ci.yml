@@ -32,6 +32,9 @@ jobs:
       - name: Run unit tests
         run: npm test
 
+      - name: Run Firestore rules tests
+        run: npm run test:rules
+
       - name: Typecheck
         run: npm run typecheck
 

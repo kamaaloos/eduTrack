@@ -9,6 +9,8 @@ You need:
 
 Register each school in the super-admin panel (or directly in `schoolRegistry`) with that school’s Firebase web app config.
 
+For step-by-step onboarding and the **`npm run onboard:school`** deploy script, see [SCHOOL_ONBOARDING.md](./SCHOOL_ONBOARDING.md).
+
 ## Firestore security rules
 
 Rules live in `firestore.rules` at the repo root.
@@ -89,13 +91,49 @@ firebase deploy --config firebase.school.json --only functions:school:sendPushOn
 
 See [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md) for EAS build requirements and testing.
 
-## Usage expiry (`usageExpiresAt`)
+## Usage expiry and subscription enforcement
 
-- Stored on `schoolRegistry/{schoolId}` as `YYYY-MM-DD`.
-- School admins see a dashboard card when ≤7 days remain.
-- In-app notifications are created on admin dashboard focus (client-side, 24h dedupe).
+- **`testingExpiresAt`** — trial end date (`YYYY-MM-DD`, required when registering a school).
+- **`usageExpiresAt`** — paid subscription end date (optional; when set, it overrides the trial date).
+- **`active`** — when `false`, the school is hidden from the picker and access is blocked.
 
-For production, consider a **scheduled Cloud Function** to notify admins without requiring the app to open.
+### What runs automatically
+
+1. **Registry Cloud Function** `enforceSchoolSubscriptionsScheduled` (daily at 03:00 UTC):
+   - Sets `active: false` on expired schools in `schoolRegistry`.
+   - Writes `platform/subscription` on each **school** Firebase project with `{ entitled: true|false }`.
+
+2. **App client** — blocks school selection, login, and signs users out when subscription ends (also re-checks when the app returns to foreground).
+
+3. **Firestore rules (school projects)** — all role access requires `platform/subscription.entitled != false` (missing doc = legacy entitled until the first sync).
+
+### Super-admin: restore access after payment
+
+1. Open the school in super-admin → set **Active**, extend **`usageExpiresAt`** (or testing date).
+2. Deploy updated **`firestore.rules`** to that school project if not already done.
+3. Call the callable function to sync immediately:
+
+```bash
+firebase use <registry-project-id>
+firebase deploy --only functions:registry:enforceSchoolSubscriptionsScheduled,functions:registry:refreshSchoolSubscriptions
+```
+
+> **Note:** Registry functions use codebase `registry` in `firebase.json`. The filter must be `functions:registry:<functionName>`, not `functions:<functionName>` alone.
+
+Or deploy all registry functions:
+
+```bash
+firebase deploy --only functions:registry
+```
+
+From the super-admin app (or Firebase console → Functions → test), call **`refreshSchoolSubscriptions`** with `{ "schoolId": "<id>" }` or `{}` for all schools.
+
+### Deploy checklist (subscription)
+
+- [ ] Registry functions deployed (`enforceSchoolSubscriptionsScheduled`, `refreshSchoolSubscriptions`)
+- [ ] `firestore.rules` deployed to **every school project** (includes `platform/subscription` gate)
+- [ ] One-time: call `refreshSchoolSubscriptions` with `{}` to seed `platform/subscription` docs
+- [ ] School admins still receive dashboard warnings when ≤7 days remain (client-side notifications)
 
 ## Billable user counts (registry Cloud Functions)
 

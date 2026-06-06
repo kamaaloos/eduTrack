@@ -29,7 +29,7 @@ function getRegistryDb() {
   return getFirestore();
 }
 
-function getSchoolFirestore(projectId: string) {
+export function getSchoolFirestore(projectId: string) {
   const appName = `edutrack-school-${projectId}`;
   const existing = getApps().find((app) => app.name === appName);
   const app =

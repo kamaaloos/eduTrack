@@ -29,6 +29,8 @@ import { webAuthContentStyle } from "../src/constants/webLayout";
 import { WEB_PAGE_ROOT_STYLE } from "../src/constants/webBackground";
 import { AuthContext } from "../src/context/authContext";
 import { auth } from "../src/services/firebase";
+import { getSchoolRegistryEntry } from "../src/services/schoolRegistry";
+import { isSchoolEntitled } from "../src/utils/schoolSubscriptionAccess";
 import {
   confirmAction,
   showErrorAlert,
@@ -107,6 +109,14 @@ export default function Login() {
     if (password.length < 6) {
       setError(t("auth.login.passwordMin"));
       return;
+    }
+
+    if (selectedSchool?.id && selectedSchool.id !== "default") {
+      const registryEntry = await getSchoolRegistryEntry(selectedSchool.id);
+      if (!registryEntry || !isSchoolEntitled(registryEntry)) {
+        setError(t("common.subscriptionExpired"));
+        return;
+      }
     }
 
     setLoading(true);

@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { SuperAdminScreenShell } from "../../components/superAdmin/SuperAdminScreenShell";
 import { SchoolLogoField } from "../../components/superAdmin/SchoolLogoField";
+import { SchoolOnboardingChecklist } from "../../components/superAdmin/SchoolOnboardingChecklist";
 import {
   createSchoolRecord,
   getSchoolForAdmin,
@@ -72,6 +73,7 @@ export default function SuperAdminSchoolFormScreen() {
           return;
         }
         setName(school.name);
+        setCountry(school.country ?? "");
         setCity(school.city ?? "");
         setLogoUrl(school.logoUrl ?? "");
         setActive(school.active);
@@ -286,6 +288,11 @@ export default function SuperAdminSchoolFormScreen() {
             </View>
           ))}
         </View>
+
+        <SchoolOnboardingChecklist
+          projectId={firebase.projectId}
+          registryProjectId={process.env.EXPO_PUBLIC_REGISTRY_PROJECT_ID}
+        />
 
         <TouchableOpacity
           style={[styles.saveButton, saving && styles.saveButtonDisabled]}

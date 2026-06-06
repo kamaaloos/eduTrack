@@ -7,6 +7,7 @@ import {
   where,
 } from "firebase/firestore";
 import type { SchoolFirebaseConfig, SchoolRecord } from "../types/school";
+import { isSchoolEntitled } from "../utils/schoolSubscriptionAccess";
 import { getDefaultFirebaseConfig, registryDb } from "./firebase";
 import { mapSchoolRegistryDoc } from "./schoolRegistryMappers";
 
@@ -36,6 +37,7 @@ export async function loadActiveSchools(): Promise<SchoolRecord[]> {
       const schools = snapshot.docs
         .map((docSnap) => mapSchoolRegistryDoc(docSnap.id, docSnap.data()))
         .filter((school): school is SchoolRecord => school !== null)
+        .filter((school) => isSchoolEntitled(school))
         .sort((a, b) => a.name.localeCompare(b.name));
 
       if (schools.length > 0) {
@@ -66,10 +68,15 @@ export async function getSchoolById(schoolId: string): Promise<SchoolRecord | nu
   return schools.find((school) => school.id === schoolId) ?? null;
 }
 
-/** Fresh registry metadata for the selected school (usage expiry, name). */
+/** Fresh registry metadata for the selected school (subscription + name). */
 export async function getSchoolRegistryEntry(
   schoolId: string,
-): Promise<Pick<SchoolRecord, "id" | "name" | "testingExpiresAt" | "usageExpiresAt"> | null> {
+): Promise<
+  Pick<
+    SchoolRecord,
+    "id" | "name" | "active" | "testingExpiresAt" | "usageExpiresAt"
+  > | null
+> {
   if (!schoolId || schoolId === "default" || !registryDb) return null;
   try {
     const snap = await getDoc(doc(registryDb, COLLECTION, schoolId));
@@ -79,6 +86,7 @@ export async function getSchoolRegistryEntry(
     return {
       id: mapped.id,
       name: mapped.name,
+      active: mapped.active,
       testingExpiresAt: mapped.testingExpiresAt ?? null,
       usageExpiresAt: mapped.usageExpiresAt ?? null,
     };

@@ -9,6 +9,16 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    /** School platform doc synced from registry (see Cloud Functions). Missing doc = legacy entitled. */
+    function subscriptionEntitled() {
+      return !exists(/databases/$(database)/documents/platform/subscription)
+        || get(/databases/$(database)/documents/platform/subscription).data.entitled != false;
+    }
+
+    function canUseSchoolData() {
+      return isSignedIn() && subscriptionEntitled();
+    }
+
     function userDocPath() {
       return /databases/$(database)/documents/users/$(request.auth.uid);
     }
@@ -26,23 +36,23 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && userRole() == "admin";
+      return canUseSchoolData() && userRole() == "admin";
     }
 
     function isSuperAdmin() {
-      return isSignedIn() && userRole() == "superAdmin";
+      return canUseSchoolData() && userRole() == "superAdmin";
     }
 
     function isTeacher() {
-      return isSignedIn() && userRole() == "teacher";
+      return canUseSchoolData() && userRole() == "teacher";
     }
 
     function isStudent() {
-      return isSignedIn() && userRole() == "student";
+      return canUseSchoolData() && userRole() == "student";
     }
 
     function isParent() {
-      return isSignedIn() && userRole() == "parent";
+      return canUseSchoolData() && userRole() == "parent";
     }
 
     function isValidSchoolRole(role) {
@@ -603,6 +613,15 @@ service cloud.firestore {
       allow read: if isAdmin()
         || (isParent() && resource.data.parentId == request.auth.uid)
         || teacherCanReadParentAbsence();
+    }
+
+    /**
+     * Platform subscription gate — written by registry Cloud Functions.
+     * Signed-in users may read status (e.g. expiry messaging).
+     */
+    match /platform/subscription {
+      allow read: if isSignedIn();
+      allow write: if false;
     }
 
     /**

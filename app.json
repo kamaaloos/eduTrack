@@ -17,11 +17,7 @@
         "backgroundColor": "#000000"
       },
       "package": "com.maylesoft.edutrack",
-      "versionCode": 2,
-      "navigationBar": {
-        "backgroundColor": "#E8F2FA",
-        "barStyle": "dark-content"
-      }
+      "versionCode": 2
     },
     "web": {
       "bundler": "metro",

@@ -14,11 +14,13 @@
     "build:web": "expo export --platform web",
     "lint": "expo lint",
     "test": "jest",
+    "test:rules": "firebase emulators:exec --config firebase.rules-test.json --only firestore --project demo-edutrack-rules-test \"cross-env GCLOUD_PROJECT=demo-edutrack-rules-test jest --config jest.rules.config.js --runInBand --testTimeout=30000\"",
+    "onboard:school": "node scripts/onboard-school.mjs",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.ci.json",
     "typecheck:app": "tsc --noEmit",
-    "ci": "npm test && npm run lint && npm run typecheck",
+    "ci": "npm test && npm run test:rules && npm run lint && npm run typecheck",
     "build:android:preview": "eas build -p android --profile preview",
     "build:android:production": "eas build -p android --profile production"
   },
@@ -68,6 +70,8 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.1",
+    "firebase-tools": "^14.0.0",
     "@types/jest": "^29.5.14",
     "@types/react": "~19.1.0",
     "cross-env": "^7.0.3",

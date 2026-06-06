@@ -1,3 +1,4 @@
+import { AppState } from "react-native";
 import {
   createContext,
   useCallback,
@@ -18,6 +19,12 @@ import {
   disconnectSchool,
 } from "../services/firebase";
 import type { SchoolRecord, StoredSchool } from "../types/school";
+import {
+  isSchoolEntitled,
+  getSchoolSubscriptionBlockReason,
+} from "../utils/schoolSubscriptionAccess";
+import { subscriptionBlockMessageKey } from "../utils/subscriptionMessages";
+import i18n from "../i18n";
 import {
   applyRegistryToStoredSchool,
   storedSchoolNeedsPersist,
@@ -56,8 +63,11 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const mergeStoredSchoolWithRegistry = useCallback(
-    async (stored: StoredSchool): Promise<StoredSchool> => {
+    async (stored: StoredSchool): Promise<StoredSchool | null> => {
       const fresh = await getSchoolRegistryEntry(stored.id);
+      if (!fresh || !isSchoolEntitled(fresh)) {
+        return null;
+      }
       const updated = applyRegistryToStoredSchool(stored, fresh);
       if (storedSchoolNeedsPersist(stored, updated)) {
         await saveSelectedSchool(updated);
@@ -66,6 +76,11 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     },
     [],
   );
+
+  const subscriptionErrorMessage = useCallback((school: SchoolRecord) => {
+    const reason = getSchoolSubscriptionBlockReason(school);
+    return i18n.t(subscriptionBlockMessageKey(reason));
+  }, []);
 
   const reloadSchools = useCallback(async () => {
     setSchoolsLoading(true);
@@ -88,6 +103,16 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
       if (!selectedSchool) return null;
       try {
         const updated = await mergeStoredSchoolWithRegistry(selectedSchool);
+        if (!updated) {
+          if (auth?.currentUser) {
+            await signOut(auth);
+          }
+          await disconnectSchool();
+          await clearSelectedSchool();
+          setSelectedSchool(null);
+          setError(i18n.t("common.subscriptionExpired"));
+          return null;
+        }
         if (
           (updated.testingExpiresAt ?? null) !==
             (selectedSchool.testingExpiresAt ?? null) ||
@@ -122,7 +147,17 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
           try {
             await connectToSchool(saved.firebase);
             const merged = await mergeStoredSchoolWithRegistry(saved);
-            if (active) {
+            if (!merged) {
+              await clearSelectedSchool();
+              if (auth?.currentUser) {
+                await signOut(auth);
+              }
+              await disconnectSchool();
+              if (active) {
+                setError(i18n.t("common.subscriptionExpired"));
+                setSelectedSchool(null);
+              }
+            } else if (active) {
               setSelectedSchool(merged);
             }
           } catch (connectErr) {
@@ -154,6 +189,23 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
   }, [reloadSchools, mergeStoredSchoolWithRegistry]);
 
   useEffect(() => {
+    if (!selectedSchool) return;
+
+    const verifySubscription = () => {
+      void refreshSelectedSchoolFromRegistry();
+    };
+
+    verifySubscription();
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        verifySubscription();
+      }
+    });
+
+    return () => sub.remove();
+  }, [selectedSchool, refreshSelectedSchoolFromRegistry]);
+
+  useEffect(() => {
     if (!selectedSchool || schools.length === 0) return;
     const match = schools.find((school) => school.id === selectedSchool.id);
     if (!match) return;
@@ -183,6 +235,9 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     setConnecting(true);
     setError(null);
     try {
+      if (!isSchoolEntitled(school)) {
+        throw new Error(subscriptionErrorMessage(school));
+      }
       await connectToSchool(school.firebase);
       const stored = toStoredSchool(school);
       await saveSelectedSchool(stored);
@@ -195,7 +250,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     } finally {
       setConnecting(false);
     }
-  }, []);
+  }, [subscriptionErrorMessage]);
 
   const clearSchool = useCallback(async () => {
     setError(null);

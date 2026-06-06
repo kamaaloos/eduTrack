@@ -33,7 +33,13 @@ cd ..
 
 firebase login
 firebase use YOUR_REGISTRY_PROJECT_ID
-firebase deploy --only functions
+firebase deploy --only functions:registry
+```
+
+Deploy one function (codebase name is required in the filter):
+
+```bash
+firebase deploy --only functions:registry:syncSchoolUserCountsScheduled
 ```
 
 Also redeploy **registry** Firestore rules (protects sync fields):

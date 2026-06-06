@@ -1,0 +1,18 @@
+{
+  "name": "Example Academy",
+  "country": "Finland",
+  "city": "Helsinki",
+  "active": true,
+  "testingExpiresAt": "2026-07-01",
+  "usageExpiresAt": "",
+  "userCount": null,
+  "logoUrl": "",
+  "firebase": {
+    "apiKey": "AIza...",
+    "authDomain": "example-school.firebaseapp.com",
+    "projectId": "example-school",
+    "storageBucket": "example-school.appspot.com",
+    "messagingSenderId": "123456789012",
+    "appId": "1:123456789012:web:abcdef"
+  }
+}
