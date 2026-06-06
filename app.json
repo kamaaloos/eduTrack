@@ -16,8 +16,7 @@
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.maylesoft.edutrack",
-      "versionCode": 2
+      "package": "com.maylesoft.edutrack"
     },
     "web": {
       "bundler": "metro",

@@ -1,9 +1,7 @@
-# Copy this file to adi-registration.properties and paste the snippet
-# from Google Play Console (Android developer verification upload dialog).
+# Copy to adi-registration.properties (gitignored) with ONLY the snippet
+# line from Google Play Console — no comments or extra lines.
 #
-# The file must end up at:
-#   android/app/src/main/assets/adi-registration.properties
-# inside the signed APK. The withAdiRegistration config plugin does that
-# automatically during eas build.
+# For EAS cloud builds, also set secret env var ADI_REGISTRATION_TOKEN
+# on the production environment (same snippet value).
 
 PASTE_YOUR_SNIPPET_HERE

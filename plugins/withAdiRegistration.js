@@ -12,7 +12,7 @@ function withAdiRegistration(config, props = {}) {
     async (config) => {
       const projectRoot = config.modRequest.projectRoot;
       const sourcePath = path.join(projectRoot, "assets", "adi-registration.properties");
-      const token = props.token?.trim();
+      const token = (props.token || process.env.ADI_REGISTRATION_TOKEN || "").trim();
 
       let contents;
       if (token) {
@@ -26,7 +26,7 @@ function withAdiRegistration(config, props = {}) {
         }
       } else {
         throw new Error(
-          "Missing ADI registration token. Create assets/adi-registration.properties with the snippet from Google Play Console, or pass { token } to ./plugins/withAdiRegistration."
+          "Missing ADI registration token. Create assets/adi-registration.properties locally, set ADI_REGISTRATION_TOKEN on EAS (production), or pass { token } to ./plugins/withAdiRegistration."
         );
       }
 
