@@ -80,48 +80,58 @@ function getExpoProjectId(): string | undefined {
 export async function requestPushPermissions(): Promise<boolean> {
   if (!PUSH_NOTIFICATIONS_ENABLED) return false;
 
-  const [Notifications, Device] = await Promise.all([
-    loadNotifications(),
-    loadDeviceModule(),
-  ]);
-  if (!Notifications || !Device?.isDevice) return false;
+  try {
+    const [Notifications, Device] = await Promise.all([
+      loadNotifications(),
+      loadDeviceModule(),
+    ]);
+    if (!Notifications || !Device?.isDevice) return false;
 
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
 
-  if (existingStatus !== "granted") {
-    const { status } = await Notifications.requestPermissionsAsync({
-      ios: {
-        allowAlert: true,
-        allowBadge: true,
-        allowSound: true,
-      },
-    });
-    finalStatus = status;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync({
+        ios: {
+          allowAlert: true,
+          allowBadge: true,
+          allowSound: true,
+        },
+      });
+      finalStatus = status;
+    }
+
+    return finalStatus === "granted";
+  } catch (err) {
+    console.warn("Push: requestPushPermissions failed", err);
+    return false;
   }
-
-  return finalStatus === "granted";
 }
 
 export async function getDevicePushToken(): Promise<string | null> {
   if (!PUSH_NOTIFICATIONS_ENABLED) return null;
 
-  const [Notifications, Device] = await Promise.all([
-    loadNotifications(),
-    loadDeviceModule(),
-  ]);
-  if (!Notifications || !Device?.isDevice) return null;
+  try {
+    const [Notifications, Device] = await Promise.all([
+      loadNotifications(),
+      loadDeviceModule(),
+    ]);
+    if (!Notifications || !Device?.isDevice) return null;
 
-  const projectId = getExpoProjectId();
-  if (!projectId) {
-    console.warn("Push: missing EAS projectId in app config");
+    const projectId = getExpoProjectId();
+    if (!projectId) {
+      console.warn("Push: missing EAS projectId in app config");
+      return null;
+    }
+
+    await ensureAndroidChannel(Notifications);
+
+    const token = await Notifications.getExpoPushTokenAsync({ projectId });
+    return token.data;
+  } catch (err) {
+    console.warn("Push: getDevicePushToken failed", err);
     return null;
   }
-
-  await ensureAndroidChannel(Notifications);
-
-  const token = await Notifications.getExpoPushTokenAsync({ projectId });
-  return token.data;
 }
 
 export async function savePushTokenToProfile(
@@ -155,14 +165,19 @@ export async function registerForPushNotifications(
 ): Promise<string | null> {
   if (!PUSH_NOTIFICATIONS_ENABLED || !userId) return null;
 
-  const granted = await requestPushPermissions();
-  if (!granted) return null;
+  try {
+    const granted = await requestPushPermissions();
+    if (!granted) return null;
 
-  const token = await getDevicePushToken();
-  if (!token) return null;
+    const token = await getDevicePushToken();
+    if (!token) return null;
 
-  await savePushTokenToProfile(userId, token);
-  return token;
+    await savePushTokenToProfile(userId, token);
+    return token;
+  } catch (err) {
+    console.warn("Push: registerForPushNotifications failed", err);
+    return null;
+  }
 }
 
 export async function subscribePushTokenRefresh(
@@ -202,13 +217,20 @@ export async function subscribeNotificationResponses(
     navigate(route);
   };
 
-  const last = Notifications.getLastNotificationResponse();
-  if (last) {
-    openFromResponse(last);
-  }
-
   const subscription =
     Notifications.addNotificationResponseReceivedListener(openFromResponse);
 
-  return () => subscription.remove();
+  // Defer replay so login navigation finishes first (avoids route conflicts).
+  const replayTimer = setTimeout(() => {
+    try {
+      openFromResponse(Notifications.getLastNotificationResponse());
+    } catch (err) {
+      console.warn("Push: replay last notification failed", err);
+    }
+  }, 2000);
+
+  return () => {
+    clearTimeout(replayTimer);
+    subscription.remove();
+  };
 }

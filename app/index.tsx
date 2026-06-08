@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, InteractionManager, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { router, useRootNavigationState, useSegments } from "expo-router";
@@ -57,11 +57,25 @@ export default function Index() {
       return;
     }
 
+    let cancelled = false;
+    let navigationTask: { cancel: () => void } | null = null;
+
+    const navigate = (href: string) => {
+      navigationTask = InteractionManager.runAfterInteractions(() => {
+        if (!cancelled) {
+          router.replace(href as never);
+        }
+      });
+    };
+
     if (superAdminUser && superAdminRole === "superAdmin") {
       if (firstSegment !== "(super-admin)") {
-        router.replace("/(super-admin)/schools");
+        navigate("/(super-admin)/schools");
       }
-      return;
+      return () => {
+        cancelled = true;
+        navigationTask?.cancel();
+      };
     }
 
     if (user) {
@@ -72,9 +86,12 @@ export default function Index() {
       // Logged in: only redirect from entry screens (index/login/onboarding).
       // When returning from background, keep the screen the user was on.
       if (isPublicEntrySegment(firstSegment)) {
-        router.replace(getPostLoginRoute(role, userData) as never);
+        navigate(getPostLoginRoute(role, userData));
       }
-      return;
+      return () => {
+        cancelled = true;
+        navigationTask?.cancel();
+      };
     }
 
     if (!onboardingComplete) {

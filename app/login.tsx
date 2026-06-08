@@ -8,6 +8,7 @@ import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  InteractionManager,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -36,14 +37,22 @@ import {
   showErrorAlert,
   showSuccessAlert,
 } from "../src/utils/confirmDialog";
+import { getPostLoginRoute } from "../src/utils/authNavigation";
 import { validateEmail } from "../src/utils/validation";
 
 export default function Login() {
   const { t } = useTranslation();
-  const { error: authError } = useContext(AuthContext);
+  const {
+    user,
+    userData,
+    role,
+    loading: authLoading,
+    error: authError,
+  } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [awaitingProfile, setAwaitingProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -61,8 +70,27 @@ export default function Login() {
   useEffect(() => {
     if (authError) {
       setError(authError);
+      setAwaitingProfile(false);
+      setLoading(false);
     }
   }, [authError]);
+
+  useEffect(() => {
+    if (!awaitingProfile || authLoading) return;
+    if (!user || !role) {
+      setAwaitingProfile(false);
+      setLoading(false);
+      return;
+    }
+
+    setAwaitingProfile(false);
+    const task = InteractionManager.runAfterInteractions(() => {
+      router.replace(getPostLoginRoute(role, userData) as never);
+      setLoading(false);
+    });
+
+    return () => task.cancel();
+  }, [awaitingProfile, authLoading, user, role, userData, router]);
 
   const handleChangeSchool = () => {
     void (async () => {
@@ -120,12 +148,12 @@ export default function Login() {
     }
 
     setLoading(true);
+    setAwaitingProfile(true);
 
     try {
       await signInWithEmailAndPassword(auth, email.toLowerCase(), password);
-      // Navigation handled by auth context
-      router.replace("/");
     } catch (err) {
+      setAwaitingProfile(false);
       let message = t("auth.login.loginFailed");
 
       if (err instanceof Error) {
@@ -143,10 +171,11 @@ export default function Login() {
       }
 
       setError(message);
-    } finally {
       setLoading(false);
     }
   };
+
+  const busy = loading || awaitingProfile;
 
   const handleForgotPassword = async () => {
     if (!auth) {
@@ -267,7 +296,7 @@ export default function Login() {
             }}
             autoCapitalize="none"
             keyboardType="email-address"
-            editable={!loading}
+            editable={!busy}
           />
 
           <View style={styles.passwordBlock}>
@@ -281,13 +310,13 @@ export default function Login() {
                 setPassword(text);
                 setError(null);
               }}
-              editable={!loading}
+              editable={!busy}
               containerStyle={styles.passwordField}
             />
             <TouchableOpacity
               style={styles.forgotPasswordLink}
               onPress={() => setShowForgotPassword(true)}
-              disabled={loading}
+              disabled={busy}
             >
               <Text style={styles.forgotPasswordText}>
                 {t("auth.login.forgotPassword")}
@@ -296,12 +325,12 @@ export default function Login() {
           </View>
 
           <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
+            style={[styles.button, busy && styles.buttonDisabled]}
             onPress={handleLogin}
-            disabled={loading}
+            disabled={busy}
             activeOpacity={0.8}
           >
-            {loading ? (
+            {busy ? (
               <ActivityIndicator color="white" size="small" />
             ) : (
               <Text style={styles.buttonText}>{t("auth.login.signIn")}</Text>

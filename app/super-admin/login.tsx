@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  InteractionManager,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -37,7 +38,10 @@ export default function SuperAdminLoginScreen() {
 
   useEffect(() => {
     if (!loading && user && role === "superAdmin") {
-      router.replace("/(super-admin)/schools");
+      const task = InteractionManager.runAfterInteractions(() => {
+        router.replace("/(super-admin)/schools");
+      });
+      return () => task.cancel();
     }
   }, [loading, user, role]);
 
@@ -61,7 +65,6 @@ export default function SuperAdminLoginScreen() {
         email.trim().toLowerCase(),
         password,
       );
-      router.replace("/(super-admin)/schools");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t("superAdmin.loginFailed"),
