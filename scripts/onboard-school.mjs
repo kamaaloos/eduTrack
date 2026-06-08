@@ -253,7 +253,16 @@ async function registerSchoolFromJson(jsonPath, credentialsPath, dryRun) {
 
   console.log(`    Registered schoolRegistry/${docRef.id}`);
   console.log(
-    "\nNext: deploy registry refreshSchoolSubscriptions and call it with {} or this school id.",
+    "\nNext steps:",
+  );
+  console.log(
+    "  1. IAM on the SCHOOL project: grant registry compute SA Cloud Datastore User",
+  );
+  console.log(
+    "     (see docs/REGISTER_NEW_SCHOOL.md — billable userCount sync).",
+  );
+  console.log(
+    "  2. Call refreshSchoolSubscriptions on the registry project ({} or this school id).",
   );
 }
 
@@ -333,8 +342,12 @@ async function deploySchoolProject(opts) {
   console.log("\nSchool deploy complete.");
   console.log("Remaining manual steps:");
   console.log("  1. Register the school in super-admin (or use --register JSON).");
-  console.log("  2. Call refreshSchoolSubscriptions on the registry project.");
-  console.log("  3. Create the first school admin user in Firebase Auth + users/{uid}.");
+  console.log(
+    "  2. IAM on this school project: grant registry compute SA Cloud Datastore User",
+  );
+  console.log("     (required for billable userCount — docs/REGISTER_NEW_SCHOOL.md).");
+  console.log("  3. Call refreshSchoolSubscriptions on the registry project.");
+  console.log("  4. Create the first school admin user in Firebase Auth + users/{uid}.");
 }
 
 async function main() {

@@ -1,5 +1,7 @@
 import { getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import { logger } from "firebase-functions";
 
 const SCHOOL_REGISTRY = "schoolRegistry";
 
@@ -105,12 +107,34 @@ export async function syncAllSchoolUserCounts(): Promise<SyncSchoolResult[]> {
   return results;
 }
 
+function normalizeSuperAdminRole(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 export async function assertRegistrySuperAdmin(uid: string): Promise<void> {
   const registryDb = getRegistryDb();
   const profile = await registryDb.collection("users").doc(uid).get();
-  if (!profile.exists || profile.data()?.role !== "superAdmin") {
-    throw new Error("permission_denied");
+  const role = normalizeSuperAdminRole(profile.data()?.role);
+  if (profile.exists && role === "superAdmin") {
+    return;
   }
+
+  try {
+    const authUser = await getAuth().getUser(uid);
+    if (normalizeSuperAdminRole(authUser.customClaims?.role) === "superAdmin") {
+      return;
+    }
+  } catch {
+    // Auth user missing — fall through to permission_denied.
+  }
+
+  logger.warn("assertRegistrySuperAdmin denied", {
+    uid,
+    profileExists: profile.exists,
+    profileRole: profile.data()?.role ?? null,
+  });
+
+  throw new Error("permission_denied");
 }
 
 export { getRegistryDb };

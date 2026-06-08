@@ -2,6 +2,8 @@
 
 Automates the repeatable parts of adding a new school tenant. **Creating the Firebase project** still happens in [Firebase Console](https://console.firebase.google.com/) — Google does not expose full project creation in the super-admin app.
 
+**Full numbered checklist (registry + IAM + billable user count):** [REGISTER_NEW_SCHOOL.md](./REGISTER_NEW_SCHOOL.md)
+
 ## What to automate vs. manual
 
 | Step | Where |
@@ -11,6 +13,8 @@ Automates the repeatable parts of adding a new school tenant. **Creating the Fir
 | Web app config → registry form | Super-admin school form |
 | Deploy rules, indexes, storage, push function | **`npm run onboard:school`** |
 | Register `schoolRegistry` doc | Super-admin form **or** `--register` JSON |
+| IAM: registry can read school `users` | Google Cloud IAM on **each school** project |
+| Billable `userCount` sync | Daily scheduled function; optional manual **Sync count** |
 | Sync `platform/subscription` | Registry Cloud Function `refreshSchoolSubscriptions` |
 | First school admin user | School project Auth + `users/{uid}` |
 
@@ -52,12 +56,14 @@ On **Add school** / **Edit school**, the **School onboarding checklist** shows n
 ## After deploy
 
 1. Save the school in super-admin (if not registered via JSON).
-2. On the **registry** project:
+2. **IAM (per new school):** on the school Google Cloud project, grant the registry compute service account **Cloud Datastore User** (see [REGISTER_NEW_SCHOOL.md](./REGISTER_NEW_SCHOOL.md) §4).
+3. **Billable user count:** wait for the nightly sync (03:00 UTC) or use super-admin **Sync count**; verify `userCount` on `schoolRegistry/{schoolId}` in the registry project.
+4. On the **registry** project:
    ```bash
    firebase use <registry-project-id>
    firebase deploy --only functions:registry:refreshSchoolSubscriptions
    ```
-3. Call **`refreshSchoolSubscriptions`** with `{}` (or `{ "schoolId": "<id>" }`).
-4. Create the first **admin** in the school project (Auth + Firestore `users/{uid}` with `role: "admin"`).
+5. Call **`refreshSchoolSubscriptions`** with `{}` (or `{ "schoolId": "<id>" }`).
+6. Create the first **admin** in the school project (Auth + Firestore `users/{uid}` with `role: "admin"`).
 
-See also [DEPLOYMENT.md](./DEPLOYMENT.md) and [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md).
+See also [REGISTER_NEW_SCHOOL.md](./REGISTER_NEW_SCHOOL.md), [REGISTRY_USER_COUNT_SYNC.md](./REGISTRY_USER_COUNT_SYNC.md), [DEPLOYMENT.md](./DEPLOYMENT.md), and [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md).

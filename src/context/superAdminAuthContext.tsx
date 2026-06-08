@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDocFromServer } from "firebase/firestore";
 import { router } from "expo-router";
 import { registryAuth, registryDb } from "../services/firebase";
 import { clearLocalSessionPreferences } from "../utils/authNavigation";
@@ -53,7 +53,7 @@ export function SuperAdminAuthProvider({
 
         setUser(currentUser);
 
-        const profileSnap = await getDoc(
+        const profileSnap = await getDocFromServer(
           doc(registryDb, "users", currentUser.uid),
         );
 
@@ -66,7 +66,8 @@ export function SuperAdminAuthProvider({
         }
 
         const profile = profileSnap.data();
-        const userRole = String(profile.role ?? "");
+        const userRole =
+          typeof profile.role === "string" ? profile.role.trim() : "";
 
         if (userRole !== "superAdmin") {
           setError("This account is not authorized as a platform administrator.");

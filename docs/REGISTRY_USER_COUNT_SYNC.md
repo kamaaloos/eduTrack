@@ -157,6 +157,7 @@ Counts also update automatically on the nightly schedule after deploy.
 | `Sync failed` / permission errors in app | Deploy functions; grant IAM on school projects |
 | `userCount` stays empty, no error | Run manual sync once; check function logs in Firebase Console |
 | Callable `unauthenticated` | Sign in as registry super-admin in the app |
+| **Sync button: Super admin required** (counts already update nightly) | Cloud Run → `refreshschoolusercounts` → **Allow public access**; sign out/in after fixing `users/{Auth UID}`; or run `node scripts/set-registry-super-admin.mjs --email you@example.com` on the registry project |
 | Partial sync | Fix IAM for failed school projects; read `userCountSyncError` on each doc |
 
 Function logs: Firebase Console → Functions → Logs.

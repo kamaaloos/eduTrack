@@ -107,6 +107,14 @@ export const registryDb = registryFirebase?.db ?? null;
 export const registryAuth = registryFirebase?.auth ?? null;
 export const registryStorage = registryFirebase?.storage ?? null;
 
+export function getRegistryFirebaseApp() {
+  try {
+    return getApp("EduTrackRegistry");
+  } catch {
+    return null;
+  }
+}
+
 export function isRegistryFirebaseReady(): boolean {
   return registryDb !== null && registryAuth !== null && registryStorage !== null;
 }
