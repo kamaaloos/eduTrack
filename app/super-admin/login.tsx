@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  InteractionManager,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -38,10 +37,7 @@ export default function SuperAdminLoginScreen() {
 
   useEffect(() => {
     if (!loading && user && role === "superAdmin") {
-      const task = InteractionManager.runAfterInteractions(() => {
-        router.replace("/(super-admin)/schools");
-      });
-      return () => task.cancel();
+      router.replace("/(super-admin)/schools");
     }
   }, [loading, user, role]);
 

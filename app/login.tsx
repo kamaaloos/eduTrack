@@ -8,7 +8,6 @@ import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  InteractionManager,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -80,12 +79,8 @@ export default function Login() {
     if (authLoading || !user || !role) return;
 
     setAwaitingProfile(false);
-    const task = InteractionManager.runAfterInteractions(() => {
-      router.replace(getPostLoginRoute(role, userData) as never);
-      setLoading(false);
-    });
-
-    return () => task.cancel();
+    setLoading(false);
+    router.replace(getPostLoginRoute(role, userData) as never);
   }, [awaitingProfile, authLoading, user, role, userData, router]);
 
   const handleChangeSchool = () => {

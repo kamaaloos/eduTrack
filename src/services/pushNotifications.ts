@@ -81,29 +81,35 @@ export async function requestPushPermissions(): Promise<boolean> {
   if (!PUSH_NOTIFICATIONS_ENABLED) return false;
 
   try {
-    const [Notifications, Device] = await Promise.all([
-      loadNotifications(),
-      loadDeviceModule(),
-    ]);
-    if (!Notifications || !Device?.isDevice) return false;
+    const Notifications = await loadNotifications();
+    if (!Notifications) return false;
 
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
+    if (existingStatus === "granted") return true;
 
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync({
-        ios: {
-          allowAlert: true,
-          allowBadge: true,
-          allowSound: true,
-        },
-      });
-      finalStatus = status;
-    }
-
-    return finalStatus === "granted";
+    const { status } = await Notifications.requestPermissionsAsync({
+      ios: {
+        allowAlert: true,
+        allowBadge: true,
+        allowSound: true,
+      },
+    });
+    return status === "granted";
   } catch (err) {
     console.warn("Push: requestPushPermissions failed", err);
+    return false;
+  }
+}
+
+export async function hasPushPermissions(): Promise<boolean> {
+  if (!PUSH_NOTIFICATIONS_ENABLED) return false;
+
+  try {
+    const Notifications = await loadNotifications();
+    if (!Notifications) return false;
+    const { status } = await Notifications.getPermissionsAsync();
+    return status === "granted";
+  } catch {
     return false;
   }
 }
@@ -162,11 +168,17 @@ export async function clearPushTokenFromProfile(userId: string): Promise<void> {
 
 export async function registerForPushNotifications(
   userId: string,
+  options?: { promptForPermission?: boolean },
 ): Promise<string | null> {
   if (!PUSH_NOTIFICATIONS_ENABLED || !userId) return null;
 
   try {
-    const granted = await requestPushPermissions();
+    const Device = await loadDeviceModule();
+    if (!Device?.isDevice) return null;
+
+    const granted = options?.promptForPermission
+      ? await requestPushPermissions()
+      : await hasPushPermissions();
     if (!granted) return null;
 
     const token = await getDevicePushToken();
@@ -190,9 +202,11 @@ export async function subscribePushTokenRefresh(
   if (!Notifications) return () => {};
 
   const subscription = Notifications.addPushTokenListener(() => {
-    void registerForPushNotifications(userId).then((token) => {
-      if (token) onRegistered();
-    });
+    void registerForPushNotifications(userId, { promptForPermission: false }).then(
+      (token) => {
+        if (token) onRegistered();
+      },
+    );
   });
 
   return () => subscription.remove();
@@ -220,17 +234,5 @@ export async function subscribeNotificationResponses(
   const subscription =
     Notifications.addNotificationResponseReceivedListener(openFromResponse);
 
-  // Defer replay so login navigation finishes first (avoids route conflicts).
-  const replayTimer = setTimeout(() => {
-    try {
-      openFromResponse(Notifications.getLastNotificationResponse());
-    } catch (err) {
-      console.warn("Push: replay last notification failed", err);
-    }
-  }, 2000);
-
-  return () => {
-    clearTimeout(replayTimer);
-    subscription.remove();
-  };
+  return () => subscription.remove();
 }
