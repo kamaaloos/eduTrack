@@ -130,11 +130,19 @@
     "tagline": "School management for students, teachers, parents, and administrators.",
     "appInfo": "App information",
     "build": "Build",
+    "versionHint": "Version is the release name. Build is the install number from EAS (increments on each APK build).",
     "language": "Language",
     "updatesTitle": "App updates",
-    "updatesBody": "This app is installed as an APK. To get the latest version, download and install the newest build from the link below.",
-    "openBuilds": "Open latest builds",
-    "openBuildsFailed": "Could not open the builds page."
+    "checkingUpdates": "Checking for updates…",
+    "upToDate": "You're up to date",
+    "latestKnown": "Latest release: {{version}} (build {{build}})",
+    "updateAvailable": "Update available",
+    "updateAvailableBody": "A newer APK is available: {{version}} (build {{build}}). You have {{current}}.",
+    "downloadUpdate": "Download update",
+    "downloadUpdateFailed": "Could not open the download link.",
+    "updatesUnknown": "Update check is not configured yet. Ask your administrator to publish the latest APK details.",
+    "updatesWebOnly": "Install the Android APK to receive update notifications.",
+    "checkAgain": "Check again"
   },
   "onboarding": {
     "skipA11y": "Skip onboarding",

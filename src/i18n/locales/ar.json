@@ -129,11 +129,19 @@
     "tagline": "إدارة المدرسة للطلاب والمعلمين وأولياء الأمور والمسؤولين.",
     "appInfo": "معلومات التطبيق",
     "build": "رقم البناء",
+    "versionHint": "الإصدار هو اسم الإطلاق. رقم البناء هو رقم التثبيت من EAS (يزيد مع كل بناء APK).",
     "language": "اللغة",
     "updatesTitle": "تحديثات التطبيق",
-    "updatesBody": "يُثبَّت هذا التطبيق كملف APK. للحصول على أحدث إصدار، حمّل وثبّت أحدث build من الرابط أدناه.",
-    "openBuilds": "فتح أحدث الإصدارات",
-    "openBuildsFailed": "تعذّر فتح صفحة الإصدارات."
+    "checkingUpdates": "جارٍ التحقق من التحديثات…",
+    "upToDate": "التطبيق محدَّث",
+    "latestKnown": "أحدث إصدار: {{version}} (بناء {{build}})",
+    "updateAvailable": "يتوفر تحديث",
+    "updateAvailableBody": "يتوفر APK أحدث: {{version}} (بناء {{build}}). لديك {{current}}.",
+    "downloadUpdate": "تنزيل التحديث",
+    "downloadUpdateFailed": "تعذّر فتح رابط التنزيل.",
+    "updatesUnknown": "لم يتم إعداد فحص التحديثات بعد. اطلب من المسؤول نشر تفاصيل أحدث APK.",
+    "updatesWebOnly": "ثبّت APK على أندرويد لتلقي إشعارات التحديث.",
+    "checkAgain": "تحقق مرة أخرى"
   },
   "onboarding": {
     "skipA11y": "تخطّي التعريف",

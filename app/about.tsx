@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
+  ActivityIndicator,
   Alert,
   Linking,
   ScrollView,
@@ -12,55 +12,132 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  AboutFixedHeader,
+  aboutHeaderTotalHeight,
+} from "../components/about/AboutFixedHeader";
 import { AppScreenBackground } from "../components/AppScreenBackground";
 import { AppLogo } from "../components/AppLogo";
 import { LanguageSelector } from "../components/LanguageSelector";
-import { APP_BUILDS_URL } from "../src/constants/appTheme";
+import { useAppUpdateCheck } from "../hooks/useAppUpdateCheck";
+import { copyrightFooterInset } from "../src/constants/appTheme";
 import {
   getAppBuildNumber,
   getAppVersion,
+  getAppVersionLabel,
 } from "../src/utils/appVersion";
 
 export default function AboutScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { status, refresh } = useAppUpdateCheck();
+  const headerHeight = aboutHeaderTotalHeight(insets.top);
+  const footerInset = copyrightFooterInset(insets.bottom);
 
-  const openBuildsPage = async () => {
+  const openApkDownload = async (url: string) => {
     try {
-      const supported = await Linking.canOpenURL(APP_BUILDS_URL);
+      const supported = await Linking.canOpenURL(url);
       if (!supported) {
-        Alert.alert(t("common.error"), t("about.openBuildsFailed"));
+        Alert.alert(t("common.error"), t("about.downloadUpdateFailed"));
         return;
       }
-      await Linking.openURL(APP_BUILDS_URL);
+      await Linking.openURL(url);
     } catch {
-      Alert.alert(t("common.error"), t("about.openBuildsFailed"));
+      Alert.alert(t("common.error"), t("about.downloadUpdateFailed"));
     }
+  };
+
+  const renderUpdateSection = () => {
+    if (status.state === "checking") {
+      return (
+        <View style={styles.updateRow}>
+          <ActivityIndicator size="small" color="#2563EB" />
+          <Text style={styles.bodyText}>{t("about.checkingUpdates")}</Text>
+        </View>
+      );
+    }
+
+    if (status.state === "upToDate") {
+      return (
+        <>
+          <View style={styles.statusPillOk}>
+            <Ionicons name="checkmark-circle" size={18} color="#15803D" />
+            <Text style={styles.statusPillOkText}>{t("about.upToDate")}</Text>
+          </View>
+          <Text style={styles.metaText}>
+            {t("about.latestKnown", {
+              version: status.latestVersion,
+              build: status.latestBuild,
+            })}
+          </Text>
+        </>
+      );
+    }
+
+    if (status.state === "updateAvailable") {
+      return (
+        <>
+          <View style={styles.statusPillWarn}>
+            <Ionicons name="arrow-up-circle" size={18} color="#B45309" />
+            <Text style={styles.statusPillWarnText}>
+              {t("about.updateAvailable")}
+            </Text>
+          </View>
+          <Text style={styles.bodyText}>
+            {t("about.updateAvailableBody", {
+              version: status.latestVersion,
+              build: status.latestBuild,
+              current: getAppVersionLabel(),
+            })}
+          </Text>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => void openApkDownload(status.apkUrl)}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="download-outline" size={18} color="#FFFFFF" />
+            <Text style={styles.actionButtonText}>
+              {t("about.downloadUpdate")}
+            </Text>
+          </TouchableOpacity>
+        </>
+      );
+    }
+
+    if (status.state === "unsupported") {
+      return <Text style={styles.bodyText}>{t("about.updatesWebOnly")}</Text>;
+    }
+
+    return (
+      <>
+        <Text style={styles.bodyText}>{t("about.updatesUnknown")}</Text>
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={() => void refresh()}
+          activeOpacity={0.85}
+        >
+          <Ionicons name="refresh-outline" size={18} color="#1E3A8A" />
+          <Text style={styles.secondaryButtonText}>{t("about.checkAgain")}</Text>
+        </TouchableOpacity>
+      </>
+    );
   };
 
   return (
     <AppScreenBackground>
       <View style={styles.screen}>
         <StatusBar style="dark" />
+        <AboutFixedHeader />
         <ScrollView
           contentContainerStyle={[
             styles.content,
             {
-              paddingTop: insets.top + 16,
-              paddingBottom: insets.bottom + 72,
+              paddingTop: headerHeight + 16,
+              paddingBottom: footerInset,
             },
           ]}
           showsVerticalScrollIndicator={false}
         >
-          <TouchableOpacity
-            style={styles.backLink}
-            onPress={() => router.back()}
-            accessibilityRole="button"
-          >
-            <Ionicons name="chevron-back" size={18} color="#1E3A8A" />
-            <Text style={styles.backLinkText}>{t("common.back")}</Text>
-          </TouchableOpacity>
-
           <View style={styles.hero}>
             <AppLogo size={112} />
             <Text style={styles.appName}>{t("about.appName")}</Text>
@@ -73,10 +150,11 @@ export default function AboutScreen() {
               <Text style={styles.rowLabel}>{t("common.version")}</Text>
               <Text style={styles.rowValue}>{getAppVersion()}</Text>
             </View>
-            <View style={styles.row}>
+            <View style={[styles.row, styles.rowLast]}>
               <Text style={styles.rowLabel}>{t("about.build")}</Text>
               <Text style={styles.rowValue}>{getAppBuildNumber()}</Text>
             </View>
+            <Text style={styles.hintText}>{t("about.versionHint")}</Text>
           </View>
 
           <View style={styles.card}>
@@ -85,15 +163,7 @@ export default function AboutScreen() {
 
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{t("about.updatesTitle")}</Text>
-            <Text style={styles.bodyText}>{t("about.updatesBody")}</Text>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => void openBuildsPage()}
-              activeOpacity={0.85}
-            >
-              <Ionicons name="download-outline" size={18} color="#FFFFFF" />
-              <Text style={styles.actionButtonText}>{t("about.openBuilds")}</Text>
-            </TouchableOpacity>
+            {renderUpdateSection()}
           </View>
         </ScrollView>
       </View>
@@ -108,18 +178,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 24,
-  },
-  backLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    alignSelf: "flex-start",
-    marginBottom: 20,
-  },
-  backLinkText: {
-    color: "#1E3A8A",
-    fontWeight: "600",
-    fontSize: 15,
   },
   hero: {
     alignItems: "center",
@@ -160,6 +218,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#E2E8F0",
   },
+  rowLast: {
+    borderBottomWidth: 0,
+  },
   rowLabel: {
     fontSize: 15,
     color: "#64748B",
@@ -170,11 +231,59 @@ const styles = StyleSheet.create({
     color: "#0F172A",
     fontWeight: "700",
   },
+  hintText: {
+    marginTop: 10,
+    fontSize: 12,
+    lineHeight: 18,
+    color: "#94A3B8",
+  },
   bodyText: {
     fontSize: 14,
     lineHeight: 21,
     color: "#475569",
-    marginBottom: 16,
+    marginBottom: 12,
+  },
+  metaText: {
+    fontSize: 13,
+    lineHeight: 19,
+    color: "#64748B",
+  },
+  updateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  statusPillOk: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    alignSelf: "flex-start",
+    backgroundColor: "#DCFCE7",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 10,
+  },
+  statusPillOkText: {
+    color: "#15803D",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  statusPillWarn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    alignSelf: "flex-start",
+    backgroundColor: "#FEF3C7",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 10,
+  },
+  statusPillWarnText: {
+    color: "#B45309",
+    fontWeight: "700",
+    fontSize: 14,
   },
   actionButton: {
     flexDirection: "row",
@@ -187,6 +296,22 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  secondaryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    borderRadius: 12,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+    backgroundColor: "#EFF6FF",
+  },
+  secondaryButtonText: {
+    color: "#1E3A8A",
     fontSize: 15,
     fontWeight: "700",
   },

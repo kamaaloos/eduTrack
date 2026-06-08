@@ -129,11 +129,19 @@
     "tagline": "Maamulka dugsiga ardayda, macallimiinta, waalidiinta, iyo maamulayaasha.",
     "appInfo": "Macluumaadka app-ka",
     "build": "Dhismaha",
+    "versionHint": "Nooca waa magaca daabacaadda. Dhismuhu waa lambarka rakibidda EAS (wuu kordhaa build kasta oo APK).",
     "language": "Luqadda",
     "updatesTitle": "Cusbooneysiinta app-ka",
-    "updatesBody": "App-kan waxaa lagu rakibay APK. Si aad u hesho nooca ugu dambeeya, ka soo dejiso oo rakib build-ka ugu cusub ee linkiga hoose.",
-    "openBuilds": "Fur build-yada ugu dambeeyay",
-    "openBuildsFailed": "Bogga build-yada lama furi karin."
+    "checkingUpdates": "Waxaa la hubinayaa cusbooneysiinta…",
+    "upToDate": "App-kaagu waa kan ugu dambeeya",
+    "latestKnown": "Daabacaadda ugu dambeysa: {{version}} (dhismo {{build}})",
+    "updateAvailable": "Cusbooneysi baa diyaar ah",
+    "updateAvailableBody": "APK cusub baa jira: {{version}} (dhismo {{build}}). Adigu waxaad haysataa {{current}}.",
+    "downloadUpdate": "Soo dejiso cusbooneysiga",
+    "downloadUpdateFailed": "Linkiga soo dejinta lama furi karin.",
+    "updatesUnknown": "Hubinta cusbooneysiga weli lama habeeyn. Weydii maamulaha inuu daabaco xogta APK-ga ugu dambeeya.",
+    "updatesWebOnly": "Rakib APK Android si aad u hesho ogeysiisyada cusbooneysiga.",
+    "checkAgain": "Mar kale hubi"
   },
   "onboarding": {
     "skipA11y": "Ka bood hordhaca",

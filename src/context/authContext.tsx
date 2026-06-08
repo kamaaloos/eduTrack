@@ -68,6 +68,8 @@ export const AuthProvider = ({ children }: any) => {
           return;
         }
 
+        setLoading(true);
+
         if (selectedSchool?.id && selectedSchool.id !== "default") {
           const registryEntry = await getSchoolRegistryEntry(selectedSchool.id);
           if (!registryEntry || !isSchoolEntitled(registryEntry)) {

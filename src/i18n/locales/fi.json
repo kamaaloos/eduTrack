@@ -129,11 +129,19 @@
     "tagline": "Koulun hallinta opiskelijoille, opettajille, vanhemmille ja ylläpitäjille.",
     "appInfo": "Sovelluksen tiedot",
     "build": "Koonti",
+    "versionHint": "Versio on julkaisun nimi. Koonti on EAS-asennusnumero (kasvaa jokaisessa APK-buildissa).",
     "language": "Kieli",
     "updatesTitle": "Sovelluspäivitykset",
-    "updatesBody": "Sovellus on asennettu APK-tiedostona. Saat uusimman version lataamalla ja asentamalla uusimman buildin alla olevasta linkistä.",
-    "openBuilds": "Avaa uusimmat buildit",
-    "openBuildsFailed": "Build-sivua ei voitu avata."
+    "checkingUpdates": "Tarkistetaan päivityksiä…",
+    "upToDate": "Sovellus on ajan tasalla",
+    "latestKnown": "Uusin julkaisu: {{version}} (koonti {{build}})",
+    "updateAvailable": "Päivitys saatavilla",
+    "updateAvailableBody": "Uudempi APK on saatavilla: {{version}} (koonti {{build}}). Sinulla on {{current}}.",
+    "downloadUpdate": "Lataa päivitys",
+    "downloadUpdateFailed": "Latauslinkkiä ei voitu avata.",
+    "updatesUnknown": "Päivitystarkistusta ei ole vielä määritetty. Pyydä ylläpitäjää julkaisemaan uusimman APK:n tiedot.",
+    "updatesWebOnly": "Asenna Android-APK saadaksesi päivitysilmoituksia.",
+    "checkAgain": "Tarkista uudelleen"
   },
   "onboarding": {
     "skipA11y": "Ohita esittely",

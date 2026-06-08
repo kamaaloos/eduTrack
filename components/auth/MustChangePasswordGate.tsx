@@ -5,6 +5,7 @@ import { AuthContext } from "../../src/context/authContext";
 import {
   CHANGE_PASSWORD_ROUTE,
   isChangePasswordSegment,
+  isPublicEntrySegment,
 } from "../../src/utils/authNavigation";
 import { userMustChangePassword } from "../../src/utils/mustChangePassword";
 
@@ -21,6 +22,7 @@ export function MustChangePasswordGate({
   const segments = useSegments();
   const firstSegment = segments[0] as string | undefined;
   const onChangePasswordScreen = isChangePasswordSegment(firstSegment);
+  const onPublicRoute = isPublicEntrySegment(firstSegment);
   const mustChange = userMustChangePassword(userData);
 
   useEffect(() => {
@@ -29,7 +31,8 @@ export function MustChangePasswordGate({
     router.replace(CHANGE_PASSWORD_ROUTE as never);
   }, [loading, user, userData, mustChange, onChangePasswordScreen]);
 
-  if (loading) {
+  // Keep login/onboarding visible while auth profile loads (login screen navigates itself).
+  if (loading && !onPublicRoute) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#2563EB" />

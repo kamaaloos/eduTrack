@@ -76,12 +76,8 @@ export default function Login() {
   }, [authError]);
 
   useEffect(() => {
-    if (!awaitingProfile || authLoading) return;
-    if (!user || !role) {
-      setAwaitingProfile(false);
-      setLoading(false);
-      return;
-    }
+    if (!awaitingProfile) return;
+    if (authLoading || !user || !role) return;
 
     setAwaitingProfile(false);
     const task = InteractionManager.runAfterInteractions(() => {
