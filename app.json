@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/edutrac-logo.png",
+        "foregroundImage": "./assets/images/edutrack-logo.png",
         "backgroundColor": "#000000"
       },
       "package": "com.maylesoft.edutrack"
