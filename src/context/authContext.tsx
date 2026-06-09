@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
@@ -19,6 +19,11 @@ export const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: any) => {
   const { selectedSchool, schoolReady, resetSchoolSession } = useSchoolContext();
+  const selectedSchoolId = selectedSchool?.id ?? null;
+  const sessionRef = useRef<{ uid: string | null; schoolId: string | null }>({
+    uid: null,
+    schoolId: null,
+  });
   const [user, setUser] = useState<any>(null);
 
   const [userData, setUserData] = useState<any>(null);
@@ -46,7 +51,8 @@ export const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     if (!schoolReady) return;
 
-    if (!selectedSchool || !auth || !db) {
+    if (!selectedSchoolId || !auth || !db) {
+      sessionRef.current = { uid: null, schoolId: null };
       setUser(null);
       setUserData(null);
       setRole(null);
@@ -54,13 +60,21 @@ export const AuthProvider = ({ children }: any) => {
       return;
     }
 
-    setLoading(true);
+    const sameSchoolSession =
+      sessionRef.current.schoolId === selectedSchoolId &&
+      sessionRef.current.uid === auth.currentUser?.uid &&
+      Boolean(sessionRef.current.uid);
+
+    if (!sameSchoolSession) {
+      setLoading(true);
+    }
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       try {
         setError(null);
 
         if (!currentUser) {
+          sessionRef.current = { uid: null, schoolId: null };
           setUser(null);
           setUserData(null);
           setRole(null);
@@ -68,10 +82,16 @@ export const AuthProvider = ({ children }: any) => {
           return;
         }
 
-        setLoading(true);
+        const profileRefreshOnly =
+          sessionRef.current.uid === currentUser.uid &&
+          sessionRef.current.schoolId === selectedSchoolId;
 
-        if (selectedSchool?.id && selectedSchool.id !== "default") {
-          const registryEntry = await getSchoolRegistryEntry(selectedSchool.id);
+        if (!profileRefreshOnly) {
+          setLoading(true);
+        }
+
+        if (selectedSchoolId !== "default") {
+          const registryEntry = await getSchoolRegistryEntry(selectedSchoolId);
           if (!registryEntry || !isSchoolEntitled(registryEntry)) {
             await denyAccess(i18n.t("common.subscriptionExpired"));
             await resetSchoolSession();
@@ -100,6 +120,7 @@ export const AuthProvider = ({ children }: any) => {
           return;
         }
 
+        sessionRef.current = { uid: currentUser.uid, schoolId: selectedSchoolId };
         setUserData({ ...fetchedUserData, uid: currentUser.uid });
         setRole(userRole);
       } catch (err) {
@@ -107,18 +128,17 @@ export const AuthProvider = ({ children }: any) => {
           err instanceof Error ? err.message : "Authentication error occurred";
         setError(message);
         console.error("AUTH ERROR:", err);
+        sessionRef.current = { uid: null, schoolId: null };
         setUser(null);
         setUserData(null);
         setRole(null);
       } finally {
-        setTimeout(() => {
-          setLoading(false);
-        }, 0);
+        setLoading(false);
       }
     });
 
     return unsubscribe;
-  }, [schoolReady, selectedSchool, resetSchoolSession]);
+  }, [schoolReady, selectedSchoolId, resetSchoolSession]);
 
   const logout = async () => {
     notifyFirestoreClosing();

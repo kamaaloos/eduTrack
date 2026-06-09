@@ -6,7 +6,7 @@ import { WebAppShell } from "../components/layout/WebAppShell";
 import { WebIconFontGate } from "../components/layout/WebIconFontGate";
 import { BrandedSplashGate } from "../components/BrandedSplashGate";
 import { FirebaseBootstrapGate } from "../components/FirebaseBootstrapGate";
-import { PushNotificationsSetup } from "../components/PushNotificationsSetup";
+import { DeferredPushNotificationsSetup } from "../components/DeferredPushNotificationsSetup";
 import { MustChangePasswordGate } from "../components/auth/MustChangePasswordGate";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { AuthProvider } from "../src/context/authContext";
@@ -26,7 +26,7 @@ export default function RootLayout() {
               <ErrorBoundary>
                 <SuperAdminAuthProvider>
                   <AuthProvider>
-                    <PushNotificationsSetup />
+                    <DeferredPushNotificationsSetup />
                     <MustChangePasswordGate>
                       <Stack screenOptions={{ headerShown: false }} />
                     </MustChangePasswordGate>

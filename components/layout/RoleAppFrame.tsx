@@ -21,9 +21,15 @@ export function RoleAppFrame({
   showCopyright = true,
 }: RoleAppFrameProps) {
   useEffect(() => {
-    if (Platform.OS === "android") {
-      void SystemUI.setBackgroundColorAsync(ANDROID_NAV_BAR_COLOR);
-    }
+    if (Platform.OS !== "android") return;
+
+    const timer = setTimeout(() => {
+      void SystemUI.setBackgroundColorAsync(ANDROID_NAV_BAR_COLOR).catch(() => {
+        /* ignore */
+      });
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (

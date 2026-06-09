@@ -8,6 +8,7 @@ import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -36,14 +37,12 @@ import {
   showErrorAlert,
   showSuccessAlert,
 } from "../src/utils/confirmDialog";
-import { getPostLoginRoute } from "../src/utils/authNavigation";
 import { validateEmail } from "../src/utils/validation";
 
 export default function Login() {
   const { t } = useTranslation();
   const {
     user,
-    userData,
     role,
     loading: authLoading,
     error: authError,
@@ -80,8 +79,15 @@ export default function Login() {
 
     setAwaitingProfile(false);
     setLoading(false);
-    router.replace(getPostLoginRoute(role, userData) as never);
-  }, [awaitingProfile, authLoading, user, role, userData, router]);
+
+    // Route through index (/) — same path as cold-start reopen, which is stable.
+    Keyboard.dismiss();
+    const timer = setTimeout(() => {
+      router.replace("/");
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [awaitingProfile, authLoading, user, role, router]);
 
   const handleChangeSchool = () => {
     void (async () => {

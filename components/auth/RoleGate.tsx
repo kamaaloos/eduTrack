@@ -39,7 +39,11 @@ export function RoleGate({ allowedRole, children }: RoleGateProps) {
   }
 
   if (!user || !isSchoolRole(role) || role !== allowedRole) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#2563EB" />
+      </View>
+    );
   }
 
   return <>{children}</>;

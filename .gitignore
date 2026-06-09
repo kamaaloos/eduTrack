@@ -58,3 +58,5 @@ coverage/
 # generated native folders
 /ios
 /android
+
+.eas-inspect/

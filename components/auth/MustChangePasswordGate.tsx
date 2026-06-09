@@ -1,6 +1,6 @@
 import { router, useSegments } from "expo-router";
 import { useContext, useEffect } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { AuthContext } from "../../src/context/authContext";
 import {
   CHANGE_PASSWORD_ROUTE,
@@ -31,8 +31,9 @@ export function MustChangePasswordGate({
     router.replace(CHANGE_PASSWORD_ROUTE as never);
   }, [loading, user, userData, mustChange, onChangePasswordScreen]);
 
-  // Keep login/onboarding visible while auth profile loads (login screen navigates itself).
-  if (loading && !onPublicRoute) {
+  // Only block entry when nobody is signed in yet. Never unmount the navigator
+  // for a signed-in user — that crashes Android during post-login transitions.
+  if (loading && !user && !onPublicRoute) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#2563EB" />
@@ -40,13 +41,22 @@ export function MustChangePasswordGate({
     );
   }
 
-  if (user && mustChange && !onChangePasswordScreen) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#2563EB" />
-      </View>
-    );
-  }
-
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      {user && mustChange && !onChangePasswordScreen ? (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#FFFFFF",
+            zIndex: 9998,
+          }}
+        >
+          <ActivityIndicator size="large" color="#2563EB" />
+        </View>
+      ) : null}
+    </>
+  );
 }

@@ -50,6 +50,8 @@ export default function StudentLayout() {
         : {})}
       screenOptions={{
         headerShown: false,
+        lazy: true,
+        detachInactiveScreens: true,
         sceneStyle,
         sceneContainerStyle: sceneStyle,
         tabBarShowLabel: true,
