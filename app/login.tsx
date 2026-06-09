@@ -37,6 +37,7 @@ import {
   showErrorAlert,
   showSuccessAlert,
 } from "../src/utils/confirmDialog";
+import { authLog, withTimeout } from "../src/utils/authDebug";
 import { validateEmail } from "../src/utils/validation";
 
 export default function Login() {
@@ -80,7 +81,7 @@ export default function Login() {
     setAwaitingProfile(false);
     setLoading(false);
 
-    // Route through index (/) — same path as cold-start reopen, which is stable.
+    authLog("login:navigate", { role, target: "/" });
     Keyboard.dismiss();
     const timer = setTimeout(() => {
       router.replace("/");
@@ -137,7 +138,13 @@ export default function Login() {
     }
 
     if (selectedSchool?.id && selectedSchool.id !== "default") {
-      const registryEntry = await getSchoolRegistryEntry(selectedSchool.id);
+      authLog("login:registryCheck:start", { schoolId: selectedSchool.id });
+      const registryEntry = await withTimeout(
+        getSchoolRegistryEntry(selectedSchool.id),
+        12_000,
+        "School registry check",
+      );
+      authLog("login:registryCheck:done", { found: Boolean(registryEntry) });
       if (!registryEntry || !isSchoolEntitled(registryEntry)) {
         setError(t("common.subscriptionExpired"));
         return;
@@ -146,9 +153,11 @@ export default function Login() {
 
     setLoading(true);
     setAwaitingProfile(true);
+    authLog("login:signIn:start");
 
     try {
       await signInWithEmailAndPassword(auth, email.toLowerCase(), password);
+      authLog("login:signIn:done");
     } catch (err) {
       setAwaitingProfile(false);
       let message = t("auth.login.loginFailed");

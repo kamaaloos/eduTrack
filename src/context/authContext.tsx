@@ -13,7 +13,11 @@ import { notifyFirestoreClosing } from "../services/firestoreSession";
 import { clearPushTokenFromProfile } from "../services/pushNotifications";
 import { isSchoolRole } from "../utils/schoolRoles";
 import { isSchoolEntitled } from "../utils/schoolSubscriptionAccess";
+import { authLog, withTimeout } from "../utils/authDebug";
 import { useSchoolContext } from "./schoolContext";
+
+const REGISTRY_CHECK_TIMEOUT_MS = 12_000;
+const PROFILE_FETCH_TIMEOUT_MS = 15_000;
 
 export const AuthContext = createContext<any>(null);
 
@@ -70,6 +74,11 @@ export const AuthProvider = ({ children }: any) => {
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      authLog("auth:onAuthStateChanged", {
+        uid: currentUser?.uid ?? null,
+        schoolId: selectedSchoolId,
+      });
+
       try {
         setError(null);
 
@@ -91,7 +100,15 @@ export const AuthProvider = ({ children }: any) => {
         }
 
         if (selectedSchoolId !== "default") {
-          const registryEntry = await getSchoolRegistryEntry(selectedSchoolId);
+          authLog("auth:registryCheck:start", { schoolId: selectedSchoolId });
+          const registryEntry = await withTimeout(
+            getSchoolRegistryEntry(selectedSchoolId),
+            REGISTRY_CHECK_TIMEOUT_MS,
+            "School registry check",
+          );
+          authLog("auth:registryCheck:done", {
+            found: Boolean(registryEntry),
+          });
           if (!registryEntry || !isSchoolEntitled(registryEntry)) {
             await denyAccess(i18n.t("common.subscriptionExpired"));
             await resetSchoolSession();
@@ -103,7 +120,13 @@ export const AuthProvider = ({ children }: any) => {
         setUser(currentUser);
 
         const userRef = doc(db, "users", currentUser.uid);
-        const userSnap = await getDoc(userRef);
+        authLog("auth:profileFetch:start", { uid: currentUser.uid });
+        const userSnap = await withTimeout(
+          getDoc(userRef),
+          PROFILE_FETCH_TIMEOUT_MS,
+          "User profile fetch",
+        );
+        authLog("auth:profileFetch:done", { exists: userSnap.exists() });
 
         if (!userSnap.exists()) {
           await denyAccess(i18n.t("common.profileNotFound"));
@@ -123,6 +146,7 @@ export const AuthProvider = ({ children }: any) => {
         sessionRef.current = { uid: currentUser.uid, schoolId: selectedSchoolId };
         setUserData({ ...fetchedUserData, uid: currentUser.uid });
         setRole(userRole);
+        authLog("auth:ready", { role: userRole });
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Authentication error occurred";

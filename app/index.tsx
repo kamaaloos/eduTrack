@@ -12,6 +12,7 @@ import {
   getPostLoginRoute,
   isPublicEntrySegment,
 } from "../src/utils/authNavigation";
+import { authLog } from "../src/utils/authDebug";
 import { hasCompletedOnboarding } from "../src/utils/onboardingStorage";
 
 export default function Index() {
@@ -54,6 +55,16 @@ export default function Index() {
       !onboardingChecked ||
       !schoolReady
     ) {
+      if (user) {
+        authLog("index:waiting", {
+          navigationReady,
+          loading,
+          superAdminLoading,
+          onboardingChecked,
+          schoolReady,
+          role: role ?? null,
+        });
+      }
       return;
     }
 
@@ -70,7 +81,9 @@ export default function Index() {
       }
 
       if (isPublicEntrySegment(firstSegment)) {
-        router.replace(getPostLoginRoute(role, userData) as never);
+        const target = getPostLoginRoute(role, userData);
+        authLog("index:navigate", { role, target, firstSegment: firstSegment ?? null });
+        router.replace(target as never);
       }
       return;
     }
