@@ -78,11 +78,20 @@ service cloud.firestore {
         : [];
     }
 
+    /** Legacy link doc keyed only by parent uid (see reconcileParentStudentLinks). */
+    function legacyParentLinkStudentId() {
+      let legacyPath = /databases/$(database)/documents/parentStudents/$(request.auth.uid);
+      return exists(legacyPath) && "studentId" in get(legacyPath).data
+        ? get(legacyPath).data.studentId
+        : null;
+    }
+
     function parentOwnsStudent(studentId) {
       return isParent()
         && (
           exists(/databases/$(database)/documents/parentStudents/$(request.auth.uid + "_" + studentId))
           || studentId in parentLinkedStudentIds()
+          || legacyParentLinkStudentId() == studentId
         );
     }
 
@@ -594,7 +603,10 @@ service cloud.firestore {
 
     match /parentStudents/{docId} {
       allow read: if isAdmin()
-        || (isParent() && resource.data.parentId == request.auth.uid)
+        || (isParent() && (
+          resource.data.parentId == request.auth.uid
+          || docId == request.auth.uid
+        ))
         || (
           isTeacher()
           && resource.data.studentId != null

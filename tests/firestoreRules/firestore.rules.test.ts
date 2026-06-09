@@ -158,6 +158,16 @@ describe("Firestore security rules — admin / teacher / parent", () => {
   });
 
   describe("parent paths", () => {
+    it("allows parent to query parentStudents by parentId", async () => {
+      const db = firestoreAs(testEnv, UIDS.parent);
+      await assertSucceeds(
+        db
+          .collection("parentStudents")
+          .where("parentId", "==", UIDS.parent)
+          .get(),
+      );
+    });
+
     it("allows parent to read a linked student profile", async () => {
       const db = firestoreAs(testEnv, UIDS.parent);
       await assertSucceeds(db.doc(`users/${UIDS.student}`).get());
@@ -232,6 +242,40 @@ describe("Firestore security rules — admin / teacher / parent", () => {
           classId: CLASS_A,
         }),
       );
+    });
+  });
+
+  describe("parent paths — legacy parentStudents link", () => {
+    beforeEach(async () => {
+      await testEnv.clearFirestore();
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const db = context.firestore();
+        await db.doc(`users/${UIDS.parent}`).set({
+          name: "Parent One",
+          email: "parent@test.com",
+          role: "parent",
+        });
+        await db.doc(`users/${UIDS.student}`).set({
+          name: "Student One",
+          email: "student@test.com",
+          role: "student",
+          classId: CLASS_A,
+        });
+        await db.doc(`classes/${CLASS_A}`).set({ name: "Class A" });
+        await db.doc(`parentStudents/${UIDS.parent}`).set({
+          studentId: UIDS.student,
+        });
+      });
+    }, 30_000);
+
+    it("allows parent to read legacy link doc without parentId field", async () => {
+      const db = firestoreAs(testEnv, UIDS.parent);
+      await assertSucceeds(db.doc(`parentStudents/${UIDS.parent}`).get());
+    });
+
+    it("allows parent to read student profile via legacy link", async () => {
+      const db = firestoreAs(testEnv, UIDS.parent);
+      await assertSucceeds(db.doc(`users/${UIDS.student}`).get());
     });
   });
 

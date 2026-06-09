@@ -146,10 +146,14 @@ export async function collectLinkedStudentIds(parentId: string): Promise<string[
     }
   }
 
-  const legacySnap = await getDoc(doc(db, "parentStudents", parentId));
-  if (legacySnap.exists()) {
-    const legacyStudentId = legacySnap.data()?.studentId as string | undefined;
-    if (legacyStudentId) ids.add(legacyStudentId);
+  try {
+    const legacySnap = await getDoc(doc(db, "parentStudents", parentId));
+    if (legacySnap.exists()) {
+      const legacyStudentId = legacySnap.data()?.studentId as string | undefined;
+      if (legacyStudentId) ids.add(legacyStudentId);
+    }
+  } catch (err) {
+    console.warn("Could not read legacy parentStudents link:", err);
   }
 
   if (ids.size > 0) {

@@ -36,6 +36,7 @@ export async function loadParentChildren(
 export async function loadParentChildrenDetailed(
   parentId: string,
 ): Promise<LoadParentChildrenResult> {
+  const schoolDb = requireSchoolDb();
   const studentIds = await collectLinkedStudentIds(parentId);
 
   if (studentIds.length === 0) {
@@ -46,7 +47,7 @@ export async function loadParentChildrenDetailed(
 
   const settled = await Promise.allSettled(
     studentIds.map(async (studentId) => {
-      const userSnap = await getDoc(doc(db, "users", studentId));
+      const userSnap = await getDoc(doc(schoolDb, "users", studentId));
       if (!userSnap.exists()) {
         throw new Error(`Student profile not found (${studentId})`);
       }

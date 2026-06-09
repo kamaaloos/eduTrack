@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/edutrack-logo.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "./assets/images/logo-bg.png"
       },
       "package": "com.maylesoft.edutrack"
     },
