@@ -30,7 +30,6 @@ export function BrandedSplashGate({ children }: BrandedSplashGateProps) {
   const { t } = useTranslation();
   const { schoolReady, schoolsLoading, error } = useSchoolContext();
   const isWeb = Platform.OS === "web";
-  const [appUnlocked, setAppUnlocked] = useState(isWeb);
   const [overlayVisible, setOverlayVisible] = useState(!isWeb);
 
   useEffect(() => {
@@ -41,22 +40,14 @@ export function BrandedSplashGate({ children }: BrandedSplashGateProps) {
   }, [isWeb]);
 
   useEffect(() => {
-    if (schoolReady) {
-      setAppUnlocked(true);
-    }
-  }, [schoolReady]);
-
-  useEffect(() => {
     if (isWeb) return;
-    const timer = setTimeout(() => setAppUnlocked(true), 10000);
+    if (!schoolReady) {
+      const timer = setTimeout(() => setOverlayVisible(false), 10_000);
+      return () => clearTimeout(timer);
+    }
+    const timer = setTimeout(() => setOverlayVisible(false), 150);
     return () => clearTimeout(timer);
-  }, [isWeb]);
-
-  useEffect(() => {
-    if (!appUnlocked) return;
-    const timer = setTimeout(() => setOverlayVisible(false), isWeb ? 0 : 150);
-    return () => clearTimeout(timer);
-  }, [appUnlocked, isWeb]);
+  }, [schoolReady, isWeb]);
 
   const splash = (
     <ImageBackground
@@ -90,8 +81,12 @@ export function BrandedSplashGate({ children }: BrandedSplashGateProps) {
 
   return (
     <View style={styles.root}>
-      {appUnlocked ? children : null}
-      {overlayVisible ? <View style={styles.overlay}>{splash}</View> : null}
+      {children}
+      {overlayVisible ? (
+        <View style={styles.overlay} pointerEvents="auto">
+          {splash}
+        </View>
+      ) : null}
     </View>
   );
 }

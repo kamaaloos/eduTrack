@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 
 import { ActivityIndicator, Text, View } from "react-native";
+import { safeRouterReplace } from "../src/utils/safeNavigation";
 import { useTranslation } from "react-i18next";
 
 import { router, useRootNavigationState, useSegments } from "expo-router";
@@ -83,27 +84,27 @@ export default function Index() {
       if (isPublicEntrySegment(firstSegment)) {
         const target = getPostLoginRoute(role, userData);
         authLog("index:navigate", { role, target, firstSegment: firstSegment ?? null });
-        router.replace(target as never);
+        safeRouterReplace(router, target);
       }
       return;
     }
 
     if (!onboardingComplete) {
       if (firstSegment !== "onboarding") {
-        router.replace("/onboarding");
+        safeRouterReplace(router, "/onboarding");
       }
       return;
     }
 
     if (!selectedSchool) {
       if (firstSegment !== "select-school") {
-        router.replace("/select-school");
+        safeRouterReplace(router, "/select-school");
       }
       return;
     }
 
     if (firstSegment !== "login") {
-      router.replace("/login");
+      safeRouterReplace(router, "/login");
     }
   }, [
     navigationReady,

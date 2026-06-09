@@ -39,6 +39,7 @@ import {
 } from "../src/utils/confirmDialog";
 import { authLog, withTimeout } from "../src/utils/authDebug";
 import { getPostLoginRoute } from "../src/utils/authNavigation";
+import { safeRouterReplace } from "../src/utils/safeNavigation";
 import { validateEmail } from "../src/utils/validation";
 
 export default function Login() {
@@ -72,7 +73,7 @@ export default function Login() {
       Keyboard.dismiss();
       setAwaitingProfile(false);
       setLoading(false);
-      router.replace(target as never);
+      safeRouterReplace(router, target);
     },
     [role, userData, router],
   );
@@ -423,12 +424,14 @@ export default function Login() {
         )}
         </ScrollView>
 
-        <Text
-          style={[styles.copyright, { paddingBottom: insets.bottom + 12 }]}
-          accessibilityRole="text"
-        >
-          {APP_COPYRIGHT}
-        </Text>
+        {!busy ? (
+          <Text
+            style={[styles.copyright, { paddingBottom: insets.bottom + 12 }]}
+            accessibilityRole="text"
+          >
+            {APP_COPYRIGHT}
+          </Text>
+        ) : null}
       </KeyboardAvoidingView>
     </View>
   );

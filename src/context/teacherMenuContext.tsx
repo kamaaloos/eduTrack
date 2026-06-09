@@ -34,13 +34,15 @@ export function TeacherMenuProvider({ children }: { children: ReactNode }) {
   return (
     <TeacherMenuContext.Provider value={value}>
       {children}
-      <AdminSideMenu
-        visible={visible}
-        onClose={closeMenu}
-        title={t("admin.management")}
-        subtitle={firstName}
-        items={menuItems}
-      />
+      {visible ? (
+        <AdminSideMenu
+          visible
+          onClose={closeMenu}
+          title={t("admin.management")}
+          subtitle={firstName}
+          items={menuItems}
+        />
+      ) : null}
     </TeacherMenuContext.Provider>
   );
 }

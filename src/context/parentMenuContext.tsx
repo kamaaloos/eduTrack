@@ -32,13 +32,15 @@ export function ParentMenuProvider({ children }: { children: ReactNode }) {
   return (
     <ParentMenuContext.Provider value={value}>
       {children}
-      <AdminSideMenu
-        visible={visible}
-        onClose={closeMenu}
-        title={t("tabs.parent.home")}
-        subtitle={userData?.name ?? null}
-        items={menuItems}
-      />
+      {visible ? (
+        <AdminSideMenu
+          visible
+          onClose={closeMenu}
+          title={t("tabs.parent.home")}
+          subtitle={userData?.name ?? null}
+          items={menuItems}
+        />
+      ) : null}
     </ParentMenuContext.Provider>
   );
 }

@@ -1,6 +1,7 @@
 import "react-native-gesture-handler";
 import "../src/i18n";
 import { Stack } from "expo-router";
+import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebAppShell } from "../components/layout/WebAppShell";
 import { WebIconFontGate } from "../components/layout/WebIconFontGate";
@@ -28,7 +29,12 @@ export default function RootLayout() {
                   <AuthProvider>
                     <DeferredPushNotificationsSetup />
                     <MustChangePasswordGate>
-                      <Stack screenOptions={{ headerShown: false }} />
+                      <Stack
+                        screenOptions={{
+                          headerShown: false,
+                          animation: Platform.OS === "android" ? "fade" : "default",
+                        }}
+                      />
                     </MustChangePasswordGate>
                   </AuthProvider>
                 </SuperAdminAuthProvider>

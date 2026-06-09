@@ -42,21 +42,26 @@ export function MustChangePasswordGate({
   }
 
   return (
-    <>
+    <View style={styles.shell}>
       {children}
       {user && mustChange && !onChangePasswordScreen ? (
-        <View
-          style={{
-            ...StyleSheet.absoluteFillObject,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#FFFFFF",
-            zIndex: 9998,
-          }}
-        >
+        <View style={styles.blocker}>
           <ActivityIndicator size="large" color="#2563EB" />
         </View>
       ) : null}
-    </>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  shell: {
+    flex: 1,
+  },
+  blocker: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    zIndex: 9998,
+  },
+});
