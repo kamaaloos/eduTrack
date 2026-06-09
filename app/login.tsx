@@ -4,7 +4,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -38,12 +38,14 @@ import {
   showSuccessAlert,
 } from "../src/utils/confirmDialog";
 import { authLog, withTimeout } from "../src/utils/authDebug";
+import { getPostLoginRoute } from "../src/utils/authNavigation";
 import { validateEmail } from "../src/utils/validation";
 
 export default function Login() {
   const { t } = useTranslation();
   const {
     user,
+    userData,
     role,
     loading: authLoading,
     error: authError,
@@ -59,6 +61,27 @@ export default function Login() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { selectedSchool, clearSchool, schoolReady } = useSchoolContext();
+  const navigatedRef = useRef(false);
+
+  const goToPostLogin = useCallback(
+    (reason: string) => {
+      if (!role || navigatedRef.current) return;
+      navigatedRef.current = true;
+      const target = getPostLoginRoute(role, userData);
+      authLog("login:navigate", { reason, role, target });
+      Keyboard.dismiss();
+      setAwaitingProfile(false);
+      setLoading(false);
+      router.replace(target as never);
+    },
+    [role, userData, router],
+  );
+
+  useEffect(() => {
+    if (!user) {
+      navigatedRef.current = false;
+    }
+  }, [user]);
 
   useEffect(() => {
     if (schoolReady && !selectedSchool) {
@@ -74,21 +97,18 @@ export default function Login() {
     }
   }, [authError]);
 
+  // After sign-in: navigate as soon as profile (role) is ready.
   useEffect(() => {
     if (!awaitingProfile) return;
     if (authLoading || !user || !role) return;
+    goToPostLogin("signInComplete");
+  }, [awaitingProfile, authLoading, user, role, goToPostLogin]);
 
-    setAwaitingProfile(false);
-    setLoading(false);
-
-    authLog("login:navigate", { role, target: "/" });
-    Keyboard.dismiss();
-    const timer = setTimeout(() => {
-      router.replace("/");
-    }, 50);
-
-    return () => clearTimeout(timer);
-  }, [awaitingProfile, authLoading, user, role, router]);
+  // Recovery: session exists but login screen is still visible.
+  useEffect(() => {
+    if (awaitingProfile || authLoading || !user || !role) return;
+    goToPostLogin("sessionRecovery");
+  }, [awaitingProfile, authLoading, user, role, goToPostLogin]);
 
   const handleChangeSchool = () => {
     void (async () => {
