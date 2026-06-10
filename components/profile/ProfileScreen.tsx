@@ -33,6 +33,7 @@ import {
   updateProfileName,
 } from "../../src/services/userProfile";
 import { canUploadProfilePhoto } from "../../src/utils/userAvatar";
+import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 
 type ProfileScreenProps = {
   roleLabel?: string;
@@ -216,7 +217,7 @@ export function ProfileScreen({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, inScreenShell && styles.containerEmbedded]}>
       <View
         style={[
           styles.fixedHero,
@@ -229,6 +230,7 @@ export function ProfileScreen({
             : null,
         ]}
       >
+        <View style={styles.formColumn}>
         {showBack && !inScreenShell ? (
           <TouchableOpacity
             style={styles.backBtn}
@@ -297,17 +299,26 @@ export function ProfileScreen({
             <Text style={styles.roleBadgeText}>{displayRole}</Text>
           </View>
         </View>
+        </View>
       </View>
 
       <ScrollView
-        style={styles.scrollBody}
-        contentContainerStyle={{
-          paddingHorizontal: inScreenShell ? 0 : 20,
-          paddingBottom: insets.bottom + (inScreenShell ? 32 : 120),
-        }}
+        style={[styles.scrollBody, inScreenShell && styles.scrollBodyEmbedded]}
+        contentContainerStyle={
+          inScreenShell
+            ? [
+                styles.scrollContentEmbedded,
+                { paddingBottom: insets.bottom + 32 },
+              ]
+            : [
+                styles.scrollContentStandalone,
+                { paddingBottom: insets.bottom + 120 },
+              ]
+        }
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+      <View style={styles.formColumn}>
       <View style={[styles.card, styles.firstCard]}>
         <Text style={styles.cardTitle}>{t("profile.displayName")}</Text>
         <TextInput
@@ -413,6 +424,7 @@ export function ProfileScreen({
         <Ionicons name="log-out-outline" size={20} color="#FFFFFF" />
         <Text style={styles.logoutBtnText}>{t("profile.signOut")}</Text>
       </TouchableOpacity>
+      </View>
       </ScrollView>
     </View>
   );
@@ -420,6 +432,10 @@ export function ProfileScreen({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "transparent" },
+  containerEmbedded: {
+    width: "100%",
+    alignItems: "center",
+  },
   fixedHero: {
     backgroundColor: "transparent",
     paddingBottom: 16,
@@ -428,8 +444,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     paddingTop: 0,
     paddingBottom: 12,
+    width: "100%",
+    alignItems: "center",
   },
   scrollBody: { flex: 1 },
+  scrollBodyEmbedded: { width: "100%" },
+  scrollContentEmbedded: {
+    alignItems: "center",
+    width: "100%",
+  },
+  scrollContentStandalone: {
+    paddingHorizontal: 20,
+    alignItems: "center",
+    width: "100%",
+  },
+  formColumn: {
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
+  },
   firstCard: { marginTop: 16 },
   backBtn: {
     flexDirection: "row",

@@ -1,9 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Keyboard,
+  Platform,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import type { TeacherStudent } from "../../../src/services/teacherStudents";
 import { ExamReportsShowMore } from "./ExamReportsShowMore";
 import { examReportsStyles as styles } from "./examReportsStyles";
+import { EXAM_REPORTS_KEYBOARD_ACCESSORY_ID } from "./examReportsTypes";
 
 type ExamReportsReportsSectionProps = {
   reportSearch: string;
@@ -24,6 +32,12 @@ export function ExamReportsReportsSearch({
     <TextInput
       style={styles.search}
       placeholder={t("teacher.examReports.searchStudents")}
+      returnKeyType="search"
+      blurOnSubmit
+      onSubmitEditing={() => Keyboard.dismiss()}
+      inputAccessoryViewID={
+        Platform.OS === "ios" ? EXAM_REPORTS_KEYBOARD_ACCESSORY_ID : undefined
+      }
       value={reportSearch}
       onChangeText={onReportSearchChange}
     />

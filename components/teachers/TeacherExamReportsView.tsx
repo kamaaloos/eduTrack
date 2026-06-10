@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   RefreshControl,
   ScrollView,
   Text,
@@ -13,6 +15,7 @@ import {
   ExamReportsGradeFixedHeader,
   ExamReportsGradeStudentList,
 } from "./examReports/ExamReportsGradeSection";
+import { ExamReportsKeyboardAccessory } from "./examReports/ExamReportsKeyboardAccessory";
 import { ExamReportsModeTabs } from "./examReports/ExamReportsModeTabs";
 import {
   ExamReportsReportsSearch,
@@ -112,46 +115,54 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
       onRefresh={onRefresh}
     >
       <View style={styles.container}>
-        <View style={styles.fixedTop}>
-          <Text style={styles.label}>{t("common.class")}</Text>
-          <SelectChips
-            options={classOptions}
-            selectedValue={selectedClassId}
-            onSelect={setSelectedClassId}
-          />
-
-          <ExamReportsModeTabs mode={mode} onModeChange={setMode} />
-
-          {loading ? (
-            <ActivityIndicator style={styles.loader} color="#2563EB" />
-          ) : mode === "grade" ? (
-            <ExamReportsGradeFixedHeader
-              exams={exams}
-              examChipOptions={examChipOptions}
-              selectedExamId={selectedExamId}
-              onSelectExam={setSelectedExamId}
-              selectedExam={selectedExam}
-              maxMarks={maxMarks}
-              gradedCount={gradedCount}
-              classAverage={classAverage}
-              studentsInClass={studentsInClass}
-              onExportAllCertificates={() => void exportAllCertificates()}
-              exportingAllCertificates={exportingAllCertificates}
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoid}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+          <View style={styles.fixedTop}>
+            <Text style={styles.label}>{t("common.class")}</Text>
+            <SelectChips
+              options={classOptions}
+              selectedValue={selectedClassId}
+              onSelect={setSelectedClassId}
             />
-          ) : (
-            <ExamReportsReportsSearch
-              reportSearch={reportSearch}
-              onReportSearchChange={setReportSearch}
-            />
-          )}
-        </View>
 
-        {!loading && (showGradeStudents || showReportStudents) ? (
+            <ExamReportsModeTabs mode={mode} onModeChange={setMode} />
+
+            {loading ? (
+              <ActivityIndicator style={styles.loader} color="#2563EB" />
+            ) : mode === "grade" ? (
+              <ExamReportsGradeFixedHeader
+                exams={exams}
+                examChipOptions={examChipOptions}
+                selectedExamId={selectedExamId}
+                onSelectExam={setSelectedExamId}
+                selectedExam={selectedExam}
+                maxMarks={maxMarks}
+                gradedCount={gradedCount}
+                classAverage={classAverage}
+                studentsInClass={studentsInClass}
+                onExportAllCertificates={() => void exportAllCertificates()}
+                exportingAllCertificates={exportingAllCertificates}
+              />
+            ) : (
+              <ExamReportsReportsSearch
+                reportSearch={reportSearch}
+                onReportSearchChange={setReportSearch}
+              />
+            )}
+          </View>
+
+          {!loading && (showGradeStudents || showReportStudents) ? (
           <ScrollView
             style={styles.studentScroll}
             contentContainerStyle={styles.studentScrollContent}
             showsVerticalScrollIndicator
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode={
+              Platform.OS === "ios" ? "interactive" : "on-drag"
+            }
+            automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
@@ -179,7 +190,9 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
               />
             )}
           </ScrollView>
-        ) : null}
+          ) : null}
+        </KeyboardAvoidingView>
+        <ExamReportsKeyboardAccessory />
       </View>
     </TeacherScreenShell>
   );

@@ -8,6 +8,8 @@ export const FLOATING_TAB_BAR_BOTTOM_MARGIN = 16;
 /** Space above the floating tab bar (bar height + bottom offset). */
 export const FLOATING_TAB_BAR_INSET = 96;
 
+export const STUDENT_COPYRIGHT_BOTTOM_OFFSET = FLOATING_TAB_BAR_INSET - 8;
+
 export function floatingTabBarBottom(_safeAreaBottom: number): number {
   return FLOATING_TAB_BAR_BOTTOM_MARGIN;
 }

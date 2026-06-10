@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  mobileScreenPaddingStyle,
   webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
@@ -46,6 +47,7 @@ export function StudentScreenHeader({
             styles.headerInner,
             webAdminContentStyle(),
             webAdminPagePaddingStyle(),
+            mobileScreenPaddingStyle(),
           ]}
         >
           <View style={styles.row}>

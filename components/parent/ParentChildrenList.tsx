@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { MOBILE_SCREEN_HORIZONTAL_PADDING } from "../../src/constants/appTheme";
 import type { ParentChild } from "../../src/services/parentChildren";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { UserAvatar } from "../common/UserAvatar";
@@ -134,8 +135,12 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "100%",
   },
+  mobileRowScroll: {
+    marginHorizontal: -MOBILE_SCREEN_HORIZONTAL_PADDING,
+  },
   mobileRow: {
-    paddingRight: 4,
+    paddingHorizontal: MOBILE_SCREEN_HORIZONTAL_PADDING,
+    paddingRight: MOBILE_SCREEN_HORIZONTAL_PADDING + 4,
     gap: 12,
   },
   childCard: {
@@ -150,8 +155,10 @@ const styles = StyleSheet.create({
   },
   childCardMobile: {
     width: 172,
+    maxWidth: 172,
     padding: 14,
     flexShrink: 0,
+    alignSelf: "flex-start",
     flexDirection: "column",
     alignItems: "flex-start",
     minHeight: 168,

@@ -12,7 +12,9 @@ import {
 } from "react-native";
 import { SelectChips } from "../../components/teachers/SelectChips";
 import { TeacherScreenShell } from "../../components/teachers/TeacherScreenShell";
+import { STUDENT_LIST_MAX_WIDTH } from "../../components/students/studentScreenStyles";
 import { useTeacherClassesContext } from "../../src/context/teacherClassesContext";
+import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 import {
   loadAbsenceReportsForTeacher,
   type TeacherAbsenceReport,
@@ -185,7 +187,12 @@ const styles = StyleSheet.create({
   },
   loader: { marginVertical: 24 },
   listScroll: { flex: 1 },
-  list: { paddingBottom: 24, gap: 12 },
+  list: {
+    paddingBottom: FLOATING_TAB_BAR_INSET,
+    gap: 12,
+    width: "100%",
+    alignItems: "center",
+  },
   card: {
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
@@ -194,6 +201,9 @@ const styles = StyleSheet.create({
     borderLeftColor: "#1E40AF",
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   cardHeader: {
     flexDirection: "row",
@@ -235,6 +245,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 48,
     paddingHorizontal: 24,
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   emptyTitle: {
     fontSize: 17,
@@ -256,6 +269,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: "#FECACA",
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   errorText: { color: "#B91C1C", fontWeight: "600" },
 });

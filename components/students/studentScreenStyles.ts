@@ -3,11 +3,19 @@ import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 
 const isWeb = Platform.OS === "web";
 
+/** Centered card column on student tab screens (attendance, messages, etc.). */
+export const STUDENT_LIST_MAX_WIDTH = 480;
+
 export const studentScreenStyles = StyleSheet.create({
   scrollContent: {
     paddingTop: isWeb ? 16 : 12,
     paddingBottom: isWeb ? 32 : FLOATING_TAB_BAR_INSET,
     flexGrow: 1,
+  },
+  listStack: {
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   listCard: {
     backgroundColor: "#FFFFFF",
@@ -18,6 +26,9 @@ export const studentScreenStyles = StyleSheet.create({
     borderColor: "#E2E8F0",
     borderLeftWidth: 4,
     borderLeftColor: "#2563EB",
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   listCardDirect: {
     borderLeftColor: "#7C3AED",
@@ -57,6 +68,9 @@ export const studentScreenStyles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     marginTop: 24,
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   metricCard: {
     backgroundColor: "#FFFFFF",
@@ -65,6 +79,9 @@ export const studentScreenStyles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   metricTitle: {
     fontSize: 15,
@@ -88,6 +105,9 @@ export const studentScreenStyles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     marginTop: 4,
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   highlightTitle: {
     color: "#FFFFFF",
@@ -107,6 +127,9 @@ export const studentScreenStyles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   detailSender: {
     fontSize: 14,

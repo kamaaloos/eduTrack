@@ -37,30 +37,40 @@ export default function AttendanceScreen() {
       {records.length === 0 ? (
         <Text style={styles.emptyText}>{t("student.noAttendance")}</Text>
       ) : (
-        records.map((r) => {
-          const colors = getAttendanceColor(r.status, r.parentResponse);
-          return (
-            <View
-              key={r.id}
-              style={[styles.listCard, { borderLeftWidth: 4, borderLeftColor: colors.border }]}
-            >
-              <Text style={styles.listCardTitle}>{r.date}</Text>
-              <Text style={[styles.listCardBody, { color: colors.text, fontWeight: "700" }]}>
-                {colors.label}
-              </Text>
-              {r.parentResponse?.reason ? (
-                <Text style={[styles.listCardBody, { marginTop: 6 }]}>
-                  {t("common.parent")}: {r.parentResponse.reason}
+        <View style={styles.listStack}>
+          {records.map((r) => {
+            const colors = getAttendanceColor(r.status, r.parentResponse);
+            return (
+              <View
+                key={r.id}
+                style={[
+                  styles.listCard,
+                  { borderLeftWidth: 4, borderLeftColor: colors.border },
+                ]}
+              >
+                <Text style={styles.listCardTitle}>{r.date}</Text>
+                <Text
+                  style={[
+                    styles.listCardBody,
+                    { color: colors.text, fontWeight: "700" },
+                  ]}
+                >
+                  {colors.label}
                 </Text>
-              ) : null}
-              {r.remark ? (
-                <Text style={[styles.listCardBody, { marginTop: 6 }]}>
-                  {t("common.remarks")}: {r.remark}
-                </Text>
-              ) : null}
-            </View>
-          );
-        })
+                {r.parentResponse?.reason ? (
+                  <Text style={[styles.listCardBody, { marginTop: 6 }]}>
+                    {t("common.parent")}: {r.parentResponse.reason}
+                  </Text>
+                ) : null}
+                {r.remark ? (
+                  <Text style={[styles.listCardBody, { marginTop: 6 }]}>
+                    {t("common.remarks")}: {r.remark}
+                  </Text>
+                ) : null}
+              </View>
+            );
+          })}
+        </View>
       )}
     </StudentScreenShell>
   );

@@ -8,9 +8,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RoleGate } from "../../components/auth/RoleGate";
 import { RoleAppFrame } from "../../components/layout/RoleAppFrame";
 import {
-  FLOATING_TAB_BAR_INSET,
   floatingTabBarStyle,
   floatingTabBarStyleForSafeArea,
+  STUDENT_COPYRIGHT_BOTTOM_OFFSET,
   tabBarItemStyle,
   tabBarLabelStyle,
   tabSceneContainerStyle,
@@ -27,21 +27,11 @@ export default function StudentLayout() {
         : floatingTabBarStyleForSafeArea(insets.bottom),
     [insets.bottom],
   );
-  const sceneStyle = useMemo(
-    () =>
-      Platform.OS === "web"
-        ? tabSceneContainerStyle
-        : {
-            ...tabSceneContainerStyle,
-            paddingBottom: FLOATING_TAB_BAR_INSET + insets.bottom,
-          },
-    [insets.bottom],
-  );
 
   return (
     <RoleGate allowedRole="student">
     <StudentMenuProvider>
-    <RoleAppFrame copyrightBottomOffset={FLOATING_TAB_BAR_INSET}>
+    <RoleAppFrame copyrightBottomOffset={STUDENT_COPYRIGHT_BOTTOM_OFFSET}>
     <Tabs
       {...(Platform.OS !== "web"
         ? {
@@ -52,8 +42,8 @@ export default function StudentLayout() {
         headerShown: false,
         lazy: true,
         detachInactiveScreens: true,
-        sceneStyle,
-        sceneContainerStyle: sceneStyle,
+        sceneStyle: tabSceneContainerStyle,
+        sceneContainerStyle: tabSceneContainerStyle,
         tabBarShowLabel: true,
         tabBarActiveTintColor:
           Platform.OS === "web" ? "#1D4ED8" : "#2563EB",

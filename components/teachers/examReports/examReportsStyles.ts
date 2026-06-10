@@ -3,6 +3,7 @@ import { FLOATING_TAB_BAR_INSET } from "../../../src/constants/tabBar";
 
 export const examReportsStyles = StyleSheet.create({
   container: { flex: 1 },
+  keyboardAvoid: { flex: 1 },
   content: { paddingTop: 8 },
   fixedTop: {
     paddingBottom: 8,
@@ -207,5 +208,24 @@ export const examReportsStyles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "700",
+  },
+  keyboardAccessory: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    backgroundColor: "#F1F5F9",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "#CBD5E1",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  keyboardDoneBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  keyboardDoneText: {
+    color: "#2563EB",
+    fontSize: 17,
+    fontWeight: "600",
   },
 });

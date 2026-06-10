@@ -26,5 +26,8 @@ export const APP_BUILDS_URL =
 /** Screen content sits on AppScreenBackground — keep surfaces transparent. */
 export const APP_SCREEN_BACKGROUND = "transparent";
 
+/** Standard horizontal inset for native role screens (matches student dashboard). */
+export const MOBILE_SCREEN_HORIZONTAL_PADDING = 16;
+
 /** Dim overlay when side menu is open. */
 export const APP_MENU_BACKDROP = "rgba(15, 23, 42, 0.45)";

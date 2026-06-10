@@ -14,7 +14,10 @@ export const dashboardStyles = StyleSheet.create({
     paddingBottom: isWeb ? 32 : FLOATING_TAB_BAR_INSET,
     ...(isWeb ? { paddingTop: 0 } : null),
   },
-  horizontalScrollContent: { paddingRight: 20, alignItems: "stretch" },
+  horizontalScrollContent: {
+    paddingRight: isWeb ? 20 : 16,
+    alignItems: "flex-start",
+  },
   /** Fixed-width cards inside horizontal carousel (web + native). */
   slideCardInCarousel: {
     width: 260,

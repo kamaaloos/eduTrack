@@ -2,6 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Keyboard,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
@@ -10,6 +12,7 @@ import {
 import type { ExamResultRecord } from "../../../src/services/examResults";
 import type { TeacherStudent } from "../../../src/services/teacherStudents";
 import { examReportsStyles as styles } from "./examReportsStyles";
+import { EXAM_REPORTS_KEYBOARD_ACCESSORY_ID } from "./examReportsTypes";
 import { scoreLabel } from "./examReportsUtils";
 
 type ExamReportsStudentGradeRowProps = {
@@ -112,6 +115,14 @@ export function ExamReportsStudentGradeRow({
           style={styles.scoreInput}
           placeholder={maxMarks != null ? `0–${maxMarks}` : "0–100"}
           keyboardType="numeric"
+          returnKeyType="done"
+          blurOnSubmit
+          onSubmitEditing={() => Keyboard.dismiss()}
+          inputAccessoryViewID={
+            Platform.OS === "ios"
+              ? EXAM_REPORTS_KEYBOARD_ACCESSORY_ID
+              : undefined
+          }
           value={scoreDraft}
           onChangeText={onScoreChange}
         />

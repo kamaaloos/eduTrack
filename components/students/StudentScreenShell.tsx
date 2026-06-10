@@ -12,6 +12,7 @@ import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { AuthContext } from "../../src/context/authContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
 import {
+  mobileScreenPaddingStyle,
   webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
@@ -58,6 +59,7 @@ export function StudentScreenShell({
     styles.bodyInner,
     webAdminContentStyle(),
     webAdminPagePaddingStyle(),
+    mobileScreenPaddingStyle(),
   ];
 
   const body = scroll ? (
@@ -116,6 +118,7 @@ const styles = StyleSheet.create({
   },
   bodyInner: {
     width: "100%",
+    alignItems: "center",
   },
   bodyFill: {
     flex: 1,

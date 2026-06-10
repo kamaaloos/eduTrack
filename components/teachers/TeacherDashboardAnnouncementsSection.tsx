@@ -23,7 +23,7 @@ export function TeacherDashboardAnnouncementsSection({
       <DashboardSlideRow variant="carousel">
         {announcements.length === 0 ? (
           <View style={styles.announcementCard}>
-            <Text style={styles.cardTitle}>
+            <Text style={styles.cardTitle} numberOfLines={2}>
               {t("teacher.dashboard.noAnnouncements")}
             </Text>
           </View>
@@ -33,7 +33,7 @@ export function TeacherDashboardAnnouncementsSection({
               key={`${item.classId}-${item.id}`}
               style={styles.announcementCard}
             >
-              <Text style={styles.cardTitle}>
+              <Text style={styles.cardTitle} numberOfLines={2}>
                 {item.title || t("common.announcements")}
               </Text>
               <Text style={styles.cardText} numberOfLines={4}>

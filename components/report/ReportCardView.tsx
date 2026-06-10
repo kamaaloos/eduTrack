@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { ReportCardData } from "../../src/services/reportCardEngine";
 import { attendanceHistoryLabel } from "../../src/constants/attendanceHistory";
 import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
+import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import { getAttendanceColor } from "../../src/utils/dashboardUi";
 import { getAttendanceStatusLabel } from "../../src/utils/attendanceLabels";
 
@@ -37,6 +38,7 @@ export function ReportCardView({
       ]}
       showsVerticalScrollIndicator={false}
     >
+      <View style={styles.cardColumn}>
       <View style={styles.hero}>
         <Text style={styles.heroEyebrow}>{t("reportCard.heroEyebrow")}</Text>
         <Text style={styles.heroTitle}>{report.studentName}</Text>
@@ -229,16 +231,27 @@ export function ReportCardView({
           </View>
         ))
       )}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "transparent" },
-  content: { padding: 20, paddingBottom: FLOATING_TAB_BAR_INSET },
+  content: {
+    padding: 20,
+    paddingBottom: FLOATING_TAB_BAR_INSET,
+    alignItems: "center",
+  },
   contentEmbedded: {
     padding: 0,
+    paddingTop: 4,
     paddingBottom: 32,
+    alignItems: "center",
+  },
+  cardColumn: {
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
   },
   hero: {
     backgroundColor: "#1E3A8A",

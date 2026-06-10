@@ -12,6 +12,7 @@ import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { AuthContext } from "../../src/context/authContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
 import {
+  mobileScreenPaddingStyle,
   webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
@@ -57,6 +58,7 @@ export function ParentScreenShell({
     styles.bodyInner,
     webAdminContentStyle(),
     webAdminPagePaddingStyle(),
+    mobileScreenPaddingStyle(),
   ];
 
   const body = scroll ? (
