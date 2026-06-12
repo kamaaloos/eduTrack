@@ -25,6 +25,8 @@ firebase-adminsdk*.json
 dist/
 web-build/
 expo-env.d.ts
+# Local EAS build inspection output (hundreds of generated files — never commit)
+.eas-inspect/
 
 # Native
 .kotlin/
@@ -59,4 +61,5 @@ coverage/
 /ios
 /android
 
-.eas-inspect/
+# Local debug logs
+crash-full.txt
