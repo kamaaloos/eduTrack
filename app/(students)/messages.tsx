@@ -1,6 +1,6 @@
-import { Text, View } from "react-native";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../src/services/firebase";
 import {
@@ -8,7 +8,10 @@ import {
   isDirectAnnouncement,
 } from "../../src/utils/announcementDisplay";
 import { filterAnnouncementsForViewer } from "../../src/utils/announcementVisibility";
+import { filterDismissedAnnouncements } from "../../src/services/dismissedContent";
 import { AuthContext } from "../../src/context/authContext";
+import { useDismissedContent } from "../../hooks/useDismissedContent";
+import { SwipeToDeleteRow } from "../../components/common/SwipeToDeleteRow";
 import { StudentScreenShell } from "../../components/students/StudentScreenShell";
 import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
 
@@ -16,6 +19,7 @@ export default function MessagesScreen() {
   const { t } = useTranslation();
   const { user, userData } = useContext(AuthContext);
   const [messages, setMessages] = useState<any[]>([]);
+  const { dismissedKeys, dismiss } = useDismissedContent(user?.uid);
 
   useEffect(() => {
     const load = async () => {
@@ -33,8 +37,24 @@ export default function MessagesScreen() {
       );
     };
 
-    load();
+    void load();
   }, [userData?.classId, user?.uid]);
+
+  const visibleMessages = useMemo(
+    () =>
+      filterDismissedAnnouncements(
+        messages,
+        userData?.classId ?? null,
+        dismissedKeys,
+      ),
+    [messages, userData?.classId, dismissedKeys],
+  );
+
+  const handleDismiss = (messageId: string) => {
+    const classId = userData?.classId;
+    if (!classId) return;
+    void dismiss("announcement", classId, messageId);
+  };
 
   return (
     <StudentScreenShell
@@ -42,31 +62,35 @@ export default function MessagesScreen() {
       showBack
       showMenu={false}
     >
-      {messages.length === 0 ? (
+      {visibleMessages.length === 0 ? (
         <Text style={styles.emptyText}>{t("common.noData")}</Text>
       ) : (
-        messages.map((m) => {
+        visibleMessages.map((m) => {
           const senderLine = getAnnouncementSenderLine(m, t);
           const isDirect = isDirectAnnouncement(m);
           return (
-            <View
+            <SwipeToDeleteRow
               key={m.id}
-              style={[
-                styles.listCard,
-                isDirect && styles.listCardDirect,
-              ]}
+              onDelete={() => handleDismiss(m.id)}
             >
-              {isDirect ? (
-                <Text style={styles.listCardBadge}>
-                  {t("announcement.personalMessage")}
-                </Text>
-              ) : null}
-              {senderLine ? (
-                <Text style={styles.listCardSender}>{senderLine}</Text>
-              ) : null}
-              <Text style={styles.listCardTitle}>{m.title}</Text>
-              <Text style={styles.listCardBody}>{m.text || m.message}</Text>
-            </View>
+              <View
+                style={[
+                  styles.listCard,
+                  isDirect && styles.listCardDirect,
+                ]}
+              >
+                {isDirect ? (
+                  <Text style={styles.listCardBadge}>
+                    {t("announcement.personalMessage")}
+                  </Text>
+                ) : null}
+                {senderLine ? (
+                  <Text style={styles.listCardSender}>{senderLine}</Text>
+                ) : null}
+                <Text style={styles.listCardTitle}>{m.title}</Text>
+                <Text style={styles.listCardBody}>{m.text || m.message}</Text>
+              </View>
+            </SwipeToDeleteRow>
           );
         })
       )}

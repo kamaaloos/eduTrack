@@ -178,6 +178,21 @@ export const studentScreenStyles = StyleSheet.create({
     lineHeight: 26,
     color: "#334155",
   },
+  detailDeleteBtn: {
+    marginTop: 16,
+    backgroundColor: "#DC2626",
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
+  },
+  detailDeleteBtnText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 15,
+  },
   loadingCenter: {
     flex: 1,
     justifyContent: "center",

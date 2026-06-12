@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   query,
@@ -165,6 +166,11 @@ export async function createNotifications(
 export async function markNotificationRead(notificationId: string): Promise<void> {
   if (!db) return;
   await updateDoc(doc(db, "notifications", notificationId), { read: true });
+}
+
+export async function deleteNotification(notificationId: string): Promise<void> {
+  if (!db) return;
+  await deleteDoc(doc(db, "notifications", notificationId));
 }
 
 export async function markAllNotificationsRead(userId: string): Promise<void> {

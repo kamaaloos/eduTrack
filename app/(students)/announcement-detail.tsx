@@ -1,13 +1,19 @@
 import { useContext, useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { Text, TouchableOpacity, View } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../src/context/authContext";
 import { db } from "../../src/services/firebase";
 import { getAnnouncementSenderLine } from "../../src/utils/announcementDisplay";
+import { useDismissedContent } from "../../hooks/useDismissedContent";
+import { SwipeToDeleteRow } from "../../components/common/SwipeToDeleteRow";
 import { StudentScreenShell } from "../../components/students/StudentScreenShell";
 import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
+import {
+  confirmDestructiveAction,
+  showErrorAlert,
+} from "../../src/utils/confirmDialog";
 
 export default function AnnouncementDetailScreen() {
   const { t } = useTranslation();
@@ -18,7 +24,8 @@ export default function AnnouncementDetailScreen() {
       title?: string;
       body?: string;
     }>();
-  const { userData } = useContext(AuthContext);
+  const { user, userData } = useContext(AuthContext);
+  const { dismiss } = useDismissedContent(user?.uid);
   const [item, setItem] = useState<any>(null);
 
   useEffect(() => {
@@ -60,6 +67,34 @@ export default function AnnouncementDetailScreen() {
   const screenTitle =
     item?.title || paramTitle || t("common.announcements");
   const senderLine = item ? getAnnouncementSenderLine(item, t) : null;
+  const resolvedClassId = paramClassId || userData?.classId || "";
+
+  const handleDelete = () => {
+    if (!resolvedClassId || !id) {
+      router.back();
+      return;
+    }
+
+    void (async () => {
+      const confirmed = await confirmDestructiveAction(
+        t("common.delete"),
+        t("announcement.dismissConfirm"),
+        t("common.delete"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      try {
+        await dismiss("announcement", resolvedClassId, String(id));
+        router.back();
+      } catch (err) {
+        showErrorAlert(
+          t("common.error"),
+          err instanceof Error ? err.message : t("common.somethingWentWrong"),
+        );
+      }
+    })();
+  };
 
   if (!item) {
     return (
@@ -71,14 +106,24 @@ export default function AnnouncementDetailScreen() {
 
   return (
     <StudentScreenShell title={screenTitle} showBack showMenu={false}>
-      <View style={styles.detailCard}>
-        {senderLine ? (
-          <Text style={styles.detailSender}>{senderLine}</Text>
-        ) : null}
-        <Text style={styles.detailBody}>
-          {fullText || t("common.notAvailable")}
-        </Text>
-      </View>
+      <SwipeToDeleteRow onDelete={handleDelete}>
+        <View style={styles.detailCard}>
+          {senderLine ? (
+            <Text style={styles.detailSender}>{senderLine}</Text>
+          ) : null}
+          <Text style={styles.detailBody}>
+            {fullText || t("common.notAvailable")}
+          </Text>
+        </View>
+      </SwipeToDeleteRow>
+
+      <TouchableOpacity
+        style={styles.detailDeleteBtn}
+        onPress={handleDelete}
+        accessibilityRole="button"
+      >
+        <Text style={styles.detailDeleteBtnText}>{t("common.delete")}</Text>
+      </TouchableOpacity>
     </StudentScreenShell>
   );
 }

@@ -144,6 +144,41 @@
     "updatesWebOnly": "Install the Android APK to receive update notifications.",
     "checkAgain": "Check again"
   },
+  "contact": {
+    "title": "Contact us",
+    "heading": "Get in touch",
+    "subtitle": "Tell us about your school and we will help you get started with eduTrack.",
+    "name": "Your name",
+    "namePlaceholder": "Full name",
+    "email": "Email",
+    "emailPlaceholder": "you@school.edu",
+    "schoolName": "School name",
+    "schoolNamePlaceholder": "Optional",
+    "message": "Message",
+    "messagePlaceholder": "How can we help?",
+    "submit": "Send message",
+    "success": "Thank you! Your message was sent.",
+    "successSavedAndMail": "Your message was saved and your email app was opened — send the email to reach us, or we'll follow up from the saved copy.",
+    "mailClientOpened": "Your email app was opened with your message addressed to us.",
+    "mailSubject": "eduTrack inquiry from {{name}}",
+    "directEmail": "Or email us directly at {{email}}",
+    "errorName": "Please enter your name.",
+    "errorEmail": "Please enter a valid email address.",
+    "errorMessage": "Please enter a message (at least 10 characters).",
+    "errorSubmit": "Could not send your message. Please try again or email us directly."
+  },
+  "download": {
+    "title": "Get the app",
+    "heading": "Download eduTrack",
+    "subtitle": "Install the mobile app for students, teachers, parents, and school administrators.",
+    "googlePlayEyebrow": "Get it on",
+    "googlePlayTitle": "Google Play",
+    "appStoreEyebrow": "Download on the",
+    "appStoreTitle": "App Store",
+    "comingSoon": "Coming soon",
+    "appStorePendingHint": "The iOS App Store link will appear here once the app is published.",
+    "openFailed": "Could not open the store link."
+  },
   "onboarding": {
     "skipA11y": "Skip onboarding",
     "languageHint": "Pick the language you prefer. You can change it later in settings.",
@@ -197,7 +232,8 @@
     "personalFromSender": "From {{name}} (for you)",
     "fromTeacher": "From teacher {{name}}",
     "fromAdmin": "From admin {{name}}",
-    "fromSender": "From {{name}}"
+    "fromSender": "From {{name}}",
+    "dismissConfirm": "Hide this announcement from your messages and dashboard?"
   },
   "auth": {
     "login": {
@@ -266,6 +302,36 @@
   },
   "index": {
     "loading": "Loading…"
+  },
+  "landing": {
+    "brandName": "eduTrack",
+    "brandTag": "School management platform",
+    "heroBadge": "EduTrack Platform",
+    "heroTitlePrefix": "The connected school hub for",
+    "heroTitleHighlight": "every role",
+    "heroSubtitle": "Homework, exams, attendance, report cards, and parent communication — in one secure platform for students, teachers, parents, and school administrators.",
+    "openWebApp": "Open eduTrack web app",
+    "downloadApp": "Get the mobile app",
+    "signIn": "Sign in",
+    "getStarted": "Get started",
+    "navFeatures": "Features",
+    "contactUs": "Contact us",
+    "utilityTagline": "Secure school management for every role",
+    "trustLine": "One platform for your whole school community",
+    "infrastructureTitle": "School operations are not spreadsheets. They are infrastructure.",
+    "heroRating": "Built for modern schools",
+    "featuresTitle": "Built for your whole school",
+    "featuresHint": "One platform, tailored experiences for each role.",
+    "featureStudentsTitle": "Students",
+    "featureStudentsBody": "Dashboard, homework, exams, attendance, messages, and report cards in one place.",
+    "featureTeachersTitle": "Teachers",
+    "featureTeachersBody": "Mark attendance, publish academic content, grade exams, and message classes.",
+    "featureParentsTitle": "Parents",
+    "featureParentsBody": "Follow each child's progress, respond to absences, and receive school updates.",
+    "featureAdminsTitle": "Administrators",
+    "featureAdminsBody": "Manage users, classes, schedules, analytics, and school-wide announcements.",
+    "promoVideoAria": "EduTrack platform promotional video",
+    "copyright": "© 2026 - MayleSoft school-app by eng. Hasan Kamaal."
   },
   "tabs": {
     "teacher": {
@@ -366,6 +432,8 @@
       "noStudentsInClass": "No students in this class",
       "schoolUpdates": "School updates",
       "noAnnouncements": "No announcements right now",
+      "deleteAnnouncementConfirm": "Remove this announcement for everyone in the class?",
+      "announcementDeleted": "Announcement deleted",
       "viewReport": "View student report"
     },
     "attendance": {
@@ -1187,6 +1255,18 @@
     "onboardingStepSyncSubscription": "Sync subscription to school project",
     "onboardingStepSyncSubscriptionHint": "Deploy refreshSchoolSubscriptions on the registry project, then call it with {} once (or pass this school id).",
     "onboardingStepFirstAdmin": "Create first school admin",
-    "onboardingStepFirstAdminHint": "In the school Firebase project: create Auth user, then users/{uid} with role admin, name, and email in Firestore."
+    "onboardingStepFirstAdminHint": "In the school Firebase project: create Auth user, then users/{uid} with role admin, name, and email in Firestore.",
+    "contactTitle": "Contact messages",
+    "contactSubtitle": "Inquiries from the public contact form",
+    "contactEmpty": "No messages yet",
+    "contactEmptyHint": "When visitors submit the contact form, copies appear here. They also open their email app to write to you directly.",
+    "contactLoadFailed": "Could not load contact messages",
+    "contactReply": "Reply",
+    "contactReplySubject": "Re: eduTrack inquiry",
+    "contactReplyFailed": "Could not open your email app.",
+    "contactDeleteTitle": "Delete message",
+    "contactDeleteMessage": "Remove the inquiry from {{name}}?",
+    "contactDeleted": "Message deleted.",
+    "contactDeleteFailed": "Could not delete the message."
   }
 }

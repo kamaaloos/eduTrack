@@ -9,9 +9,8 @@ import { useNotifications } from "../../hooks/useNotifications";
 export default function StudentNotifications() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
-  const { notifications, loading, markRead, markAllRead } = useNotifications(
-    user?.uid,
-  );
+  const { notifications, loading, markRead, markAllRead, remove } =
+    useNotifications(user?.uid);
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
@@ -44,6 +43,7 @@ export default function StudentNotifications() {
         loading={loading}
         onMarkRead={markRead}
         onMarkAllRead={markAllRead}
+        onDelete={remove}
         embedded
       />
     </StudentScreenShell>

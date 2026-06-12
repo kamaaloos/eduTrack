@@ -1,5 +1,6 @@
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { DashboardSlideRow } from "../dashboard/DashboardSlideRow";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
@@ -11,6 +12,25 @@ export function TeacherDashboardAnnouncementsSection({
   announcements,
 }: TeacherDashboardAnnouncementsSectionProps) {
   const { t } = useTranslation();
+
+  const openDetail = (item: {
+    id: string;
+    classId?: string;
+    title?: string;
+    text?: string;
+    message?: string;
+  }) => {
+    if (!item.classId) return;
+    router.push({
+      pathname: "/(teachers)/announcement-detail",
+      params: {
+        id: item.id,
+        classId: item.classId,
+        title: item.title || "",
+        body: item.text || item.message || "",
+      },
+    });
+  };
 
   return (
     <View style={styles.section}>
@@ -29,9 +49,11 @@ export function TeacherDashboardAnnouncementsSection({
           </View>
         ) : (
           announcements.map((item: any) => (
-            <View
+            <TouchableOpacity
               key={`${item.classId}-${item.id}`}
               style={styles.announcementCard}
+              activeOpacity={0.85}
+              onPress={() => openDetail(item)}
             >
               <Text style={styles.cardTitle} numberOfLines={2}>
                 {item.title || t("common.announcements")}
@@ -39,7 +61,8 @@ export function TeacherDashboardAnnouncementsSection({
               <Text style={styles.cardText} numberOfLines={4}>
                 {item.text || item.message || ""}
               </Text>
-            </View>
+              <Text style={styles.cardReadMore}>{t("common.readMore")}</Text>
+            </TouchableOpacity>
           ))
         )}
       </DashboardSlideRow>

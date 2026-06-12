@@ -247,6 +247,17 @@ service cloud.firestore {
           )
         );
       allow delete: if isAdmin();
+
+      match /dismissedContent/{contentId} {
+        allow read, delete: if request.auth.uid == userId;
+        allow create, update: if request.auth.uid == userId
+          && request.resource.data.type == "announcement"
+          && request.resource.data.classId is string
+          && request.resource.data.itemId is string
+          && request.resource.data.keys().hasOnly([
+            "type", "classId", "itemId", "dismissedAt"
+          ]);
+      }
     }
 
     /* ---------------- ATTENDANCE ---------------- */
@@ -468,7 +479,9 @@ service cloud.firestore {
           && request.resource.data.read == true
         );
 
-      allow delete: if isAdmin();
+      allow delete: if isAdmin()
+        || resource.data.targetUserId == request.auth.uid;
+
     }
 
     /* ---------------- CLASSES ---------------- */
@@ -634,6 +647,28 @@ service cloud.firestore {
     match /platform/subscription {
       allow read: if isSignedIn();
       allow write: if false;
+    }
+
+    /** Public marketing contact form — create only, validated fields. */
+    match /contactInquiries/{docId} {
+      allow create: if request.resource.data.keys().hasOnly([
+          'name', 'email', 'schoolName', 'message', 'language', 'createdAt'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 120
+        && request.resource.data.email is string
+        && request.resource.data.email.size() >= 5
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.schoolName is string
+        && request.resource.data.schoolName.size() <= 160
+        && request.resource.data.message is string
+        && request.resource.data.message.size() >= 10
+        && request.resource.data.message.size() <= 4000
+        && request.resource.data.language is string
+        && request.resource.data.language.size() <= 8
+        && request.resource.data.createdAt == request.time;
+      allow read, update, delete: if isSuperAdmin();
     }
 
     /**

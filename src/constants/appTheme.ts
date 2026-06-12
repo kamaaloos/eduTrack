@@ -23,6 +23,9 @@ export function copyrightFooterInset(
 export const APP_BUILDS_URL =
   "https://expo.dev/accounts/kamaaloos/projects/eduTrack/builds";
 
+/** Public contact form destination (also used as mailto fallback). */
+export const CONTACT_EMAIL = "mayle.aden@gmail.com";
+
 /** Screen content sits on AppScreenBackground — keep surfaces transparent. */
 export const APP_SCREEN_BACKGROUND = "transparent";
 

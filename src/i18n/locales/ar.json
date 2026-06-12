@@ -143,6 +143,41 @@
     "updatesWebOnly": "ثبّت APK على أندرويد لتلقي إشعارات التحديث.",
     "checkAgain": "تحقق مرة أخرى"
   },
+  "contact": {
+    "title": "اتصل بنا",
+    "heading": "تواصل معنا",
+    "subtitle": "أخبرنا عن مدرستك وسنساعدك على البدء مع eduTrack.",
+    "name": "اسمك",
+    "namePlaceholder": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "you@school.edu",
+    "schoolName": "اسم المدرسة",
+    "schoolNamePlaceholder": "اختياري",
+    "message": "الرسالة",
+    "messagePlaceholder": "كيف يمكننا مساعدتك؟",
+    "submit": "إرسال الرسالة",
+    "success": "شكراً لك! تم إرسال رسالتك.",
+    "successSavedAndMail": "تم حفظ رسالتك وفتح تطبيق البريد — أرسل البريد للتواصل معنا، أو سنتابع من النسخة المحفوظة.",
+    "mailClientOpened": "تم فتح تطبيق البريد مع رسالتك الموجهة إلينا.",
+    "mailSubject": "استفسار eduTrack من {{name}}",
+    "directEmail": "أو راسلنا مباشرة على {{email}}",
+    "errorName": "يرجى إدخال اسمك.",
+    "errorEmail": "يرجى إدخال بريد إلكتروني صالح.",
+    "errorMessage": "يرجى إدخال رسالة (10 أحرف على الأقل).",
+    "errorSubmit": "تعذر إرسال رسالتك. حاول مرة أخرى أو راسلنا مباشرة."
+  },
+  "download": {
+    "title": "تحميل التطبيق",
+    "heading": "حمّل eduTrack",
+    "subtitle": "ثبّت تطبيق الجوال للطلاب والمعلمين وأولياء الأمور وإدارة المدرسة.",
+    "googlePlayEyebrow": "احصل عليه من",
+    "googlePlayTitle": "Google Play",
+    "appStoreEyebrow": "حمّل من",
+    "appStoreTitle": "App Store",
+    "comingSoon": "قريباً",
+    "appStorePendingHint": "سيظهر رابط App Store هنا بعد نشر التطبيق.",
+    "openFailed": "تعذر فتح رابط المتجر."
+  },
   "onboarding": {
     "skipA11y": "تخطّي التعريف",
     "languageHint": "اختر اللغة التي تفضّلها. يمكنك تغييرها لاحقًا من الإعدادات.",
@@ -265,6 +300,36 @@
   },
   "index": {
     "loading": "جارٍ التحميل…"
+  },
+  "landing": {
+    "brandName": "eduTrack",
+    "brandTag": "منصة إدارة المدارس",
+    "heroBadge": "منصة EduTrack",
+    "heroTitlePrefix": "المركز المدرسي المتصل لـ",
+    "heroTitleHighlight": "كل الأدوار",
+    "heroSubtitle": "الواجبات والامتحانات والحضور وبطاقات التقرير والتواصل مع أولياء الأمور — في منصة آمنة واحدة للطلاب والمعلمين وأولياء الأمور وإدارة المدرسة.",
+    "openWebApp": "فتح تطبيق eduTrack على الويب",
+    "downloadApp": "تحميل تطبيق الجوال",
+    "signIn": "تسجيل الدخول",
+    "getStarted": "ابدأ الآن",
+    "navFeatures": "الميزات",
+    "contactUs": "اتصل بنا",
+    "utilityTagline": "إدارة مدرسية آمنة لكل دور",
+    "trustLine": "منصة واحدة لمجتمع مدرستك بالكامل",
+    "infrastructureTitle": "عمليات المدرسة ليست جداول بيانات. إنها بنية تحتية.",
+    "heroRating": "مصمم للمدارس الحديثة",
+    "featuresTitle": "مصمم لمدرستك بأكملها",
+    "featuresHint": "منصة واحدة وتجربة مخصصة لكل دور.",
+    "featureStudentsTitle": "الطلاب",
+    "featureStudentsBody": "لوحة تحكم، واجبات، امتحانات، حضور، رسائل وبطاقات تقرير في مكان واحد.",
+    "featureTeachersTitle": "المعلمون",
+    "featureTeachersBody": "تسجيل الحضور، نشر المحتوى الأكاديمي، تقييم الامتحانات ومراسلة الصفوف.",
+    "featureParentsTitle": "أولياء الأمور",
+    "featureParentsBody": "متابعة تقدم كل طفل، الرد على الغياب، واستلام تحديثات المدرسة.",
+    "featureAdminsTitle": "الإدارة",
+    "featureAdminsBody": "إدارة المستخدمين والصفوف والجداول والتحليلات والإعلانات المدرسية.",
+    "promoVideoAria": "فيديو ترويجي لمنصة EduTrack",
+    "copyright": "© 2026 - تطبيق MayleSoft المدرسي — eng. Hasan Kamaal."
   },
   "tabs": {
     "teacher": {
@@ -1149,6 +1214,18 @@
     "onboardingStepSyncSubscription": "مزامنة الاشتراك مع مشروع المدرسة",
     "onboardingStepSyncSubscriptionHint": "انشر refreshSchoolSubscriptions على مشروع السجل ثم استدعها بـ {}.",
     "onboardingStepFirstAdmin": "إنشاء أول مسؤول للمدرسة",
-    "onboardingStepFirstAdminHint": "في مشروع المدرسة: أنشئ مستخدم Auth ثم users/{uid} بدور admin في Firestore."
+    "onboardingStepFirstAdminHint": "في مشروع المدرسة: أنشئ مستخدم Auth ثم users/{uid} بدور admin في Firestore.",
+    "contactTitle": "رسائل التواصل",
+    "contactSubtitle": "استفسارات من نموذج التواصل العام",
+    "contactEmpty": "لا توجد رسائل بعد",
+    "contactEmptyHint": "عند إرسال الزوار نموذج التواصل، تظهر نسخة هنا. كما يُفتح تطبيق البريد لديهم للمراسلة المباشرة.",
+    "contactLoadFailed": "تعذر تحميل رسائل التواصل",
+    "contactReply": "رد",
+    "contactReplySubject": "Re: استفسار eduTrack",
+    "contactReplyFailed": "تعذر فتح تطبيق البريد.",
+    "contactDeleteTitle": "حذف الرسالة",
+    "contactDeleteMessage": "إزالة استفسار {{name}}؟",
+    "contactDeleted": "تم حذف الرسالة.",
+    "contactDeleteFailed": "تعذر حذف الرسالة."
   }
 }

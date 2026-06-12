@@ -48,6 +48,12 @@ export function useSuperAdminSideMenuItems(): AdminSideMenuItem[] {
         onPress: () => router.push("/(super-admin)/school-form" as never),
       },
       {
+        key: "contact-inquiries",
+        label: t("superAdmin.contactTitle"),
+        icon: "mail-outline",
+        onPress: () => router.push("/(super-admin)/contact-inquiries" as never),
+      },
+      {
         key: "logout",
         label: t("common.logout"),
         icon: "log-out-outline",

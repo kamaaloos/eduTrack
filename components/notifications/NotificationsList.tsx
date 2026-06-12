@@ -10,6 +10,8 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SwipeToDeleteRow } from "../common/SwipeToDeleteRow";
+import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import {
   NOTIFICATION_TYPE_LABELS,
   type AppNotification,
@@ -23,6 +25,7 @@ type NotificationsListProps = {
   loading?: boolean;
   onMarkRead: (id: string) => void;
   onMarkAllRead: () => void;
+  onDelete: (id: string) => void;
   onRefresh?: () => void;
   refreshing?: boolean;
   /** Hide built-in header when wrapped in a screen shell. */
@@ -56,6 +59,7 @@ export function NotificationsList({
   loading = false,
   onMarkRead,
   onMarkAllRead,
+  onDelete,
   onRefresh,
   refreshing = false,
   embedded = false,
@@ -104,28 +108,34 @@ export function NotificationsList({
             </View>
           ) : (
             notifications.map((item) => (
-              <TouchableOpacity
+              <SwipeToDeleteRow
                 key={item.id}
-                style={[styles.card, !item.read && styles.cardUnread]}
-                activeOpacity={0.85}
-                onPress={() => {
-                  if (!item.read) onMarkRead(item.id);
-                }}
+                onDelete={() => onDelete(item.id)}
               >
-                <View style={styles.cardTop}>
-                  <View style={styles.typePill}>
-                    <Text style={styles.typePillText}>
-                      {NOTIFICATION_TYPE_LABELS[item.type] ?? item.type}
-                    </Text>
+                <TouchableOpacity
+                  style={[styles.card, !item.read && styles.cardUnread]}
+                  activeOpacity={0.85}
+                  onPress={() => {
+                    if (!item.read) onMarkRead(item.id);
+                  }}
+                >
+                  <View style={styles.cardTop}>
+                    <View style={styles.typePill}>
+                      <Text style={styles.typePillText}>
+                        {NOTIFICATION_TYPE_LABELS[item.type] ?? item.type}
+                      </Text>
+                    </View>
+                    {!item.read ? <View style={styles.unreadDot} /> : null}
                   </View>
-                  {!item.read ? <View style={styles.unreadDot} /> : null}
-                </View>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardMessage}>{item.message}</Text>
-                {item.createdAt ? (
-                  <Text style={styles.cardTime}>{formatWhen(item.createdAt)}</Text>
-                ) : null}
-              </TouchableOpacity>
+                  <Text style={styles.cardTitle}>{item.title}</Text>
+                  <Text style={styles.cardMessage}>{item.message}</Text>
+                  {item.createdAt ? (
+                    <Text style={styles.cardTime}>
+                      {formatWhen(item.createdAt)}
+                    </Text>
+                  ) : null}
+                </TouchableOpacity>
+              </SwipeToDeleteRow>
             ))
           )}
         </ScrollView>
@@ -167,10 +177,12 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 16,
     paddingTop: 4,
+    alignItems: "center",
   },
   listEmbedded: {
     paddingHorizontal: 0,
     paddingTop: 0,
+    alignItems: "center",
   },
   centered: {
     flex: 1,
@@ -203,6 +215,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    width: "100%",
+    maxWidth: STUDENT_LIST_MAX_WIDTH,
+    alignSelf: "center",
   },
   cardUnread: {
     borderColor: "#93C5FD",

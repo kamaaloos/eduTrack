@@ -44,6 +44,7 @@ export default function SuperAdminLayout() {
           <Stack.Screen name="schools" />
           <Stack.Screen name="school/[id]" />
           <Stack.Screen name="school-form" />
+          <Stack.Screen name="contact-inquiries" />
         </Stack>
       </RoleAppFrame>
     </SuperAdminGate>

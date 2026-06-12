@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 
 export type TeacherAnnouncement = {
@@ -58,4 +58,12 @@ export async function loadAnnouncementsForTeacher(
   return results.sort(
     (a, b) => toMillis(b.createdAt) - toMillis(a.createdAt),
   );
+}
+
+export async function deleteClassAnnouncement(
+  classId: string,
+  announcementId: string,
+): Promise<void> {
+  if (!db) return;
+  await deleteDoc(doc(db, "classes", classId, "announcements", announcementId));
 }

@@ -26,6 +26,7 @@ const TEACHER_STACK_SCREENS = [
   "remarks",
   "notifications",
   "student-report/[studentId]",
+  "announcement-detail",
 ] as const;
 
 /** Web: one screen at a time (tabs keep all routes mounted → dashboard bleeds through). */

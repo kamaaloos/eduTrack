@@ -15,7 +15,12 @@ export default function Root({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
-        <meta name="theme-color" content="#FFFFFF" />
+        <meta name="theme-color" content="#6B9FD4" />
+        <meta
+          name="description"
+          content="EduTrack Platform — school management for students, teachers, parents, and administrators. Homework, exams, attendance, and report cards in one app."
+        />
+        <title>EduTrack Platform</title>
         <ScrollViewStyleReset />
         <style
           dangerouslySetInnerHTML={{

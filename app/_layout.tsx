@@ -2,6 +2,7 @@ import "react-native-gesture-handler";
 import "../src/i18n";
 import { Stack } from "expo-router";
 import { Platform } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WebAppShell } from "../components/layout/WebAppShell";
 import { WebIconFontGate } from "../components/layout/WebIconFontGate";
@@ -17,34 +18,36 @@ import { SuperAdminAuthProvider } from "../src/context/superAdminAuthContext";
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <LanguageProvider>
-        <FirebaseBootstrapGate>
-          <SchoolProvider>
-            <WebAppShell>
-              <WebIconFontGate>
-              <BrandedSplashGate>
-              <ErrorBoundary>
-                <SuperAdminAuthProvider>
-                  <AuthProvider>
-                    <DeferredPushNotificationsSetup />
-                    <MustChangePasswordGate>
-                      <Stack
-                        screenOptions={{
-                          headerShown: false,
-                          animation: Platform.OS === "android" ? "fade" : "default",
-                        }}
-                      />
-                    </MustChangePasswordGate>
-                  </AuthProvider>
-                </SuperAdminAuthProvider>
-              </ErrorBoundary>
-              </BrandedSplashGate>
-              </WebIconFontGate>
-            </WebAppShell>
-          </SchoolProvider>
-        </FirebaseBootstrapGate>
-      </LanguageProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <LanguageProvider>
+          <FirebaseBootstrapGate>
+            <SchoolProvider>
+              <WebAppShell>
+                <WebIconFontGate>
+                <BrandedSplashGate>
+                <ErrorBoundary>
+                  <SuperAdminAuthProvider>
+                    <AuthProvider>
+                      <DeferredPushNotificationsSetup />
+                      <MustChangePasswordGate>
+                        <Stack
+                          screenOptions={{
+                            headerShown: false,
+                            animation: Platform.OS === "android" ? "fade" : "default",
+                          }}
+                        />
+                      </MustChangePasswordGate>
+                    </AuthProvider>
+                  </SuperAdminAuthProvider>
+                </ErrorBoundary>
+                </BrandedSplashGate>
+                </WebIconFontGate>
+              </WebAppShell>
+            </SchoolProvider>
+          </FirebaseBootstrapGate>
+        </LanguageProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

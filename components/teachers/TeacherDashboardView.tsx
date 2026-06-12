@@ -66,9 +66,9 @@ export function TeacherDashboardView({
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <TeacherDashboardQuickActions />
+        <TeacherDashboardQuickActions pendingAbsenceCount={pendingAbsenceCount} />
 
-        <TeacherDashboardBanners />
+        <TeacherDashboardBanners pendingAbsenceCount={pendingAbsenceCount} />
 
         <View style={styles.section}>
           <TeacherDashboardStats

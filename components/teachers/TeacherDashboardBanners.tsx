@@ -4,7 +4,13 @@ import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
-export function TeacherDashboardBanners() {
+type TeacherDashboardBannersProps = {
+  pendingAbsenceCount?: number;
+};
+
+export function TeacherDashboardBanners({
+  pendingAbsenceCount = 0,
+}: TeacherDashboardBannersProps) {
   const { t } = useTranslation();
 
   return (
@@ -33,6 +39,11 @@ export function TeacherDashboardBanners() {
         onPress={() => router.push("/(teachers)/absence-reports")}
         activeOpacity={0.85}
       >
+        {pendingAbsenceCount > 0 ? (
+          <View style={styles.actionBadge}>
+            <Text style={styles.actionBadgeText}>{pendingAbsenceCount}</Text>
+          </View>
+        ) : null}
         <View style={[styles.linkBannerIcon, { backgroundColor: "#EFF6FF" }]}>
           <Ionicons name="medkit-outline" size={22} color="#1E3A8A" />
         </View>

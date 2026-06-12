@@ -8,9 +8,8 @@ import { AuthContext } from "../../src/context/authContext";
 export default function AdminNotifications() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
-  const { notifications, loading, markRead, markAllRead } = useNotifications(
-    user?.uid,
-  );
+  const { notifications, loading, markRead, markAllRead, remove } =
+    useNotifications(user?.uid);
 
   return (
     <AdminScreenShell title={t("admin.notificationsTitle")} showBack>
@@ -20,6 +19,7 @@ export default function AdminNotifications() {
         loading={loading}
         onMarkRead={markRead}
         onMarkAllRead={markAllRead}
+        onDelete={remove}
       />
     </AdminScreenShell>
   );

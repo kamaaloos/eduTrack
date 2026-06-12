@@ -143,6 +143,41 @@
     "updatesWebOnly": "Rakib APK Android si aad u hesho ogeysiisyada cusbooneysiga.",
     "checkAgain": "Mar kale hubi"
   },
+  "contact": {
+    "title": "Nala soo xiriir",
+    "heading": "Nala soo xiriir",
+    "subtitle": "Noo sheeg dugsigaaga waxaanan kaa caawin doonnaa inaad bilowdo eduTrack.",
+    "name": "Magacaaga",
+    "namePlaceholder": "Magaca oo dhan",
+    "email": "Iimaylka",
+    "emailPlaceholder": "you@school.edu",
+    "schoolName": "Magaca dugsiga",
+    "schoolNamePlaceholder": "Ikhtiyaari",
+    "message": "Fariinta",
+    "messagePlaceholder": "Sidee kuu caawin karnaa?",
+    "submit": "Dir fariinta",
+    "success": "Mahadsanid! Fariintaada waa la diray.",
+    "successSavedAndMail": "Fariintaada waa la kaydiyay app-ka iimaylkana waa la furay — dir iimaylka si aad noogu soo xiriirto, ama waan ka jawaabi doonnaa nuqulka la kaydiyay.",
+    "mailClientOpened": "App-ka iimaylka ayaa la furay fariintaada oo loo dirayo.",
+    "mailSubject": "Su'aal eduTrack oo ka timid {{name}}",
+    "directEmail": "Ama noo soo dir iimayl toos ah: {{email}}",
+    "errorName": "Fadlan geli magacaaga.",
+    "errorEmail": "Fadlan geli iimayl sax ah.",
+    "errorMessage": "Fadlan qor fariin (ugu yaraan 10 xaraf).",
+    "errorSubmit": "Fariinta lama diri karin. Isku day mar kale ama noo soo dir iimayl toos ah."
+  },
+  "download": {
+    "title": "Soo deji app-ka",
+    "heading": "Soo deji eduTrack",
+    "subtitle": "Ku rakib app-ka mobilka ardayda, macallimiinta, waalidiinta iyo maamulka dugsiga.",
+    "googlePlayEyebrow": "Ka hel",
+    "googlePlayTitle": "Google Play",
+    "appStoreEyebrow": "Ka soo deji",
+    "appStoreTitle": "App Store",
+    "comingSoon": "Dhawaan",
+    "appStorePendingHint": "Linkiga App Store halkan ayuu ka muuqan doonaa marka app-ka la daabaco.",
+    "openFailed": "Linkiga dukaanka lama furi karin."
+  },
   "onboarding": {
     "skipA11y": "Ka bood hordhaca",
     "languageHint": "Dooro luqadda aad doorbidayso. Waxaad ka beddeli kartaa goobaha dambe.",
@@ -265,6 +300,36 @@
   },
   "index": {
     "loading": "Waa la soo rarayaa…"
+  },
+  "landing": {
+    "brandName": "eduTrack",
+    "brandTag": "Madalada maaraynta dugsiga",
+    "heroBadge": "Madaladda EduTrack",
+    "heroTitlePrefix": "Xarunta isku-xirka dugsiga ee",
+    "heroTitleHighlight": "door kasta",
+    "heroSubtitle": "Shaqada guriga, imtixaannada, imaanshaha, warbixinnada iyo xiriirka waalidka — hal madal ammaan ah ardayda, macallimiinta, waalidiinta iyo maamulka dugsiga.",
+    "openWebApp": "Fur eduTrack web-ka",
+    "downloadApp": "Soo deji app-ka mobilka",
+    "signIn": "Gal",
+    "getStarted": "Bilow",
+    "navFeatures": "Astaamaha",
+    "contactUs": "Nala soo xiriir",
+    "utilityTagline": "Maamul dugsiga oo ammaan ah door kasta",
+    "trustLine": "Hal madal bulshada dugsigaaga oo dhan",
+    "infrastructureTitle": "Hawlgallada dugsigu ma aha shax. Waa kaab-dhismeed.",
+    "heroRating": "Loogu talagalay dugsiyada casriga ah",
+    "featuresTitle": "Loogu talagalay dugsigaaga oo dhan",
+    "featuresHint": "Hal madal, khibrad u gaar ah door kasta.",
+    "featureStudentsTitle": "Ardayda",
+    "featureStudentsBody": "Dashboard, shaqo guri, imtixaan, imaansho, fariimo iyo warbixin hal meel.",
+    "featureTeachersTitle": "Macallimiinta",
+    "featureTeachersBody": "Calamaadi imaanshaha, daabac waxbarasho, qiimee imtixaannada oo fariin u dir fasallada.",
+    "featureParentsTitle": "Waalidiinta",
+    "featureParentsBody": "La soco horumarka ilmaha, ka jawaab maqnaanshaha, hel wararka dugsiga.",
+    "featureAdminsTitle": "Maamulka",
+    "featureAdminsBody": "Maamul isticmaaleyaal, fasallo, jadwal, falanqayn iyo ogeysiisyada dugsiga.",
+    "promoVideoAria": "Fiidiyowga EduTrack",
+    "copyright": "© 2026 - App-ka dugsiga MayleSoft — eng. Hasan Kamaal."
   },
   "tabs": {
     "teacher": {
@@ -1149,6 +1214,18 @@
     "onboardingStepSyncSubscription": "Isku xidh rukhsadda mashruuca dugsiga",
     "onboardingStepSyncSubscriptionHint": "Deploy refreshSchoolSubscriptions mashruuca diiwaanka ka dibna wac {}.",
     "onboardingStepFirstAdmin": "Samee maamulaha ugu horreeya ee dugsiga",
-    "onboardingStepFirstAdminHint": "Mashruuca dugsiga: samee Auth user ka dibna users/{uid} role admin."
+    "onboardingStepFirstAdminHint": "Mashruuca dugsiga: samee Auth user ka dibna users/{uid} role admin.",
+    "contactTitle": "Fariimaha xiriirka",
+    "contactSubtitle": "Su'aalaha foomka xiriirka dadweynaha",
+    "contactEmpty": "Weli ma jiraan fariimo",
+    "contactEmptyHint": "Marka booqdayaashu diraan foomka, nuqul ayaa halkan ka muuqda. App-ka iimaylkooda sidoo kale waa la furaa si ay toos kuu soo qoraan.",
+    "contactLoadFailed": "Fariimaha xiriirka lama soo rarin karin",
+    "contactReply": "Ka jawaab",
+    "contactReplySubject": "Re: su'aal eduTrack",
+    "contactReplyFailed": "App-ka iimaylka lama furi karin.",
+    "contactDeleteTitle": "Tirtir fariinta",
+    "contactDeleteMessage": "Ka saar su'aasha {{name}}?",
+    "contactDeleted": "Fariinta waa la tirtiray.",
+    "contactDeleteFailed": "Fariinta lama tirtiri karin."
   }
 }

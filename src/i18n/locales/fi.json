@@ -143,6 +143,41 @@
     "updatesWebOnly": "Asenna Android-APK saadaksesi päivitysilmoituksia.",
     "checkAgain": "Tarkista uudelleen"
   },
+  "contact": {
+    "title": "Ota yhteyttä",
+    "heading": "Ota yhteyttä",
+    "subtitle": "Kerro koulustasi — autamme sinut alkuun eduTrackin kanssa.",
+    "name": "Nimesi",
+    "namePlaceholder": "Koko nimi",
+    "email": "Sähköposti",
+    "emailPlaceholder": "you@school.edu",
+    "schoolName": "Koulun nimi",
+    "schoolNamePlaceholder": "Valinnainen",
+    "message": "Viesti",
+    "messagePlaceholder": "Miten voimme auttaa?",
+    "submit": "Lähetä viesti",
+    "success": "Kiitos! Viestisi on lähetetty.",
+    "successSavedAndMail": "Viestisi tallennettiin ja sähköpostisovellus avattiin — lähetä viesti tai otamme yhteyttä tallennetun kopion perusteella.",
+    "mailClientOpened": "Sähköpostisovellus avattiin viestilläsi osoitteeseemme.",
+    "mailSubject": "eduTrack-kysely henkilöltä {{name}}",
+    "directEmail": "Tai lähetä sähköpostia suoraan: {{email}}",
+    "errorName": "Anna nimesi.",
+    "errorEmail": "Anna kelvollinen sähköpostiosoite.",
+    "errorMessage": "Kirjoita viesti (vähintään 10 merkkiä).",
+    "errorSubmit": "Viestin lähetys epäonnistui. Yritä uudelleen tai lähetä sähköpostia suoraan."
+  },
+  "download": {
+    "title": "Lataa sovellus",
+    "heading": "Lataa eduTrack",
+    "subtitle": "Asenna mobiilisovellus opiskelijoille, opettajille, vanhemmille ja koulun hallinnolle.",
+    "googlePlayEyebrow": "Hae",
+    "googlePlayTitle": "Google Playsta",
+    "appStoreEyebrow": "Lataa",
+    "appStoreTitle": "App Storesta",
+    "comingSoon": "Tulossa pian",
+    "appStorePendingHint": "App Store -linkki näkyy täällä, kun sovellus on julkaistu.",
+    "openFailed": "Kaupan linkkiä ei voitu avata."
+  },
   "onboarding": {
     "skipA11y": "Ohita esittely",
     "languageHint": "Valitse haluamasi kieli. Voit vaihtaa sen myöhemmin asetuksista.",
@@ -265,6 +300,36 @@
   },
   "index": {
     "loading": "Ladataan…"
+  },
+  "landing": {
+    "brandName": "eduTrack",
+    "brandTag": "Koulun hallinta-alusta",
+    "heroBadge": "EduTrack-alusta",
+    "heroTitlePrefix": "Yhtenäinen koulun keskus",
+    "heroTitleHighlight": "jokaiselle roolille",
+    "heroSubtitle": "Kotitehtävät, kokeet, läsnäolo, opintotodistukset ja viestintä vanhempien kanssa — yhdessä turvallisessa alustassa opiskelijoille, opettajille, vanhemmille ja koulun hallinnolle.",
+    "openWebApp": "Avaa eduTrack-verkkosovellus",
+    "downloadApp": "Lataa mobiilisovellus",
+    "signIn": "Kirjaudu sisään",
+    "getStarted": "Aloita",
+    "navFeatures": "Ominaisuudet",
+    "contactUs": "Ota yhteyttä",
+    "utilityTagline": "Turvallinen koulun hallinta jokaiselle roolille",
+    "trustLine": "Yksi alusta koko kouluyhteisöllesi",
+    "infrastructureTitle": "Koulun toiminnot eivät ole taulukoita. Ne ovat infrastruktuuria.",
+    "heroRating": "Rakennettu nykyaikaisille kouluille",
+    "featuresTitle": "Koko koululle",
+    "featuresHint": "Yksi alusta, räätälöity kokemus jokaiselle roolille.",
+    "featureStudentsTitle": "Opiskelijat",
+    "featureStudentsBody": "Kojelauta, kotitehtävät, kokeet, läsnäolo, viestit ja opintotodistukset yhdessä paikassa.",
+    "featureTeachersTitle": "Opettajat",
+    "featureTeachersBody": "Merkitse läsnäolo, julkaise oppisisältöä, arvioi kokeita ja viesti luokille.",
+    "featureParentsTitle": "Vanhemmat",
+    "featureParentsBody": "Seuraa lapsen edistymistä, vastaa poissaoloihin ja vastaanota koulun päivityksiä.",
+    "featureAdminsTitle": "Hallinto",
+    "featureAdminsBody": "Hallitse käyttäjiä, luokkia, aikatauluja, analytiikkaa ja koulun ilmoituksia.",
+    "promoVideoAria": "EduTrack-alustan esittelyvideo",
+    "copyright": "© 2026 - MayleSoft koulusovellus — eng. Hasan Kamaal."
   },
   "tabs": {
     "teacher": {
@@ -1149,6 +1214,18 @@
     "onboardingStepSyncSubscription": "Synkronoi tilaus koulun projektiin",
     "onboardingStepSyncSubscriptionHint": "Julkaise refreshSchoolSubscriptions rekisteriprojektiin ja kutsu {}.",
     "onboardingStepFirstAdmin": "Luo ensimmäinen koulun ylläpitäjä",
-    "onboardingStepFirstAdminHint": "Koulun projektissa: luo Auth-käyttäjä ja users/{uid} roolilla admin."
+    "onboardingStepFirstAdminHint": "Koulun projektissa: luo Auth-käyttäjä ja users/{uid} roolilla admin.",
+    "contactTitle": "Yhteydenottoviestit",
+    "contactSubtitle": "Yhteydenotot julkisesta lomakkeesta",
+    "contactEmpty": "Ei viestejä vielä",
+    "contactEmptyHint": "Kun vierailijat lähettävät lomakkeen, kopiot näkyvät täällä. Heidän sähköpostisovelluksensa avautuu myös suoraan viestiä varten.",
+    "contactLoadFailed": "Yhteydenottoviestejä ei voitu ladata",
+    "contactReply": "Vastaa",
+    "contactReplySubject": "Re: eduTrack-kysely",
+    "contactReplyFailed": "Sähköpostisovellusta ei voitu avata.",
+    "contactDeleteTitle": "Poista viesti",
+    "contactDeleteMessage": "Poistetaanko viesti henkilöltä {{name}}?",
+    "contactDeleted": "Viesti poistettu.",
+    "contactDeleteFailed": "Viestiä ei voitu poistaa."
   }
 }

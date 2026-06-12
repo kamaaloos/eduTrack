@@ -14,6 +14,8 @@ npm run web
 
 Opens the dev server (default `http://localhost:8081`). Press `w` in the Expo terminal if it does not open automatically.
 
+On **web**, unsigned visitors land on **`/landing`** — a marketing hero with links to sign in or download the mobile app. Signed-in users are routed to their role dashboard as on mobile.
+
 Alternative:
 
 ```bash

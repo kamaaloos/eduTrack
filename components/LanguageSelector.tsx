@@ -7,36 +7,59 @@ type LanguageSelectorProps = {
   compact?: boolean;
   title?: string;
   showTitle?: boolean;
+  variant?: "default" | "nav";
 };
 
 export function LanguageSelector({
   compact,
   title,
   showTitle = true,
+  variant = "default",
 }: LanguageSelectorProps) {
   const { t } = useTranslation();
   const { language, setLanguage, languages } = useLanguage();
 
+  const isNav = variant === "nav";
+
   return (
-    <View style={[styles.wrap, compact && styles.wrapCompact]}>
+    <View
+      style={[
+        styles.wrap,
+        compact && styles.wrapCompact,
+        isNav && styles.wrapNav,
+      ]}
+    >
       {showTitle ? (
         title ? (
-          <Text style={styles.title}>{title}</Text>
+          <Text style={[styles.title, isNav && styles.titleNav]}>{title}</Text>
         ) : (
-          <Text style={styles.title}>{t("language.choose")}</Text>
+          <Text style={[styles.title, isNav && styles.titleNav]}>
+            {t("language.choose")}
+          </Text>
         )
       ) : null}
-      <View style={styles.row}>
+      <View style={[styles.row, isNav && styles.rowNav]}>
         {languages.map((item) => {
           const active = language === item.code;
           return (
             <TouchableOpacity
               key={item.code}
-              style={[styles.chip, active && styles.chipActive]}
+              style={[
+                styles.chip,
+                isNav && styles.chipNav,
+                active && styles.chipActive,
+                isNav && active && styles.chipNavActive,
+              ]}
               onPress={() => void setLanguage(item.code as AppLanguage)}
               accessibilityLabel={t(item.labelKey)}
             >
-              <Text style={[styles.chipText, active && styles.chipTextActive]}>
+              <Text
+                style={[
+                  styles.chipText,
+                  isNav && styles.chipTextNav,
+                  active && styles.chipTextActive,
+                ]}
+              >
                 {item.nativeName}
               </Text>
             </TouchableOpacity>
@@ -55,6 +78,10 @@ const styles = StyleSheet.create({
   wrapCompact: {
     marginTop: 8,
   },
+  wrapNav: {
+    marginTop: 0,
+    marginBottom: 0,
+  },
   title: {
     fontSize: 14,
     fontWeight: "700",
@@ -62,11 +89,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
   },
+  titleNav: {
+    marginBottom: 6,
+    fontSize: 12,
+  },
   row: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
     gap: 8,
+  },
+  rowNav: {
+    gap: 6,
   },
   chip: {
     paddingHorizontal: 14,
@@ -76,14 +110,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
+  chipNav: {
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 999,
+    backgroundColor: "#FFFFFF",
+    borderColor: "#E2E8F0",
+  },
   chipActive: {
     backgroundColor: "#1E3A8A",
     borderColor: "#1E3A8A",
+  },
+  chipNavActive: {
+    backgroundColor: "#0F172A",
+    borderColor: "#0F172A",
   },
   chipText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#334155",
+  },
+  chipTextNav: {
+    fontSize: 12,
   },
   chipTextActive: {
     color: "#FFFFFF",

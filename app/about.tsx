@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -21,6 +22,7 @@ import { AppLogo } from "../components/AppLogo";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { useAppUpdateCheck } from "../hooks/useAppUpdateCheck";
 import { copyrightFooterInset } from "../src/constants/appTheme";
+import { WEB_AUTH_MAX_WIDTH } from "../src/constants/webLayout";
 import {
   getAppBuildNumber,
   getAppVersion,
@@ -138,32 +140,40 @@ export default function AboutScreen() {
           ]}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.hero}>
-            <AppLogo size={112} />
-            <Text style={styles.appName}>{t("about.appName")}</Text>
-            <Text style={styles.tagline}>{t("about.tagline")}</Text>
-          </View>
+          <View style={styles.pageColumn}>
+            <View style={styles.mainCard}>
+              <View style={styles.hero}>
+                <AppLogo size={96} />
+                <Text style={styles.appName}>{t("about.appName")}</Text>
+                <Text style={styles.tagline}>{t("about.tagline")}</Text>
+              </View>
 
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>{t("about.appInfo")}</Text>
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>{t("common.version")}</Text>
-              <Text style={styles.rowValue}>{getAppVersion()}</Text>
+              <View style={styles.section}>
+                <Text style={styles.cardTitle}>{t("about.appInfo")}</Text>
+                <View style={styles.row}>
+                  <Text style={styles.rowLabel}>{t("common.version")}</Text>
+                  <Text style={styles.rowValue}>{getAppVersion()}</Text>
+                </View>
+                <View style={[styles.row, styles.rowLast]}>
+                  <Text style={styles.rowLabel}>{t("about.build")}</Text>
+                  <Text style={styles.rowValue}>{getAppBuildNumber()}</Text>
+                </View>
+                <Text style={styles.hintText}>{t("about.versionHint")}</Text>
+              </View>
+
+              <View style={styles.sectionDivider} />
+
+              <View style={styles.section}>
+                <LanguageSelector compact title={t("about.language")} showTitle />
+              </View>
+
+              <View style={styles.sectionDivider} />
+
+              <View style={styles.section}>
+                <Text style={styles.cardTitle}>{t("about.updatesTitle")}</Text>
+                {renderUpdateSection()}
+              </View>
             </View>
-            <View style={[styles.row, styles.rowLast]}>
-              <Text style={styles.rowLabel}>{t("about.build")}</Text>
-              <Text style={styles.rowValue}>{getAppBuildNumber()}</Text>
-            </View>
-            <Text style={styles.hintText}>{t("about.versionHint")}</Text>
-          </View>
-
-          <View style={styles.card}>
-            <LanguageSelector title={t("about.language")} showTitle />
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>{t("about.updatesTitle")}</Text>
-            {renderUpdateSection()}
           </View>
         </ScrollView>
       </View>
@@ -177,12 +187,39 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   content: {
+    paddingHorizontal: 20,
+    alignItems: "center",
+  },
+  pageColumn: {
+    width: "100%",
+    maxWidth: WEB_AUTH_MAX_WIDTH,
+    alignSelf: "center",
+  },
+  mainCard: {
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 24,
     paddingHorizontal: 24,
+    paddingVertical: 28,
+    borderWidth: 1,
+    borderColor: "#EEF2F7",
+    ...(Platform.OS === "web"
+      ? ({
+          boxShadow:
+            "0 16px 48px rgba(15, 23, 42, 0.1), 0 4px 16px rgba(15, 23, 42, 0.06)",
+        } as object)
+      : {
+          elevation: 6,
+          shadowColor: "#0F172A",
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.12,
+          shadowRadius: 16,
+        }),
   },
   hero: {
     alignItems: "center",
-    marginBottom: 24,
-    gap: 14,
+    marginBottom: 8,
+    gap: 10,
   },
   appName: {
     fontSize: 28,
@@ -190,19 +227,18 @@ const styles = StyleSheet.create({
     color: "#0C4A6E",
   },
   tagline: {
-    marginTop: 8,
     fontSize: 15,
     lineHeight: 22,
     color: "#64748B",
     textAlign: "center",
+    maxWidth: 360,
   },
-  card: {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    borderRadius: 18,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.85)",
+  section: {
+    paddingVertical: 20,
+  },
+  sectionDivider: {
+    height: 1,
+    backgroundColor: "#EEF2F7",
   },
   cardTitle: {
     fontSize: 16,

@@ -129,7 +129,7 @@ export function useTeacherDashboardData() {
   useFirestoreListenerEffect(() => {
     if (!user?.uid || !db || !schoolKey || classIds.length === 0) return;
 
-    return classIds.map((classId) =>
+    const unsubs = classIds.flatMap((classId) => [
       onSnapshot(
         query(
           collection(db, "studentClasses"),
@@ -141,8 +141,22 @@ export function useTeacherDashboardData() {
           console.error("studentClasses listener:", err);
         },
       ),
-    );
-  }, [user?.uid, classIds, scheduleReload, schoolKey]);
+      onSnapshot(
+        collection(db, "classes", classId, "announcements"),
+        () => {
+          void reloadAnnouncements();
+        },
+        (err) => {
+          if (isIgnorableFirestoreListenerError(err)) return;
+          console.error("announcements listener:", err);
+        },
+      ),
+    ]);
+
+    return () => {
+      unsubs.forEach((unsub) => unsub());
+    };
+  }, [user?.uid, classIds, scheduleReload, reloadAnnouncements, schoolKey]);
 
   useEffect(() => {
     return () => {

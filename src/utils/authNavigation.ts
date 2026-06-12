@@ -4,10 +4,12 @@ import { userMustChangePassword } from "./mustChangePassword";
 export const CHANGE_PASSWORD_ROUTE = "/change-password";
 
 const PUBLIC_ENTRY_SEGMENTS = new Set([
+  "landing",
   "onboarding",
   "select-school",
   "login",
   "super-admin",
+  "about",
 ]);
 
 export function isPublicEntrySegment(segment: string | undefined): boolean {

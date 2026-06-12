@@ -6,19 +6,28 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../src/services/firebase";
+import { AuthContext } from "../../src/context/authContext";
 import { hasParentAttendanceResponse } from "../../src/services/parentAttendanceResponse";
 import {
   getAbsenceReasonLabel,
   getAttendanceStatusLabel,
 } from "../../src/utils/attendanceLabels";
+import {
+  confirmDestructiveAction,
+  showErrorAlert,
+} from "../../src/utils/confirmDialog";
+import { useDismissedContent } from "../../hooks/useDismissedContent";
+import { SwipeToDeleteRow } from "../../components/common/SwipeToDeleteRow";
 import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 
 export default function ParentDetailScreen() {
   const { t } = useTranslation();
+  const { user } = useContext(AuthContext);
+  const { dismiss } = useDismissedContent(user?.uid);
   const params = useLocalSearchParams<{
     kind?: string;
     id?: string;
@@ -195,6 +204,39 @@ export default function ParentDetailScreen() {
     loadedAttendance?.parentResponse as { reasonCode?: string; reason?: string },
   );
 
+  const handleDismissAnnouncement = () => {
+    if (!classId || !id) {
+      router.back();
+      return;
+    }
+
+    void (async () => {
+      const confirmed = await confirmDestructiveAction(
+        t("common.delete"),
+        t("announcement.dismissConfirm"),
+        t("common.delete"),
+        t("common.cancel"),
+      );
+      if (!confirmed) return;
+
+      try {
+        await dismiss("announcement", classId, id);
+        router.back();
+      } catch (err) {
+        showErrorAlert(
+          t("common.error"),
+          err instanceof Error ? err.message : t("common.somethingWentWrong"),
+        );
+      }
+    })();
+  };
+
+  const bodyCard = (
+    <View style={styles.bodyCard}>
+      <Text style={styles.body}>{body || t("common.notAvailable")}</Text>
+    </View>
+  );
+
   return (
     <ParentScreenShell title={t("common.details")} subtitle={title} showBack>
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -258,9 +300,13 @@ export default function ParentDetailScreen() {
           </Text>
         ) : null}
 
-        <View style={styles.bodyCard}>
-          <Text style={styles.body}>{body || t("common.notAvailable")}</Text>
-        </View>
+        {kind === "announcement" ? (
+          <SwipeToDeleteRow onDelete={handleDismissAnnouncement}>
+            {bodyCard}
+          </SwipeToDeleteRow>
+        ) : (
+          bodyCard
+        )}
       </ScrollView>
     </ParentScreenShell>
   );

@@ -15,10 +15,12 @@ import {
 } from "../src/services/firestoreSession";
 import { getExamResultsForStudent } from "../src/services/examResults";
 
+import { filterDismissedAnnouncements } from "../src/services/dismissedContent";
 import {
   filterAnnouncementsForViewer,
   type AnnouncementViewer,
 } from "../src/utils/announcementVisibility";
+import { useDismissedContent } from "./useDismissedContent";
 
 export function useStudentDashboardData(
   studentId: string | undefined,
@@ -27,6 +29,8 @@ export function useStudentDashboardData(
 ) {
   const { selectedSchool } = useSchoolContext();
   const schoolKey = selectedSchool?.id ?? null;
+  const dismissUserId = viewer?.userId ?? studentId;
+  const { dismissedKeys } = useDismissedContent(dismissUserId);
 
   const [classId, setClassId] = useState<string | null>(profileClassId ?? null);
   const [messages, setMessages] = useState<any[]>([]);
@@ -270,7 +274,7 @@ export function useStudentDashboardData(
       };
       return toMs(b.createdAt) - toMs(a.createdAt);
     });
-  }, [messages, viewer, studentId]);
+  }, [messages, viewer, studentId, classId, dismissedKeys]);
 
   const onRefresh = () => {
     setRefreshing(true);

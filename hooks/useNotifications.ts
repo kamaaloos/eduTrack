@@ -13,6 +13,7 @@ import {
   isIgnorableFirestoreListenerError,
 } from "../src/services/firestoreSession";
 import {
+  deleteNotification,
   mapNotificationDoc,
   markNotificationRead,
   type AppNotification,
@@ -87,12 +88,21 @@ export function useNotifications(userId: string | null | undefined) {
     }
   }, [notifications]);
 
+  const remove = useCallback(async (notificationId: string) => {
+    try {
+      await deleteNotification(notificationId);
+    } catch (err) {
+      console.warn("deleteNotification:", err);
+    }
+  }, []);
+
   return {
     notifications,
     unreadCount,
     loading,
     markRead,
     markAllRead,
+    remove,
   };
 }
 

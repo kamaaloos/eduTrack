@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Platform, Text, View } from "react-native";
 import { safeRouterReplace } from "../src/utils/safeNavigation";
 import { useTranslation } from "react-i18next";
 
@@ -90,6 +90,12 @@ export default function Index() {
     }
 
     if (!onboardingComplete) {
+      if (Platform.OS === "web") {
+        if (firstSegment !== "landing") {
+          safeRouterReplace(router, "/landing");
+        }
+        return;
+      }
       if (firstSegment !== "onboarding") {
         safeRouterReplace(router, "/onboarding");
       }
@@ -97,8 +103,19 @@ export default function Index() {
     }
 
     if (!selectedSchool) {
-      if (firstSegment !== "select-school") {
+      if (firstSegment !== "select-school" && firstSegment !== "landing") {
         safeRouterReplace(router, "/select-school");
+      }
+      return;
+    }
+
+    if (Platform.OS === "web") {
+      if (
+        firstSegment !== "login" &&
+        firstSegment !== "landing" &&
+        firstSegment !== "select-school"
+      ) {
+        safeRouterReplace(router, "/landing");
       }
       return;
     }
