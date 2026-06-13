@@ -12,6 +12,7 @@
 - School user profiles (`users/{uid}`) may only be **created by admins** (see `firestore.rules`).
 - End users without a Firestore profile cannot use the app; admins must create accounts first.
 - Admin-created accounts get `mustChangePassword: true` on their Firestore profile; the app blocks access until they set a new password (not the default temporary one).
+- **Password reset:** Users do not receive email reset links. On login they can notify school admins; admins set a temporary password in User management and share it in person. Deploy school Cloud Functions `setSchoolUserPassword` and `requestSchoolPasswordReset`.
 
 ## Admin scripts
 

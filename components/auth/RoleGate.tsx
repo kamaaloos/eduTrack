@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { useContext, useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { AuthContext } from "../../src/context/authContext";
-import { getRoleHomeRoute } from "../../src/utils/authNavigation";
+import { getRoleHomeRoute, getSignedOutRoute } from "../../src/utils/authNavigation";
 import { isSchoolRole, type SchoolRole } from "../../src/utils/schoolRoles";
 
 type RoleGateProps = {
@@ -21,7 +21,7 @@ export function RoleGate({ allowedRole, children }: RoleGateProps) {
     if (loading) return;
 
     if (!user || !isSchoolRole(role)) {
-      router.replace("/login");
+      router.replace(getSignedOutRoute() as never);
       return;
     }
 

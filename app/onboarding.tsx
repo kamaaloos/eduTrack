@@ -14,6 +14,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { WebPageCard } from "../components/layout/WebPageCard";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { useLanguage } from "../src/context/languageContext";
 import { webAuthContentStyle } from "../src/constants/webLayout";
@@ -159,7 +160,9 @@ export default function OnboardingScreen() {
           />
         )}
 
-        <View style={[styles.body, webAuthContentStyle()]}>
+        <View style={[styles.onboardingColumn, webAuthContentStyle()]}>
+          <WebPageCard fill style={styles.onboardingCard}>
+        <View style={styles.body}>
           <Animated.View
             style={[
               styles.slide,
@@ -206,8 +209,7 @@ export default function OnboardingScreen() {
         <View
           style={[
             styles.footer,
-            webAuthContentStyle(),
-            { paddingBottom: Math.max(insets.bottom, 16) + 24 },
+            { paddingBottom: Math.max(insets.bottom, 16) + 8 },
           ]}
         >
           <View style={styles.dots}>
@@ -236,6 +238,8 @@ export default function OnboardingScreen() {
             </Text>
             <Ionicons name={nextIcon} size={20} color="#FFFFFF" />
           </Pressable>
+        </View>
+          </WebPageCard>
         </View>
       </View>
     </Frame>
@@ -272,6 +276,17 @@ const styles = StyleSheet.create({
     color: "#64748B",
     fontSize: 14,
     fontWeight: "600",
+  },
+  onboardingColumn: {
+    flex: 1,
+    width: "100%",
+    paddingHorizontal: 20,
+    paddingTop: 56,
+    paddingBottom: 16,
+  },
+  onboardingCard: {
+    flex: 1,
+    justifyContent: "space-between",
   },
   body: {
     flex: 1,

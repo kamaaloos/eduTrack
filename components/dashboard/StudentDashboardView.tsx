@@ -13,6 +13,7 @@ import { DashboardHomeworkSection } from "./DashboardHomeworkSection";
 import { DashboardRemarksSection } from "./DashboardRemarksSection";
 import { DashboardScheduleSection } from "./DashboardScheduleSection";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
+import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { dashboardStyles as styles } from "./dashboardStyles";
 import type { StudentDashboardViewProps } from "./studentDashboardTypes";
 import { useStudentDashboardDerivedData } from "./useStudentDashboardDerivedData";
@@ -90,24 +91,25 @@ export function StudentDashboardView({
   return (
     <View style={styles.mainContainer}>
       <ScreenBackgroundLayer />
-      <DashboardHeader
-        initials={initials}
-        displayName={displayName}
-        photoURL={photoURL}
-        firstName={firstName}
-        headerSubtitle={headerSubtitle}
-        showNotifications={showNotifications}
-        showHeaderLogout={showHeaderLogout}
-        showHealthCheck={showHealthCheck}
-        onHealthCheckPress={onHealthCheckPress}
-        notificationRoute={`${routePrefix}/notifications`}
-        notificationUnreadCount={notificationUnreadCount}
-        onLogout={handleLogout}
-        onMenuPress={onMenuPress}
-      />
+      <WebPageCardFrame>
+        <DashboardHeader
+          initials={initials}
+          displayName={displayName}
+          photoURL={photoURL}
+          firstName={firstName}
+          headerSubtitle={headerSubtitle}
+          showNotifications={showNotifications}
+          showHeaderLogout={showHeaderLogout}
+          showHealthCheck={showHealthCheck}
+          onHealthCheckPress={onHealthCheckPress}
+          notificationRoute={`${routePrefix}/notifications`}
+          notificationUnreadCount={notificationUnreadCount}
+          onLogout={handleLogout}
+          onMenuPress={onMenuPress}
+        />
 
-      <ScrollView
-        style={styles.container}
+        <ScrollView
+          style={[styles.container, webPageBodyStyle()]}
         contentContainerStyle={[styles.scrollContent, webDashboardContentStyle()]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -169,6 +171,7 @@ export function StudentDashboardView({
 
         <View style={styles.scrollBottomSpacer} />
       </ScrollView>
+      </WebPageCardFrame>
     </View>
   );
 }

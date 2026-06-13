@@ -52,7 +52,7 @@ type AdminDataContextValue = {
       feePaid?: boolean;
     },
   ) => Promise<void>;
-  resetUserPassword: (email: string) => Promise<void>;
+  setUserPassword: (userId: string, newPassword: string) => Promise<void>;
   removeUser: (userId: string, role: UserRole) => Promise<void>;
   updateClass: (classId: string, name: string) => Promise<void>;
   deleteClass: (classId: string) => Promise<void>;
@@ -70,7 +70,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     loadUsers,
     createUser,
     updateUser,
-    resetUserPassword,
+    setUserPassword,
     removeUser,
   } = useAdminUsers();
 
@@ -123,7 +123,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       linkParentToStudent,
       repairParentStudentLinks,
       updateUser,
-      resetUserPassword,
+      setUserPassword,
       removeUser,
       updateClass,
       deleteClass,
@@ -151,7 +151,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       linkParentToStudent,
       repairParentStudentLinks,
       updateUser,
-      resetUserPassword,
+      setUserPassword,
       removeUser,
       updateClass,
       deleteClass,

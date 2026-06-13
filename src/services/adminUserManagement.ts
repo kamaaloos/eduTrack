@@ -1,6 +1,6 @@
-import { sendPasswordResetEmail } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import { httpsCallable } from "firebase/functions";
 import {
-  arrayRemove,
   collection,
   deleteDoc,
   doc,
@@ -10,7 +10,9 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { requireSchoolAuth, requireSchoolDb } from "./firebase";
+import { requireSchoolDb } from "./firebase";
+import { removeAllParentLinksForStudent } from "./parentStudentLinks";
+import { getSchoolFunctions } from "./schoolFunctions";
 import type { UserRole } from "../../hooks/useAdminUsers";
 
 export async function updateUserProfile(
@@ -28,10 +30,26 @@ export async function updateUserProfile(
   await setDoc(doc(requireSchoolDb(), "users", userId), payload, { merge: true });
 }
 
-export async function sendUserPasswordReset(email: string): Promise<void> {
-  const normalized = email.trim().toLowerCase();
-  if (!normalized) throw new Error("Email is required");
-  await sendPasswordResetEmail(requireSchoolAuth(), normalized);
+export async function setUserPassword(
+  userId: string,
+  newPassword: string,
+): Promise<void> {
+  const trimmed = newPassword.trim();
+  if (trimmed.length < 6) {
+    throw new Error("Password must be at least 6 characters");
+  }
+
+  const functions = getSchoolFunctions();
+  if (!functions) {
+    throw new FirebaseError("functions/not-found", "School functions not configured.");
+  }
+
+  const callable = httpsCallable<
+    { userId: string; newPassword: string },
+    { ok: boolean }
+  >(functions, "setSchoolUserPassword");
+
+  await callable({ userId, newPassword: trimmed });
 }
 
 async function deleteQueryDocs(
@@ -50,38 +68,46 @@ async function deleteQueryDocs(
   await batch.commit();
 }
 
-/** Removes Firestore profile and role-related links. Firebase Auth account may remain. */
-export async function removeUserAndLinks(
+function isCallableUnavailable(err: unknown): boolean {
+  if (err instanceof FirebaseError) {
+    return (
+      err.code === "functions/not-found" ||
+      err.code === "functions/unavailable"
+    );
+  }
+  return false;
+}
+
+async function callRemoveSchoolUser(
+  userId: string,
+  role: UserRole,
+): Promise<{ authDeleted: boolean }> {
+  const functions = getSchoolFunctions();
+  if (!functions) {
+    throw new FirebaseError("functions/not-found", "School functions not configured.");
+  }
+
+  const callable = httpsCallable<
+    { userId: string; role: UserRole },
+    { ok: boolean; authDeleted: boolean }
+  >(functions, "removeSchoolUser");
+
+  const response = await callable({ userId, role });
+  return { authDeleted: response.data.authDeleted };
+}
+
+/** Client fallback when school Cloud Function is not deployed. */
+async function removeUserAndLinksClient(
   userId: string,
   role: UserRole,
 ): Promise<void> {
   if (role === "student") {
-    const schoolDb = requireSchoolDb();
-    const parentLinkSnap = await getDocs(
-      query(
-        collection(schoolDb, "parentStudents"),
-        where("studentId", "==", userId),
-      ),
-    );
-    const parentIds = new Set<string>();
-    for (const linkDoc of parentLinkSnap.docs) {
-      const parentId = linkDoc.data().parentId as string | undefined;
-      if (parentId) parentIds.add(parentId);
-    }
-
+    await removeAllParentLinksForStudent(userId);
     await Promise.all([
       deleteQueryDocs("studentClasses", "studentId", userId),
-      deleteQueryDocs("parentStudents", "studentId", userId),
       deleteQueryDocs("attendance", "studentId", userId),
       deleteQueryDocs("grades", "studentId", userId),
       deleteQueryDocs("examResults", "studentId", userId),
-      ...[...parentIds].map((parentId) =>
-        setDoc(
-          doc(schoolDb, "users", parentId),
-          { linkedStudentIds: arrayRemove(userId) },
-          { merge: true },
-        ),
-      ),
     ]);
   } else if (role === "teacher") {
     await Promise.all([
@@ -96,6 +122,29 @@ export async function removeUserAndLinks(
   }
 
   await deleteDoc(doc(requireSchoolDb(), "users", userId));
+}
+
+/**
+ * Removes Firestore profile, role links, and Firebase Auth (via school Cloud Function).
+ * Falls back to client-only cleanup if the function is not deployed.
+ */
+export async function removeUserAndLinks(
+  userId: string,
+  role: UserRole,
+): Promise<{ authDeleted: boolean }> {
+  try {
+    return await callRemoveSchoolUser(userId, role);
+  } catch (err) {
+    if (!isCallableUnavailable(err)) {
+      throw err instanceof Error ? err : new Error("Failed to remove user");
+    }
+    console.warn(
+      "removeSchoolUser Cloud Function unavailable; using client-only removal (Auth account may remain).",
+      err,
+    );
+    await removeUserAndLinksClient(userId, role);
+    return { authDeleted: false };
+  }
 }
 
 export async function updateClassRecord(

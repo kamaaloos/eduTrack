@@ -4,6 +4,7 @@ import { Stack } from "expo-router";
 import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { configureForegroundNotifications } from "../src/services/pushNotifications";
 import { WebAppShell } from "../components/layout/WebAppShell";
 import { WebIconFontGate } from "../components/layout/WebIconFontGate";
 import { BrandedSplashGate } from "../components/BrandedSplashGate";
@@ -17,6 +18,10 @@ import { SchoolProvider } from "../src/context/schoolContext";
 import { SuperAdminAuthProvider } from "../src/context/superAdminAuthContext";
 
 export default function RootLayout() {
+  if (Platform.OS !== "web") {
+    configureForegroundNotifications();
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

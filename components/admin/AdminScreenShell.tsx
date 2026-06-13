@@ -8,10 +8,10 @@ import { AuthContext } from "../../src/context/authContext";
 import { useSchoolContext } from "../../src/context/schoolContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
 import {
-  webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
+import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { AdminScreenHeader } from "./AdminScreenHeader";
 import { AdminSideMenu } from "./AdminSideMenu";
 
@@ -42,18 +42,25 @@ export function AdminScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <AdminScreenHeader
-        title={title}
-        subtitle={subtitle}
-        showBack={showBack}
-        onMenuPress={() => setSideMenuVisible(true)}
-        notificationCount={showNotifications ? notificationCount : 0}
-        onNotificationsPress={
-          showNotifications
-            ? () => router.push("/(admin)/notifications" as never)
-            : undefined
-        }
-      />
+      <WebPageCardFrame>
+        <AdminScreenHeader
+          title={title}
+          subtitle={subtitle}
+          showBack={showBack}
+          onMenuPress={() => setSideMenuVisible(true)}
+          notificationCount={showNotifications ? notificationCount : 0}
+          onNotificationsPress={
+            showNotifications
+              ? () => router.push("/(admin)/notifications" as never)
+              : undefined
+          }
+        />
+        <View style={[styles.body, webPageBodyStyle()]}>
+          <View style={[styles.bodyInner, webAdminPagePaddingStyle()]}>
+            {children}
+          </View>
+        </View>
+      </WebPageCardFrame>
       <AdminSideMenu
         visible={sideMenuVisible}
         onClose={() => setSideMenuVisible(false)}
@@ -62,11 +69,6 @@ export function AdminScreenShell({
         subtitleTone="accent"
         items={menuItems}
       />
-      <View style={styles.body}>
-        <View style={[styles.bodyInner, webAdminContentStyle(), webAdminPagePaddingStyle()]}>
-          {children}
-        </View>
-      </View>
     </View>
   );
 }

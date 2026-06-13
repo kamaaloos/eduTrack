@@ -8,8 +8,8 @@ import {
   subscribeNotificationResponses,
 } from "../src/services/pushNotifications";
 
-/** Wait until the user is on a role screen before any push native calls. */
-const PUSH_SETUP_DELAY_MS = 15000;
+/** Mount push hooks only after the user is on a role screen for a while. */
+const PUSH_SETUP_DELAY_MS = 3000;
 
 const ROLE_ROUTE_GROUPS = new Set([
   "(students)",
@@ -34,16 +34,7 @@ export function usePushNotifications() {
 
   useEffect(() => {
     if (!PUSH_NOTIFICATIONS_ENABLED) return;
-
-    const timer = setTimeout(() => {
-      try {
-        configureForegroundNotifications();
-      } catch (err) {
-        console.warn("Push: configureForegroundNotifications failed", err);
-      }
-    }, PUSH_SETUP_DELAY_MS);
-
-    return () => clearTimeout(timer);
+    configureForegroundNotifications();
   }, []);
 
   useEffect(() => {
@@ -58,7 +49,7 @@ export function usePushNotifications() {
     let removeResponseListener: (() => void) | undefined;
 
     const setupTimer = setTimeout(() => {
-      void registerForPushNotifications(user.uid, { promptForPermission: false })
+      void registerForPushNotifications(user.uid)
         .then((token) => {
           if (cancelled || !token) return;
           registeredUserIdRef.current = user.uid;

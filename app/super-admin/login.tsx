@@ -11,14 +11,13 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../../components/AppScreenBackground";
-import { AuthAboutLink } from "../../components/auth/AuthAboutLink";
-import { PasswordInput } from "../../components/PasswordInput";
+import { AuthFormField } from "../../components/auth/AuthFormField";
+import { WebPageCard } from "../../components/layout/WebPageCard";
 import { useLanguage } from "../../src/context/languageContext";
 import { useSuperAdminAuth } from "../../src/context/superAdminAuthContext";
 import { WEB_PAGE_ROOT_STYLE } from "../../src/constants/webBackground";
@@ -77,9 +76,6 @@ export default function SuperAdminLoginScreen() {
     <Frame {...frameProps}>
       <View style={[styles.screen, WEB_PAGE_ROOT_STYLE]}>
         <StatusBar style="dark" />
-        <AuthAboutLink
-          style={[styles.aboutLink, { top: insets.top + 8 }]}
-        />
         <KeyboardAvoidingView
           style={styles.flex}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -96,6 +92,7 @@ export default function SuperAdminLoginScreen() {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
+            <WebPageCard>
             <View style={[styles.navRow, isRtl && styles.navRowRtl]}>
               <Pressable
                 style={({ pressed }) => [
@@ -146,26 +143,28 @@ export default function SuperAdminLoginScreen() {
             ) : null}
 
             <View style={styles.formCard}>
-              <Text style={styles.label}>{t("common.email")}</Text>
-              <TextInput
-                style={[styles.input, isRtl && styles.inputRtl]}
+              <AuthFormField
+                label={t("common.email")}
+                icon="person-outline"
+                placeholder="superadmin@example.com"
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
-                placeholder="superadmin@example.com"
-                placeholderTextColor="#94A3B8"
                 editable={!submitting}
-                textAlign={isRtl ? "right" : "left"}
+                inputStyle={isRtl ? styles.inputRtl : undefined}
               />
 
-              <Text style={styles.label}>{t("common.password")}</Text>
-              <PasswordInput
+              <AuthFormField
+                label={t("common.password")}
+                icon="key-outline"
+                isPassword
+                placeholder={t("common.password")}
                 value={password}
                 onChangeText={setPassword}
-                placeholder={t("common.password")}
                 editable={!submitting}
-                inputStyle={[styles.input, isRtl && styles.inputRtl]}
+                containerStyle={styles.passwordField}
+                inputStyle={isRtl ? styles.inputRtl : undefined}
               />
 
               <Pressable
@@ -193,6 +192,7 @@ export default function SuperAdminLoginScreen() {
                 {t("superAdmin.setupReminderText")}
               </Text>
             </View>
+            </WebPageCard>
           </ScrollView>
         </KeyboardAvoidingView>
       </View>
@@ -208,11 +208,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: "transparent",
-  },
-  aboutLink: {
-    position: "absolute",
-    right: 16,
-    zIndex: 10,
   },
   flex: {
     flex: 1,
@@ -313,27 +308,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#334155",
+  passwordField: {
     marginBottom: 8,
-    marginTop: 4,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#CBD5E1",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: "#0F172A",
-    backgroundColor: "#F8FAFC",
-    marginBottom: 8,
-    width: "100%",
   },
   inputRtl: {
     writingDirection: "rtl",
+    textAlign: "right",
   },
   button: {
     marginTop: 12,

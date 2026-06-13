@@ -16,11 +16,12 @@ import type { UserData, UserRole } from "../../hooks/useAdminUsers";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
 import { useAdminData } from "../../src/context/adminDataContext";
 import {
-  confirmAction,
   confirmDestructiveAction,
   showErrorAlert,
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
+import { AuthFormField } from "../auth/AuthFormField";
+import { TempPasswordShareModal } from "./TempPasswordShareModal";
 import { DirectoryPagination } from "./DirectoryPagination";
 
 const isWeb = Platform.OS === "web";
@@ -40,10 +41,18 @@ export function UserDirectoryList({
 }: UserDirectoryListProps) {
   const { t } = useTranslation();
   const roleLabel = t(`common.${role}`);
-  const { usersLoading, updateUser, resetUserPassword, removeUser } =
+  const { usersLoading, updateUser, setUserPassword, removeUser } =
     useAdminData();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<UserData | null>(null);
+  const [passwordUser, setPasswordUser] = useState<UserData | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [settingPassword, setSettingPassword] = useState(false);
+  const [shareCard, setShareCard] = useState<{
+    user: UserData;
+    password: string;
+  } | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPhone, setEditPhone] = useState("");
@@ -97,27 +106,41 @@ export function UserDirectoryList({
     }
   };
 
-  const onResetPassword = async (user: UserData) => {
-    if (!user.email) {
-      showErrorAlert(t("admin.noEmail"), t("admin.noEmailOnFile"));
+  const closePasswordModal = () => {
+    setPasswordUser(null);
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  const openPasswordModal = (user: UserData) => {
+    setPasswordUser(user);
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  const savePassword = async () => {
+    if (!passwordUser) return;
+    if (newPassword.length < 6) {
+      showErrorAlert(t("common.error"), t("admin.setPasswordTooShort"));
       return;
     }
-    const confirmed = await confirmAction(
-      t("admin.resetPasswordTitle"),
-      t("admin.resetPasswordMessage", { email: user.email }),
-      t("admin.sendEmail"),
-      t("common.cancel"),
-    );
-    if (!confirmed) return;
+    if (newPassword !== confirmPassword) {
+      showErrorAlert(t("common.error"), t("admin.setPasswordMismatch"));
+      return;
+    }
 
+    setSettingPassword(true);
     try {
-      await resetUserPassword(user.email);
-      showSuccessAlert(t("admin.emailSent"), t("admin.resetPasswordHint"));
+      await setUserPassword(passwordUser.id, newPassword);
+      setShareCard({ user: passwordUser, password: newPassword });
+      closePasswordModal();
     } catch (err) {
       showErrorAlert(
         t("common.error"),
         err instanceof Error ? err.message : t("common.connectionError"),
       );
+    } finally {
+      setSettingPassword(false);
     }
   };
 
@@ -217,11 +240,11 @@ export function UserDirectoryList({
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionBtn}
-                  onPress={() => void onResetPassword(item)}
+                  onPress={() => openPasswordModal(item)}
                 >
                   <Ionicons name="key-outline" size={18} color="#D97706" />
                   <Text style={styles.actionReset}>
-                    {t("admin.resetPasswordAction")}
+                    {t("admin.setPasswordAction")}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -316,6 +339,97 @@ export function UserDirectoryList({
           </Pressable>
         </Pressable>
       </Modal>
+
+      <Modal
+        visible={passwordUser != null}
+        animationType={Platform.OS === "web" ? "fade" : "slide"}
+        transparent
+        onRequestClose={closePasswordModal}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={closePasswordModal}>
+          <Pressable
+            style={styles.modalCard}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <View style={styles.modalHeader}>
+              <View style={styles.modalHeaderText}>
+                <Text style={styles.modalTitle}>
+                  {t("admin.setPasswordTitle")}
+                </Text>
+                <Text style={styles.modalHint}>
+                  {t("admin.setPasswordMessage", {
+                    name:
+                      passwordUser?.name ||
+                      passwordUser?.email ||
+                      t("common.unnamed"),
+                  })}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.modalCloseBtn}
+                onPress={closePasswordModal}
+                disabled={settingPassword}
+                accessibilityLabel={t("common.close")}
+              >
+                <Ionicons name="close" size={22} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <AuthFormField
+              label={t("admin.setPasswordNew")}
+              icon="key-outline"
+              isPassword
+              value={newPassword}
+              onChangeText={setNewPassword}
+              editable={!settingPassword}
+              containerStyle={styles.passwordField}
+            />
+
+            <AuthFormField
+              label={t("admin.setPasswordConfirm")}
+              icon="lock-closed-outline"
+              isPassword
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              editable={!settingPassword}
+              containerStyle={styles.passwordField}
+            />
+
+            <Text style={styles.note}>{t("admin.setPasswordHint")}</Text>
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.cancelBtn}
+                onPress={closePasswordModal}
+                disabled={settingPassword}
+              >
+                <Text style={styles.cancelBtnText}>{t("common.cancel")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.saveBtn, settingPassword && styles.btnDisabled]}
+                onPress={() => void savePassword()}
+                disabled={settingPassword}
+              >
+                {settingPassword ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.saveBtnText}>
+                    {t("admin.setPasswordAction")}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <TempPasswordShareModal
+        visible={shareCard != null}
+        user={shareCard?.user ?? null}
+        role={role}
+        tempPassword={shareCard?.password ?? ""}
+        onClose={() => setShareCard(null)}
+      />
     </View>
   );
 }
@@ -431,6 +545,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9FAFB",
   },
   note: { fontSize: 12, color: "#64748B", lineHeight: 17, marginBottom: 16 },
+  passwordField: { marginBottom: 12 },
   modalActions: { flexDirection: "row", gap: 10 },
   cancelBtn: {
     flex: 1,

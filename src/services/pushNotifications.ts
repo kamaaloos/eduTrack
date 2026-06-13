@@ -8,6 +8,9 @@ export { notificationsRouteForRole } from "../utils/pushNotificationRoutes";
 
 type NotificationsModule = typeof import("expo-notifications");
 
+/** Android 8+ channel for remote push — must match Cloud Function channelId. */
+export const PUSH_NOTIFICATION_CHANNEL_ID = "edutrack-alerts";
+
 function isExpoGo(): boolean {
   return (
     Constants.executionEnvironment === "storeClient" ||
@@ -41,8 +44,9 @@ async function loadDeviceModule(): Promise<typeof import("expo-device") | null> 
 export function configureForegroundNotifications(): void {
   if (!PUSH_NOTIFICATIONS_ENABLED) return;
 
-  void loadNotifications().then((Notifications) => {
+  void loadNotifications().then(async (Notifications) => {
     if (!Notifications) return;
+    await ensureAndroidChannel(Notifications);
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
@@ -60,12 +64,19 @@ async function ensureAndroidChannel(
 ): Promise<void> {
   if (Platform.OS !== "android") return;
 
-  await Notifications.setNotificationChannelAsync("default", {
-    name: "Default",
+  await Notifications.setNotificationChannelAsync(PUSH_NOTIFICATION_CHANNEL_ID, {
+    name: "Alerts",
+    description: "Homework, messages, and school updates",
     importance: Notifications.AndroidImportance.MAX,
     vibrationPattern: [0, 250, 250, 250],
     lightColor: "#1E3A8A",
     sound: "default",
+    enableVibrate: true,
+    showBadge: true,
+    audioAttributes: {
+      usage: Notifications.AndroidAudioUsage.NOTIFICATION,
+      contentType: Notifications.AndroidAudioContentType.SONIFICATION,
+    },
   });
 }
 
@@ -92,6 +103,7 @@ export async function requestPushPermissions(): Promise<boolean> {
         allowAlert: true,
         allowBadge: true,
         allowSound: true,
+        allowAnnouncements: true,
       },
     });
     return status === "granted";
@@ -176,7 +188,16 @@ export async function registerForPushNotifications(
     const Device = await loadDeviceModule();
     if (!Device?.isDevice) return null;
 
-    const granted = options?.promptForPermission
+    const Notifications = await loadNotifications();
+    if (!Notifications) return null;
+
+    await ensureAndroidChannel(Notifications);
+
+    const { status: currentStatus } = await Notifications.getPermissionsAsync();
+    const shouldPrompt =
+      options?.promptForPermission ?? currentStatus === "undetermined";
+
+    const granted = shouldPrompt
       ? await requestPushPermissions()
       : await hasPushPermissions();
     if (!granted) return null;

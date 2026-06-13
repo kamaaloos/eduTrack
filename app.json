@@ -52,13 +52,19 @@
           "photosPermission": "Allow eduTrack to access your photos to set your profile picture."
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow eduTrack to scan your school login card QR code."
+        }
+      ],
       "expo-font",
       [
         "expo-notifications",
         {
           "icon": "./assets/images/icon.png",
           "color": "#1E3A8A",
-          "defaultChannel": "default"
+          "defaultChannel": "edutrack-alerts"
         }
       ],
       "./plugins/withAdiRegistration"

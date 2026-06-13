@@ -52,7 +52,7 @@ npm run build
 cd ..
 
 firebase use <school-project-id>
-firebase deploy --config firebase.school.json --only functions:school:sendPushOnNotificationCreated
+firebase deploy --config firebase.school.json --only functions:school:sendPushOnNotificationCreated,functions:school:removeSchoolUser
 ```
 
 Repeat for **every** school Firebase project.
@@ -88,6 +88,8 @@ On logout, the app clears `expoPushToken` for that user so the device does not k
 | Token not saved | Firestore rules deployed? User logged in? |
 | Token saved, no push | School function deployed to **that** school project? |
 | Push on Android only in foreground | Rebuild APK with EAS after adding `expo-notifications` |
+| No sound (Android) | Open **Settings → Apps → eduTrack → Notifications → Alerts** and enable sound. Reinstall after app update (channel settings are cached). Ensure `sendPushOnNotificationCreated` is redeployed. |
+| No sound (iOS) | Check silent mode / Focus. Allow notifications with **Sounds** enabled in iOS Settings → eduTrack. |
 | `DeviceNotRegistered` in function logs | User must open app again to refresh token |
 | `Permission denied while using the Eventarc Service Agent` | First 2nd-gen deploy — wait 5–10 min and redeploy; or fix IAM below |
 
@@ -103,7 +105,7 @@ If deploy fails with:
 2. **Redeploy only the function** (rules are already deployed if you saw `released rules`):
 
 ```bash
-firebase deploy --config firebase.school.json --only functions:school:sendPushOnNotificationCreated
+firebase deploy --config firebase.school.json --only functions:school:sendPushOnNotificationCreated,functions:school:removeSchoolUser
 ```
 
 3. **If it still fails**, fix IAM in Google Cloud (same Google account as Firebase):

@@ -86,10 +86,19 @@ Deploy per **school** project (not the registry):
 ```bash
 cd school-functions && npm install && npm run build && cd ..
 firebase use <school-project-id>
-firebase deploy --config firebase.school.json --only functions:school:sendPushOnNotificationCreated,firestore:rules
+firebase deploy --config firebase.school.json --only functions:school:sendPushOnNotificationCreated,functions:school:removeSchoolUser,functions:school:setSchoolUserPassword,functions:school:requestSchoolPasswordReset,firestore:rules
 ```
 
 See [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md) for EAS build requirements and testing.
+
+## Admin user removal
+
+School admins remove users from the app via **Remove** in the user directory. That calls the school Cloud Function `removeSchoolUser`, which:
+
+1. Deletes Firestore profile and role-related links (including orphaned `parentStudents` docs).
+2. Deletes the Firebase **Authentication** account in that school project.
+
+Deploy `removeSchoolUser`, `setSchoolUserPassword`, and `requestSchoolPasswordReset` with the push function (see command above). Without them, user removal may leave Auth accounts, and password reset falls back to manual Firebase Console steps.
 
 ## Usage expiry and subscription enforcement
 

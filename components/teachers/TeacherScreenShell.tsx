@@ -12,11 +12,11 @@ import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { AuthContext } from "../../src/context/authContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
 import {
-  webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
 import { useTeacherMenu } from "../../src/context/teacherMenuContext";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
+import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { StudentScreenHeader } from "../students/StudentScreenHeader";
 import { studentScreenStyles } from "../students/studentScreenStyles";
 
@@ -55,7 +55,6 @@ export function TeacherScreenShell({
 
   const innerStyle = [
     styles.bodyInner,
-    webAdminContentStyle(),
     webAdminPagePaddingStyle(),
   ];
 
@@ -82,21 +81,23 @@ export function TeacherScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <StudentScreenHeader
-        title={title}
-        subtitle={subtitle}
-        showBack={showBack}
-        showMenu={showMenu}
-        notificationCount={showNotifications ? notificationCount : 0}
-        onNotificationsPress={
-          showNotifications
-            ? () => router.push("/(teachers)/notifications" as never)
-            : undefined
-        }
-        onMenuPress={openMenu}
-        headerRight={headerRight}
-      />
-      <View style={styles.body}>{body}</View>
+      <WebPageCardFrame>
+        <StudentScreenHeader
+          title={title}
+          subtitle={subtitle}
+          showBack={showBack}
+          showMenu={showMenu}
+          notificationCount={showNotifications ? notificationCount : 0}
+          onNotificationsPress={
+            showNotifications
+              ? () => router.push("/(teachers)/notifications" as never)
+              : undefined
+          }
+          onMenuPress={openMenu}
+          headerRight={headerRight}
+        />
+        <View style={[styles.body, webPageBodyStyle()]}>{body}</View>
+      </WebPageCardFrame>
     </View>
   );
 }

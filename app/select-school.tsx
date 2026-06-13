@@ -16,6 +16,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { WebPageCard } from "../components/layout/WebPageCard";
 import { AppLogo } from "../components/AppLogo";
 import { AuthAboutLink } from "../components/auth/AuthAboutLink";
 import { SelectSchoolLocationPicker } from "../components/auth/SelectSchoolLocationPicker";
@@ -164,6 +165,7 @@ export default function SelectSchoolScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        <WebPageCard>
         <View style={styles.header}>
           <Pressable
             style={styles.logo}
@@ -218,6 +220,7 @@ export default function SelectSchoolScreen() {
         ) : (
           <View style={styles.list}>{pickerBody}</View>
         )}
+        </WebPageCard>
       </ScrollView>
 
       {connecting ? (

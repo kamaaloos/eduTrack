@@ -5,10 +5,10 @@ import { AdminSideMenu } from "../admin/AdminSideMenu";
 import { useSuperAdminSideMenuItems } from "../../hooks/useSuperAdminSideMenuItems";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
 import {
-  webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
+import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { SuperAdminScreenHeader } from "./SuperAdminScreenHeader";
 
 type SuperAdminScreenShellProps = {
@@ -31,12 +31,19 @@ export function SuperAdminScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <SuperAdminScreenHeader
-        title={title}
-        subtitle={subtitle}
-        showBack={showBack}
-        onMenuPress={() => setSideMenuVisible(true)}
-      />
+      <WebPageCardFrame>
+        <SuperAdminScreenHeader
+          title={title}
+          subtitle={subtitle}
+          showBack={showBack}
+          onMenuPress={() => setSideMenuVisible(true)}
+        />
+        <View style={[styles.body, webPageBodyStyle()]}>
+          <View style={[styles.bodyInner, webAdminPagePaddingStyle()]}>
+            {children}
+          </View>
+        </View>
+      </WebPageCardFrame>
       <AdminSideMenu
         visible={sideMenuVisible}
         onClose={() => setSideMenuVisible(false)}
@@ -44,11 +51,6 @@ export function SuperAdminScreenShell({
         subtitle={t("profile.roleSuperAdmin")}
         items={menuItems}
       />
-      <View style={styles.body}>
-        <View style={[styles.bodyInner, webAdminContentStyle(), webAdminPagePaddingStyle()]}>
-          {children}
-        </View>
-      </View>
     </View>
   );
 }

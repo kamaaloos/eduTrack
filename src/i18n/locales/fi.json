@@ -258,7 +258,14 @@
       "tooManyRequests": "Liian monta yritystä. Odota ja yritä myöhemmin uudelleen.",
       "resetSent": "Salasanan nollausviesti lähetetty. Tarkista postilaatikkosi.",
       "resetFailed": "Nollausviestiä ei voitu lähettää. Yritä uudelleen.",
-      "notRegisteredHint": "Etkö ole rekisteröitynyt? Pyydä kirjautumistiedot koulusi ylläpitäjältä."
+      "notRegisteredHint": "Etkö ole rekisteröitynyt? Pyydä kirjautumistiedot koulusi ylläpitäjältä.",
+      "scanCard": "Skannaa kirjautumiskortti",
+      "scanCardTitle": "Skannaa kirjautumiskortti",
+      "scanCardHint": "Osoita kamera koulun ylläpitäjän antaman kortin QR-koodiin.",
+      "scanCardPermission": "Kameran käyttöoikeus tarvitaan kirjautumiskortin skannaukseen.",
+      "scanCardAllowCamera": "Salli kamera",
+      "scanCardInvalid": "Tämä QR-koodi ei ole kelvollinen eduTrack-kirjautumiskortti.",
+      "scanCardFilled": "Sähköposti ja salasana täytetty kortista. Jatka painamalla Kirjaudu sisään."
     },
     "changePassword": {
       "title": "Aseta salasanasi",

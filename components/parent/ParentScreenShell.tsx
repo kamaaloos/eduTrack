@@ -13,11 +13,11 @@ import { AuthContext } from "../../src/context/authContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
 import {
   mobileScreenPaddingStyle,
-  webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
 import { useParentMenu } from "../../src/context/parentMenuContext";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
+import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { StudentScreenHeader } from "../students/StudentScreenHeader";
 import { studentScreenStyles } from "../students/studentScreenStyles";
 
@@ -56,7 +56,6 @@ export function ParentScreenShell({
 
   const innerStyle = [
     styles.bodyInner,
-    webAdminContentStyle(),
     webAdminPagePaddingStyle(),
     mobileScreenPaddingStyle(),
   ];
@@ -84,21 +83,23 @@ export function ParentScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <StudentScreenHeader
-        title={title}
-        subtitle={subtitle}
-        showBack={showBack}
-        showMenu={showMenu}
-        notificationCount={showNotifications ? notificationCount : 0}
-        onNotificationsPress={
-          showNotifications
-            ? () => router.push("/(parent)/notifications" as never)
-            : undefined
-        }
-        onMenuPress={openMenu}
-        headerRight={headerRight}
-      />
-      <View style={styles.body}>{body}</View>
+      <WebPageCardFrame>
+        <StudentScreenHeader
+          title={title}
+          subtitle={subtitle}
+          showBack={showBack}
+          showMenu={showMenu}
+          notificationCount={showNotifications ? notificationCount : 0}
+          onNotificationsPress={
+            showNotifications
+              ? () => router.push("/(parent)/notifications" as never)
+              : undefined
+          }
+          onMenuPress={openMenu}
+          headerRight={headerRight}
+        />
+        <View style={[styles.body, webPageBodyStyle()]}>{body}</View>
+      </WebPageCardFrame>
     </View>
   );
 }

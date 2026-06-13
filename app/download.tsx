@@ -14,6 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppLogo } from "../components/AppLogo";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { WebPageCard } from "../components/layout/WebPageCard";
 import {
   DownloadFixedHeader,
   downloadHeaderTotalHeight,
@@ -25,7 +26,6 @@ import {
   PLAY_STORE_URL,
 } from "../src/constants/appStores";
 import { copyrightFooterInset } from "../src/constants/appTheme";
-import { WEB_AUTH_MAX_WIDTH } from "../src/constants/webLayout";
 import { showErrorAlert } from "../src/utils/confirmDialog";
 
 type StoreButtonProps = {
@@ -112,8 +112,7 @@ export default function DownloadScreen() {
           ]}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.pageColumn}>
-            <View style={styles.mainCard}>
+          <WebPageCard>
               <View style={styles.hero}>
                 <AppLogo size={88} />
                 <Text style={styles.heading}>{t("download.heading")}</Text>
@@ -145,8 +144,7 @@ export default function DownloadScreen() {
               {!appStoreReady ? (
                 <Text style={styles.hint}>{t("download.appStorePendingHint")}</Text>
               ) : null}
-            </View>
-          </View>
+          </WebPageCard>
         </ScrollView>
       </View>
     </AppScreenBackground>
@@ -161,32 +159,6 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     alignItems: "center",
-  },
-  pageColumn: {
-    width: "100%",
-    maxWidth: WEB_AUTH_MAX_WIDTH,
-    alignSelf: "center",
-  },
-  mainCard: {
-    width: "100%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingVertical: 28,
-    borderWidth: 1,
-    borderColor: "#EEF2F7",
-    ...(Platform.OS === "web"
-      ? ({
-          boxShadow:
-            "0 16px 48px rgba(15, 23, 42, 0.1), 0 4px 16px rgba(15, 23, 42, 0.06)",
-        } as object)
-      : {
-          elevation: 6,
-          shadowColor: "#0F172A",
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.12,
-          shadowRadius: 16,
-        }),
   },
   hero: {
     alignItems: "center",

@@ -20,9 +20,9 @@ import {
 import { AppScreenBackground } from "../components/AppScreenBackground";
 import { AppLogo } from "../components/AppLogo";
 import { LanguageSelector } from "../components/LanguageSelector";
+import { WebPageCard } from "../components/layout/WebPageCard";
 import { useAppUpdateCheck } from "../hooks/useAppUpdateCheck";
 import { copyrightFooterInset } from "../src/constants/appTheme";
-import { WEB_AUTH_MAX_WIDTH } from "../src/constants/webLayout";
 import {
   getAppBuildNumber,
   getAppVersion,
@@ -140,8 +140,7 @@ export default function AboutScreen() {
           ]}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.pageColumn}>
-            <View style={styles.mainCard}>
+          <WebPageCard>
               <View style={styles.hero}>
                 <AppLogo size={96} />
                 <Text style={styles.appName}>{t("about.appName")}</Text>
@@ -173,8 +172,7 @@ export default function AboutScreen() {
                 <Text style={styles.cardTitle}>{t("about.updatesTitle")}</Text>
                 {renderUpdateSection()}
               </View>
-            </View>
-          </View>
+          </WebPageCard>
         </ScrollView>
       </View>
     </AppScreenBackground>
@@ -189,32 +187,6 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     alignItems: "center",
-  },
-  pageColumn: {
-    width: "100%",
-    maxWidth: WEB_AUTH_MAX_WIDTH,
-    alignSelf: "center",
-  },
-  mainCard: {
-    width: "100%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingVertical: 28,
-    borderWidth: 1,
-    borderColor: "#EEF2F7",
-    ...(Platform.OS === "web"
-      ? ({
-          boxShadow:
-            "0 16px 48px rgba(15, 23, 42, 0.1), 0 4px 16px rgba(15, 23, 42, 0.06)",
-        } as object)
-      : {
-          elevation: 6,
-          shadowColor: "#0F172A",
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.12,
-          shadowRadius: 16,
-        }),
   },
   hero: {
     alignItems: "center",

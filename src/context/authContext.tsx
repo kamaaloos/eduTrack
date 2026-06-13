@@ -14,6 +14,7 @@ import { clearPushTokenFromProfile } from "../services/pushNotifications";
 import { isSchoolRole } from "../utils/schoolRoles";
 import { isSchoolEntitled } from "../utils/schoolSubscriptionAccess";
 import { authLog, withTimeout } from "../utils/authDebug";
+import { getPostLogoutRoute } from "../utils/authNavigation";
 import { useSchoolContext } from "./schoolContext";
 
 const REGISTRY_CHECK_TIMEOUT_MS = 12_000;
@@ -169,7 +170,7 @@ export const AuthProvider = ({ children }: any) => {
 
     if (!auth) {
       await resetSchoolSession();
-      router.replace("/select-school");
+      router.replace(getPostLogoutRoute() as never);
       return;
     }
     try {
@@ -183,7 +184,7 @@ export const AuthProvider = ({ children }: any) => {
       setUserData(null);
       setRole(null);
       await resetSchoolSession();
-      router.replace("/select-school");
+      router.replace(getPostLogoutRoute() as never);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Logout failed";
       setError(message);

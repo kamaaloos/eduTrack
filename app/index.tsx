@@ -89,13 +89,16 @@ export default function Index() {
       return;
     }
 
-    if (!onboardingComplete) {
-      if (Platform.OS === "web") {
-        if (firstSegment !== "landing") {
-          safeRouterReplace(router, "/landing");
-        }
-        return;
+    if (Platform.OS === "web") {
+      const onLanding = firstSegment === "landing";
+      const onPublicPage = Boolean(firstSegment && isPublicEntrySegment(firstSegment));
+      if (!onLanding && !onPublicPage) {
+        safeRouterReplace(router, "/landing");
       }
+      return;
+    }
+
+    if (!onboardingComplete) {
       if (firstSegment !== "onboarding") {
         safeRouterReplace(router, "/onboarding");
       }
@@ -103,19 +106,8 @@ export default function Index() {
     }
 
     if (!selectedSchool) {
-      if (firstSegment !== "select-school" && firstSegment !== "landing") {
+      if (firstSegment !== "select-school") {
         safeRouterReplace(router, "/select-school");
-      }
-      return;
-    }
-
-    if (Platform.OS === "web") {
-      if (
-        firstSegment !== "login" &&
-        firstSegment !== "landing" &&
-        firstSegment !== "select-school"
-      ) {
-        safeRouterReplace(router, "/landing");
       }
       return;
     }

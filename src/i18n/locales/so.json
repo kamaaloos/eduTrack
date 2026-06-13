@@ -258,7 +258,14 @@
       "tooManyRequests": "Isku dayo aad u badan. Fadlan sug oo mar kale isku day.",
       "resetSent": "Iimaylka dib u dejinta furaha sirta waa la diray. Hubi sanduuqaaga.",
       "resetFailed": "Lama diri karin iimaylka dib u dejinta. Fadlan isku day mar kale.",
-      "notRegisteredHint": "Ma diiwaangashan? Fadlan ka codso maamulaha dugsigaaga aqoonsiga soo gelitaanka."
+      "notRegisteredHint": "Ma diiwaangashan? Fadlan ka codso maamulaha dugsigaaga aqoonsiga soo gelitaanka.",
+      "scanCard": "Sawir kaarka gelitaanka",
+      "scanCardTitle": "Sawir kaarka gelitaanka",
+      "scanCardHint": "U jeedi kamaradaada QR code-ka kaarka ee maamulaha dugsigaaga.",
+      "scanCardPermission": "Helitaanka kamarada ayaa loo baahan yahay si loo sawiro kaarka gelitaanka.",
+      "scanCardAllowCamera": "Oggolow kamarada",
+      "scanCardInvalid": "QR code-kan ma aha kaar gelitaan eduTrack sax ah.",
+      "scanCardFilled": "Iimaylka iyo furaha sirta waa la buuxiyey kaarka. Taabo Soo gal si aad u sii wadato."
     },
     "changePassword": {
       "title": "Deji eraygaaga sirta ah",

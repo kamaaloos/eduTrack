@@ -20,9 +20,9 @@ import {
   contactHeaderTotalHeight,
 } from "../components/contact/ContactFixedHeader";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { WebPageCard } from "../components/layout/WebPageCard";
 import { useLanguage } from "../src/context/languageContext";
 import { CONTACT_EMAIL, copyrightFooterInset } from "../src/constants/appTheme";
-import { WEB_AUTH_MAX_WIDTH } from "../src/constants/webLayout";
 import { submitContactInquiry } from "../src/services/contactInquiry";
 import { showErrorAlert, showSuccessAlert } from "../src/utils/confirmDialog";
 import { validateEmail } from "../src/utils/validation";
@@ -140,8 +140,7 @@ export default function ContactScreen() {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.pageColumn}>
-              <View style={styles.mainCard}>
+            <WebPageCard>
                 <Text style={styles.title}>{t("contact.heading")}</Text>
                 <Text style={styles.subtitle}>{t("contact.subtitle")}</Text>
 
@@ -213,8 +212,7 @@ export default function ContactScreen() {
                 </TouchableOpacity>
 
                 <Text style={styles.hint}>{t("contact.directEmail", { email: CONTACT_EMAIL })}</Text>
-              </View>
-            </View>
+            </WebPageCard>
           </ScrollView>
         </KeyboardAvoidingView>
       </View>
@@ -233,32 +231,6 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     alignItems: "center",
-  },
-  pageColumn: {
-    width: "100%",
-    maxWidth: WEB_AUTH_MAX_WIDTH,
-    alignSelf: "center",
-  },
-  mainCard: {
-    width: "100%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingVertical: 28,
-    borderWidth: 1,
-    borderColor: "#EEF2F7",
-    ...(Platform.OS === "web"
-      ? ({
-          boxShadow:
-            "0 16px 48px rgba(15, 23, 42, 0.1), 0 4px 16px rgba(15, 23, 42, 0.06)",
-        } as object)
-      : {
-          elevation: 6,
-          shadowColor: "#0F172A",
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.12,
-          shadowRadius: 16,
-        }),
   },
   title: {
     fontSize: 24,

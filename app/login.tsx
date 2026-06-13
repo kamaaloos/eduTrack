@@ -1,7 +1,6 @@
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
-  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -22,7 +21,9 @@ import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AuthAboutLink } from "../components/auth/AuthAboutLink";
 import { AuthFormField } from "../components/auth/AuthFormField";
+import { LoginCardScannerModal } from "../components/auth/LoginCardScannerModal";
 import { AppLogo } from "../components/AppLogo";
+import { WebPageCard } from "../components/layout/WebPageCard";
 import { ScreenBackgroundLayer } from "../components/ScreenBackgroundLayer";
 import { useSchoolContext } from "../src/context/schoolContext";
 import { APP_COPYRIGHT } from "../src/constants/appTheme";
@@ -30,6 +31,7 @@ import { webAuthContentStyle } from "../src/constants/webLayout";
 import { WEB_PAGE_ROOT_STYLE } from "../src/constants/webBackground";
 import { AuthContext } from "../src/context/authContext";
 import { auth } from "../src/services/firebase";
+import { requestSchoolPasswordResetHelp } from "../src/services/passwordResetRequest";
 import { getSchoolRegistryEntry } from "../src/services/schoolRegistry";
 import { isSchoolEntitled } from "../src/utils/schoolSubscriptionAccess";
 import {
@@ -59,6 +61,7 @@ export default function Login() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
+  const [showLoginCardScanner, setShowLoginCardScanner] = useState(false);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { selectedSchool, clearSchool, schoolReady } = useSchoolContext();
@@ -203,13 +206,19 @@ export default function Login() {
   };
 
   const busy = loading || awaitingProfile;
+  const showScanLoginCard = Platform.OS !== "web";
+
+  const handleLoginCardFilled = useCallback(
+    (payload: { email: string; password: string; name?: string }) => {
+      setEmail(payload.email);
+      setPassword(payload.password);
+      setError(null);
+      showSuccessAlert(t("common.success"), t("auth.login.scanCardFilled"));
+    },
+    [t],
+  );
 
   const handleForgotPassword = async () => {
-    if (!auth) {
-      showErrorAlert(t("common.error"), t("auth.login.schoolNotReady"));
-      return;
-    }
-
     if (!resetEmail) {
       showErrorAlert(t("common.error"), t("auth.login.enterEmailPassword"));
       return;
@@ -223,23 +232,13 @@ export default function Login() {
     setResetLoading(true);
 
     try {
-      await sendPasswordResetEmail(auth, resetEmail.toLowerCase());
-      showSuccessAlert(t("common.success"), t("auth.login.resetSent"));
+      await requestSchoolPasswordResetHelp(resetEmail);
+      showSuccessAlert(t("common.success"), t("auth.login.resetRequestSent"));
       setShowForgotPassword(false);
       setResetEmail("");
     } catch (err) {
-      let message = t("auth.login.resetFailed");
-
-      if (err instanceof Error) {
-        if (err.message.includes("user-not-found")) {
-          message = t("auth.login.userNotFound");
-        } else if (err.message.includes("invalid-email")) {
-          message = t("auth.login.invalidEmailAuth");
-        } else {
-          message = err.message;
-        }
-      }
-
+      const message =
+        err instanceof Error ? err.message : t("auth.login.resetFailed");
       showErrorAlert(t("common.error"), message);
     } finally {
       setResetLoading(false);
@@ -277,6 +276,7 @@ export default function Login() {
           ]}
           showsVerticalScrollIndicator={false}
         >
+        <WebPageCard>
         <View style={styles.logoContainer}>
           <AppLogo size={120} />
           <Text style={styles.title}>{t("auth.login.title")}</Text>
@@ -351,6 +351,20 @@ export default function Login() {
             </TouchableOpacity>
           </View>
 
+          {showScanLoginCard ? (
+            <TouchableOpacity
+              style={[styles.scanCardButton, busy && styles.buttonDisabled]}
+              onPress={() => setShowLoginCardScanner(true)}
+              disabled={busy}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="qr-code-outline" size={20} color="#1E3A8A" />
+              <Text style={styles.scanCardButtonText}>
+                {t("auth.login.scanCard")}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+
           <TouchableOpacity
             style={[styles.button, busy && styles.buttonDisabled]}
             onPress={handleLogin}
@@ -370,6 +384,7 @@ export default function Login() {
             </Text>
           </View>
         </View>
+        </WebPageCard>
 
         {showForgotPassword && (
           <View style={styles.forgotPasswordContainer}>
@@ -404,7 +419,7 @@ export default function Login() {
                 {resetLoading ? (
                   <ActivityIndicator color="white" size="small" />
                 ) : (
-                  <Text style={styles.buttonText}>{t("auth.login.sendReset")}</Text>
+                  <Text style={styles.buttonText}>{t("auth.login.notifyAdmin")}</Text>
                 )}
               </TouchableOpacity>
 
@@ -433,6 +448,12 @@ export default function Login() {
           </Text>
         ) : null}
       </KeyboardAvoidingView>
+
+      <LoginCardScannerModal
+        visible={showLoginCardScanner}
+        onClose={() => setShowLoginCardScanner(false)}
+        onFilled={handleLoginCardFilled}
+      />
     </View>
   );
 }
@@ -569,6 +590,26 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
+  },
+
+  scanCardButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 4,
+    marginBottom: 4,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+    backgroundColor: "#EFF6FF",
+  },
+
+  scanCardButtonText: {
+    color: "#1E3A8A",
+    fontWeight: "700",
+    fontSize: 15,
   },
 
   buttonDisabled: {

@@ -9,8 +9,8 @@ const ROLE_ROUTE_GROUPS = new Set([
   "(admin)",
 ]);
 
-/** Mount push hooks only after the user has been on a role screen for a while. */
-const DEFER_MS = 20000;
+/** Mount push hooks only after the user has been on a role screen briefly. */
+const DEFER_MS = 5000;
 
 function isOnRoleRoute(segments: string[]): boolean {
   const first = segments[0];

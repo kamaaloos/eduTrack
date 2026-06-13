@@ -251,13 +251,18 @@ export function useStudentDashboardData(
   }, [remarks, attendance]);
 
   const visibleMessages = useMemo(() => {
-    const filtered = !viewer
+    const forViewer = !viewer
       ? messages
       : filterAnnouncementsForViewer(messages, {
           ...viewer,
           studentId: viewer.studentId ?? studentId,
         });
-    return [...filtered].sort((a, b) => {
+    const withoutDismissed = filterDismissedAnnouncements(
+      forViewer,
+      classId,
+      dismissedKeys,
+    );
+    return [...withoutDismissed].sort((a, b) => {
       const aDirect = a.direct === true ? 1 : 0;
       const bDirect = b.direct === true ? 1 : 0;
       if (aDirect !== bDirect) return bDirect - aDirect;

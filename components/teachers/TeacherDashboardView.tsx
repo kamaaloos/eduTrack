@@ -1,6 +1,7 @@
 import { RefreshControl, ScrollView, View } from "react-native";
 import { webDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
+import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { TeacherDashboardAnnouncementsSection } from "./TeacherDashboardAnnouncementsSection";
 import { TeacherDashboardBanners } from "./TeacherDashboardBanners";
 import { TeacherDashboardClassesSection } from "./TeacherDashboardClassesSection";
@@ -50,16 +51,17 @@ export function TeacherDashboardView({
   return (
     <View style={styles.mainContainer}>
       <ScreenBackgroundLayer />
-      <TeacherDashboardHeader
-        displayName={displayName}
-        photoURL={photoURL}
-        firstName={firstName}
-        alertCount={alertCount}
-        onMenuPress={onMenuPress}
-      />
+      <WebPageCardFrame>
+        <TeacherDashboardHeader
+          displayName={displayName}
+          photoURL={photoURL}
+          firstName={firstName}
+          alertCount={alertCount}
+          onMenuPress={onMenuPress}
+        />
 
-      <ScrollView
-        style={styles.container}
+        <ScrollView
+          style={[styles.container, webPageBodyStyle()]}
         contentContainerStyle={[styles.scrollContent, webDashboardContentStyle()]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -93,6 +95,7 @@ export function TeacherDashboardView({
 
         <View style={styles.scrollBottomSpacer} />
       </ScrollView>
+      </WebPageCardFrame>
     </View>
   );
 }

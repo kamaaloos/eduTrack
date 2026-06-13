@@ -20,8 +20,18 @@ type ExpoPushMessage = {
   sound: "default";
   priority: "high";
   channelId: string;
+  android?: {
+    channelId: string;
+    sound: "default";
+    priority: "max";
+  };
+  ios?: {
+    sound: "default";
+  };
   data: Record<string, string>;
 };
+
+const PUSH_CHANNEL_ID = "edutrack-alerts";
 
 function ensureAdminApp() {
   if (getApps().length === 0) {
@@ -90,7 +100,15 @@ export const sendPushOnNotificationCreated = onDocumentCreated(
         body,
         sound: "default",
         priority: "high",
-        channelId: "default",
+        channelId: PUSH_CHANNEL_ID,
+        android: {
+          channelId: PUSH_CHANNEL_ID,
+          sound: "default",
+          priority: "max",
+        },
+        ios: {
+          sound: "default",
+        },
         data: {
           notificationId,
           type: data.type ?? "announcement",

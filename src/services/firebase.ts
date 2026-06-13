@@ -11,6 +11,7 @@ import type { SchoolFirebaseConfig } from "../types/school";
 import { normalizeSchoolFirebaseConfig } from "../utils/firebaseConfig";
 import { initAuthForApp } from "./firebaseAuthInit";
 import { notifyFirestoreClosing } from "./firestoreSession";
+import { resetSchoolFunctionsCache } from "./schoolFunctions";
 
 type EnvFirebaseConfig = {
   apiKey?: string;
@@ -262,6 +263,8 @@ export async function disconnectSchool(): Promise<void> {
   adminCreateAuth = null;
   lastSchoolFirebaseConfig = null;
   connectedSchoolProjectId = null;
+
+  resetSchoolFunctionsCache();
 
   for (const existing of getApps()) {
     if (

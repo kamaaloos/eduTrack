@@ -1,4 +1,5 @@
 import {
+  arrayRemove,
   arrayUnion,
   collection,
   deleteDoc,
@@ -9,8 +10,10 @@ import {
   serverTimestamp,
   setDoc,
   where,
+  writeBatch,
+  type DocumentReference,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, requireSchoolDb } from "./firebase";
 import { syncParentClassAccess } from "./parentClassAccess";
 
 export function parentStudentLinkId(parentId: string, studentId: string): string {
@@ -117,6 +120,62 @@ export async function upsertParentStudentLink(
   }
 
   await syncParentClassAccess(parentId, studentId);
+}
+
+/** Removes all parentStudents docs and linkedStudentIds entries for a student. */
+export async function removeAllParentLinksForStudent(
+  studentId: string,
+): Promise<void> {
+  const schoolDb = requireSchoolDb();
+  const parentIds = new Set<string>();
+  const deleteRefs = new Map<string, DocumentReference>();
+
+  const byFieldSnap = await getDocs(
+    query(
+      collection(schoolDb, "parentStudents"),
+      where("studentId", "==", studentId),
+    ),
+  );
+
+  for (const linkDoc of byFieldSnap.docs) {
+    deleteRefs.set(linkDoc.ref.path, linkDoc.ref);
+    const parentId = linkDoc.data().parentId as string | undefined;
+    if (parentId) parentIds.add(parentId);
+  }
+
+  const suffix = `_${studentId}`;
+  const allLinksSnap = await getDocs(collection(schoolDb, "parentStudents"));
+  for (const linkDoc of allLinksSnap.docs) {
+    if (linkDoc.id.endsWith(suffix)) {
+      deleteRefs.set(linkDoc.ref.path, linkDoc.ref);
+      const parentId = linkDoc.id.slice(0, -suffix.length);
+      if (parentId) parentIds.add(parentId);
+    } else if (linkDoc.data().studentId === studentId) {
+      deleteRefs.set(linkDoc.ref.path, linkDoc.ref);
+      const parentId = linkDoc.data().parentId as string | undefined;
+      if (parentId) parentIds.add(parentId);
+    }
+  }
+
+  const refs = [...deleteRefs.values()];
+  const BATCH_SIZE = 400;
+  for (let i = 0; i < refs.length; i += BATCH_SIZE) {
+    const batch = writeBatch(schoolDb);
+    for (const ref of refs.slice(i, i + BATCH_SIZE)) {
+      batch.delete(ref);
+    }
+    await batch.commit();
+  }
+
+  await Promise.all(
+    [...parentIds].map((parentId) =>
+      setDoc(
+        doc(schoolDb, "users", parentId),
+        { linkedStudentIds: arrayRemove(studentId) },
+        { merge: true },
+      ),
+    ),
+  );
 }
 
 /**

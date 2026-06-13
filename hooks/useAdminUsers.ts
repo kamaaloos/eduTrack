@@ -6,7 +6,7 @@ import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { useCallback, useState } from "react";
 import {
     removeUserAndLinks,
-    sendUserPasswordReset,
+    setUserPassword,
     updateUserProfile,
 } from "../src/services/adminUserManagement";
 import { ensureAdminCreateAuth, requireSchoolDb } from "../src/services/firebase";
@@ -150,20 +150,23 @@ export const useAdminUsers = () => {
         [loadUsers],
     );
 
-    const resetUserPassword = useCallback(async (email: string): Promise<void> => {
-        setLoading(true);
-        setError(null);
-        try {
-            await sendUserPasswordReset(email);
-        } catch (err) {
-            const message =
-                err instanceof Error ? err.message : "Failed to send reset email";
-            setError(message);
-            throw new Error(message);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    const setUserPasswordAction = useCallback(
+        async (userId: string, newPassword: string): Promise<void> => {
+            setLoading(true);
+            setError(null);
+            try {
+                await setUserPassword(userId, newPassword);
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Failed to set password";
+                setError(message);
+                throw new Error(message);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [],
+    );
 
     const removeUser = useCallback(
         async (userId: string, role: UserRole): Promise<void> => {
@@ -193,7 +196,7 @@ export const useAdminUsers = () => {
         loadUsers,
         createUser,
         updateUser,
-        resetUserPassword,
+        setUserPassword: setUserPasswordAction,
         removeUser,
     };
 };

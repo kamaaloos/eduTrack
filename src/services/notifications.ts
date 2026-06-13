@@ -32,7 +32,8 @@ export type NotificationType =
   | "school_usage_expiring"
   | "school_usage_ended"
   | "school_testing_expiring"
-  | "school_testing_ended";
+  | "school_testing_ended"
+  | "password_reset_request";
 
 export type CreateNotificationInput = {
   title: string;
@@ -73,6 +74,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   school_usage_ended: "Usage ended",
   school_testing_expiring: "Testing period",
   school_testing_ended: "Testing ended",
+  password_reset_request: "Password reset",
 };
 
 function toDate(value: unknown): Date | null {

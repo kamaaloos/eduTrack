@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { WebPageCard } from "../components/layout/WebPageCard";
 import { PasswordInput } from "../components/PasswordInput";
 import { webAuthContentStyle } from "../src/constants/webLayout";
 import { AuthContext } from "../src/context/authContext";
@@ -133,6 +134,7 @@ export default function ChangePasswordScreen() {
           ]}
         keyboardShouldPersistTaps="handled"
       >
+        <WebPageCard>
         <Text style={styles.title}>{t("auth.changePassword.title")}</Text>
         <Text style={styles.subtitle}>{t("auth.changePassword.subtitle")}</Text>
 
@@ -179,6 +181,7 @@ export default function ChangePasswordScreen() {
         <TouchableOpacity style={styles.secondaryBtn} onPress={handleLogout}>
           <Text style={styles.secondaryBtnText}>{t("common.logout")}</Text>
         </TouchableOpacity>
+        </WebPageCard>
         </ScrollView>
       </KeyboardAvoidingView>
     </AppScreenBackground>

@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { doc, getDocFromServer } from "firebase/firestore";
 import { router } from "expo-router";
+import { Platform } from "react-native";
 import { registryAuth, registryDb } from "../services/firebase";
 import { clearLocalSessionPreferences } from "../utils/authNavigation";
 import { useSchoolContext } from "./schoolContext";
@@ -104,7 +105,7 @@ export function SuperAdminAuthProvider({
     setRole(null);
     await clearLocalSessionPreferences();
     await resetSchoolSession();
-    router.replace("/onboarding");
+    router.replace((Platform.OS === "web" ? "/landing" : "/onboarding") as never);
   }, [resetSchoolSession]);
 
   const value = useMemo(

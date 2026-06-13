@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { clearOnboardingComplete } from "./onboardingStorage";
 import { userMustChangePassword } from "./mustChangePassword";
 
@@ -10,6 +11,8 @@ const PUBLIC_ENTRY_SEGMENTS = new Set([
   "login",
   "super-admin",
   "about",
+  "contact",
+  "download",
 ]);
 
 export function isPublicEntrySegment(segment: string | undefined): boolean {
@@ -45,6 +48,22 @@ export function getPostLoginRoute(
 
 export function isChangePasswordSegment(segment: string | undefined): boolean {
   return segment === "change-password";
+}
+
+/** Route after sign-out on web (marketing entry) vs native (school picker). */
+export function getPostLogoutRoute(): string {
+  if (Platform.OS === "web") {
+    return "/landing";
+  }
+  return "/select-school";
+}
+
+/** Route when a protected screen finds no signed-in school user. */
+export function getSignedOutRoute(): string {
+  if (Platform.OS === "web") {
+    return "/landing";
+  }
+  return "/login";
 }
 
 /** Clears onboarding flag so the next signed-out launch starts at onboarding. */
