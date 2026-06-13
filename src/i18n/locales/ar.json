@@ -1103,7 +1103,9 @@
     "defaultPassword": "123456",
     "tempPasswordHint": "يسجّل المستخدمون الجدد دخولهم بكلمة المرور المؤقتة ويجب عليهم اختيار كلمة مرور جديدة عند أول تسجيل دخول.",
     "broadcastFailed": "فشل البث",
-    "workbookSheetsList": "Sheets: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements"
+    "workbookSheetsList": "Sheets: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements",
+    "directoryActionsColumn": "Actions",
+    "classSubjectsColumn": "Subjects"
   },
   "superAdmin": {
     "schools": "المدارس",

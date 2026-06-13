@@ -1103,7 +1103,9 @@
     "defaultPassword": "123456",
     "tempPasswordHint": "Uudet käyttäjät kirjautuvat väliaikaisella salasanalla ja valitsevat oman salasanan ensimmäisellä kirjautumisella.",
     "broadcastFailed": "Lähetys epäonnistui",
-    "workbookSheetsList": "Sheets: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements"
+    "workbookSheetsList": "Sheets: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements",
+    "directoryActionsColumn": "Actions",
+    "classSubjectsColumn": "Subjects"
   },
   "superAdmin": {
     "schools": "Koulut",

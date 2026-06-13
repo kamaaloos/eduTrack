@@ -1,12 +1,16 @@
-import { Platform, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import type { ReactNode } from "react";
 import { PieChart } from "react-native-chart-kit";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
+import { adminChartHorizontalPadding } from "../../src/constants/platformLayout";
 
 /** Keep charts inside the admin column — not full browser width on web. */
 export function useAdminChartWidth() {
-  const { width } = useWindowDimensions();
-  const horizontalPad = Platform.OS === "web" ? 96 : 48;
-  return Math.min(Math.max(width - horizontalPad, 280), 520);
+  const layout = usePlatformLayout();
+  const { width } = layout;
+  const horizontalPad = adminChartHorizontalPadding(layout);
+  const maxWidth = layout.isDesktopWeb ? 640 : 520;
+  return Math.min(Math.max(width - horizontalPad, 280), maxWidth);
 }
 
 export const adminChartConfig = {

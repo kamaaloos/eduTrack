@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -14,7 +13,17 @@ import {
 } from "react-native";
 import type { ClassData } from "../../hooks/useAdminClasses";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useAdminData } from "../../src/context/adminDataContext";
+import {
+  adminDirectoryCardStyle,
+  adminDirectoryCardsWrapStyle,
+  adminDirectoryTableHeadStyle,
+  adminDirectoryTableRowStyle,
+  adminModalAnimationType,
+  adminModalBackdropStyle,
+  adminModalCardStyle,
+} from "../../src/constants/platformLayout";
 import {
   confirmAction,
   showErrorAlert,
@@ -22,10 +31,63 @@ import {
 } from "../../src/utils/confirmDialog";
 import { DirectoryPagination } from "./DirectoryPagination";
 
-const isWeb = Platform.OS === "web";
+function ClassDirectoryCard({
+  item,
+  layout,
+  subjectCountLabel,
+  subjectsPreview,
+  onEdit,
+  onDelete,
+}: {
+  item: ClassData;
+  layout: ReturnType<typeof usePlatformLayout>;
+  subjectCountLabel: string;
+  subjectsPreview: string;
+  onEdit: (cls: ClassData) => void;
+  onDelete: (cls: ClassData) => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <View style={adminDirectoryCardStyle(layout)}>
+      <View style={styles.cardTop}>
+        <View style={styles.iconWrap}>
+          <Ionicons name="school" size={22} color="#D97706" />
+        </View>
+        <View style={styles.cardBody}>
+          <Text style={styles.name}>
+            {item.name || t("common.classFallback")}
+          </Text>
+          <Text style={styles.meta}>
+            {subjectCountLabel}
+            {subjectsPreview}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.actionBtn}
+          onPress={() => onEdit(item)}
+        >
+          <Ionicons name="create-outline" size={18} color="#2563EB" />
+          <Text style={styles.actionEdit}>{t("common.rename")}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionBtn}
+          onPress={() => onDelete(item)}
+        >
+          <Ionicons name="trash-outline" size={18} color="#DC2626" />
+          <Text style={styles.actionRemove}>{t("common.delete")}</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 
 export function ClassDirectoryList() {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
+  const showTableLayout = layout.isDesktopWeb;
   const { classes, classesLoading, updateClass, deleteClass } = useAdminData();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<ClassData | null>(null);
@@ -38,7 +100,7 @@ export function ClassDirectoryList() {
     return classes.filter((c) => c.name?.toLowerCase().includes(q));
   }, [classes, search]);
 
-  const pagination = usePaginatedList(filtered, 4, search);
+  const pagination = usePaginatedList(filtered, showTableLayout ? 8 : 4, search);
 
   const openEdit = (cls: ClassData) => {
     setEditing(cls);
@@ -89,6 +151,93 @@ export function ClassDirectoryList() {
     })();
   };
 
+  const formatSubjects = (item: ClassData) => {
+    const subjects = Array.isArray(item.subjects) ? item.subjects : [];
+    const subjectCountLabel =
+      subjects.length === 1
+        ? t("admin.subjectsCount", { count: subjects.length })
+        : t("admin.subjectsCount_plural", { count: subjects.length });
+    const subjectsPreview =
+      subjects.length > 0
+        ? `: ${subjects.slice(0, 4).join(", ")}${subjects.length > 4 ? "…" : ""}`
+        : "";
+    return { subjects, subjectCountLabel, subjectsPreview };
+  };
+
+  const renderCardList = () => (
+    <View style={adminDirectoryCardsWrapStyle(layout)}>
+      {pagination.pageItems.map((item) => {
+        const { subjectCountLabel, subjectsPreview } = formatSubjects(item);
+        return (
+          <ClassDirectoryCard
+            key={item.id}
+            item={item}
+            layout={layout}
+            subjectCountLabel={subjectCountLabel}
+            subjectsPreview={subjectsPreview}
+            onEdit={openEdit}
+            onDelete={onDelete}
+          />
+        );
+      })}
+    </View>
+  );
+
+  const renderTableList = () => (
+    <>
+      <View style={adminDirectoryTableHeadStyle()}>
+        <Text style={[styles.th, styles.colName]}>
+          {t("admin.classNameField")}
+        </Text>
+        <Text style={[styles.th, styles.colSubjects]}>
+          {t("admin.classSubjectsColumn")}
+        </Text>
+        <Text style={[styles.th, styles.colActions]}>
+          {t("admin.directoryActionsColumn")}
+        </Text>
+      </View>
+
+      {pagination.pageItems.map((item) => {
+        const { subjectCountLabel, subjectsPreview } = formatSubjects(item);
+
+        return (
+          <View key={item.id} style={adminDirectoryTableRowStyle()}>
+            <View style={[styles.colName, styles.tableNameCell]}>
+              <View style={styles.iconWrapSmall}>
+                <Ionicons name="school" size={18} color="#D97706" />
+              </View>
+              <Text style={styles.tableName} numberOfLines={1}>
+                {item.name || t("common.classFallback")}
+              </Text>
+            </View>
+            <Text style={[styles.tableCell, styles.colSubjects]} numberOfLines={2}>
+              {subjectCountLabel}
+              {subjectsPreview}
+            </Text>
+            <View style={styles.colActions}>
+              <View style={styles.actionsCompact}>
+                <TouchableOpacity
+                  style={styles.actionBtn}
+                  onPress={() => openEdit(item)}
+                  accessibilityLabel={t("common.rename")}
+                >
+                  <Ionicons name="create-outline" size={18} color="#2563EB" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionBtn}
+                  onPress={() => onDelete(item)}
+                  accessibilityLabel={t("common.delete")}
+                >
+                  <Ionicons name="trash-outline" size={18} color="#DC2626" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        );
+      })}
+    </>
+  );
+
   return (
     <View style={styles.wrap}>
       <TextInput
@@ -117,62 +266,19 @@ export function ClassDirectoryList() {
             onNext={pagination.nextPage}
           />
 
-          {pagination.pageItems.map((item) => {
-            const subjects = Array.isArray(item.subjects) ? item.subjects : [];
-            const subjectCountLabel =
-              subjects.length === 1
-                ? t("admin.subjectsCount", { count: subjects.length })
-                : t("admin.subjectsCount_plural", { count: subjects.length });
-
-            return (
-              <View key={item.id} style={styles.card}>
-                <View style={styles.cardTop}>
-                  <View style={styles.iconWrap}>
-                    <Ionicons name="school" size={22} color="#D97706" />
-                  </View>
-                  <View style={styles.cardBody}>
-                    <Text style={styles.name}>
-                      {item.name || t("common.classFallback")}
-                    </Text>
-                    <Text style={styles.meta}>
-                      {subjectCountLabel}
-                      {subjects.length > 0
-                        ? `: ${subjects.slice(0, 4).join(", ")}${subjects.length > 4 ? "…" : ""}`
-                        : ""}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.actions}>
-                  <TouchableOpacity
-                    style={styles.actionBtn}
-                    onPress={() => openEdit(item)}
-                  >
-                    <Ionicons name="create-outline" size={18} color="#2563EB" />
-                    <Text style={styles.actionEdit}>{t("common.rename")}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.actionBtn}
-                    onPress={() => onDelete(item)}
-                  >
-                    <Ionicons name="trash-outline" size={18} color="#DC2626" />
-                    <Text style={styles.actionRemove}>{t("common.delete")}</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
-          })}
+          {showTableLayout ? renderTableList() : renderCardList()}
         </>
       )}
 
       <Modal
         visible={editing != null}
-        animationType={isWeb ? "fade" : "slide"}
+        animationType={adminModalAnimationType(layout)}
         transparent
         onRequestClose={closeEdit}
       >
-        <Pressable style={styles.modalBackdrop} onPress={closeEdit}>
+        <Pressable style={adminModalBackdropStyle(layout)} onPress={closeEdit}>
           <Pressable
-            style={styles.modalCard}
+            style={adminModalCardStyle(layout)}
             onPress={(e) => e.stopPropagation()}
           >
             <View style={styles.modalHeader}>
@@ -234,14 +340,6 @@ const styles = StyleSheet.create({
   },
   loader: { marginTop: 40 },
   empty: { textAlign: "center", color: "#64748B", marginTop: 32 },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
   cardTop: { flexDirection: "row", gap: 12, marginBottom: 12 },
   iconWrap: {
     width: 44,
@@ -251,7 +349,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  cardBody: { flex: 1 },
+  iconWrapSmall: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#FFFBEB",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  cardBody: { flex: 1, minWidth: 0 },
   name: { fontSize: 16, fontWeight: "800", color: "#0F172A" },
   meta: { fontSize: 12, color: "#64748B", marginTop: 4, lineHeight: 17 },
   actions: {
@@ -261,30 +368,40 @@ const styles = StyleSheet.create({
     borderTopColor: "#F1F5F9",
     paddingTop: 10,
   },
+  actionsCompact: {
+    flexDirection: "row",
+    gap: 4,
+    justifyContent: "flex-end",
+  },
   actionBtn: { flexDirection: "row", alignItems: "center", gap: 4 },
   actionEdit: { color: "#2563EB", fontWeight: "600", fontSize: 13 },
   actionRemove: { color: "#DC2626", fontWeight: "600", fontSize: 13 },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(15,23,42,0.45)",
-    justifyContent: isWeb ? "center" : "flex-end",
-    alignItems: isWeb ? "center" : "stretch",
-    padding: isWeb ? 24 : 0,
+  th: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#64748B",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
   },
-  modalCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: isWeb ? 16 : undefined,
-    borderTopLeftRadius: isWeb ? 16 : 20,
-    borderTopRightRadius: isWeb ? 16 : 20,
-    width: isWeb ? ("100%" as const) : undefined,
-    maxWidth: isWeb ? 480 : undefined,
-    padding: 20,
-    paddingBottom: isWeb ? 20 : 32,
-    ...(isWeb
-      ? ({
-          boxShadow: "0 12px 40px rgba(15, 23, 42, 0.2)",
-        } as object)
-      : null),
+  colName: { flex: 1.2, minWidth: 0 },
+  colSubjects: { flex: 2, minWidth: 0 },
+  colActions: { width: 88, alignItems: "flex-end" },
+  tableNameCell: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  tableName: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#0F172A",
+    minWidth: 0,
+  },
+  tableCell: {
+    fontSize: 13,
+    color: "#64748B",
+    lineHeight: 18,
   },
   modalHeader: {
     flexDirection: "row",

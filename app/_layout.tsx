@@ -4,6 +4,7 @@ import { Stack } from "expo-router";
 import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AppDialogHost } from "../components/dialog/AppDialogHost";
 import { configureForegroundNotifications } from "../src/services/pushNotifications";
 import { WebAppShell } from "../components/layout/WebAppShell";
 import { WebIconFontGate } from "../components/layout/WebIconFontGate";
@@ -42,6 +43,7 @@ export default function RootLayout() {
                             animation: Platform.OS === "android" ? "fade" : "default",
                           }}
                         />
+                        <AppDialogHost />
                       </MustChangePasswordGate>
                     </AuthProvider>
                   </SuperAdminAuthProvider>

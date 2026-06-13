@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AuthAboutLink } from "../components/auth/AuthAboutLink";
 import { AuthFormField } from "../components/auth/AuthFormField";
 import { LoginCardScannerModal } from "../components/auth/LoginCardScannerModal";
+import { LoginCardCodeModal } from "../components/auth/LoginCardCodeModal";
 import { AppLogo } from "../components/AppLogo";
 import { WebPageCard } from "../components/layout/WebPageCard";
 import { ScreenBackgroundLayer } from "../components/ScreenBackgroundLayer";
@@ -62,6 +63,7 @@ export default function Login() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
   const [showLoginCardScanner, setShowLoginCardScanner] = useState(false);
+  const [showLoginCardCode, setShowLoginCardCode] = useState(false);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { selectedSchool, clearSchool, schoolReady } = useSchoolContext();
@@ -207,6 +209,7 @@ export default function Login() {
 
   const busy = loading || awaitingProfile;
   const showScanLoginCard = Platform.OS !== "web";
+  const showEnterLoginCardCode = Platform.OS === "web";
 
   const handleLoginCardFilled = useCallback(
     (payload: { email: string; password: string; name?: string }) => {
@@ -351,6 +354,20 @@ export default function Login() {
             </TouchableOpacity>
           </View>
 
+          {showEnterLoginCardCode ? (
+            <TouchableOpacity
+              style={[styles.scanCardButton, busy && styles.buttonDisabled]}
+              onPress={() => setShowLoginCardCode(true)}
+              disabled={busy}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="keypad-outline" size={20} color="#1E3A8A" />
+              <Text style={styles.scanCardButtonText}>
+                {t("auth.login.enterCardCode")}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+
           {showScanLoginCard ? (
             <TouchableOpacity
               style={[styles.scanCardButton, busy && styles.buttonDisabled]}
@@ -452,6 +469,12 @@ export default function Login() {
       <LoginCardScannerModal
         visible={showLoginCardScanner}
         onClose={() => setShowLoginCardScanner(false)}
+        onFilled={handleLoginCardFilled}
+      />
+
+      <LoginCardCodeModal
+        visible={showLoginCardCode}
+        onClose={() => setShowLoginCardCode(false)}
         onFilled={handleLoginCardFilled}
       />
     </View>

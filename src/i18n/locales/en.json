@@ -269,7 +269,13 @@
       "scanCardPermission": "Camera access is needed to scan your login card.",
       "scanCardAllowCamera": "Allow camera",
       "scanCardInvalid": "That QR code is not a valid eduTrack login card.",
-      "scanCardFilled": "Email and password filled from login card. Tap Sign in to continue."
+      "scanCardFilled": "Email and password filled from login card. Tap Sign in to continue.",
+      "enterCardCode": "Enter login card code",
+      "enterCardCodeTitle": "Enter login card code",
+      "enterCardCodeHint": "Paste the JSON code from your school login card (the same data encoded in the QR).",
+      "enterCardCodePlaceholder": "{\"type\":\"edutrack-temp-login\",\"v\":1,\"email\":\"...\",\"password\":\"...\"}",
+      "enterCardCodeInvalid": "That code is not a valid eduTrack login card.",
+      "enterCardCodeSubmit": "Use code"
     },
     "changePassword": {
       "title": "Set your password",
@@ -1004,6 +1010,8 @@
     "subjectsCount": "{{count}} subject",
     "subjectsCount_plural": "{{count}} subjects",
     "searchUsers": "Search by name or email…",
+    "directoryActionsColumn": "Actions",
+    "classSubjectsColumn": "Subjects",
     "noUsersFound": "No {{role}}s found.",
     "noUsersForSearch": "No {{role}}s found for this search.",
     "profileUpdated": "Profile updated.",

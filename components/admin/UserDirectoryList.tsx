@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -14,7 +13,17 @@ import {
 } from "react-native";
 import type { UserData, UserRole } from "../../hooks/useAdminUsers";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useAdminData } from "../../src/context/adminDataContext";
+import {
+  adminDirectoryCardStyle,
+  adminDirectoryCardsWrapStyle,
+  adminDirectoryTableHeadStyle,
+  adminDirectoryTableRowStyle,
+  adminModalAnimationType,
+  adminModalBackdropStyle,
+  adminModalCardStyle,
+} from "../../src/constants/platformLayout";
 import {
   confirmDestructiveAction,
   showErrorAlert,
@@ -24,14 +33,120 @@ import { AuthFormField } from "../auth/AuthFormField";
 import { TempPasswordShareModal } from "./TempPasswordShareModal";
 import { DirectoryPagination } from "./DirectoryPagination";
 
-const isWeb = Platform.OS === "web";
-
 type UserDirectoryListProps = {
   role: UserRole;
   title: string;
   subtitle: string;
   users: UserData[];
 };
+
+type UserRowActionsProps = {
+  item: UserData;
+  compact?: boolean;
+  onEdit: (user: UserData) => void;
+  onPassword: (user: UserData) => void;
+  onRemove: (user: UserData) => void;
+};
+
+function UserRowActions({
+  item,
+  compact = false,
+  onEdit,
+  onPassword,
+  onRemove,
+}: UserRowActionsProps) {
+  const { t } = useTranslation();
+
+  return (
+    <View style={[styles.actions, compact && styles.actionsCompact]}>
+      <TouchableOpacity
+        style={styles.actionBtn}
+        onPress={() => onEdit(item)}
+        accessibilityLabel={t("common.edit")}
+      >
+        <Ionicons name="create-outline" size={18} color="#2563EB" />
+        {!compact ? (
+          <Text style={styles.actionEdit}>{t("common.edit")}</Text>
+        ) : null}
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.actionBtn}
+        onPress={() => onPassword(item)}
+        accessibilityLabel={t("admin.setPasswordAction")}
+      >
+        <Ionicons name="key-outline" size={18} color="#D97706" />
+        {!compact ? (
+          <Text style={styles.actionReset}>{t("admin.setPasswordAction")}</Text>
+        ) : null}
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.actionBtn}
+        onPress={() => void onRemove(item)}
+        accessibilityLabel={t("common.remove")}
+      >
+        <Ionicons name="trash-outline" size={18} color="#DC2626" />
+        {!compact ? (
+          <Text style={styles.actionRemove}>{t("common.remove")}</Text>
+        ) : null}
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+function UserDirectoryCard({
+  item,
+  layout,
+  showClassMeta,
+  onEdit,
+  onPassword,
+  onRemove,
+}: {
+  item: UserData;
+  layout: ReturnType<typeof usePlatformLayout>;
+  showClassMeta: boolean;
+  onEdit: (user: UserData) => void;
+  onPassword: (user: UserData) => void;
+  onRemove: (user: UserData) => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <View style={adminDirectoryCardStyle(layout)}>
+      <View style={styles.cardTop}>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>
+            {(item.name || item.email || "?").charAt(0).toUpperCase()}
+          </Text>
+        </View>
+        <View style={styles.cardBody}>
+          <Text style={styles.name} numberOfLines={1}>
+            {item.name || t("common.unnamed")}
+          </Text>
+          <Text style={styles.email} numberOfLines={1}>
+            {item.email || "—"}
+          </Text>
+          {typeof item.phone === "string" && item.phone.trim() ? (
+            <Text style={styles.meta} numberOfLines={1}>
+              {item.phone.trim()}
+            </Text>
+          ) : null}
+          {showClassMeta && item.classId ? (
+            <Text style={styles.meta}>
+              {t("admin.classIdLabel", { id: item.classId })}
+            </Text>
+          ) : null}
+        </View>
+      </View>
+
+      <UserRowActions
+        item={item}
+        onEdit={onEdit}
+        onPassword={onPassword}
+        onRemove={onRemove}
+      />
+    </View>
+  );
+}
 
 export function UserDirectoryList({
   role,
@@ -40,6 +155,9 @@ export function UserDirectoryList({
   users,
 }: UserDirectoryListProps) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
+  const showTableLayout = layout.isDesktopWeb;
+  const showClassColumn = role === "student";
   const roleLabel = t(`common.${role}`);
   const { usersLoading, updateUser, setUserPassword, removeUser } =
     useAdminData();
@@ -69,7 +187,7 @@ export function UserDirectoryList({
     );
   }, [users, search]);
 
-  const pagination = usePaginatedList(filtered, 4, search);
+  const pagination = usePaginatedList(filtered, showTableLayout ? 8 : 4, search);
 
   const openEdit = (user: UserData) => {
     setEditing(user);
@@ -169,6 +287,77 @@ export function UserDirectoryList({
     }
   };
 
+  const renderCardList = () => (
+    <View style={adminDirectoryCardsWrapStyle(layout)}>
+      {pagination.pageItems.map((item) => (
+        <UserDirectoryCard
+          key={item.id}
+          item={item}
+          layout={layout}
+          showClassMeta={showClassColumn}
+          onEdit={openEdit}
+          onPassword={openPasswordModal}
+          onRemove={onRemove}
+        />
+      ))}
+    </View>
+  );
+
+  const renderTableList = () => (
+    <>
+      <View style={adminDirectoryTableHeadStyle()}>
+        <Text style={[styles.th, styles.colName]}>{t("admin.fullNameLabel")}</Text>
+        <Text style={[styles.th, styles.colEmail]}>
+          {t("admin.emailProfileLabel")}
+        </Text>
+        <Text style={[styles.th, styles.colPhone]}>{t("admin.phoneLabel")}</Text>
+        {showClassColumn ? (
+          <Text style={[styles.th, styles.colClass]}>{t("common.class")}</Text>
+        ) : null}
+        <Text style={[styles.th, styles.colActions]}>
+          {t("admin.directoryActionsColumn")}
+        </Text>
+      </View>
+
+      {pagination.pageItems.map((item) => (
+        <View key={item.id} style={adminDirectoryTableRowStyle()}>
+          <View style={[styles.colName, styles.tableNameCell]}>
+            <View style={styles.avatarSmall}>
+              <Text style={styles.avatarTextSmall}>
+                {(item.name || item.email || "?").charAt(0).toUpperCase()}
+              </Text>
+            </View>
+            <Text style={styles.tableName} numberOfLines={1}>
+              {item.name || t("common.unnamed")}
+            </Text>
+          </View>
+          <Text style={[styles.tableCell, styles.colEmail]} numberOfLines={1}>
+            {item.email || "—"}
+          </Text>
+          <Text style={[styles.tableCell, styles.colPhone]} numberOfLines={1}>
+            {typeof item.phone === "string" && item.phone.trim()
+              ? item.phone.trim()
+              : "—"}
+          </Text>
+          {showClassColumn ? (
+            <Text style={[styles.tableCell, styles.colClass]} numberOfLines={1}>
+              {item.classId || "—"}
+            </Text>
+          ) : null}
+          <View style={styles.colActions}>
+            <UserRowActions
+              item={item}
+              compact
+              onEdit={openEdit}
+              onPassword={openPasswordModal}
+              onRemove={onRemove}
+            />
+          </View>
+        </View>
+      ))}
+    </>
+  );
+
   return (
     <View style={styles.wrap}>
       <TextInput
@@ -202,73 +391,22 @@ export function UserDirectoryList({
             onNext={pagination.nextPage}
           />
 
-          {pagination.pageItems.map((item) => (
-            <View key={item.id} style={styles.card}>
-              <View style={styles.cardTop}>
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>
-                    {(item.name || item.email || "?").charAt(0).toUpperCase()}
-                  </Text>
-                </View>
-                <View style={styles.cardBody}>
-                  <Text style={styles.name} numberOfLines={1}>
-                    {item.name || t("common.unnamed")}
-                  </Text>
-                  <Text style={styles.email} numberOfLines={1}>
-                    {item.email || "—"}
-                  </Text>
-                  {typeof item.phone === "string" && item.phone.trim() ? (
-                    <Text style={styles.meta} numberOfLines={1}>
-                      {item.phone.trim()}
-                    </Text>
-                  ) : null}
-                  {item.classId ? (
-                    <Text style={styles.meta}>
-                      {t("admin.classIdLabel", { id: item.classId })}
-                    </Text>
-                  ) : null}
-                </View>
-              </View>
-
-              <View style={styles.actions}>
-                <TouchableOpacity
-                  style={styles.actionBtn}
-                  onPress={() => openEdit(item)}
-                >
-                  <Ionicons name="create-outline" size={18} color="#2563EB" />
-                  <Text style={styles.actionEdit}>{t("common.edit")}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.actionBtn}
-                  onPress={() => openPasswordModal(item)}
-                >
-                  <Ionicons name="key-outline" size={18} color="#D97706" />
-                  <Text style={styles.actionReset}>
-                    {t("admin.setPasswordAction")}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.actionBtn}
-                  onPress={() => void onRemove(item)}
-                >
-                  <Ionicons name="trash-outline" size={18} color="#DC2626" />
-                  <Text style={styles.actionRemove}>{t("common.remove")}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
+          {showTableLayout ? renderTableList() : renderCardList()}
         </>
       )}
 
       <Modal
         visible={editing != null}
-        animationType={Platform.OS === "web" ? "fade" : "slide"}
+        animationType={adminModalAnimationType(layout)}
         transparent
         onRequestClose={closeEdit}
       >
-        <Pressable style={styles.modalBackdrop} onPress={closeEdit}>
+        <Pressable
+          style={adminModalBackdropStyle(layout)}
+          onPress={closeEdit}
+        >
           <Pressable
-            style={styles.modalCard}
+            style={adminModalCardStyle(layout)}
             onPress={(e) => e.stopPropagation()}
           >
             <View style={styles.modalHeader}>
@@ -342,13 +480,16 @@ export function UserDirectoryList({
 
       <Modal
         visible={passwordUser != null}
-        animationType={Platform.OS === "web" ? "fade" : "slide"}
+        animationType={adminModalAnimationType(layout)}
         transparent
         onRequestClose={closePasswordModal}
       >
-        <Pressable style={styles.modalBackdrop} onPress={closePasswordModal}>
+        <Pressable
+          style={adminModalBackdropStyle(layout)}
+          onPress={closePasswordModal}
+        >
           <Pressable
-            style={styles.modalCard}
+            style={adminModalCardStyle(layout)}
             onPress={(e) => e.stopPropagation()}
           >
             <View style={styles.modalHeader}>
@@ -453,14 +594,6 @@ const styles = StyleSheet.create({
     marginTop: 32,
     fontSize: 15,
   },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
   cardTop: { flexDirection: "row", gap: 12, marginBottom: 12 },
   avatar: {
     width: 44,
@@ -470,7 +603,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  avatarSmall: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#EFF6FF",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
   avatarText: { fontSize: 18, fontWeight: "800", color: "#2563EB" },
+  avatarTextSmall: { fontSize: 14, fontWeight: "800", color: "#2563EB" },
   cardBody: { flex: 1, minWidth: 0 },
   name: { fontSize: 16, fontWeight: "800", color: "#0F172A" },
   email: { fontSize: 13, color: "#64748B", marginTop: 2 },
@@ -483,6 +626,12 @@ const styles = StyleSheet.create({
     borderTopColor: "#F1F5F9",
     paddingTop: 10,
   },
+  actionsCompact: {
+    borderTopWidth: 0,
+    paddingTop: 0,
+    gap: 4,
+    justifyContent: "flex-end",
+  },
   actionBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -493,27 +642,33 @@ const styles = StyleSheet.create({
   actionEdit: { color: "#2563EB", fontWeight: "600", fontSize: 13 },
   actionReset: { color: "#D97706", fontWeight: "600", fontSize: 13 },
   actionRemove: { color: "#DC2626", fontWeight: "600", fontSize: 13 },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(15,23,42,0.45)",
-    justifyContent: isWeb ? "center" : "flex-end",
-    alignItems: isWeb ? "center" : "stretch",
-    padding: isWeb ? 24 : 0,
+  th: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#64748B",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
   },
-  modalCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: isWeb ? 16 : undefined,
-    borderTopLeftRadius: isWeb ? 16 : 20,
-    borderTopRightRadius: isWeb ? 16 : 20,
-    width: isWeb ? ("100%" as const) : undefined,
-    maxWidth: isWeb ? 480 : undefined,
-    padding: 20,
-    paddingBottom: isWeb ? 20 : 32,
-    ...(isWeb
-      ? ({
-          boxShadow: "0 12px 40px rgba(15, 23, 42, 0.2)",
-        } as object)
-      : null),
+  colName: { flex: 1.3, minWidth: 0 },
+  colEmail: { flex: 1.4, minWidth: 0 },
+  colPhone: { flex: 1, minWidth: 0 },
+  colClass: { width: 88, minWidth: 0 },
+  colActions: { width: 132, alignItems: "flex-end" },
+  tableNameCell: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  tableName: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#0F172A",
+    minWidth: 0,
+  },
+  tableCell: {
+    fontSize: 13,
+    color: "#64748B",
   },
   modalHeader: {
     flexDirection: "row",

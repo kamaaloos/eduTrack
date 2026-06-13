@@ -7,10 +7,13 @@ import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import { AdminScreenShell } from "../../../components/admin/AdminScreenShell";
 import { UserDirectoryList } from "../../../components/admin/UserDirectoryList";
 import type { UserRole } from "../../../hooks/useAdminUsers";
+import { usePlatformLayout } from "../../../hooks/usePlatformLayout";
 import { useAdminData } from "../../../src/context/adminDataContext";
+import { adminScreenScrollStyle } from "../../../src/constants/platformLayout";
 
 export default function UserDirectoryScreen() {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const { role: roleParam } = useLocalSearchParams<{ role: string }>();
   const role = (roleParam === "teacher" ||
   roleParam === "parent" ||
@@ -78,7 +81,7 @@ export default function UserDirectoryScreen() {
         <View style={styles.body}>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={adminScreenScrollStyle(layout)}
           >
             <UserDirectoryList
               role={role}
@@ -95,9 +98,4 @@ export default function UserDirectoryScreen() {
 
 const styles = StyleSheet.create({
   body: { flex: 1 },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 40,
-  },
 });

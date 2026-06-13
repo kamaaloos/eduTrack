@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -11,7 +10,9 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { adminSurfaceCardStyle } from "../../src/constants/platformLayout";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
 import {
   buildParentOverviewRows,
@@ -28,6 +29,7 @@ type FeeFilter = "all" | "yes" | "no";
 
 export function AdminParentsOverview() {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const { parents, usersLoading, loadUsers } = useAdminData();
   const [search, setSearch] = useState("");
   const [feeFilter, setFeeFilter] = useState<FeeFilter>("all");
@@ -82,7 +84,7 @@ export function AdminParentsOverview() {
 
   const pagination = usePaginatedList(filtered, 6, `${search}-${feeFilter}`);
   const busy = usersLoading || loadingCounts;
-  const isWeb = Platform.OS === "web";
+  const showTableLayout = layout.isDesktopWeb;
   const year = new Date().getFullYear();
 
   const openParentDetail = (parentId: string) => {
@@ -139,7 +141,7 @@ export function AdminParentsOverview() {
   ];
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, adminSurfaceCardStyle(layout), styles.cardSpacing]}>
       <View style={styles.headerRow}>
         <View style={styles.headerText}>
           <Text style={styles.title}>{t("admin.parentOverviewTitle")}</Text>
@@ -196,7 +198,7 @@ export function AdminParentsOverview() {
         clearButtonMode="while-editing"
       />
 
-      {isWeb ? (
+      {showTableLayout ? (
         <View style={styles.tableHead}>
           <Text style={[styles.th, styles.colName]}>{t("admin.fullNameLabel")}</Text>
           <Text style={[styles.th, styles.colContact]}>
@@ -231,42 +233,42 @@ export function AdminParentsOverview() {
           />
 
           {pagination.pageItems.map((row) => (
-            <View key={row.id} style={[styles.row, isWeb && styles.rowWeb]}>
+            <View key={row.id} style={[styles.row, showTableLayout && styles.rowWeb]}>
               <Pressable
-                style={[styles.rowMain, !isWeb && styles.rowMainMobile]}
+                style={[styles.rowMain, !showTableLayout && styles.rowMainMobile]}
                 onPress={() => openParentDetail(row.id)}
               >
-                <View style={[styles.colName, !isWeb && styles.colNameMobile]}>
+                <View style={[styles.colName, !showTableLayout && styles.colNameMobile]}>
                   <Text style={styles.name} numberOfLines={1}>
                     {row.name}
                   </Text>
-                  {!isWeb ? (
+                  {!showTableLayout ? (
                     <Text style={styles.meta} numberOfLines={2}>
                       {row.contact}
                     </Text>
                   ) : null}
                 </View>
 
-                {isWeb ? (
+                {showTableLayout ? (
                   <Text style={[styles.meta, styles.colContact]} numberOfLines={2}>
                     {row.contact}
                   </Text>
                 ) : null}
 
-                {isWeb ? (
+                {showTableLayout ? (
                   <Text style={[styles.students, styles.colStudents]}>
                     {row.linkedStudentCount}
                   </Text>
                 ) : null}
 
-                {isWeb ? (
+                {showTableLayout ? (
                   <Text style={[styles.months, styles.colMonths]}>
                     {row.paidMonthsThisYear}/12
                   </Text>
                 ) : null}
               </Pressable>
 
-              {!isWeb ? (
+              {!showTableLayout ? (
                 <View style={styles.mobileStatsRow}>
                   <Text style={styles.mobileStat}>
                     {t("admin.parentStudentsColumn")}: {row.linkedStudentCount}
@@ -281,8 +283,8 @@ export function AdminParentsOverview() {
                 style={[
                   styles.feeBtn,
                   row.feePaid ? styles.feeBtnYes : styles.feeBtnNo,
-                  styles.colFee,
-                  !isWeb && styles.feeBtnMobile,
+                  showTableLayout && styles.colFee,
+                  !showTableLayout && styles.feeBtnMobile,
                 ]}
                 onPress={() => void toggleFee(row)}
                 disabled={togglingId === row.id}
@@ -313,12 +315,10 @@ export function AdminParentsOverview() {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: Platform.OS === "web" ? 12 : 18,
-    padding: Platform.OS === "web" ? 18 : 16,
-    marginBottom: Platform.OS === "web" ? 24 : 20,
-    borderWidth: Platform.OS === "web" ? 1 : 0,
-    borderColor: "#E2E8F0",
+    padding: 18,
+  },
+  cardSpacing: {
+    marginBottom: 20,
   },
   headerRow: {
     flexDirection: "row",
@@ -469,19 +469,19 @@ const styles = StyleSheet.create({
   feeBtnMobile: {
     alignSelf: "flex-end",
   },
-  colName: { flex: Platform.OS === "web" ? 1.2 : undefined, minWidth: 0 },
-  colContact: { flex: Platform.OS === "web" ? 1.4 : undefined, minWidth: 0 },
+  colName: { flex: 1.2, minWidth: 0 },
+  colContact: { flex: 1.4, minWidth: 0 },
   colStudents: {
-    width: Platform.OS === "web" ? 64 : undefined,
-    textAlign: Platform.OS === "web" ? "center" : "left",
+    width: 64,
+    textAlign: "center",
   },
   colMonths: {
-    width: Platform.OS === "web" ? 72 : undefined,
+    width: 72,
     textAlign: "center",
   },
   colFee: {
-    width: Platform.OS === "web" ? 72 : 88,
-    alignSelf: Platform.OS === "web" ? "center" : "flex-start",
+    width: 72,
+    alignSelf: "center",
   },
   name: { fontSize: 15, fontWeight: "700", color: "#0F172A" },
   meta: { fontSize: 13, color: "#64748B", marginTop: 2, lineHeight: 18 },

@@ -5,10 +5,13 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { ClassDirectoryList } from "../../components/admin/ClassDirectoryList";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { adminScreenScrollStyle } from "../../src/constants/platformLayout";
 
 export default function ClassDirectoryScreen() {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const { refreshAll } = useAdminData();
 
   useFocusEffect(
@@ -27,7 +30,7 @@ export default function ClassDirectoryScreen() {
         <View style={styles.body}>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={adminScreenScrollStyle(layout)}
           >
             <ClassDirectoryList />
           </ScrollView>
@@ -39,9 +42,4 @@ export default function ClassDirectoryScreen() {
 
 const styles = StyleSheet.create({
   body: { flex: 1 },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 40,
-  },
 });

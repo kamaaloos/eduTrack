@@ -1103,7 +1103,9 @@
     "defaultPassword": "123456",
     "tempPasswordHint": "Isticmaalayaasha cusub waxay ku soo galaan eraygan ku meel gaarka ah waxayna u baahan yihiin inay doortaan eray sir cusub markii ugu horreysay.",
     "broadcastFailed": "Ogeysiiska lama dirin",
-    "workbookSheetsList": "Sheets: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements"
+    "workbookSheetsList": "Sheets: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements",
+    "directoryActionsColumn": "Actions",
+    "classSubjectsColumn": "Subjects"
   },
   "superAdmin": {
     "schools": "Dugsiyada",

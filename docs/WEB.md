@@ -62,12 +62,16 @@ These work on mobile first; web polish is ongoing:
 |------|------------|
 | Login, school picker, role dashboards | Supported (Phase 1) |
 | Layout | Centered auth forms; docked tab bar on web (not floating pill) |
-| Logout confirm | Uses browser `confirm()` — multi-button alerts do not work on web |
+| Logout confirm | Branded modal via `AppDialogHost` |
+| Alerts / errors | Branded modal via `AppDialogHost` (web) |
+| Login card | Paste JSON code on web; QR scan on native |
 | Time pickers | Native `<input type="time">` on web (schedule, etc.) |
 | Delete / confirm actions | Use `confirmAction()` from `src/utils/confirmDialog.ts` |
 | Image picker / profile photos | Native picker; file input follow-up |
 | PDF share / print | May use download instead of native share |
 | Date/time pickers | May need web-specific controls on some screens |
+| Admin dashboard layout | Responsive grid at ≥1024px via `usePlatformLayout()` |
+| User / class directories | Table at ≥1024px; 2-column cards on compact web; cards on native |
 
 Report breakages by role and screen so we can prioritize Phase 2 (responsive layouts + platform APIs).
 

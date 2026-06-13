@@ -4,7 +4,6 @@ import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -15,10 +14,18 @@ import {
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminParentsOverview } from "../../components/admin/AdminParentsOverview";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { AuthContext } from "../../src/context/authContext";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { useSchoolContext } from "../../src/context/schoolContext";
-import { platformShadow } from "../../src/utils/platformShadow";
+import {
+  adminContentPaddingStyle,
+  adminGridContainerStyle,
+  adminInsightCardStyle,
+  adminMenuCardStyle,
+  adminStatGridItemStyle,
+  adminSurfaceCardStyle,
+} from "../../src/constants/platformLayout";
 import {
   notifySchoolTestingEnded,
   notifySchoolTestingExpiring,
@@ -43,6 +50,7 @@ type DirectoryRoute =
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const { user } = useContext(AuthContext);
   const { selectedSchool, refreshSelectedSchoolFromRegistry } = useSchoolContext();
   const {
@@ -259,8 +267,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const isWeb = Platform.OS === "web";
-
   const statItems = [
     {
       key: "students",
@@ -301,7 +307,10 @@ export default function AdminDashboard() {
       >
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={styles.content}
+          contentContainerStyle={[
+            styles.content,
+            adminContentPaddingStyle(layout),
+          ]}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -331,73 +340,88 @@ export default function AdminDashboard() {
             />
           ) : null}
 
-          <View style={styles.statsSection}>
-            {isWeb ? (
-              <View style={styles.statsGridWeb}>
+          <View style={[styles.statsSection, layout.isWeb && styles.statsSectionWeb]}>
+            {layout.isNative ? (
+              <>
+                <View style={styles.statsRow}>
+                  {statItems.slice(0, 2).map((item) => (
+                    <TouchableOpacity
+                      key={item.key}
+                      style={[
+                        styles.statCard,
+                        adminSurfaceCardStyle(layout),
+                        item.style,
+                      ]}
+                      onPress={() => router.push(item.route)}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.statValue}>{item.value}</Text>
+                      <Text style={styles.statLabel}>{item.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <View style={styles.statsRow}>
+                  {statItems.slice(2).map((item) => (
+                    <TouchableOpacity
+                      key={item.key}
+                      style={[
+                        styles.statCard,
+                        adminSurfaceCardStyle(layout),
+                        item.style,
+                      ]}
+                      onPress={() => router.push(item.route)}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.statValue}>{item.value}</Text>
+                      <Text style={styles.statLabel}>{item.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </>
+            ) : (
+              <View style={adminGridContainerStyle(layout)}>
                 {statItems.map((item) => (
                   <TouchableOpacity
                     key={item.key}
-                    style={[styles.statCard, item.style, styles.statCardWeb]}
+                    style={[
+                      styles.statCard,
+                      adminSurfaceCardStyle(layout),
+                      adminStatGridItemStyle(layout),
+                      item.style,
+                    ]}
                     onPress={() => router.push(item.route)}
                     activeOpacity={0.85}
                   >
-                    <Text style={styles.statValue}>{item.value}</Text>
+                    <Text
+                      style={[
+                        styles.statValue,
+                        layout.isDesktopWeb && styles.statValueDesktop,
+                      ]}
+                    >
+                      {item.value}
+                    </Text>
                     <Text style={styles.statLabel}>{item.label}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
-            ) : (
-              <>
-                <View style={styles.statsRow}>
-                  <TouchableOpacity
-                    style={[styles.statCard, styles.statCardBlue]}
-                    onPress={() => router.push("/(admin)/user-directory/student")}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.statValue}>{students.length}</Text>
-                    <Text style={styles.statLabel}>{t("admin.students")}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.statCard, styles.statCardGreen]}
-                    onPress={() => router.push("/(admin)/user-directory/teacher")}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.statValue}>{teachers.length}</Text>
-                    <Text style={styles.statLabel}>{t("admin.teachers")}</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.statsRow}>
-                  <TouchableOpacity
-                    style={[styles.statCard, styles.statCardPurple]}
-                    onPress={() => router.push("/(admin)/user-directory/parent")}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.statValue}>{parents.length}</Text>
-                    <Text style={styles.statLabel}>{t("admin.parents")}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.statCard, styles.statCardAmber]}
-                    onPress={() => router.push("/(admin)/class-directory")}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.statValue}>{classes.length}</Text>
-                    <Text style={styles.statLabel}>{t("admin.classes")}</Text>
-                  </TouchableOpacity>
-                </View>
-              </>
             )}
           </View>
 
-          <View style={styles.insightsRow}>
+          <View
+            style={[
+              styles.insightsRow,
+              layout.isWeb && styles.insightsRowWeb,
+            ]}
+          >
             <TouchableOpacity
-              style={styles.insightCard}
+              style={adminInsightCardStyle(layout)}
               onPress={() => router.push("/(admin)/analytics")}
             >
               <Ionicons name="bar-chart-outline" size={26} color="#2563EB" />
               <Text style={styles.insightTitle}>{t("admin.analytics")}</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.insightCard}
+              style={adminInsightCardStyle(layout)}
               onPress={() => router.push("/(admin)/performance")}
             >
               <Ionicons name="trending-up-outline" size={26} color="#16A34A" />
@@ -407,27 +431,46 @@ export default function AdminDashboard() {
 
           <AdminParentsOverview />
 
-          <Text style={styles.sectionLabel}>{t("admin.directories")}</Text>
-          <Text style={styles.sectionHint}>{t("admin.directoriesHint")}</Text>
+          <Text
+            style={[
+              styles.sectionLabel,
+              layout.isWeb && styles.sectionLabelWeb,
+            ]}
+          >
+            {t("admin.directories")}
+          </Text>
+          <Text
+            style={[styles.sectionHint, layout.isWeb && styles.sectionHintWeb]}
+          >
+            {t("admin.directoriesHint")}
+          </Text>
 
-          <View style={isWeb ? styles.menuGridWeb : undefined}>
+          <View style={adminGridContainerStyle(layout)}>
           {directoryItems.map((item) => (
             <TouchableOpacity
               key={item.key}
-              style={[styles.menuCard, isWeb && styles.menuCardWeb]}
+              style={adminMenuCardStyle(layout)}
               onPress={() => router.push(item.route)}
               activeOpacity={0.85}
             >
               <View
                 style={[
                   styles.menuIconWrap,
+                  layout.isWeb && styles.menuIconWrapWeb,
                   { backgroundColor: `${item.color}18` },
                 ]}
               >
                 <Ionicons name={item.icon} size={24} color={item.color} />
               </View>
               <View style={styles.menuText}>
-                <Text style={styles.menuTitle}>{item.label}</Text>
+                <Text
+                  style={[
+                    styles.menuTitle,
+                    layout.isWeb && styles.menuTitleWeb,
+                  ]}
+                >
+                  {item.label}
+                </Text>
                 <Text style={styles.menuDescription}>{item.description}</Text>
               </View>
               <Ionicons name="chevron-forward" size={22} color="#94A3B8" />
@@ -439,24 +482,32 @@ export default function AdminDashboard() {
             {t("admin.management")}
           </Text>
 
-          <View style={isWeb ? styles.menuGridWeb : undefined}>
+          <View style={adminGridContainerStyle(layout)}>
           {menuItems.map((item) => (
             <TouchableOpacity
               key={item.key}
-              style={[styles.menuCard, isWeb && styles.menuCardWeb]}
+              style={adminMenuCardStyle(layout)}
               onPress={() => router.push(item.route)}
               activeOpacity={0.85}
             >
               <View
                 style={[
                   styles.menuIconWrap,
+                  layout.isWeb && styles.menuIconWrapWeb,
                   { backgroundColor: `${item.color}18` },
                 ]}
               >
                 <Ionicons name={item.icon} size={24} color={item.color} />
               </View>
               <View style={styles.menuText}>
-                <Text style={styles.menuTitle}>{item.label}</Text>
+                <Text
+                  style={[
+                    styles.menuTitle,
+                    layout.isWeb && styles.menuTitleWeb,
+                  ]}
+                >
+                  {item.label}
+                </Text>
                 <Text style={styles.menuDescription}>{item.description}</Text>
               </View>
               <Ionicons name="chevron-forward" size={22} color="#94A3B8" />
@@ -514,11 +565,7 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
   },
-  content: {
-    paddingHorizontal: Platform.OS === "web" ? 0 : 16,
-    paddingTop: Platform.OS === "web" ? 24 : 16,
-    paddingBottom: Platform.OS === "web" ? 32 : 20,
-  },
+  content: {},
   usageCard: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -556,12 +603,10 @@ const styles = StyleSheet.create({
     color: "#64748B",
   },
   statsSection: {
-    marginBottom: Platform.OS === "web" ? 20 : 8,
+    marginBottom: 8,
   },
-  statsGridWeb: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
+  statsSectionWeb: {
+    marginBottom: 20,
   },
   statsRow: {
     flexDirection: "row",
@@ -570,19 +615,6 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
-    padding: Platform.OS === "web" ? 16 : 18,
-    borderRadius: Platform.OS === "web" ? 12 : 18,
-    ...platformShadow("sm"),
-    ...(Platform.OS === "web"
-      ? { borderWidth: 1, borderColor: "#E2E8F0" }
-      : null),
-  },
-  statCardWeb: {
-    flexGrow: 1,
-    flexBasis: "22%",
-    minWidth: 150,
-    maxWidth: 220,
   },
   statCardBlue: { borderLeftWidth: 4, borderLeftColor: "#2563EB" },
   statCardGreen: { borderLeftWidth: 4, borderLeftColor: "#16A34A" },
@@ -590,8 +622,11 @@ const styles = StyleSheet.create({
   statCardAmber: { borderLeftWidth: 4, borderLeftColor: "#D97706" },
   statValue: {
     color: "#0F172A",
-    fontSize: Platform.OS === "web" ? 24 : 28,
+    fontSize: 28,
     fontWeight: "800",
+  },
+  statValueDesktop: {
+    fontSize: 24,
   },
   statLabel: {
     color: "#64748B",
@@ -602,21 +637,10 @@ const styles = StyleSheet.create({
   insightsRow: {
     flexDirection: "row",
     gap: 12,
-    marginBottom: Platform.OS === "web" ? 28 : 20,
+    marginBottom: 20,
   },
-  insightCard: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    padding: Platform.OS === "web" ? 14 : 16,
-    borderRadius: Platform.OS === "web" ? 12 : 16,
-    flexDirection: Platform.OS === "web" ? "row" : "column",
-    alignItems: "center",
-    justifyContent: Platform.OS === "web" ? "flex-start" : "center",
-    gap: Platform.OS === "web" ? 10 : 6,
-    ...platformShadow("sm"),
-    ...(Platform.OS === "web"
-      ? { borderWidth: 1, borderColor: "#E2E8F0", minHeight: 56 }
-      : null),
+  insightsRowWeb: {
+    marginBottom: 28,
   },
   insightTitle: {
     fontSize: 14,
@@ -630,56 +654,45 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.8,
     marginBottom: 8,
-    marginLeft: Platform.OS === "web" ? 0 : 4,
+    marginLeft: 4,
+  },
+  sectionLabelWeb: {
+    marginLeft: 0,
   },
   sectionHint: {
     fontSize: 13,
     color: "#64748B",
     lineHeight: 18,
     marginBottom: 14,
-    marginLeft: Platform.OS === "web" ? 0 : 4,
+    marginLeft: 4,
   },
-  menuGridWeb: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    marginBottom: 4,
-  },
-  menuCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: Platform.OS === "web" ? 12 : 18,
-    padding: Platform.OS === "web" ? 14 : 16,
-    marginBottom: Platform.OS === "web" ? 0 : 12,
-    gap: 14,
-    ...platformShadow("sm"),
-    ...(Platform.OS === "web"
-      ? { borderWidth: 1, borderColor: "#E2E8F0" }
-      : null),
-  },
-  menuCardWeb: {
-    flexGrow: 1,
-    flexBasis: "48%",
-    minWidth: 280,
+  sectionHintWeb: {
+    marginLeft: 0,
   },
   menuIconWrap: {
-    width: Platform.OS === "web" ? 44 : 48,
-    height: Platform.OS === "web" ? 44 : 48,
+    width: 48,
+    height: 48,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
+  },
+  menuIconWrapWeb: {
+    width: 44,
+    height: 44,
   },
   menuText: {
     flex: 1,
     minWidth: 0,
   },
   menuTitle: {
-    fontSize: Platform.OS === "web" ? 15 : 17,
+    fontSize: 17,
     fontWeight: "700",
     color: "#0F172A",
     marginBottom: 2,
+  },
+  menuTitleWeb: {
+    fontSize: 15,
   },
   menuDescription: {
     fontSize: 12,
