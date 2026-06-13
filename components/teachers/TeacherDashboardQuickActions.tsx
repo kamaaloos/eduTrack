@@ -2,6 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
+import { webTeacherQuickActionsStyle } from "../../src/constants/platformLayout";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 type TeacherDashboardQuickActionsProps = {
@@ -12,9 +14,10 @@ export function TeacherDashboardQuickActions({
   pendingAbsenceCount,
 }: TeacherDashboardQuickActionsProps) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
 
   return (
-    <View style={styles.actionsContainer}>
+    <View style={[styles.actionsContainer, webTeacherQuickActionsStyle(layout)]}>
       <TouchableOpacity
         style={styles.actionCard}
         onPress={() => router.push("/(teachers)/attendance")}

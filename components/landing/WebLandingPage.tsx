@@ -22,6 +22,7 @@ import { hasCompletedOnboarding } from "../../src/utils/onboardingStorage";
 import { safeRouterReplace } from "../../src/utils/safeNavigation";
 import { WebLandingHeroVideo } from "./WebLandingHeroVideo";
 import { webLandingStyles as styles } from "./webLandingStyles";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 
 type FeatureItem = {
   icon: keyof typeof Ionicons.glyphMap;
@@ -125,7 +126,20 @@ export function WebLandingPage() {
     router.push("/download");
   }, []);
 
-  const heroRowDirection = isRtl && Platform.OS === "web" ? "row-reverse" : undefined;
+  const layout = usePlatformLayout();
+  const heroRowDirection =
+    layout.isTabletWeb || layout.isDesktopWeb
+      ? isRtl
+        ? "row-reverse"
+        : "row"
+      : undefined;
+
+  const pagePaddingStyle =
+    layout.isDesktopWeb
+      ? { paddingHorizontal: 40 }
+      : layout.isTabletWeb
+        ? { paddingHorizontal: 28 }
+        : { paddingHorizontal: 20 };
 
   return (
     <View style={styles.root}>
@@ -138,7 +152,7 @@ export function WebLandingPage() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.page}>
+        <View style={[styles.page, pagePaddingStyle]}>
           <View style={styles.utilityBar}>
             <View style={styles.utilityLeft}>
               <TouchableOpacity onPress={goToDownload}>

@@ -54,6 +54,18 @@ Set the same `EXPO_PUBLIC_*` env vars in your CI/hosting build step before `npm 
 - Web auth persistence uses the browser session (IndexedDB/localStorage via Firebase SDK).
 - Add your hosting domain to **Authorized domains** in each Firebase project (Authentication → Settings).
 
+## Responsive web layout
+
+The web app uses **`usePlatformLayout()`** with three breakpoints:
+
+| Breakpoint | Width | Layout |
+|------------|-------|--------|
+| Compact | &lt;768px | Single column, 16px padding, full-width cards |
+| Tablet | 768–1023px | Two-column grids where supported, max ~960px |
+| Desktop | ≥1024px | Multi-column dashboards, data tables, sidebar nav (teacher/parent), max ~1200px |
+
+Shared helpers live in `src/constants/platformLayout.ts`. Role screens use `WebPageCardFrame` (responsive max-width). Dashboards use `WebDashboardColumns` for two-column desktop layouts.
+
 ## Known Phase 1 limits
 
 These work on mobile first; web polish is ongoing:
@@ -61,7 +73,7 @@ These work on mobile first; web polish is ongoing:
 | Area | Web status |
 |------|------------|
 | Login, school picker, role dashboards | Supported (Phase 1) |
-| Layout | Centered auth forms; docked tab bar on web (not floating pill) |
+| Layout | Responsive breakpoints via `usePlatformLayout()` — see above |
 | Logout confirm | Branded modal via `AppDialogHost` |
 | Alerts / errors | Branded modal via `AppDialogHost` (web) |
 | Login card | Paste JSON code on web; QR scan on native |
@@ -72,8 +84,10 @@ These work on mobile first; web polish is ongoing:
 | Date/time pickers | May need web-specific controls on some screens |
 | Admin dashboard layout | Responsive grid at ≥1024px via `usePlatformLayout()` |
 | User / class directories | Table at ≥1024px; 2-column cards on compact web; cards on native |
+| Teacher / parent desktop | Persistent left sidebar navigation at ≥1024px |
+| Student / teacher dashboards | Two-column section layout at ≥1024px |
 
-Report breakages by role and screen so we can prioritize Phase 2 (responsive layouts + platform APIs).
+Report breakages by role and screen so we can prioritize follow-up polish.
 
 ## Architecture
 

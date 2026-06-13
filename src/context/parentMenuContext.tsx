@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { AdminSideMenu } from "../../components/admin/AdminSideMenu";
+import { WebDesktopRoleNav } from "../../components/layout/WebDesktopRoleNav";
 import { useParentSideMenuItems } from "../../hooks/useParentSideMenuItems";
 import { AuthContext } from "./authContext";
 
@@ -31,7 +32,13 @@ export function ParentMenuProvider({ children }: { children: ReactNode }) {
 
   return (
     <ParentMenuContext.Provider value={value}>
-      {children}
+      <WebDesktopRoleNav
+        title={t("tabs.parent.home")}
+        subtitle={userData?.name ?? null}
+        items={menuItems}
+      >
+        {children}
+      </WebDesktopRoleNav>
       {visible ? (
         <AdminSideMenu
           visible

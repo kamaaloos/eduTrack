@@ -1,5 +1,12 @@
 import type { ViewStyle } from "react-native";
 import type { PlatformLayout } from "../../hooks/usePlatformLayout";
+import {
+  WEB_AUTH_MAX_WIDTH,
+  WEB_DASHBOARD_MAX_WIDTH_DESKTOP,
+  WEB_DASHBOARD_MAX_WIDTH_TABLET,
+  WEB_PAGE_MAX_WIDTH_DESKTOP,
+  WEB_PAGE_MAX_WIDTH_TABLET,
+} from "../../hooks/usePlatformLayout";
 import { platformShadow } from "../utils/platformShadow";
 
 export function adminContentPaddingStyle(layout: PlatformLayout): ViewStyle {
@@ -196,4 +203,248 @@ export function adminChartHorizontalPadding(layout: PlatformLayout): number {
     return 96;
   }
   return 48;
+}
+
+function webPageMaxWidth(layout: PlatformLayout): number | "100%" {
+  if (!layout.isWeb) {
+    return "100%";
+  }
+  if (layout.isDesktopWeb) {
+    return WEB_PAGE_MAX_WIDTH_DESKTOP;
+  }
+  if (layout.isTabletWeb) {
+    return WEB_PAGE_MAX_WIDTH_TABLET;
+  }
+  return "100%";
+}
+
+function webHorizontalPadding(layout: PlatformLayout): number {
+  if (!layout.isWeb) {
+    return 0;
+  }
+  if (layout.isCompactWeb) {
+    return 16;
+  }
+  if (layout.isTabletWeb) {
+    return 20;
+  }
+  return 24;
+}
+
+/** Outer frame padding around the main web page card. */
+export function webPageFrameStyle(layout: PlatformLayout): ViewStyle {
+  if (!layout.isWeb) {
+    return {};
+  }
+
+  const pad = webHorizontalPadding(layout);
+  return {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    paddingHorizontal: pad,
+    paddingTop: 12,
+    paddingBottom: 8,
+  };
+}
+
+/** Max-width card wrapping role screens on web. */
+export function webPageCardFrameStyle(layout: PlatformLayout): ViewStyle {
+  if (!layout.isWeb) {
+    return {};
+  }
+
+  return {
+    flex: 1,
+    width: "100%",
+    maxWidth: webPageMaxWidth(layout),
+    backgroundColor: "#FFFFFF",
+    borderRadius: layout.isCompactWeb ? 20 : 24,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#EEF2F7",
+    minHeight: 0,
+    ...( {
+      boxShadow:
+        "0 16px 48px rgba(15, 23, 42, 0.1), 0 4px 16px rgba(15, 23, 42, 0.06)",
+    } as object),
+  };
+}
+
+/** Auth / about standalone card sizing. */
+export function webAuthCardStyle(layout: PlatformLayout): ViewStyle {
+  if (!layout.isWeb) {
+    return {};
+  }
+
+  return {
+    width: "100%",
+    maxWidth: WEB_AUTH_MAX_WIDTH,
+    alignSelf: "center",
+    paddingHorizontal: layout.isCompactWeb ? 20 : 24,
+    paddingVertical: layout.isCompactWeb ? 24 : 28,
+  };
+}
+
+/** Wide standalone card (contact, download). */
+export function webWideCardStyle(layout: PlatformLayout): ViewStyle {
+  if (!layout.isWeb) {
+    return {};
+  }
+
+  return {
+    width: "100%",
+    maxWidth: webPageMaxWidth(layout),
+    alignSelf: "center",
+  };
+}
+
+/** Inner padding for role screen bodies (admin, teacher, student, parent). */
+export function webRolePagePaddingStyle(layout: PlatformLayout): ViewStyle | undefined {
+  if (!layout.isWeb) {
+    return undefined;
+  }
+
+  return {
+    paddingHorizontal: webHorizontalPadding(layout),
+  };
+}
+
+/** Dashboard scroll content — centered column that grows on desktop. */
+export function webDashboardContentStyle(layout: PlatformLayout): ViewStyle | undefined {
+  if (!layout.isWeb) {
+    return undefined;
+  }
+
+  const maxWidth = layout.isDesktopWeb
+    ? WEB_DASHBOARD_MAX_WIDTH_DESKTOP
+    : WEB_DASHBOARD_MAX_WIDTH_TABLET;
+
+  return {
+    width: "100%",
+    maxWidth,
+    alignSelf: "center",
+    paddingHorizontal: webHorizontalPadding(layout),
+    paddingTop: 16,
+    paddingBottom: 8,
+  };
+}
+
+/** List / form content column on web. */
+export function webListContentStyle(layout: PlatformLayout): ViewStyle | undefined {
+  if (!layout.isWeb) {
+    return undefined;
+  }
+
+  return {
+    width: "100%",
+    maxWidth: layout.isDesktopWeb
+      ? WEB_DASHBOARD_MAX_WIDTH_DESKTOP
+      : WEB_DASHBOARD_MAX_WIDTH_TABLET,
+    alignSelf: "center",
+  };
+}
+
+/** Dashboard section card on web. */
+export function webDashboardSectionStyle(layout: PlatformLayout): ViewStyle | undefined {
+  if (!layout.isWeb) {
+    return undefined;
+  }
+
+  return {
+    marginTop: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    padding: layout.isDesktopWeb ? 20 : 16,
+    ...platformShadow("sm"),
+  };
+}
+
+/** Two-column dashboard row on desktop web. */
+export function webDashboardColumnsStyle(layout: PlatformLayout): ViewStyle | undefined {
+  if (!layout.isDesktopWeb) {
+    return undefined;
+  }
+
+  return {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 16,
+    width: "100%",
+  };
+}
+
+export function webDashboardColumnStyle(layout: PlatformLayout): ViewStyle | undefined {
+  if (!layout.isDesktopWeb) {
+    return undefined;
+  }
+
+  return {
+    flex: 1,
+    minWidth: 0,
+  };
+}
+
+/** CSS grid for wrapped card rows on web. */
+export function webResponsiveGridStyle(
+  layout: PlatformLayout,
+  minColumnWidth: number,
+): ViewStyle | undefined {
+  if (!layout.isWeb) {
+    return undefined;
+  }
+
+  return {
+    display: "grid",
+    gridTemplateColumns: `repeat(auto-fill, minmax(${minColumnWidth}px, 1fr))`,
+    gap: 12,
+    width: "100%",
+  } as ViewStyle;
+}
+
+/** Student tab bar width scales with viewport on web. */
+export function webTabBarStyle(layout: PlatformLayout): ViewStyle | undefined {
+  if (!layout.isWeb) {
+    return undefined;
+  }
+
+  const maxWidth = layout.isDesktopWeb
+    ? Math.min(layout.width - 48, 720)
+    : layout.isTabletWeb
+      ? Math.min(layout.width - 32, 560)
+      : Math.min(layout.width * 0.92, 520);
+
+  return {
+    width: maxWidth,
+    maxWidth: "92%",
+  } as ViewStyle;
+}
+
+export function webTeacherQuickActionsStyle(
+  layout: PlatformLayout,
+): ViewStyle | undefined {
+  if (!layout.isWeb) {
+    return undefined;
+  }
+
+  if (layout.isCompactWeb) {
+    return {
+      flexDirection: "column",
+      gap: 12,
+      marginTop: 20,
+      width: "100%",
+    };
+  }
+
+  return {
+    display: "grid",
+    gridTemplateColumns: layout.isDesktopWeb
+      ? "repeat(3, minmax(0, 1fr))"
+      : "repeat(3, minmax(0, 1fr))",
+    gap: 12,
+    marginTop: 4,
+    width: "100%",
+  } as ViewStyle;
 }

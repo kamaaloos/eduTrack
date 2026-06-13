@@ -1,17 +1,12 @@
 import type { ReactNode } from "react";
 import { Platform, StyleSheet, View, type ViewStyle } from "react-native";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
-  WEB_AUTH_MAX_WIDTH,
-  WEB_PAGE_CARD_MAX_WIDTH,
-} from "../../src/constants/webLayout";
-
-const webCardShadow =
-  Platform.OS === "web"
-    ? ({
-        boxShadow:
-          "0 16px 48px rgba(15, 23, 42, 0.1), 0 4px 16px rgba(15, 23, 42, 0.06)",
-      } as object)
-    : null;
+  webAuthCardStyle,
+  webPageCardFrameStyle,
+  webPageFrameStyle,
+  webWideCardStyle,
+} from "../../src/constants/platformLayout";
 
 type WebPageCardProps = {
   children: ReactNode;
@@ -28,7 +23,9 @@ export function WebPageCard({
   variant = "auth",
   fill,
 }: WebPageCardProps) {
-  if (Platform.OS !== "web") {
+  const layout = usePlatformLayout();
+
+  if (!layout.isWeb) {
     return <>{children}</>;
   }
 
@@ -36,7 +33,7 @@ export function WebPageCard({
     <View
       style={[
         styles.card,
-        variant === "wide" ? styles.cardWide : styles.cardAuth,
+        variant === "wide" ? webWideCardStyle(layout) : webAuthCardStyle(layout),
         fill && styles.cardFill,
         style,
       ]}
@@ -56,13 +53,15 @@ type WebPageCardFrameProps = {
  * wrapping header and scrollable body.
  */
 export function WebPageCardFrame({ children, style }: WebPageCardFrameProps) {
-  if (Platform.OS !== "web") {
+  const layout = usePlatformLayout();
+
+  if (!layout.isWeb) {
     return <>{children}</>;
   }
 
   return (
-    <View style={styles.frame}>
-      <View style={[styles.frameCard, style]}>{children}</View>
+    <View style={webPageFrameStyle(layout)}>
+      <View style={[webPageCardFrameStyle(layout), style]}>{children}</View>
     </View>
   );
 }
@@ -76,45 +75,19 @@ export function webPageBodyStyle(): ViewStyle | undefined {
 
 const styles = StyleSheet.create({
   card: {
-    width: "100%",
     backgroundColor: "#FFFFFF",
     borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingVertical: 28,
     borderWidth: 1,
     borderColor: "#EEF2F7",
-    ...webCardShadow,
-  },
-  cardAuth: {
-    maxWidth: WEB_AUTH_MAX_WIDTH,
-    alignSelf: "center",
-  },
-  cardWide: {
-    maxWidth: WEB_PAGE_CARD_MAX_WIDTH,
-    alignSelf: "center",
+    ...(Platform.OS === "web"
+      ? ({
+          boxShadow:
+            "0 16px 48px rgba(15, 23, 42, 0.1), 0 4px 16px rgba(15, 23, 42, 0.06)",
+        } as object)
+      : null),
   },
   cardFill: {
     flex: 1,
-  },
-  frame: {
-    flex: 1,
-    width: "100%",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-  },
-  frameCard: {
-    flex: 1,
-    width: "100%",
-    maxWidth: WEB_PAGE_CARD_MAX_WIDTH,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#EEF2F7",
-    minHeight: 0,
-    ...webCardShadow,
   },
   webBody: {
     flex: 1,

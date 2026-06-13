@@ -1,47 +1,57 @@
-import { Platform } from "react-native";
+import { Platform, type ViewStyle } from "react-native";
 import { MOBILE_SCREEN_HORIZONTAL_PADDING } from "./appTheme";
+import { usePlatformLayout } from "../hooks/usePlatformLayout";
+import {
+  webAuthCardStyle,
+  webDashboardContentStyle,
+  webListContentStyle,
+  webRolePagePaddingStyle,
+} from "./platformLayout";
 
 export const WEB_AUTH_MAX_WIDTH = 520;
 export const WEB_CONTENT_MAX_WIDTH = 960;
 export const WEB_ADMIN_MAX_WIDTH = 960;
 /** Full app page card on desktop web (header + body). */
-export const WEB_PAGE_CARD_MAX_WIDTH = 1040;
+export const WEB_PAGE_CARD_MAX_WIDTH = 1200;
 
-export function webAuthContentStyle() {
+/** @deprecated Prefer `useWebAuthContentStyle()` or `webAuthCardStyle(layout)`. */
+export function webAuthContentStyle(): ViewStyle | undefined {
   if (Platform.OS !== "web") {
     return undefined;
   }
   return {
-    width: "100%" as const,
+    width: "100%",
     maxWidth: WEB_AUTH_MAX_WIDTH,
-    alignSelf: "center" as const,
+    alignSelf: "center",
   };
 }
 
-export function webListContentStyle() {
+/** @deprecated Prefer `useWebListContentStyle()`. */
+export function webListContentStyleLegacy(): ViewStyle | undefined {
   if (Platform.OS !== "web") {
     return undefined;
   }
   return {
-    width: "100%" as const,
+    width: "100%",
     maxWidth: WEB_CONTENT_MAX_WIDTH,
-    alignSelf: "center" as const,
+    alignSelf: "center",
   };
 }
 
-/** Centered admin / dashboard page column on desktop web. */
-export function webAdminContentStyle() {
+/** @deprecated Prefer `useWebRolePagePaddingStyle()`. */
+export function webAdminContentStyle(): ViewStyle | undefined {
   if (Platform.OS !== "web") {
     return undefined;
   }
   return {
-    width: "100%" as const,
+    width: "100%",
     maxWidth: WEB_ADMIN_MAX_WIDTH,
-    alignSelf: "center" as const,
+    alignSelf: "center",
   };
 }
 
-export function webAdminPagePaddingStyle() {
+/** @deprecated Prefer `useWebRolePagePaddingStyle()`. */
+export function webAdminPagePaddingStyle(): ViewStyle | undefined {
   if (Platform.OS !== "web") {
     return undefined;
   }
@@ -50,12 +60,30 @@ export function webAdminPagePaddingStyle() {
   };
 }
 
-/** Native phone/tablet content inset (web uses webAdminPagePaddingStyle). */
-export function mobileScreenPaddingStyle() {
+/** Native phone/tablet content inset (web uses webRolePagePaddingStyle). */
+export function mobileScreenPaddingStyle(): ViewStyle | undefined {
   if (Platform.OS === "web") {
     return undefined;
   }
   return {
     paddingHorizontal: MOBILE_SCREEN_HORIZONTAL_PADDING,
   };
+}
+
+export function useWebAuthContentStyle(): ViewStyle | undefined {
+  const layout = usePlatformLayout();
+  if (!layout.isWeb) {
+    return undefined;
+  }
+  return webAuthCardStyle(layout);
+}
+
+export function useWebRolePagePaddingStyle(): ViewStyle | undefined {
+  const layout = usePlatformLayout();
+  return webRolePagePaddingStyle(layout);
+}
+
+export function useWebListContentStyle(): ViewStyle | undefined {
+  const layout = usePlatformLayout();
+  return webListContentStyle(layout);
 }

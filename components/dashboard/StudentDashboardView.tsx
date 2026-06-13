@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, RefreshControl, ScrollView, View } from "react-native";
-import { webDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
+import { useWebDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
 import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { AuthContext } from "../../src/context/authContext";
 import { getTodayDayKey, getWeekdayLabel } from "../../src/utils/scheduleFormat";
@@ -12,6 +12,7 @@ import { DashboardHeader, useDashboardLogout } from "./DashboardHeader";
 import { DashboardHomeworkSection } from "./DashboardHomeworkSection";
 import { DashboardRemarksSection } from "./DashboardRemarksSection";
 import { DashboardScheduleSection } from "./DashboardScheduleSection";
+import { WebDashboardColumns } from "../layout/WebDashboardColumns";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { dashboardStyles as styles } from "./dashboardStyles";
@@ -87,6 +88,7 @@ export function StudentDashboardView({
   const todayKey = getTodayDayKey();
   const todayLabel = getWeekdayLabel(t, todayKey);
   const handleLogout = useDashboardLogout(logout);
+  const dashboardContentStyle = useWebDashboardContentStyle();
 
   return (
     <View style={styles.mainContainer}>
@@ -110,64 +112,73 @@ export function StudentDashboardView({
 
         <ScrollView
           style={[styles.container, webPageBodyStyle()]}
-        contentContainerStyle={[styles.scrollContent, webDashboardContentStyle()]}
+        contentContainerStyle={[styles.scrollContent, dashboardContentStyle]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <DashboardAnnouncementsSection
-          messages={messages}
-          classId={classId}
-          useParentRoutes={useParentRoutes}
-          navigation={navigation}
-          listRoute={listRoute("/messages")}
-        />
+        <WebDashboardColumns
+          primary={
+            <>
+              <DashboardAnnouncementsSection
+                messages={messages}
+                classId={classId}
+                useParentRoutes={useParentRoutes}
+                navigation={navigation}
+                listRoute={listRoute("/messages")}
+              />
 
-        <DashboardScheduleSection
-          schedule={schedule}
-          visibleSchedule={visibleSchedule}
-          currentScheduleId={currentScheduleId}
-          classId={classId}
-          todayLabel={todayLabel}
-          scheduleNow={scheduleNow}
-        />
+              <DashboardScheduleSection
+                schedule={schedule}
+                visibleSchedule={visibleSchedule}
+                currentScheduleId={currentScheduleId}
+                classId={classId}
+                todayLabel={todayLabel}
+                scheduleNow={scheduleNow}
+              />
+            </>
+          }
+          secondary={
+            <>
+              <DashboardHomeworkSection
+                homework={homework}
+                homeworkSlides={homeworkSlides}
+                classId={classId}
+                useParentRoutes={useParentRoutes}
+                navigation={navigation}
+                listRoute={listRoute("/homeworks")}
+              />
 
-        <DashboardHomeworkSection
-          homework={homework}
-          homeworkSlides={homeworkSlides}
-          classId={classId}
-          useParentRoutes={useParentRoutes}
-          navigation={navigation}
-          listRoute={listRoute("/homeworks")}
-        />
+              <DashboardExamsSection
+                exams={exams}
+                visibleExams={visibleExams}
+                classId={classId}
+                useParentRoutes={useParentRoutes}
+                navigation={navigation}
+                listRoute={listRoute("/exams")}
+              />
 
-        <DashboardExamsSection
-          exams={exams}
-          visibleExams={visibleExams}
-          classId={classId}
-          useParentRoutes={useParentRoutes}
-          navigation={navigation}
-          listRoute={listRoute("/exams")}
-        />
+              <DashboardRemarksSection
+                remarksAndAttendance={remarksAndAttendance}
+                studentId={studentId}
+                displayName={displayName}
+                classId={classId}
+                useParentRoutes={useParentRoutes}
+                navigation={navigation}
+                listRoute={listRoute("/attendance")}
+              />
 
-        <DashboardRemarksSection
-          remarksAndAttendance={remarksAndAttendance}
-          studentId={studentId}
-          displayName={displayName}
-          classId={classId}
-          useParentRoutes={useParentRoutes}
-          navigation={navigation}
-          listRoute={listRoute("/attendance")}
+              {showAbsenceReport && parentId ? (
+                <DashboardAbsenceReportSection
+                  parentId={parentId}
+                  studentId={studentId}
+                  classId={classId}
+                />
+              ) : null}
+            </>
+          }
         />
-
-        {showAbsenceReport && parentId ? (
-          <DashboardAbsenceReportSection
-            parentId={parentId}
-            studentId={studentId}
-            classId={classId}
-          />
-        ) : null}
 
         <View style={styles.scrollBottomSpacer} />
       </ScrollView>

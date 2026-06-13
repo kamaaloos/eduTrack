@@ -7,6 +7,8 @@ import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RoleGate } from "../../components/auth/RoleGate";
 import { RoleAppFrame } from "../../components/layout/RoleAppFrame";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
+import { webTabBarStyle } from "../../src/constants/platformLayout";
 import {
   floatingTabBarStyle,
   floatingTabBarStyleForSafeArea,
@@ -20,12 +22,13 @@ import { StudentMenuProvider } from "../../src/context/studentMenuContext";
 export default function StudentLayout() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const layout = usePlatformLayout();
   const tabBarStyle = useMemo(
     () =>
       Platform.OS === "web"
-        ? floatingTabBarStyle
+        ? { ...floatingTabBarStyle, ...webTabBarStyle(layout) }
         : floatingTabBarStyleForSafeArea(insets.bottom),
-    [insets.bottom],
+    [insets.bottom, layout.isDesktopWeb, layout.isTabletWeb, layout.width],
   );
 
   return (

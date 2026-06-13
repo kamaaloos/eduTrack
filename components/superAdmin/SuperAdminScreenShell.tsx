@@ -1,12 +1,11 @@
 import React, { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { AdminSideMenu } from "../admin/AdminSideMenu";
 import { useSuperAdminSideMenuItems } from "../../hooks/useSuperAdminSideMenuItems";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
-import {
-  webAdminPagePaddingStyle,
-} from "../../src/constants/webLayout";
+import { webRolePagePaddingStyle } from "../../src/constants/platformLayout";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { SuperAdminScreenHeader } from "./SuperAdminScreenHeader";
@@ -25,6 +24,7 @@ export function SuperAdminScreenShell({
   children,
 }: SuperAdminScreenShellProps) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const [sideMenuVisible, setSideMenuVisible] = useState(false);
   const menuItems = useSuperAdminSideMenuItems();
 
@@ -39,7 +39,7 @@ export function SuperAdminScreenShell({
           onMenuPress={() => setSideMenuVisible(true)}
         />
         <View style={[styles.body, webPageBodyStyle()]}>
-          <View style={[styles.bodyInner, webAdminPagePaddingStyle()]}>
+          <View style={[styles.bodyInner, webRolePagePaddingStyle(layout)]}>
             {children}
           </View>
         </View>

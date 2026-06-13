@@ -5,17 +5,9 @@ import {
   View,
   type ViewStyle,
 } from "react-native";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
+import { webResponsiveGridStyle } from "../../src/constants/platformLayout";
 import { dashboardStyles } from "./dashboardStyles";
-
-const webSlideRowStyle: ViewStyle =
-  Platform.OS === "web"
-    ? {
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-        gap: 12,
-        width: "100%",
-      }
-    : {};
 
 const localStyles = StyleSheet.create({
   webHorizontalScroll: {
@@ -40,18 +32,28 @@ type DashboardSlideRowProps = {
   variant?: "carousel" | "grid";
 };
 
+function slideGridStyle(layout: ReturnType<typeof usePlatformLayout>): ViewStyle {
+  const minWidth = layout.isDesktopWeb ? 260 : layout.isTabletWeb ? 240 : 280;
+  return {
+    ...(webResponsiveGridStyle(layout, minWidth) ?? {}),
+  } as ViewStyle;
+}
+
 /** Horizontal carousel, or wrapped grid on web when variant is grid. */
 export function DashboardSlideRow({
   children,
   contentStyle,
   variant,
 }: DashboardSlideRowProps) {
-  // Mobile: horizontal slides by default (unchanged). Web: carousel only when requested.
+  const layout = usePlatformLayout();
+
   const useCarousel =
     Platform.OS === "web" ? variant === "carousel" : variant !== "grid";
 
   if (!useCarousel) {
-    return <View style={[webSlideRowStyle, contentStyle]}>{children}</View>;
+    return (
+      <View style={[slideGridStyle(layout), contentStyle]}>{children}</View>
+    );
   }
 
   return (

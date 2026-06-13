@@ -1,15 +1,14 @@
 import { router } from "expo-router";
 import React, { useContext, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useAdminSideMenuItems } from "../../hooks/useAdminSideMenuItems";
 import { useUnreadNotificationCount } from "../../hooks/useNotifications";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { AuthContext } from "../../src/context/authContext";
 import { useSchoolContext } from "../../src/context/schoolContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
-import {
-  webAdminPagePaddingStyle,
-} from "../../src/constants/webLayout";
+import { webRolePagePaddingStyle } from "../../src/constants/platformLayout";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { AdminScreenHeader } from "./AdminScreenHeader";
@@ -31,6 +30,7 @@ export function AdminScreenShell({
   children,
 }: AdminScreenShellProps) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const { user } = useContext(AuthContext);
   const { selectedSchool } = useSchoolContext();
   const [sideMenuVisible, setSideMenuVisible] = useState(false);
@@ -56,7 +56,7 @@ export function AdminScreenShell({
           }
         />
         <View style={[styles.body, webPageBodyStyle()]}>
-          <View style={[styles.bodyInner, webAdminPagePaddingStyle()]}>
+          <View style={[styles.bodyInner, webRolePagePaddingStyle(layout)]}>
             {children}
           </View>
         </View>

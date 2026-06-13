@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import React, { useContext, type ReactNode } from "react";
 import {
-  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -9,12 +8,13 @@ import {
   type ViewStyle,
 } from "react-native";
 import { useUnreadNotificationCount } from "../../hooks/useNotifications";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { AuthContext } from "../../src/context/authContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
 import {
   mobileScreenPaddingStyle,
-  webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
+import { webRolePagePaddingStyle } from "../../src/constants/platformLayout";
 import { useParentMenu } from "../../src/context/parentMenuContext";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
@@ -49,6 +49,7 @@ export function ParentScreenShell({
   children,
 }: ParentScreenShellProps) {
   const { user } = useContext(AuthContext);
+  const layout = usePlatformLayout();
   const { openMenu } = useParentMenu();
   const notificationCount = useUnreadNotificationCount(
     showNotifications ? user?.uid : null,
@@ -56,7 +57,7 @@ export function ParentScreenShell({
 
   const innerStyle = [
     styles.bodyInner,
-    webAdminPagePaddingStyle(),
+    webRolePagePaddingStyle(layout),
     mobileScreenPaddingStyle(),
   ];
 

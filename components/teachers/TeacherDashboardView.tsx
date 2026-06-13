@@ -1,6 +1,8 @@
 import { RefreshControl, ScrollView, View } from "react-native";
-import { webDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
+import { useWebDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
+import { WebDashboardColumns } from "../layout/WebDashboardColumns";
 import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { TeacherDashboardAnnouncementsSection } from "./TeacherDashboardAnnouncementsSection";
 import { TeacherDashboardBanners } from "./TeacherDashboardBanners";
@@ -48,6 +50,9 @@ export function TeacherDashboardView({
   onRefresh,
   onMenuPress,
 }: TeacherDashboardViewProps) {
+  const layout = usePlatformLayout();
+  const dashboardContentStyle = useWebDashboardContentStyle();
+
   return (
     <View style={styles.mainContainer}>
       <ScreenBackgroundLayer />
@@ -62,7 +67,7 @@ export function TeacherDashboardView({
 
         <ScrollView
           style={[styles.container, webPageBodyStyle()]}
-        contentContainerStyle={[styles.scrollContent, webDashboardContentStyle()]}
+        contentContainerStyle={[styles.scrollContent, dashboardContentStyle]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -79,19 +84,28 @@ export function TeacherDashboardView({
           />
         </View>
 
-        <TeacherDashboardClassesSection
-          classChipOptions={classChipOptions}
-          selectedClassId={selectedClassId}
-          onSelectClass={onSelectClass}
-        />
+        <WebDashboardColumns
+          primary={
+            <>
+              <TeacherDashboardClassesSection
+                classChipOptions={classChipOptions}
+                selectedClassId={selectedClassId}
+                onSelectClass={onSelectClass}
+              />
+            </>
+          }
+          secondary={
+            <>
+              <TeacherDashboardStudentsSection
+                selectedClassId={selectedClassId}
+                selectedClassLabel={selectedClassLabel}
+                filteredStudents={filteredStudents}
+              />
 
-        <TeacherDashboardStudentsSection
-          selectedClassId={selectedClassId}
-          selectedClassLabel={selectedClassLabel}
-          filteredStudents={filteredStudents}
+              <TeacherDashboardAnnouncementsSection announcements={announcements} />
+            </>
+          }
         />
-
-        <TeacherDashboardAnnouncementsSection announcements={announcements} />
 
         <View style={styles.scrollBottomSpacer} />
       </ScrollView>
