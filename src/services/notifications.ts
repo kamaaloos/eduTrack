@@ -143,13 +143,14 @@ export async function createNotifications(
 ): Promise<void> {
   if (!db || inputs.length === 0) return;
 
+  const schoolDb = db;
   const chunkSize = 400;
   for (let i = 0; i < inputs.length; i += chunkSize) {
     const chunk = inputs.slice(i, i + chunkSize);
     try {
-      const batch = writeBatch(db);
+      const batch = writeBatch(schoolDb);
       chunk.forEach((input) => {
-        const ref = doc(collection(db, "notifications"));
+        const ref = doc(collection(schoolDb, "notifications"));
         batch.set(ref, {
           title: input.title,
           message: input.message,
