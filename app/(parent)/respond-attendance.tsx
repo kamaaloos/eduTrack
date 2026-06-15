@@ -16,7 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 import { ABSENCE_REASONS } from "../../src/constants/absenceReasons";
 import { AuthContext } from "../../src/context/authContext";
-import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import { submitParentAttendanceResponse } from "../../src/services/parentAttendanceResponse";
 import { getAbsenceReasonLabel } from "../../src/utils/attendanceLabels";
 import {

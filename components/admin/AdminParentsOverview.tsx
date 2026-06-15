@@ -24,7 +24,7 @@ import {
 import { setParentFeeMonthPaid } from "../../src/services/parentFeePayments";
 import { showErrorAlert } from "../../src/utils/confirmDialog";
 import { DirectoryPagination } from "./DirectoryPagination";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 type FeeFilter = "all" | "yes" | "no";
 

@@ -18,7 +18,7 @@ import { ParentChildrenList } from "../../components/parent/ParentChildrenList";
 import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 import { AuthContext } from "../../src/context/authContext";
 import { copyrightFooterInset } from "../../src/constants/appTheme";
-import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import {
   loadParentChildrenDetailed,
   type ParentChild,

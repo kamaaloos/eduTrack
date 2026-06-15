@@ -1,8 +1,7 @@
-import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../src/i18n";
 import { Stack } from "expo-router";
 import { Platform } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AppDialogHost } from "../components/dialog/AppDialogHost";
 import { configureForegroundNotifications } from "../src/services/pushNotifications";

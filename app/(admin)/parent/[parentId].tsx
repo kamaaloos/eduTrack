@@ -21,7 +21,7 @@ import {
   type FeeMonthsMap,
 } from "../../../src/services/parentFeePayments";
 import { showErrorAlert } from "../../../src/utils/confirmDialog";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
 
 export default function AdminParentPaymentScreen() {
   const { t } = useTranslation();
@@ -58,7 +58,7 @@ export default function AdminParentPaymentScreen() {
     } finally {
       setLoading(false);
     }
-  }, [parentId, year, t]);
+  }, [parentId, year, t, parents]);
 
   useEffect(() => {
     void loadMonths();

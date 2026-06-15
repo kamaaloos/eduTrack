@@ -2,7 +2,6 @@ import { StyleSheet } from "react-native";
 import { FLOATING_TAB_BAR_INSET } from "../../../src/constants/tabBar";
 import {
   INNER_CARD_BORDER_GREEN,
-  innerCardBorderStyle,
 } from "../../../src/constants/innerCardBorders";
 
 export const examReportsStyles = StyleSheet.create({

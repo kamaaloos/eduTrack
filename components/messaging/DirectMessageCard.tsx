@@ -21,7 +21,7 @@ import {
 } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { OptionPickerModal } from "./OptionPickerModal";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 export type DirectMessageRecipientRole = "student" | "parent";
 

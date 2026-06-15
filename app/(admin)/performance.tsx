@@ -25,7 +25,7 @@ import {
   type AdminAnalyticsStats,
 } from "../../src/services/adminAnalytics";
 import { ATTENDANCE_HISTORY_DAYS } from "../../src/constants/attendanceHistory";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 const EMPTY_STATS: AdminAnalyticsStats = {
   students: 0,

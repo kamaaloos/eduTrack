@@ -25,7 +25,7 @@ import {
 } from "../../../src/services/schoolRegistryAdmin";
 import { refreshSchoolUserCounts } from "../../../src/services/schoolUserCountSync";
 import type { SchoolRecord } from "../../../src/types/school";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
 
 export default function SuperAdminSchoolDetailScreen() {
   const { t } = useTranslation();

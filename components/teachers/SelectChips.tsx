@@ -1,5 +1,4 @@
 import { Platform, StyleSheet, Text, Pressable, View } from "react-native";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 
 export type ChipOption = {
   value: string;

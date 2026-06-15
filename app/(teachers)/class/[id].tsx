@@ -7,7 +7,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { TeacherScreenShell } from "../../../components/teachers/TeacherScreenShell";
 import { useSchoolContext } from "../../../src/context/schoolContext";
 import { useFirestoreListenerEffect } from "../../../hooks/useFirestoreListenerEffect";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
 
 export default function ClassPage() {
   const { t } = useTranslation();

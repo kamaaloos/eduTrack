@@ -28,7 +28,7 @@ export default function StudentLayout() {
       Platform.OS === "web"
         ? { ...floatingTabBarStyle, ...webTabBarStyle(layout) }
         : floatingTabBarStyleForSafeArea(insets.bottom),
-    [insets.bottom, layout.isDesktopWeb, layout.isTabletWeb, layout.width],
+    [insets.bottom, layout],
   );
 
   return (

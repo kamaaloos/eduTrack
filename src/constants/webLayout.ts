@@ -3,7 +3,6 @@ import { MOBILE_SCREEN_HORIZONTAL_PADDING } from "./appTheme";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
   webAuthCardStyle,
-  webDashboardContentStyle,
   webListContentStyle,
   webRolePagePaddingStyle,
 } from "./platformLayout";

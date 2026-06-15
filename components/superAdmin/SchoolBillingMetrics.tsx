@@ -8,7 +8,7 @@ import {
   type SubscriptionStatus,
 } from "../../src/utils/subscriptionStatus";
 import { getUsageRemainingDays } from "../../src/utils/usageExpiry";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 type SchoolBillingMetricsProps = {
   school: SchoolRecord;

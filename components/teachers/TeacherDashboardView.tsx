@@ -1,6 +1,5 @@
 import { RefreshControl, ScrollView, View } from "react-native";
 import { useWebDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
-import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { WebDashboardColumns } from "../layout/WebDashboardColumns";
 import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
@@ -50,7 +49,6 @@ export function TeacherDashboardView({
   onRefresh,
   onMenuPress,
 }: TeacherDashboardViewProps) {
-  const layout = usePlatformLayout();
   const dashboardContentStyle = useWebDashboardContentStyle();
 
   return (

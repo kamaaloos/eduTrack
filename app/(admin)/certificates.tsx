@@ -26,7 +26,7 @@ import {
 } from "../../src/utils/academicYear";
 import { copyrightFooterInset } from "../../src/constants/appTheme";
 import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 export default function AdminCertificatesScreen() {
   const { t } = useTranslation();

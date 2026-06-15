@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { ProfileScreen } from "../../components/profile/ProfileScreen";
 import { StudentScreenShell } from "../../components/students/StudentScreenShell";

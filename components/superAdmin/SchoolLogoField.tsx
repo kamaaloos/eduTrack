@@ -17,7 +17,7 @@ import {
   uploadSchoolLogo,
 } from "../../src/services/schoolLogo";
 import { updateSchoolLogoUrl } from "../../src/services/schoolRegistryAdmin";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 type SchoolLogoFieldProps = {
   schoolId?: string;

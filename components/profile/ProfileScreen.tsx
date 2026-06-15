@@ -34,7 +34,7 @@ import {
 } from "../../src/services/userProfile";
 import { canUploadProfilePhoto } from "../../src/utils/userAvatar";
 import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 type ProfileScreenProps = {
   roleLabel?: string;

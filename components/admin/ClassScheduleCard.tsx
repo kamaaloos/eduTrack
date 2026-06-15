@@ -4,7 +4,6 @@ import { innerCardBorderStyle } from "../../src/constants/innerCardBorders";
 import {
   ActivityIndicator,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,

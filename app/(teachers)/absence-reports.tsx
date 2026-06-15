@@ -20,7 +20,7 @@ import {
   type TeacherAbsenceReport,
 } from "../../src/services/teacherAbsenceReports";
 import { getAbsenceReasonLabel } from "../../src/utils/attendanceLabels";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 export default function TeacherAbsenceReportsScreen() {
   const { t } = useTranslation();

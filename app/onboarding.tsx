@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import {
   Animated,
   Easing,
-  Platform,
   Pressable,
   StyleSheet,
   Text,

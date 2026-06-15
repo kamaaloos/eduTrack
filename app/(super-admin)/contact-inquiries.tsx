@@ -14,7 +14,7 @@ import {
   View,
 } from "react-native";
 import { SuperAdminScreenShell } from "../../components/superAdmin/SuperAdminScreenShell";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import {
   deleteContactInquiry,
   listContactInquiries,

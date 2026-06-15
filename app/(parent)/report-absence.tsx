@@ -18,7 +18,7 @@ import { ABSENCE_REASONS } from "../../src/constants/absenceReasons";
 import { AuthContext } from "../../src/context/authContext";
 import {
   INNER_CARD_BORDER_GREEN,
-} from "../../../src/constants/innerCardBorders";
+} from "../../src/constants/innerCardBorders";
 import { submitParentAbsenceReport } from "../../src/services/parentAbsence";
 import { getAbsenceReasonLabel } from "../../src/utils/attendanceLabels";
 import {

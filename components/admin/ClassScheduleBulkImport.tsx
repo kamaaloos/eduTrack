@@ -14,7 +14,7 @@ import {
   runImportKind,
 } from "../../src/services/adminExcelImport";
 import { shareScheduleImportTemplate } from "../../src/services/scheduleExcelTemplate";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import {
   confirmAction,
   showErrorAlert,

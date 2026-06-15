@@ -7,7 +7,7 @@ import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import { getAttendanceColor } from "../../src/utils/dashboardUi";
 import { getAttendanceStatusLabel } from "../../src/utils/attendanceLabels";
-import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 type ReportCardViewProps = {
   report: ReportCardData;
