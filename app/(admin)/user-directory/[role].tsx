@@ -14,7 +14,11 @@ import { adminScreenScrollStyle } from "../../../src/constants/platformLayout";
 export default function UserDirectoryScreen() {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
-  const { role: roleParam } = useLocalSearchParams<{ role: string }>();
+  const { role: roleParam, userId, openPassword } = useLocalSearchParams<{
+    role: string;
+    userId?: string;
+    openPassword?: string;
+  }>();
   const role = (roleParam === "teacher" ||
   roleParam === "parent" ||
   roleParam === "student"
@@ -65,6 +69,10 @@ export default function UserDirectoryScreen() {
         ? teachers
         : parents;
 
+  const focusUserId =
+    typeof userId === "string" && userId.trim() ? userId.trim() : undefined;
+  const openPasswordOnFocus = openPassword === "1" || openPassword === "true";
+
   useFocusEffect(
     useCallback(() => {
       void refreshAll();
@@ -88,6 +96,8 @@ export default function UserDirectoryScreen() {
               title={config.title}
               subtitle={config.subtitle}
               users={users}
+              focusUserId={focusUserId}
+              openPasswordOnFocus={openPasswordOnFocus}
             />
           </ScrollView>
         </View>

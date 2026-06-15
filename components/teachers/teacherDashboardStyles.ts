@@ -1,4 +1,8 @@
 import { Platform, StyleSheet, type ViewStyle } from "react-native";
+import {
+  INNER_CARD_BORDER_GREEN,
+  INNER_CARD_BORDER_RED,
+} from "../../src/constants/innerCardBorders";
 
 const isWeb = Platform.OS === "web";
 
@@ -27,7 +31,8 @@ export const teacherDashboardStyles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#1E3A8A",
-    paddingBottom: isWeb ? 14 : 20,
+    paddingTop: isWeb ? 12 : 0,
+    paddingBottom: isWeb ? 18 : 20,
     borderBottomLeftRadius: isWeb ? 0 : 28,
     borderBottomRightRadius: isWeb ? 0 : 28,
     paddingHorizontal: isWeb ? 0 : 16,
@@ -44,7 +49,7 @@ export const teacherDashboardStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: isWeb ? 12 : 14,
-    minHeight: isWeb ? 48 : undefined,
+    minHeight: isWeb ? 72 : undefined,
   },
   headerTextBlock: {
     flex: 1,
@@ -118,7 +123,7 @@ export const teacherDashboardStyles = StyleSheet.create({
     padding: 16,
     gap: 14,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_RED,
     width: "100%",
     marginTop: isWeb ? 12 : 14,
     position: "relative",
@@ -151,7 +156,7 @@ export const teacherDashboardStyles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     minHeight: isWeb ? 108 : undefined,
     justifyContent: "center",
   },
@@ -205,7 +210,7 @@ export const teacherDashboardStyles = StyleSheet.create({
     borderRadius: isWeb ? 10 : 18,
     alignItems: "center",
     borderWidth: isWeb ? 1 : 0,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   statValue: {
     fontSize: 28,
@@ -226,7 +231,7 @@ export const teacherDashboardStyles = StyleSheet.create({
           borderRadius: 12,
           padding: 16,
           borderWidth: 1,
-          borderColor: "#E2E8F0",
+          borderColor: INNER_CARD_BORDER_RED,
         }
       : null),
   },
@@ -261,7 +266,7 @@ export const teacherDashboardStyles = StyleSheet.create({
     marginRight: isWeb ? 0 : 12,
     marginBottom: isWeb ? 0 : 8,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   studentAvatar: {
     width: 54,
@@ -300,13 +305,13 @@ export const teacherDashboardStyles = StyleSheet.create({
     padding: 14,
     borderRadius: isWeb ? 10 : 16,
     borderLeftWidth: 4,
-    borderLeftColor: "#2563EB",
+    borderLeftColor: INNER_CARD_BORDER_RED,
     borderTopWidth: 1,
     borderRightWidth: 1,
     borderBottomWidth: 1,
-    borderTopColor: "#E2E8F0",
-    borderRightColor: "#E2E8F0",
-    borderBottomColor: "#E2E8F0",
+    borderTopColor: INNER_CARD_BORDER_GREEN,
+    borderRightColor: INNER_CARD_BORDER_GREEN,
+    borderBottomColor: INNER_CARD_BORDER_GREEN,
     justifyContent: "space-between",
   },
   cardTitle: {
@@ -338,7 +343,7 @@ export const teacherDashboardStyles = StyleSheet.create({
     borderRadius: 16,
     padding: 18,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_RED,
     width: "100%",
     maxWidth: 480,
     alignSelf: "center",

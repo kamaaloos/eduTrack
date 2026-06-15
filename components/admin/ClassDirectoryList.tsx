@@ -24,6 +24,7 @@ import {
   adminModalBackdropStyle,
   adminModalCardStyle,
 } from "../../src/constants/platformLayout";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import {
   confirmAction,
   showErrorAlert,
@@ -332,7 +333,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,

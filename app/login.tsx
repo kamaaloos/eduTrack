@@ -21,11 +21,13 @@ import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AuthAboutLink } from "../components/auth/AuthAboutLink";
 import { AuthFormField } from "../components/auth/AuthFormField";
+import { ForgotPasswordModal } from "../components/auth/ForgotPasswordModal";
 import { LoginCardScannerModal } from "../components/auth/LoginCardScannerModal";
 import { LoginCardCodeModal } from "../components/auth/LoginCardCodeModal";
 import { AppLogo } from "../components/AppLogo";
 import { WebPageCard } from "../components/layout/WebPageCard";
 import { ScreenBackgroundLayer } from "../components/ScreenBackgroundLayer";
+import { usePlatformLayout } from "../hooks/usePlatformLayout";
 import { useSchoolContext } from "../src/context/schoolContext";
 import { APP_COPYRIGHT } from "../src/constants/appTheme";
 import { webAuthContentStyle } from "../src/constants/webLayout";
@@ -47,6 +49,7 @@ import { validateEmail } from "../src/utils/validation";
 
 export default function Login() {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const {
     user,
     userData,
@@ -210,6 +213,7 @@ export default function Login() {
   const busy = loading || awaitingProfile;
   const showScanLoginCard = Platform.OS !== "web";
   const showEnterLoginCardCode = Platform.OS === "web";
+  const showAlternateLogin = showScanLoginCard || showEnterLoginCardCode;
 
   const handleLoginCardFilled = useCallback(
     (payload: { email: string; password: string; name?: string }) => {
@@ -248,6 +252,12 @@ export default function Login() {
     }
   };
 
+  const closeForgotPassword = () => {
+    if (resetLoading) return;
+    setShowForgotPassword(false);
+    setResetEmail("");
+  };
+
   return (
     <View style={[styles.background, WEB_PAGE_ROOT_STYLE]}>
       <ScreenBackgroundLayer />
@@ -273,187 +283,172 @@ export default function Login() {
             styles.scrollContainer,
             webAuthContentStyle(),
             {
-              paddingTop: insets.top + 24,
+              paddingTop: insets.top + (layout.isCompactWeb ? 16 : 24),
               paddingBottom: insets.bottom + 56,
+              paddingHorizontal: layout.isCompactWeb ? 16 : 24,
             },
           ]}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-        <WebPageCard>
-        <View style={styles.logoContainer}>
-          <AppLogo size={120} />
-          <Text style={styles.title}>{t("auth.login.title")}</Text>
-          <Text style={styles.subtitle}>{t("auth.login.subtitle")}</Text>
+          <WebPageCard style={layout.isWeb ? styles.webCard : undefined}>
+            <View style={styles.header}>
+              <AppLogo size={layout.isWeb ? 96 : 108} />
+              <Text style={styles.title}>{t("auth.login.title")}</Text>
+              <Text style={styles.subtitle}>{t("auth.login.subtitle")}</Text>
 
-          {selectedSchool ? (
-            <View style={styles.schoolBanner}>
-              <Ionicons name="business" size={18} color="#1E3A8A" />
-              <Text style={styles.schoolBannerText} numberOfLines={1}>
-                {selectedSchool.name}
-              </Text>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.schoolBannerActionBtn,
-                  pressed && styles.schoolBannerActionPressed,
-                ]}
-                onPress={handleChangeSchool}
-                accessibilityRole="button"
-                accessibilityLabel={t("auth.login.changeSchool")}
-              >
-                <Text style={styles.schoolBannerAction}>
-                  {t("auth.login.changeSchool")}
-                </Text>
-              </Pressable>
+              {selectedSchool ? (
+                <View style={styles.schoolPill}>
+                  <Ionicons name="business-outline" size={16} color="#1D4ED8" />
+                  <Text style={styles.schoolPillText} numberOfLines={1}>
+                    {selectedSchool.name}
+                  </Text>
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.schoolPillActionBtn,
+                      pressed && styles.schoolPillActionPressed,
+                    ]}
+                    onPress={handleChangeSchool}
+                    accessibilityRole="button"
+                    accessibilityLabel={t("auth.login.changeSchool")}
+                  >
+                    <Text style={styles.schoolPillAction}>
+                      {t("auth.login.changeSchool")}
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : null}
             </View>
-          ) : null}
-        </View>
 
-        <View style={styles.formContainer}>
-          {error && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          )}
-
-          <AuthFormField
-            label={t("auth.login.email")}
-            icon="person-outline"
-            placeholder={t("auth.login.email")}
-            value={email}
-            onChangeText={(text) => {
-              setEmail(text);
-              setError(null);
-            }}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            editable={!busy}
-          />
-
-          <View style={styles.passwordBlock}>
-            <AuthFormField
-              label={t("auth.login.password")}
-              icon="key-outline"
-              isPassword
-              placeholder={t("auth.login.password")}
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                setError(null);
-              }}
-              editable={!busy}
-              containerStyle={styles.passwordField}
-            />
-            <TouchableOpacity
-              style={styles.forgotPasswordLink}
-              onPress={() => setShowForgotPassword(true)}
-              disabled={busy}
+            <View
+              style={[
+                styles.formBody,
+                layout.isWeb ? styles.formBodyWeb : styles.formBodyNative,
+              ]}
             >
-              <Text style={styles.forgotPasswordText}>
-                {t("auth.login.forgotPassword")}
-              </Text>
-            </TouchableOpacity>
-          </View>
+              {error ? (
+                <View style={styles.errorContainer}>
+                  <Ionicons name="alert-circle" size={18} color="#B91C1C" />
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              ) : null}
 
-          {showEnterLoginCardCode ? (
-            <TouchableOpacity
-              style={[styles.scanCardButton, busy && styles.buttonDisabled]}
-              onPress={() => setShowLoginCardCode(true)}
-              disabled={busy}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="keypad-outline" size={20} color="#1E3A8A" />
-              <Text style={styles.scanCardButtonText}>
-                {t("auth.login.enterCardCode")}
-              </Text>
-            </TouchableOpacity>
-          ) : null}
+              <AuthFormField
+                label={t("auth.login.email")}
+                icon="mail-outline"
+                placeholder={t("auth.login.email")}
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  setError(null);
+                }}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                editable={!busy}
+              />
 
-          {showScanLoginCard ? (
-            <TouchableOpacity
-              style={[styles.scanCardButton, busy && styles.buttonDisabled]}
-              onPress={() => setShowLoginCardScanner(true)}
-              disabled={busy}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="qr-code-outline" size={20} color="#1E3A8A" />
-              <Text style={styles.scanCardButtonText}>
-                {t("auth.login.scanCard")}
-              </Text>
-            </TouchableOpacity>
-          ) : null}
+              <View style={styles.passwordBlock}>
+                <AuthFormField
+                  label={t("auth.login.password")}
+                  icon="lock-closed-outline"
+                  isPassword
+                  placeholder={t("auth.login.password")}
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    setError(null);
+                  }}
+                  editable={!busy}
+                  containerStyle={styles.passwordField}
+                />
+                <TouchableOpacity
+                  style={styles.forgotPasswordLink}
+                  onPress={() => setShowForgotPassword(true)}
+                  disabled={busy}
+                >
+                  <Text style={styles.forgotPasswordText}>
+                    {t("auth.login.forgotPassword")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-          <TouchableOpacity
-            style={[styles.button, busy && styles.buttonDisabled]}
-            onPress={handleLogin}
-            disabled={busy}
-            activeOpacity={0.8}
-          >
-            {busy ? (
-              <ActivityIndicator color="white" size="small" />
-            ) : (
-              <Text style={styles.buttonText}>{t("auth.login.signIn")}</Text>
-            )}
-          </TouchableOpacity>
-
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>
-              {t("auth.login.notRegisteredHint")}
-            </Text>
-          </View>
-        </View>
-        </WebPageCard>
-
-        {showForgotPassword && (
-          <View style={styles.forgotPasswordContainer}>
-            <Text style={styles.forgotPasswordTitle}>
-              {t("auth.login.resetTitle")}
-            </Text>
-            <Text style={styles.forgotPasswordSubtitle}>
-              {t("auth.login.resetHint")}
-            </Text>
-
-            <AuthFormField
-              label={t("auth.login.email")}
-              icon="person-outline"
-              placeholder={t("auth.login.email")}
-              value={resetEmail}
-              onChangeText={setResetEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              editable={!resetLoading}
-            />
-
-            <View style={styles.forgotPasswordButtons}>
               <TouchableOpacity
-                style={[
-                  styles.resetButton,
-                  resetLoading && styles.buttonDisabled,
-                ]}
-                onPress={handleForgotPassword}
-                disabled={resetLoading}
-                activeOpacity={0.8}
+                style={[styles.primaryButton, busy && styles.buttonDisabled]}
+                onPress={handleLogin}
+                disabled={busy}
+                activeOpacity={0.85}
               >
-                {resetLoading ? (
+                {busy ? (
                   <ActivityIndicator color="white" size="small" />
                 ) : (
-                  <Text style={styles.buttonText}>{t("auth.login.notifyAdmin")}</Text>
+                  <>
+                    <Text style={styles.primaryButtonText}>
+                      {t("auth.login.signIn")}
+                    </Text>
+                    <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+                  </>
                 )}
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => {
-                  setShowForgotPassword(false);
-                  setResetEmail("");
-                }}
-                disabled={resetLoading}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.cancelButtonText}>{t("common.cancel")}</Text>
-              </TouchableOpacity>
+              {showAlternateLogin ? (
+                <>
+                  <View style={styles.dividerRow}>
+                    <View style={styles.dividerLine} />
+                    <Text style={styles.dividerText}>
+                      {t("auth.login.orDivider")}
+                    </Text>
+                    <View style={styles.dividerLine} />
+                  </View>
+
+                  {showEnterLoginCardCode ? (
+                    <TouchableOpacity
+                      style={[
+                        styles.secondaryButton,
+                        busy && styles.buttonDisabled,
+                      ]}
+                      onPress={() => setShowLoginCardCode(true)}
+                      disabled={busy}
+                      activeOpacity={0.8}
+                    >
+                      <Ionicons
+                        name="keypad-outline"
+                        size={18}
+                        color="#475569"
+                      />
+                      <Text style={styles.secondaryButtonText}>
+                        {t("auth.login.enterCardCode")}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+
+                  {showScanLoginCard ? (
+                    <TouchableOpacity
+                      style={[
+                        styles.secondaryButton,
+                        busy && styles.buttonDisabled,
+                      ]}
+                      onPress={() => setShowLoginCardScanner(true)}
+                      disabled={busy}
+                      activeOpacity={0.8}
+                    >
+                      <Ionicons
+                        name="qr-code-outline"
+                        size={18}
+                        color="#475569"
+                      />
+                      <Text style={styles.secondaryButtonText}>
+                        {t("auth.login.scanCard")}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </>
+              ) : null}
+
+              <Text style={styles.infoText}>
+                {t("auth.login.notRegisteredHint")}
+              </Text>
             </View>
-          </View>
-        )}
+          </WebPageCard>
         </ScrollView>
 
         {!busy ? (
@@ -465,6 +460,15 @@ export default function Login() {
           </Text>
         ) : null}
       </KeyboardAvoidingView>
+
+      <ForgotPasswordModal
+        visible={showForgotPassword}
+        email={resetEmail}
+        loading={resetLoading}
+        onEmailChange={setResetEmail}
+        onClose={closeForgotPassword}
+        onSubmit={handleForgotPassword}
+      />
 
       <LoginCardScannerModal
         visible={showLoginCardScanner}
@@ -503,160 +507,219 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
-    paddingHorizontal: 24,
   },
 
-  logoContainer: {
+  webCard: {
+    paddingHorizontal: 32,
+    paddingVertical: 36,
+  },
+
+  header: {
     alignItems: "center",
-    marginBottom: 48,
-    gap: 16,
+    gap: 10,
+    marginBottom: 28,
   },
 
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: "800",
-    color: "#0C4A6E",
-    marginBottom: 8,
+    color: "#0F172A",
     textAlign: "center",
+    letterSpacing: -0.3,
   },
 
   subtitle: {
-    fontSize: 16,
-    color: "#0369A1",
+    fontSize: 15,
+    color: "#64748B",
     textAlign: "center",
-    lineHeight: 24,
+    lineHeight: 22,
     fontWeight: "500",
+    maxWidth: 320,
   },
 
-  schoolBanner: {
-    marginTop: 16,
+  schoolPill: {
+    marginTop: 8,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    alignSelf: "stretch",
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    alignSelf: "center",
+    maxWidth: "100%",
+    backgroundColor: "#EFF6FF",
+    borderRadius: 999,
+    paddingLeft: 14,
+    paddingRight: 6,
+    paddingVertical: 8,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.8)",
+    borderColor: "#BFDBFE",
   },
 
-  schoolBannerText: {
-    flex: 1,
-    fontSize: 14,
+  schoolPillText: {
+    flexShrink: 1,
+    fontSize: 13,
     fontWeight: "700",
     color: "#1E3A8A",
   },
 
-  schoolBannerActionBtn: {
+  schoolPillActionBtn: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: 999,
     flexShrink: 0,
   },
-  schoolBannerActionPressed: {
-    backgroundColor: "#EFF6FF",
+
+  schoolPillActionPressed: {
+    backgroundColor: "#DBEAFE",
   },
-  schoolBannerAction: {
-    fontSize: 13,
+
+  schoolPillAction: {
+    fontSize: 12,
     fontWeight: "700",
     color: "#2563EB",
   },
 
-  formContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
+  formBody: {
+    width: "100%",
+  },
+
+  formBodyWeb: {
+    paddingTop: 4,
+  },
+
+  formBodyNative: {
+    backgroundColor: "rgba(255, 255, 255, 0.96)",
     borderRadius: 20,
     padding: 24,
     shadowColor: "#0284C7",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.12,
     shadowRadius: 16,
     elevation: 6,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.8)",
+    borderColor: "rgba(255, 255, 255, 0.85)",
   },
 
   errorContainer: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
     backgroundColor: "#FEF2F2",
     borderWidth: 1,
     borderColor: "#FECACA",
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
+    padding: 14,
+    marginBottom: 18,
   },
 
   errorText: {
+    flex: 1,
     color: "#B91C1C",
     fontSize: 14,
-    textAlign: "center",
+    lineHeight: 20,
   },
 
   passwordBlock: {
-    marginBottom: 0,
+    marginBottom: 4,
   },
 
   passwordField: {
     marginBottom: 0,
   },
 
-  button: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 52,
-    marginTop: 8,
-    shadowColor: "#2563EB",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+  forgotPasswordLink: {
+    alignSelf: "flex-end",
+    marginTop: 10,
+    marginBottom: 4,
   },
 
-  scanCardButton: {
+  forgotPasswordText: {
+    color: "#2563EB",
+    fontSize: 13,
+    fontWeight: "600",
+  },
+
+  primaryButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    marginTop: 4,
-    marginBottom: 4,
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#BFDBFE",
-    backgroundColor: "#EFF6FF",
+    backgroundColor: "#2563EB",
+    paddingVertical: 16,
+    borderRadius: 14,
+    minHeight: 54,
+    marginTop: 20,
+    ...(Platform.OS === "web"
+      ? ({
+          boxShadow: "0 8px 24px rgba(37, 99, 235, 0.28)",
+        } as object)
+      : {
+          shadowColor: "#2563EB",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.22,
+          shadowRadius: 6,
+          elevation: 3,
+        }),
   },
 
-  scanCardButtonText: {
-    color: "#1E3A8A",
+  primaryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
     fontWeight: "700",
-    fontSize: 15,
+  },
+
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 24,
+    marginBottom: 16,
+  },
+
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#E2E8F0",
+  },
+
+  dividerText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#94A3B8",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+
+  secondaryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 13,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    backgroundColor: "#F8FAFC",
+    marginBottom: 8,
+  },
+
+  secondaryButtonText: {
+    color: "#475569",
+    fontWeight: "600",
+    fontSize: 14,
   },
 
   buttonDisabled: {
     opacity: 0.6,
   },
 
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-
-  infoContainer: {
-    marginTop: 24,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
-  },
-
   infoText: {
-    fontSize: 14,
-    color: "#4B5563",
+    marginTop: 22,
+    paddingTop: 18,
+    borderTopWidth: 1,
+    borderTopColor: "#E2E8F0",
+    fontSize: 13,
+    color: "#64748B",
     textAlign: "center",
-    lineHeight: 21,
+    lineHeight: 20,
   },
 
   copyright: {
@@ -669,81 +732,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "rgba(12, 74, 110, 0.75)",
     letterSpacing: 0.3,
-  },
-
-  forgotPasswordLink: {
-    alignSelf: "flex-end",
-    marginTop: 8,
-  },
-
-  forgotPasswordText: {
-    color: "#2563EB",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-
-  forgotPasswordContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    borderRadius: 20,
-    padding: 24,
-    marginTop: 20,
-    shadowColor: "#0284C7",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.8)",
-  },
-
-  forgotPasswordTitle: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: "#111827",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-
-  forgotPasswordSubtitle: {
-    fontSize: 14,
-    color: "#6B7280",
-    textAlign: "center",
-    lineHeight: 20,
-    marginBottom: 24,
-  },
-
-  forgotPasswordButtons: {
-    gap: 12,
-  },
-
-  resetButton: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 52,
-    shadowColor: "#2563EB",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-
-  cancelButton: {
-    backgroundColor: "#F3F4F6",
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 52,
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-  },
-
-  cancelButtonText: {
-    color: "#374151",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });

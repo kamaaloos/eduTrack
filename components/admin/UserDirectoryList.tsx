@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -24,6 +24,7 @@ import {
   adminModalBackdropStyle,
   adminModalCardStyle,
 } from "../../src/constants/platformLayout";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import {
   confirmDestructiveAction,
   showErrorAlert,
@@ -38,6 +39,8 @@ type UserDirectoryListProps = {
   title: string;
   subtitle: string;
   users: UserData[];
+  focusUserId?: string;
+  openPasswordOnFocus?: boolean;
 };
 
 type UserRowActionsProps = {
@@ -153,6 +156,8 @@ export function UserDirectoryList({
   title,
   subtitle,
   users,
+  focusUserId,
+  openPasswordOnFocus = false,
 }: UserDirectoryListProps) {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
@@ -175,6 +180,7 @@ export function UserDirectoryList({
   const [editEmail, setEditEmail] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [saving, setSaving] = useState(false);
+  const handledFocusUserIdRef = useRef<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -235,6 +241,27 @@ export function UserDirectoryList({
     setNewPassword("");
     setConfirmPassword("");
   };
+
+  useEffect(() => {
+    if (!focusUserId || usersLoading) return;
+    if (handledFocusUserIdRef.current === focusUserId) return;
+
+    const user = users.find((entry) => entry.id === focusUserId);
+    if (!user) return;
+
+    handledFocusUserIdRef.current = focusUserId;
+    setSearch(user.email?.trim() || user.name?.trim() || "");
+
+    if (openPasswordOnFocus) {
+      openPasswordModal(user);
+    }
+  }, [focusUserId, openPasswordOnFocus, users, usersLoading]);
+
+  useEffect(() => {
+    if (!focusUserId) {
+      handledFocusUserIdRef.current = null;
+    }
+  }, [focusUserId]);
 
   const savePassword = async () => {
     if (!passwordUser) return;
@@ -581,7 +608,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,

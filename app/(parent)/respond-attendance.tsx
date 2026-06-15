@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 import { ABSENCE_REASONS } from "../../src/constants/absenceReasons";
 import { AuthContext } from "../../src/context/authContext";
+import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
 import { submitParentAttendanceResponse } from "../../src/services/parentAttendanceResponse";
 import { getAbsenceReasonLabel } from "../../src/utils/attendanceLabels";
 import {
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     padding: 16,
   },
   alertBox: {
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     paddingVertical: 14,
     paddingHorizontal: 14,
   },
@@ -215,7 +216,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     padding: 14,
     minHeight: 100,
     fontSize: 15,

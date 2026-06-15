@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { buildSchoolOnboardingSteps } from "../../src/utils/schoolOnboardingCommands";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 
 type SchoolOnboardingChecklistProps = {
   projectId: string;
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     gap: 16,
   },
   warning: {
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     padding: 10,
     gap: 8,
   },

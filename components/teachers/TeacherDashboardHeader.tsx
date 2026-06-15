@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
   webAdminContentStyle,
   webAdminPagePaddingStyle,
@@ -27,6 +28,8 @@ export function TeacherDashboardHeader({
   onMenuPress,
 }: TeacherDashboardHeaderProps) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
+  const showMenuButton = Boolean(onMenuPress) && !layout.isDesktopWeb;
 
   const iconBtnStyle =
     Platform.OS === "web" ? styles.headerIconButton : styles.headerIconButtonNative;
@@ -55,7 +58,7 @@ export function TeacherDashboardHeader({
         </View>
 
         <View style={styles.headerActions}>
-          {onMenuPress ? (
+          {showMenuButton ? (
             <TouchableOpacity
               style={iconBtnStyle}
               onPress={onMenuPress}

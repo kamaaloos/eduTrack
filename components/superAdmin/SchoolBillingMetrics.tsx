@@ -8,6 +8,7 @@ import {
   type SubscriptionStatus,
 } from "../../src/utils/subscriptionStatus";
 import { getUsageRemainingDays } from "../../src/utils/usageExpiry";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 
 type SchoolBillingMetricsProps = {
   school: SchoolRecord;
@@ -211,7 +212,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   chipCompact: {
     padding: 10,

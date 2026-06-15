@@ -18,6 +18,7 @@ import { ParentChildrenList } from "../../components/parent/ParentChildrenList";
 import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 import { AuthContext } from "../../src/context/authContext";
 import { copyrightFooterInset } from "../../src/constants/appTheme";
+import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
 import {
   loadParentChildrenDetailed,
   type ParentChild,
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     maxWidth: 480,
     alignSelf: "center",
     width: "100%",

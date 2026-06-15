@@ -24,6 +24,7 @@ import {
 import { setParentFeeMonthPaid } from "../../src/services/parentFeePayments";
 import { showErrorAlert } from "../../src/utils/confirmDialog";
 import { DirectoryPagination } from "./DirectoryPagination";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 
 type FeeFilter = "all" | "yes" | "no";
 
@@ -401,7 +402,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,

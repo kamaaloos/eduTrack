@@ -114,3 +114,7 @@ You must configure signing (`android/app/build.gradle` + keystore). EAS is simpl
 Current Android application ID: **`com.maylesoft.edutrack`**
 
 Changing it later requires a new app install for all users.
+
+## iOS / TestFlight
+
+See [IOS_BUILD.md](./IOS_BUILD.md) for iPhone/iPad builds and TestFlight distribution.

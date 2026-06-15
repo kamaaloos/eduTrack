@@ -24,6 +24,7 @@ import {
 } from "../../src/services/schoolRegistryAdmin";
 import { refreshSchoolUserCounts } from "../../src/services/schoolUserCountSync";
 import type { SchoolRecord } from "../../src/types/school";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
 import {
   confirmDestructiveAction,
   showErrorAlert,
@@ -349,7 +350,7 @@ const styles = StyleSheet.create({
   toolbarBtnSecondary: {
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     flexGrow: isWeb ? 0 : 1,
     flex: isWeb ? undefined : 1,
   },
@@ -400,7 +401,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 28,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   emptyTitle: {
     marginTop: 12,
@@ -421,7 +422,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   cardHeader: {
     flexDirection: "row",
@@ -522,7 +523,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 11,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   editButtonText: {
     color: "#1E3A8A",

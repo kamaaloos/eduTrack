@@ -1,5 +1,9 @@
 import { StyleSheet } from "react-native";
 import { FLOATING_TAB_BAR_INSET } from "../../../src/constants/tabBar";
+import {
+  INNER_CARD_BORDER_GREEN,
+  innerCardBorderStyle,
+} from "../../../src/constants/innerCardBorders";
 
 export const examReportsStyles = StyleSheet.create({
   container: { flex: 1 },
@@ -86,7 +90,7 @@ export const examReportsStyles = StyleSheet.create({
     padding: 14,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   studentRowTop: {
     flexDirection: "row",
@@ -149,7 +153,7 @@ export const examReportsStyles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 15,
@@ -164,7 +168,7 @@ export const examReportsStyles = StyleSheet.create({
     marginBottom: 10,
     gap: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   reportAvatar: {
     width: 44,

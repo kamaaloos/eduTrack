@@ -17,6 +17,7 @@ import {
   uploadSchoolLogo,
 } from "../../src/services/schoolLogo";
 import { updateSchoolLogoUrl } from "../../src/services/schoolRegistryAdmin";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 
 type SchoolLogoFieldProps = {
   schoolId?: string;
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     borderStyle: "dashed",
     alignItems: "center",
     justifyContent: "center",

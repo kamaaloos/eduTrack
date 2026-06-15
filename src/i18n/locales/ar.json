@@ -241,6 +241,7 @@
       "password": "كلمة المرور",
       "signIn": "تسجيل الدخول",
       "forgotPassword": "هل نسيت كلمة المرور؟",
+      "orDivider": "أو",
       "resetTitle": "إعادة تعيين كلمة المرور",
       "resetHint": "أدخل بريدك المدرسي وسنرسل رابط إعادة التعيين.",
       "sendReset": "إرسال رابط إعادة التعيين",
@@ -412,7 +413,8 @@
     "emptyStudent": "لا توجد إشعارات بعد. ستظهر هنا الواجبات والاختبارات وإعلانات المدرسة.",
     "emptyParent": "لا توجد إشعارات بعد. ستظهر هنا تنبيهات حضور أبنائك وتحديثات المدرسة.",
     "emptyAdmin": "لا توجد إشعارات بعد. ستظهر هنا تنبيهات وقت الاستخدام وتحديثات المدرسة.",
-    "markRead": "وضع علامة كمقروء"
+    "markRead": "وضع علامة كمقروء",
+    "openUserDirectory": "فتح دليل المستخدمين"
   },
   "teacher": {
     "dashboard": {
@@ -1010,6 +1012,7 @@
     "fullNameLabel": "Full name",
     "emailProfileLabel": "Email (profile)",
     "passwordResetNote": "Password reset sends an email link. Login email in Firebase may still match the original address until reset is completed.",
+    "passwordResetUserNotFound": "Could not find that user in the directory. Refresh the user lists and try again.",
     "removeUserTitle": "Remove {{role}}",
     "removeUserMessage": "Remove {{name}}? Their assignments and links will be cleared. They will no longer appear in the app.",
     "userRemoved": "{{role}} removed from the directory.",

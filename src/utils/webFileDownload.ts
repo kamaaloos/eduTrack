@@ -57,6 +57,65 @@ export async function downloadBlobFromUri(uri: string, filename: string): Promis
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Print or save-as-PDF on web using only the provided HTML.
+ * expo-print ignores `html` on web and prints the app shell instead.
+ */
+export function printHtmlOnWeb(html: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (typeof document === "undefined") {
+      reject(new Error("PRINT_NOT_SUPPORTED"));
+      return;
+    }
+
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("title", "Print document");
+    iframe.style.position = "fixed";
+    iframe.style.left = "-9999px";
+    iframe.style.top = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "none";
+
+    let settled = false;
+    const finish = (err?: unknown) => {
+      if (settled) return;
+      settled = true;
+      window.setTimeout(() => iframe.remove(), 300);
+      if (err) {
+        reject(err instanceof Error ? err : new Error("PRINT_FAILED"));
+      } else {
+        resolve();
+      }
+    };
+
+    iframe.onload = () => {
+      window.setTimeout(() => {
+        try {
+          const win = iframe.contentWindow;
+          if (!win) {
+            finish(new Error("PRINT_IFRAME_UNAVAILABLE"));
+            return;
+          }
+
+          const onAfterPrint = () => finish();
+          win.addEventListener("afterprint", onAfterPrint, { once: true });
+          window.setTimeout(onAfterPrint, 60_000);
+
+          win.focus();
+          win.print();
+        } catch (err) {
+          finish(err);
+        }
+      }, 150);
+    };
+
+    iframe.onerror = () => finish(new Error("PRINT_FAILED"));
+    document.body.appendChild(iframe);
+    iframe.srcdoc = html;
+  });
+}
+
 /** Read a picked file URI on web (blob:, data:, http(s):). */
 export async function readUriAsArrayBuffer(uri: string): Promise<ArrayBuffer> {
   const response = await fetch(uri);

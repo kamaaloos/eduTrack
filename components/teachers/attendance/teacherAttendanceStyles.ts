@@ -1,4 +1,8 @@
 import { Platform, StyleSheet } from "react-native";
+import {
+  INNER_CARD_BORDER_GREEN,
+  innerCardBorderStyle,
+} from "../../../src/constants/innerCardBorders";
 
 const isWeb = Platform.OS === "web";
 
@@ -98,6 +102,7 @@ export const teacherAttendanceStyles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 2,
+    ...innerCardBorderStyle,
   },
   cardName: { fontSize: 20, fontWeight: "800", marginBottom: 12, color: "#0F172A" },
   statusPill: {
@@ -216,7 +221,7 @@ export const teacherAttendanceStyles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   modalList: { paddingHorizontal: 20 },
   modalItem: {

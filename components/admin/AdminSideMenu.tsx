@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { APP_MENU_BACKDROP } from "../../src/constants/appTheme";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import { platformShadowDrawer } from "../../src/utils/platformShadow";
 
 const isWeb = Platform.OS === "web";
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   itemDestructive: {
     backgroundColor: "#FEF2F2",
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   closeText: {
     fontSize: 14,

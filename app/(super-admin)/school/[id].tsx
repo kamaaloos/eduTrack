@@ -25,6 +25,7 @@ import {
 } from "../../../src/services/schoolRegistryAdmin";
 import { refreshSchoolUserCounts } from "../../../src/services/schoolUserCountSync";
 import type { SchoolRecord } from "../../../src/types/school";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
 
 export default function SuperAdminSchoolDetailScreen() {
   const { t } = useTranslation();
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     marginBottom: 12,
   },
   heroRow: {
@@ -330,7 +331,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   sectionHeader: {
     flexDirection: "row",

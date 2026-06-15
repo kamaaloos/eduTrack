@@ -44,6 +44,8 @@ export type CreateNotificationInput = {
   studentId?: string | null;
   classId?: string | null;
   actorId?: string | null;
+  /** Role of the user who triggered the notification (e.g. password reset requester). */
+  actorRole?: NotificationRole | null;
 };
 
 export type AppNotification = {
@@ -56,6 +58,7 @@ export type AppNotification = {
   studentId: string | null;
   classId: string | null;
   actorId: string | null;
+  actorRole: NotificationRole | null;
   read: boolean;
   createdAt: Date | null;
 };
@@ -103,6 +106,7 @@ export function mapNotificationDoc(
     studentId: (data.studentId as string) || null,
     classId: (data.classId as string) || null,
     actorId: (data.actorId as string) || null,
+    actorRole: (data.actorRole as NotificationRole) || null,
     read: Boolean(data.read),
     createdAt: toDate(data.createdAt),
   };
@@ -123,6 +127,7 @@ export async function createNotification(
       studentId: input.studentId ?? null,
       classId: input.classId ?? null,
       actorId: input.actorId ?? null,
+      actorRole: input.actorRole ?? null,
       read: false,
       createdAt: serverTimestamp(),
     });
@@ -154,6 +159,7 @@ export async function createNotifications(
           studentId: input.studentId ?? null,
           classId: input.classId ?? null,
           actorId: input.actorId ?? null,
+          actorRole: input.actorRole ?? null,
           read: false,
           createdAt: serverTimestamp(),
         });

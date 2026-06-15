@@ -1,5 +1,9 @@
 import { Platform, StyleSheet } from "react-native";
 import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
+import {
+  INNER_CARD_BORDER_GREEN,
+  INNER_CARD_BORDER_RED,
+} from "../../src/constants/innerCardBorders";
 
 const isWeb = Platform.OS === "web";
 
@@ -23,9 +27,9 @@ export const studentScreenStyles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     borderLeftWidth: 4,
-    borderLeftColor: "#2563EB",
+    borderLeftColor: INNER_CARD_BORDER_RED,
     width: "100%",
     maxWidth: STUDENT_LIST_MAX_WIDTH,
     alignSelf: "center",
@@ -78,7 +82,7 @@ export const studentScreenStyles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     width: "100%",
     maxWidth: STUDENT_LIST_MAX_WIDTH,
     alignSelf: "center",
@@ -126,7 +130,7 @@ export const studentScreenStyles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     width: "100%",
     maxWidth: STUDENT_LIST_MAX_WIDTH,
     alignSelf: "center",

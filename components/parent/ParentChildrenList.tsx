@@ -11,6 +11,7 @@ import {
 import { MOBILE_SCREEN_HORIZONTAL_PADDING } from "../../src/constants/appTheme";
 import type { ParentChild } from "../../src/services/parentChildren";
 import { platformShadow } from "../../src/utils/platformShadow";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import { UserAvatar } from "../common/UserAvatar";
 
 type ParentChildrenListProps = {
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     gap: 12,
     ...platformShadow("sm"),
   },

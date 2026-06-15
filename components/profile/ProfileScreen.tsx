@@ -34,6 +34,7 @@ import {
 } from "../../src/services/userProfile";
 import { canUploadProfilePhoto } from "../../src/utils/userAvatar";
 import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 
 type ProfileScreenProps = {
   roleLabel?: string;
@@ -538,7 +539,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   cardTitle: { fontSize: 17, fontWeight: "800", color: "#0F172A", marginBottom: 6 },
   cardHint: { fontSize: 13, color: "#64748B", lineHeight: 18, marginBottom: 12 },
@@ -570,7 +571,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   infoText: { flex: 1, fontSize: 13, color: "#64748B", lineHeight: 18 },
   logoutBtn: {

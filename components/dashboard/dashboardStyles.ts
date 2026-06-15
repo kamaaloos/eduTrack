@@ -1,6 +1,10 @@
 import { Platform, StyleSheet, type ViewStyle } from "react-native";
 import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 import {
+  INNER_CARD_BORDER_GREEN,
+  INNER_CARD_BORDER_RED,
+} from "../../src/constants/innerCardBorders";
+import {
   platformShadow,
   platformShadowAccent,
 } from "../../src/utils/platformShadow";
@@ -77,7 +81,7 @@ export const dashboardStyles = StyleSheet.create({
           backgroundColor: "#FFFFFF",
           borderRadius: 12,
           borderWidth: 1,
-          borderColor: "#E2E8F0",
+          borderColor: INNER_CARD_BORDER_RED,
           padding: 20,
           ...platformShadow("sm"),
         }
@@ -140,7 +144,7 @@ export const dashboardStyles = StyleSheet.create({
     marginBottom: isWeb ? 0 : 8,
     backgroundColor: "#FFFFFF",
     justifyContent: "space-between",
-    ...(isWeb ? { borderWidth: 1, borderColor: "#E2E8F0" } : platformShadow("sm")),
+    ...(isWeb ? { borderWidth: 1, borderColor: INNER_CARD_BORDER_GREEN } : platformShadow("sm")),
   },
   slideCardTop: {
     flexDirection: "row",
@@ -161,7 +165,10 @@ export const dashboardStyles = StyleSheet.create({
   },
   slideCardText: { color: "#6B7280", fontSize: 13, lineHeight: 18 },
   slideCardAction: { color: "#2563EB", fontWeight: "700", fontSize: 12 },
-  messageCardAccent: { borderLeftWidth: 4, borderLeftColor: "#2563EB" },
+  messageCardAccent: {
+    borderLeftWidth: 4,
+    borderLeftColor: INNER_CARD_BORDER_RED,
+  },
   messageCardDirect: { borderLeftColor: "#7C3AED" },
   messageSenderLine: {
     fontSize: 12,

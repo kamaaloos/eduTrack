@@ -16,6 +16,7 @@ module.exports = {
     ],
   },
   modulePathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.expo/"],
+  setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"],
   collectCoverageFrom: [
     "src/utils/**/*.ts",
     "src/services/schoolRegistryMappers.ts",

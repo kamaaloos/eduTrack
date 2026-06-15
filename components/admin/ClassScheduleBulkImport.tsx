@@ -14,6 +14,7 @@ import {
   runImportKind,
 } from "../../src/services/adminExcelImport";
 import { shareScheduleImportTemplate } from "../../src/services/scheduleExcelTemplate";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 import {
   confirmAction,
   showErrorAlert,
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   templateBtnText: { color: "#1E3A8A", fontWeight: "600", fontSize: 14 },
   pickBtn: {

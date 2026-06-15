@@ -1,6 +1,10 @@
 import type { ViewStyle } from "react-native";
 import type { PlatformLayout } from "../../hooks/usePlatformLayout";
 import {
+  INNER_CARD_BORDER_GREEN,
+  INNER_CARD_BORDER_RED,
+} from "./innerCardBorders";
+import {
   WEB_AUTH_MAX_WIDTH,
   WEB_DASHBOARD_MAX_WIDTH_DESKTOP,
   WEB_DASHBOARD_MAX_WIDTH_TABLET,
@@ -24,7 +28,7 @@ export function adminSurfaceCardStyle(layout: PlatformLayout): ViewStyle {
     padding: layout.isWeb ? 14 : 16,
     ...platformShadow("sm"),
     ...(layout.isWeb
-      ? { borderWidth: 1, borderColor: "#E2E8F0" }
+      ? { borderWidth: 1, borderColor: INNER_CARD_BORDER_GREEN }
       : null),
   };
 }
@@ -83,7 +87,7 @@ export function adminMenuCardStyle(layout: PlatformLayout): ViewStyle {
     gap: 14,
     ...platformShadow("sm"),
     ...(layout.isWeb
-      ? { borderWidth: 1, borderColor: "#E2E8F0" }
+      ? { borderWidth: 1, borderColor: INNER_CARD_BORDER_GREEN }
       : null),
     ...(adminGridItemStyle(layout, 2) ?? null),
   };
@@ -101,7 +105,7 @@ export function adminInsightCardStyle(layout: PlatformLayout): ViewStyle {
     gap: layout.isWeb ? 10 : 6,
     ...platformShadow("sm"),
     ...(layout.isWeb
-      ? { borderWidth: 1, borderColor: "#E2E8F0", minHeight: 56 }
+      ? { borderWidth: 1, borderColor: INNER_CARD_BORDER_GREEN, minHeight: 56 }
       : null),
   };
 }
@@ -155,7 +159,7 @@ export function adminDirectoryCardStyle(layout: PlatformLayout): ViewStyle {
     padding: 14,
     marginBottom: layout.isNative ? 10 : 0,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     ...(layout.isCompactWeb ? adminGridItemStyle(layout, 2) : null),
   };
 }
@@ -356,7 +360,7 @@ export function webDashboardSectionStyle(layout: PlatformLayout): ViewStyle | un
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_RED,
     padding: layout.isDesktopWeb ? 20 : 16,
     ...platformShadow("sm"),
   };

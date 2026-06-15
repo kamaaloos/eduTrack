@@ -142,21 +142,46 @@ export default function SelectSchoolScreen() {
     isWeb ? styles.webScroll : styles.nativeScroll,
     contentColumn,
     {
-      paddingTop: insets.top + 20,
+      paddingTop: insets.top + (isWeb ? 20 : 56),
       paddingBottom: Math.max(insets.bottom, 24) + 24,
     },
   ];
+
+  const topActions = (
+    <View style={styles.topActionsRowInner}>
+      <TouchableOpacity
+        style={styles.topActionLink}
+        onPress={() => void handleBackToOnboarding()}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={t("selectSchool.backToOnboarding")}
+      >
+        <Ionicons name="arrow-back" size={16} color="#1E3A8A" />
+        <Text style={styles.topActionLinkText}>
+          {t("selectSchool.backToOnboarding")}
+        </Text>
+      </TouchableOpacity>
+      <AuthAboutLink />
+    </View>
+  );
 
   return (
     <Frame {...frameProps}>
     <View style={[styles.screen, isWeb && styles.screenWeb]}>
       <StatusBar style="dark" />
-      <AuthAboutLink
-        style={[
-          styles.aboutLink,
-          { top: insets.top + 8 },
-        ]}
-      />
+      {!isWeb ? (
+        <View
+          style={[
+            styles.topActionsRow,
+            {
+              top: insets.top + 8,
+              paddingHorizontal: 16,
+            },
+          ]}
+        >
+          {topActions}
+        </View>
+      ) : null}
 
       <ScrollView
         contentContainerStyle={scrollContentStyle}
@@ -166,6 +191,9 @@ export default function SelectSchoolScreen() {
         }
       >
         <WebPageCard>
+        {isWeb ? (
+          <View style={styles.cardTopActions}>{topActions}</View>
+        ) : null}
         <View style={styles.header}>
           <Pressable
             style={styles.logo}
@@ -177,16 +205,6 @@ export default function SelectSchoolScreen() {
           </Pressable>
           <Text style={styles.title}>{t("selectSchool.title")}</Text>
           <Text style={styles.subtitle}>{t("selectSchool.subtitle")}</Text>
-          <TouchableOpacity
-            style={styles.secondaryLink}
-            onPress={() => void handleBackToOnboarding()}
-            activeOpacity={0.85}
-          >
-            <Ionicons name="arrow-back" size={16} color="#475569" />
-            <Text style={styles.secondaryLinkText}>
-              {t("selectSchool.backToOnboarding")}
-            </Text>
-          </TouchableOpacity>
           {superAdminUser && superAdminRole === "superAdmin" ? (
             <TouchableOpacity
               style={styles.secondaryLink}
@@ -259,10 +277,40 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 24,
   },
-  aboutLink: {
+  topActionsRowInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    width: "100%",
+  },
+  cardTopActions: {
+    marginBottom: 12,
+  },
+  topActionsRow: {
     position: "absolute",
-    right: 16,
+    left: 0,
+    right: 0,
     zIndex: 10,
+  },
+  topActionLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.85)",
+    flexShrink: 1,
+    maxWidth: "58%",
+  },
+  topActionLinkText: {
+    color: "#1E3A8A",
+    fontSize: 13,
+    fontWeight: "700",
+    flexShrink: 1,
   },
   header: {
     paddingHorizontal: 24,

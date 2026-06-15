@@ -21,6 +21,7 @@ import {
 } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { OptionPickerModal } from "./OptionPickerModal";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 
 export type DirectMessageRecipientRole = "student" | "parent";
 
@@ -436,7 +437,7 @@ const pickerStyles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#CBD5E1",
+    borderColor: INNER_CARD_BORDER_GREEN,
     paddingHorizontal: 14,
     paddingVertical: 13,
   },
@@ -467,7 +468,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     borderRadius: 16,
-    marginBottom: 0,
+    marginBottom: 20,
     ...platformShadow("md"),
   },
   sectionTitle: {
@@ -494,7 +495,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#DADADA",
+    borderColor: INNER_CARD_BORDER_GREEN,
     borderRadius: 10,
     padding: 14,
     marginBottom: 12,

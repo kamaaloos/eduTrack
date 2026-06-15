@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { PieChart } from "react-native-chart-kit";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { adminChartHorizontalPadding } from "../../src/constants/platformLayout";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 /** Keep charts inside the admin column — not full browser width on web. */
 export function useAdminChartWidth() {
@@ -126,7 +127,7 @@ export const chartStyles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   chartTitle: {
     fontSize: 18,

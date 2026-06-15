@@ -2,6 +2,10 @@ import { escapeHtml } from "../utils/htmlEscape";
 import { getGrade } from "../utils/letterGrade";
 
 const BASE_STYLES = `
+  @page { margin: 12mm; }
+  @media print {
+    body { padding: 0; }
+  }
   body { font-family: Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 24px; }
   .page { page-break-after: always; }
   .page:last-child { page-break-after: auto; }

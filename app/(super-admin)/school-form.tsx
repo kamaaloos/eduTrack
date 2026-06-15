@@ -27,6 +27,7 @@ import {
 import { uploadSchoolLogo } from "../../src/services/schoolLogo";
 import { parseOptionalUserCount } from "../../src/services/schoolRegistryValidation";
 import type { SchoolFirebaseConfig } from "../../src/types/school";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
 
 const EMPTY_FIREBASE: SchoolFirebaseConfig = {
   apiKey: "",
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     marginBottom: 16,
   },
   label: {

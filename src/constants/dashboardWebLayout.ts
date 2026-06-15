@@ -1,6 +1,7 @@
 import type { ViewStyle } from "react-native";
 import { Platform } from "react-native";
-import { usePlatformLayout } from "../hooks/usePlatformLayout";import {
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
+import {
   webDashboardContentStyle as webDashboardContentStyleForLayout,
 } from "./platformLayout";
 

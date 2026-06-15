@@ -24,6 +24,7 @@ import {
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
+import { innerCardBorderStyle, INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 interface ExcelImportCardProps {
   onImportComplete?: () => void | Promise<void>;
@@ -271,6 +272,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
+    ...innerCardBorderStyle,
     ...platformShadow("md"),
   },
   sectionTitle: {
@@ -345,7 +347,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   templateButtonText: {
     color: "#1E3A8A",

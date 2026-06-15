@@ -241,6 +241,7 @@
       "password": "Furaha sirta",
       "signIn": "Soo gal",
       "forgotPassword": "Furaha sirta ma illowday?",
+      "orDivider": "ama",
       "resetTitle": "Dib u deji furaha sirta",
       "resetHint": "Geli iimaylka dugsigaaga waxaanu kuu soo diri doonaa xiriir dib u dejinta.",
       "sendReset": "Dir xiriirka dib u dejinta",
@@ -412,7 +413,8 @@
     "emptyStudent": "Weli ma jiraan ogeysiisyo. Hawl guriga, imtixaanada, iyo ogeysiisyada dugsiga ayaa halkan ka muuqan doona.",
     "emptyParent": "Weli ma jiraan ogeysiisyo. Digniinaha ku saabsan imaanshaha carruurtaada iyo cusbooneysiinta dugsiga ayaa halkan ka muuqan doona.",
     "emptyAdmin": "Weli ma jiraan ogeysiisyo. Digniinaha waqtiga adeegga iyo cusbooneysiinta dugsiga ayaa halkan ka muuqan doona.",
-    "markRead": "Calaamadee in la akhriyay"
+    "markRead": "Calaamadee in la akhriyay",
+    "openUserDirectory": "Fur buugga isticmaaleyaasha"
   },
   "teacher": {
     "dashboard": {
@@ -1010,6 +1012,7 @@
     "fullNameLabel": "Full name",
     "emailProfileLabel": "Email (profile)",
     "passwordResetNote": "Password reset sends an email link. Login email in Firebase may still match the original address until reset is completed.",
+    "passwordResetUserNotFound": "Could not find that user in the directory. Refresh the user lists and try again.",
     "removeUserTitle": "Remove {{role}}",
     "removeUserMessage": "Remove {{name}}? Their assignments and links will be cleared. They will no longer appear in the app.",
     "userRemoved": "{{role}} removed from the directory.",

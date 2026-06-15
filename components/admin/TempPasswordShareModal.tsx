@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import Barcode from "react-native-barcode-svg";
-import * as Print from "expo-print";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,7 +17,9 @@ import QRCode from "react-native-qrcode-svg";
 import type { UserData, UserRole } from "../../hooks/useAdminUsers";
 import { useSchoolContext } from "../../src/context/schoolContext";
 import { shareHtmlAsPdf } from "../../src/services/pdfShare";
+import { printHtmlOnWeb } from "../../src/utils/webFileDownload";
 import { showErrorAlert } from "../../src/utils/confirmDialog";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import {
   buildTempPasswordPayload,
   buildTempPasswordPrintHtml,
@@ -70,7 +71,7 @@ export function TempPasswordShareModal({
         roleLabel: t(`common.${role}`),
       });
       if (Platform.OS === "web") {
-        await Print.printAsync({ html });
+        await printHtmlOnWeb(html);
       } else {
         await shareHtmlAsPdf(
           html,
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   passwordValue: {
     flex: 1,
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   codeTitle: {
     fontSize: 13,

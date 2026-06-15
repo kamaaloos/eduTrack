@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 import {
   countPaidMonthsInYear,
   feeMonthKey,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 8,

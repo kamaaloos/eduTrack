@@ -13,6 +13,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SwipeToDeleteRow } from "../common/SwipeToDeleteRow";
 import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import {
+  INNER_CARD_BORDER_GREEN,
+  INNER_CARD_BORDER_RED,
+} from "../../src/constants/innerCardBorders";
+import {
   NOTIFICATION_TYPE_LABELS,
   type AppNotification,
 } from "../../src/services/notifications";
@@ -30,6 +34,7 @@ type NotificationsListProps = {
   refreshing?: boolean;
   /** Hide built-in header when wrapped in a screen shell. */
   embedded?: boolean;
+  onPressItem?: (item: AppNotification) => void;
 };
 
 const EMPTY_MESSAGE_KEYS: Record<NotificationAudience, string> = {
@@ -63,6 +68,7 @@ export function NotificationsList({
   onRefresh,
   refreshing = false,
   embedded = false,
+  onPressItem,
 }: NotificationsListProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -117,6 +123,7 @@ export function NotificationsList({
                   activeOpacity={0.85}
                   onPress={() => {
                     if (!item.read) onMarkRead(item.id);
+                    onPressItem?.(item);
                   }}
                 >
                   <View style={styles.cardTop}>
@@ -129,6 +136,14 @@ export function NotificationsList({
                   </View>
                   <Text style={styles.cardTitle}>{item.title}</Text>
                   <Text style={styles.cardMessage}>{item.message}</Text>
+                  {item.type === "password_reset_request" && onPressItem ? (
+                    <View style={styles.cardActionRow}>
+                      <Text style={styles.cardActionText}>
+                        {t("notifications.openUserDirectory")}
+                      </Text>
+                      <Ionicons name="arrow-forward" size={14} color="#2563EB" />
+                    </View>
+                  ) : null}
                   {item.createdAt ? (
                     <Text style={styles.cardTime}>
                       {formatWhen(item.createdAt)}
@@ -167,7 +182,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "rgba(255,255,255,0.92)",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   markAllText: {
     fontSize: 13,
@@ -214,13 +229,13 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     width: "100%",
     maxWidth: STUDENT_LIST_MAX_WIDTH,
     alignSelf: "center",
   },
   cardUnread: {
-    borderColor: "#93C5FD",
+    borderColor: INNER_CARD_BORDER_RED,
     backgroundColor: "#FFFFFF",
   },
   cardTop: {
@@ -256,6 +271,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#475569",
     lineHeight: 20,
+  },
+  cardActionRow: {
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  cardActionText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#2563EB",
   },
   cardTime: {
     marginTop: 10,

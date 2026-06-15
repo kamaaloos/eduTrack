@@ -1,6 +1,6 @@
 import { getApp } from "firebase/app";
 import { getFunctions, type Functions } from "firebase/functions";
-import { getConnectedSchoolProjectId } from "./firebase";
+import { getConnectedSchoolProjectId } from "./schoolConnectionState";
 
 /** School Cloud Functions deploy to us-central1 (firebase.school.json). */
 const SCHOOL_FUNCTIONS_REGION = "us-central1";

@@ -16,6 +16,7 @@ import {
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
+import { innerCardBorderStyle } from "../../src/constants/innerCardBorders";
 
 interface BroadcastAnnouncementCardProps {
   classCount: number;
@@ -145,6 +146,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
+    ...innerCardBorderStyle,
     ...platformShadow("md"),
   },
   sectionTitle: {

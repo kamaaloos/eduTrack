@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -33,6 +34,7 @@ export function AuthFormField({
   ...rest
 }: AuthFormFieldProps) {
   const [visible, setVisible] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   return (
     <View style={[styles.container, containerStyle]}>
@@ -40,6 +42,7 @@ export function AuthFormField({
       <View
         style={[
           styles.field,
+          focused && styles.fieldFocused,
           !editable && styles.fieldDisabled,
           fieldStyle,
         ]}
@@ -56,6 +59,14 @@ export function AuthFormField({
           editable={editable}
           placeholderTextColor={placeholderTextColor}
           secureTextEntry={isPassword && !visible}
+          onFocus={(event) => {
+            setFocused(true);
+            rest.onFocus?.(event);
+          }}
+          onBlur={(event) => {
+            setFocused(false);
+            rest.onBlur?.(event);
+          }}
           style={[styles.input, inputStyle]}
         />
         {isPassword ? (
@@ -88,19 +99,27 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
-    color: "#374151",
+    color: "#64748B",
     marginBottom: 8,
+    letterSpacing: 0.2,
   },
   field: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#D1D5DB",
-    borderRadius: 12,
-    backgroundColor: "#F9FAFB",
-    minHeight: 52,
+    borderWidth: 1.5,
+    borderColor: "#E2E8F0",
+    borderRadius: 14,
+    backgroundColor: "#FFFFFF",
+    minHeight: 54,
+  },
+  fieldFocused: {
+    borderColor: "#2563EB",
+    backgroundColor: "#FFFFFF",
+    ...(Platform.OS === "web"
+      ? ({ outlineStyle: "none" } as object)
+      : null),
   },
   fieldDisabled: {
     opacity: 0.65,

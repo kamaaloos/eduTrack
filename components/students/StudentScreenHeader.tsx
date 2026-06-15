@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
   mobileScreenPaddingStyle,
   webAdminContentStyle,
@@ -38,6 +39,8 @@ export function StudentScreenHeader({
   headerRight,
 }: StudentScreenHeaderProps) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
+  const showMenuButton = showMenu && onMenuPress && !layout.isDesktopWeb;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -99,7 +102,7 @@ export function StudentScreenHeader({
                 </TouchableOpacity>
               ) : null}
 
-              {showMenu && onMenuPress ? (
+              {showMenuButton ? (
                 <TouchableOpacity
                   style={styles.iconButton}
                   onPress={onMenuPress}
@@ -122,7 +125,8 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#1E3A8A",
-    paddingBottom: Platform.OS === "web" ? 14 : 18,
+    paddingTop: Platform.OS === "web" ? 12 : 0,
+    paddingBottom: Platform.OS === "web" ? 18 : 18,
     borderBottomLeftRadius: Platform.OS === "web" ? 0 : 24,
     borderBottomRightRadius: Platform.OS === "web" ? 0 : 24,
     shadowColor: "#0F172A",
@@ -141,7 +145,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    minHeight: Platform.OS === "web" ? 48 : 52,
+    minHeight: Platform.OS === "web" ? 72 : 52,
   },
   sideButton: {
     width: 40,

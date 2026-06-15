@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { innerCardBorderStyle } from "../../../src/constants/innerCardBorders";
 
 export const adminAcademicStyles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "transparent" },
@@ -26,6 +27,7 @@ export const adminAcademicStyles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 15,
+    ...innerCardBorderStyle,
   },
   cardTitle: { fontSize: 18, fontWeight: "700", marginBottom: 10 },
   input: {

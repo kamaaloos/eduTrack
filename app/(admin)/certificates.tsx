@@ -26,6 +26,7 @@ import {
 } from "../../src/utils/academicYear";
 import { copyrightFooterInset } from "../../src/constants/appTheme";
 import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
 
 export default function AdminCertificatesScreen() {
   const { t } = useTranslation();
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   cardTitle: {
     fontSize: 18,

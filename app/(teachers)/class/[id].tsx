@@ -7,6 +7,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { TeacherScreenShell } from "../../../components/teachers/TeacherScreenShell";
 import { useSchoolContext } from "../../../src/context/schoolContext";
 import { useFirestoreListenerEffect } from "../../../hooks/useFirestoreListenerEffect";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
 
 export default function ClassPage() {
   const { t } = useTranslation();
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   studentName: {
     fontSize: 16,

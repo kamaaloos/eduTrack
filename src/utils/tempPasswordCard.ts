@@ -85,8 +85,11 @@ function buildBarcodeSvg(value: string): string {
       null,
     );
     const svgNode = document.documentElement;
+    if (!svgNode) {
+      return `<div class="value password">${escapeHtml(value)}</div>`;
+    }
     svgNode.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    JsBarcode(svgNode, value, {
+    JsBarcode(svgNode as unknown as SVGSVGElement, value, {
       xmlDocument: document,
       format: "CODE128",
       displayValue: true,

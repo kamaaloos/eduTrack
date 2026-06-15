@@ -11,6 +11,10 @@ import type { SchoolFirebaseConfig } from "../types/school";
 import { normalizeSchoolFirebaseConfig } from "../utils/firebaseConfig";
 import { initAuthForApp } from "./firebaseAuthInit";
 import { notifyFirestoreClosing } from "./firestoreSession";
+import {
+  getConnectedSchoolProjectId,
+  setConnectedSchoolProjectId,
+} from "./schoolConnectionState";
 import { resetSchoolFunctionsCache } from "./schoolFunctions";
 
 type EnvFirebaseConfig = {
@@ -129,8 +133,6 @@ export let db: Firestore | null = null;
 export let storage: FirebaseStorage | null = null;
 export let adminCreateAuth: Auth | null = null;
 
-let connectedSchoolProjectId: string | null = null;
-
 async function shutdownFirebaseApp(
   app: ReturnType<typeof initializeApp>,
 ): Promise<void> {
@@ -164,7 +166,8 @@ export function requireSchoolAuth(): Auth {
 }
 
 export function ensureAdminCreateAuth(): Auth | null {
-  if (!lastSchoolFirebaseConfig || !connectedSchoolProjectId) {
+  const projectId = getConnectedSchoolProjectId();
+  if (!lastSchoolFirebaseConfig || !projectId) {
     return null;
   }
 
@@ -172,7 +175,6 @@ export function ensureAdminCreateAuth(): Auth | null {
     return adminCreateAuth;
   }
 
-  const projectId = connectedSchoolProjectId;
   const adminAppName = `AdminUserCreation-${projectId}`;
   let adminApp;
   try {
@@ -194,7 +196,7 @@ export async function connectToSchool(
     throw new Error("Invalid school Firebase configuration");
   }
 
-  if (connectedSchoolProjectId === projectId && auth && db) {
+  if (getConnectedSchoolProjectId() === projectId && auth && db) {
     try {
       const schoolApp = getApp(`EduTrackSchool-${projectId}`);
       if (!storage) {
@@ -242,7 +244,7 @@ export async function connectToSchool(
   storage = bucket ? getStorage(schoolApp, bucket) : getStorage(schoolApp);
   adminCreateAuth = null;
 
-  connectedSchoolProjectId = projectId;
+  setConnectedSchoolProjectId(projectId);
   return { auth: schoolAuth, db };
 }
 
@@ -250,9 +252,7 @@ export function getDefaultFirebaseConfig(): EnvFirebaseConfig {
   return defaultConfig;
 }
 
-export function getConnectedSchoolProjectId(): string | null {
-  return connectedSchoolProjectId;
-}
+export { getConnectedSchoolProjectId } from "./schoolConnectionState";
 
 export async function disconnectSchool(): Promise<void> {
   notifyFirestoreClosing();
@@ -262,7 +262,7 @@ export async function disconnectSchool(): Promise<void> {
   storage = null;
   adminCreateAuth = null;
   lastSchoolFirebaseConfig = null;
-  connectedSchoolProjectId = null;
+  setConnectedSchoolProjectId(null);
 
   resetSchoolFunctionsCache();
 

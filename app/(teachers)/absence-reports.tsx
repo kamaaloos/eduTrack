@@ -20,6 +20,7 @@ import {
   type TeacherAbsenceReport,
 } from "../../src/services/teacherAbsenceReports";
 import { getAbsenceReasonLabel } from "../../src/utils/attendanceLabels";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
 
 export default function TeacherAbsenceReportsScreen() {
   const { t } = useTranslation();
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: "#1E40AF",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     width: "100%",
     maxWidth: STUDENT_LIST_MAX_WIDTH,
     alignSelf: "center",

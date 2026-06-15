@@ -16,6 +16,9 @@ import {
 import { ParentScreenShell } from "../../components/parent/ParentScreenShell";
 import { ABSENCE_REASONS } from "../../src/constants/absenceReasons";
 import { AuthContext } from "../../src/context/authContext";
+import {
+  INNER_CARD_BORDER_GREEN,
+} from "../../../src/constants/innerCardBorders";
 import { submitParentAbsenceReport } from "../../src/services/parentAbsence";
 import { getAbsenceReasonLabel } from "../../src/utils/attendanceLabels";
 import {
@@ -188,7 +191,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     padding: 16,
   },
   label: {
@@ -217,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     paddingVertical: 10,
     paddingHorizontal: 12,
   },
@@ -241,7 +244,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     padding: 14,
     minHeight: 88,
     fontSize: 15,

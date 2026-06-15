@@ -243,6 +243,7 @@
       "password": "Password",
       "signIn": "Sign in",
       "forgotPassword": "Forgot password?",
+      "orDivider": "or",
       "resetTitle": "Reset password",
       "resetHint": "Enter your school email. Your school administrator will be notified and can give you a new temporary password in person.",
       "notifyAdmin": "Notify administrator",
@@ -422,7 +423,8 @@
     "emptyStudent": "No notifications yet. Homework, exams, and school announcements will appear here.",
     "emptyParent": "No notifications yet. Alerts about your children's attendance and school updates will appear here.",
     "emptyAdmin": "No notifications yet. Usage-time alerts and school updates will appear here.",
-    "markRead": "Mark as read"
+    "markRead": "Mark as read",
+    "openUserDirectory": "Open user directory"
   },
   "teacher": {
     "dashboard": {
@@ -1047,6 +1049,7 @@
     "phonePlaceholder": "Phone number (optional)",
     "emailProfileLabel": "Email (profile)",
     "passwordResetNote": "Passwords are reset only by school administrators. No reset email is sent to users.",
+    "passwordResetUserNotFound": "Could not find that user in the directory. Refresh the user lists and try again.",
     "removeUserTitle": "Remove {{role}}",
     "removeUserMessage": "Remove {{name}}? Their profile, assignments, parent links, and login account will be removed.",
     "userRemoved": "{{role}} removed from the directory.",

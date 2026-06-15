@@ -22,7 +22,8 @@ export function parentStudentLinkId(parentId: string, studentId: string): string
 
 /** Admin: normalize parentStudents docs and parent profile linkedStudentIds. */
 export async function reconcileParentStudentLinks(): Promise<void> {
-  const snap = await getDocs(collection(db, "parentStudents"));
+  const schoolDb = requireSchoolDb();
+  const snap = await getDocs(collection(schoolDb, "parentStudents"));
   const byParent = new Map<string, Set<string>>();
 
   for (const linkDoc of snap.docs) {
@@ -40,7 +41,7 @@ export async function reconcileParentStudentLinks(): Promise<void> {
     const expectedId = parentStudentLinkId(parentId, studentId);
     if (linkDoc.id !== expectedId) {
       await setDoc(
-        doc(db, "parentStudents", expectedId),
+        doc(schoolDb, "parentStudents", expectedId),
         {
           parentId,
           studentId,
@@ -62,7 +63,7 @@ export async function reconcileParentStudentLinks(): Promise<void> {
   await Promise.all(
     [...byParent.entries()].map(([parentId, studentIds]) =>
       setDoc(
-        doc(db, "users", parentId),
+        doc(schoolDb, "users", parentId),
         { linkedStudentIds: [...studentIds] },
         { merge: true },
       ),
@@ -75,10 +76,11 @@ export async function upsertParentStudentLink(
   parentId: string,
   studentId: string,
 ): Promise<void> {
+  const schoolDb = requireSchoolDb();
   const linkId = parentStudentLinkId(parentId, studentId);
 
   await setDoc(
-    doc(db, "parentStudents", linkId),
+    doc(schoolDb, "parentStudents", linkId),
     {
       parentId,
       studentId,
@@ -88,18 +90,18 @@ export async function upsertParentStudentLink(
   );
 
   await setDoc(
-    doc(db, "users", parentId),
+    doc(schoolDb, "users", parentId),
     { linkedStudentIds: arrayUnion(studentId) },
     { merge: true },
   );
 
-  const legacyRef = doc(db, "parentStudents", parentId);
+  const legacyRef = doc(schoolDb, "parentStudents", parentId);
   const legacySnap = await getDoc(legacyRef);
   if (legacySnap.exists()) {
     const legacyStudentId = legacySnap.data()?.studentId as string | undefined;
     if (legacyStudentId && legacyStudentId !== studentId) {
       await setDoc(
-        doc(db, "parentStudents", parentStudentLinkId(parentId, legacyStudentId)),
+        doc(schoolDb, "parentStudents", parentStudentLinkId(parentId, legacyStudentId)),
         {
           parentId,
           studentId: legacyStudentId,
@@ -108,7 +110,7 @@ export async function upsertParentStudentLink(
         { merge: true },
       );
       await setDoc(
-        doc(db, "users", parentId),
+        doc(schoolDb, "users", parentId),
         { linkedStudentIds: arrayUnion(legacyStudentId) },
         { merge: true },
       );
@@ -184,12 +186,13 @@ export async function removeAllParentLinksForStudent(
  */
 export async function collectLinkedStudentIds(parentId: string): Promise<string[]> {
   if (!db) return [];
+  const schoolDb = requireSchoolDb();
 
   const ids = new Set<string>();
 
   const linkSnap = await getDocs(
     query(
-      collection(db, "parentStudents"),
+      collection(schoolDb, "parentStudents"),
       where("parentId", "==", parentId),
     ),
   );
@@ -206,7 +209,7 @@ export async function collectLinkedStudentIds(parentId: string): Promise<string[
   }
 
   try {
-    const legacySnap = await getDoc(doc(db, "parentStudents", parentId));
+    const legacySnap = await getDoc(doc(schoolDb, "parentStudents", parentId));
     if (legacySnap.exists()) {
       const legacyStudentId = legacySnap.data()?.studentId as string | undefined;
       if (legacyStudentId) ids.add(legacyStudentId);
@@ -220,7 +223,7 @@ export async function collectLinkedStudentIds(parentId: string): Promise<string[
   }
 
   // No link docs — fall back to profile list (older schools before reconcile).
-  const parentSnap = await getDoc(doc(db, "users", parentId));
+  const parentSnap = await getDoc(doc(schoolDb, "users", parentId));
   const fromProfile = parentSnap.data()?.linkedStudentIds;
   if (Array.isArray(fromProfile)) {
     for (const id of fromProfile) {

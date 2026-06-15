@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { innerCardBorderStyle } from "../../../src/constants/innerCardBorders";
 
 export const teacherAcademicStyles = StyleSheet.create({
   container: {
@@ -37,6 +38,7 @@ export const teacherAcademicStyles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 24,
     padding: 20,
+    ...innerCardBorderStyle,
   },
   announcementsBetweenGap: {
     height: 32,

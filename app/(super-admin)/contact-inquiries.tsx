@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { SuperAdminScreenShell } from "../../components/superAdmin/SuperAdminScreenShell";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
 import {
   deleteContactInquiry,
   listContactInquiries,
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 18,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     ...(Platform.OS === "web"
       ? ({
           boxShadow: "0 8px 24px rgba(15, 23, 42, 0.06)",

@@ -7,6 +7,7 @@ import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import { getAttendanceColor } from "../../src/utils/dashboardUi";
 import { getAttendanceStatusLabel } from "../../src/utils/attendanceLabels";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../src/constants/innerCardBorders";
 
 type ReportCardViewProps = {
   report: ReportCardData;
@@ -303,7 +304,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   attendanceDateCol: { flex: 1, minWidth: 0 },
   attendanceDate: { fontSize: 15, fontWeight: "700", color: "#0F172A" },
@@ -345,7 +346,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
     shadowColor: "#0F172A",
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -401,7 +402,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   subjectName: { fontSize: 16, fontWeight: "700", color: "#0F172A" },
   subjectScore: { fontSize: 13, color: "#64748B", marginTop: 2 },

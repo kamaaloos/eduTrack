@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { innerCardBorderStyle } from "../../src/constants/innerCardBorders";
 import {
   ActivityIndicator,
   Platform,
@@ -426,6 +427,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 18,
+    ...innerCardBorderStyle,
   },
   title: { fontSize: 20, fontWeight: "700", marginBottom: 8 },
   hint: { fontSize: 13, color: "#64748B", lineHeight: 18, marginBottom: 8 },

@@ -41,6 +41,7 @@ async function notifySchoolAdmins(params: {
       studentId: null,
       classId: null,
       actorId: params.requesterUserId,
+      actorRole: params.requesterRole,
       read: false,
       createdAt: now,
     });

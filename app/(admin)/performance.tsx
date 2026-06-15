@@ -25,6 +25,7 @@ import {
   type AdminAnalyticsStats,
 } from "../../src/services/adminAnalytics";
 import { ATTENDANCE_HISTORY_DAYS } from "../../src/constants/attendanceHistory";
+import { INNER_CARD_BORDER_GREEN, INNER_CARD_BORDER_RED } from "../../../src/constants/innerCardBorders";
 
 const EMPTY_STATS: AdminAnalyticsStats = {
   students: 0,
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: INNER_CARD_BORDER_GREEN,
   },
   summaryValue: {
     fontSize: 26,

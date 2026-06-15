@@ -241,6 +241,7 @@
       "password": "Salasana",
       "signIn": "Kirjaudu sisään",
       "forgotPassword": "Unohditko salasanan?",
+      "orDivider": "tai",
       "resetTitle": "Nollaa salasana",
       "resetHint": "Syötä koulusi sähköposti, niin lähetämme nollauslinkin.",
       "sendReset": "Lähetä nollauslinkki",
@@ -412,7 +413,8 @@
     "emptyStudent": "Ei ilmoituksia vielä. Kotitehtävät, kokeet ja koulutiedotteet näkyvät täällä.",
     "emptyParent": "Ei ilmoituksia vielä. Lastesi läsnäoloon ja koulupäivityksiin liittyvät hälytykset näkyvät täällä.",
     "emptyAdmin": "Ei ilmoituksia vielä. Käyttöajan hälytykset ja koulupäivitykset näkyvät täällä.",
-    "markRead": "Merkitse luetuksi"
+    "markRead": "Merkitse luetuksi",
+    "openUserDirectory": "Avaa käyttäjäluettelo"
   },
   "teacher": {
     "dashboard": {
@@ -1010,6 +1012,7 @@
     "fullNameLabel": "Full name",
     "emailProfileLabel": "Email (profile)",
     "passwordResetNote": "Password reset sends an email link. Login email in Firebase may still match the original address until reset is completed.",
+    "passwordResetUserNotFound": "Could not find that user in the directory. Refresh the user lists and try again.",
     "removeUserTitle": "Remove {{role}}",
     "removeUserMessage": "Remove {{name}}? Their assignments and links will be cleared. They will no longer appear in the app.",
     "userRemoved": "{{role}} removed from the directory.",

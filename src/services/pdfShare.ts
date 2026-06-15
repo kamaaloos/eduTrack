@@ -2,7 +2,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
-import { downloadBlobFromUri } from "../utils/webFileDownload";
+import { printHtmlOnWeb } from "../utils/webFileDownload";
 
 function safePdfFileName(fileName: string): string {
   const safeName = fileName.replace(/[^\w.-]+/g, "_");
@@ -15,12 +15,13 @@ export async function shareHtmlAsPdf(
   dialogTitle: string,
 ): Promise<void> {
   const pdfName = safePdfFileName(fileName);
-  const { uri } = await Print.printToFileAsync({ html });
 
   if (Platform.OS === "web") {
-    await downloadBlobFromUri(uri, pdfName);
+    await printHtmlOnWeb(html);
     return;
   }
+
+  const { uri } = await Print.printToFileAsync({ html });
 
   const canShare = await Sharing.isAvailableAsync();
   if (!canShare) {
