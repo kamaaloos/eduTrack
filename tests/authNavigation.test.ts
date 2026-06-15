@@ -1,7 +1,7 @@
 import {
   getRoleHomeRoute,
   isPublicEntrySegment,
-} from "../src/utils/authNavigationCore";
+} from "../src/utils/authNavigation";
 
 describe("isPublicEntrySegment", () => {
   it("treats undefined as public entry", () => {
@@ -34,5 +34,32 @@ describe("getRoleHomeRoute", () => {
   it("falls back to login for unknown roles", () => {
     expect(getRoleHomeRoute("superAdmin")).toBe("/login");
     expect(getRoleHomeRoute("")).toBe("/login");
+  });
+});
+
+describe("platform routes", () => {
+  const originalExpoOs = process.env.EXPO_OS;
+
+  afterEach(() => {
+    if (originalExpoOs === undefined) {
+      delete process.env.EXPO_OS;
+    } else {
+      process.env.EXPO_OS = originalExpoOs;
+    }
+  });
+
+  it("uses native routes when EXPO_OS is not web", () => {
+    delete process.env.EXPO_OS;
+    const { getPostLogoutRoute, getSignedOutRoute } = require("../src/utils/authNavigation");
+    expect(getPostLogoutRoute()).toBe("/select-school");
+    expect(getSignedOutRoute()).toBe("/login");
+  });
+
+  it("uses web routes when EXPO_OS is web", () => {
+    process.env.EXPO_OS = "web";
+    jest.resetModules();
+    const { getPostLogoutRoute, getSignedOutRoute } = require("../src/utils/authNavigation");
+    expect(getPostLogoutRoute()).toBe("/landing");
+    expect(getSignedOutRoute()).toBe("/landing");
   });
 });
