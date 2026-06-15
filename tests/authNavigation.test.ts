@@ -1,7 +1,7 @@
 import {
   getRoleHomeRoute,
   isPublicEntrySegment,
-} from "../src/utils/authNavigation";
+} from "../src/utils/authNavigationCore";
 
 describe("isPublicEntrySegment", () => {
   it("treats undefined as public entry", () => {

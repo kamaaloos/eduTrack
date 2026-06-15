@@ -1,7 +1,7 @@
 import {
   getPostLoginRoute,
   CHANGE_PASSWORD_ROUTE,
-} from "../src/utils/authNavigation";
+} from "../src/utils/authNavigationCore";
 import {
   isBlockedPassword,
   userMustChangePassword,
