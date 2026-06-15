@@ -16,7 +16,10 @@ module.exports = {
     ],
   },
   modulePathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.expo/"],
-  setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"],
+  moduleNameMapper: {
+    "^react-native$": "<rootDir>/tests/__mocks__/react-native.ts",
+    "^expo-router$": "<rootDir>/tests/__mocks__/expo-router.ts",
+  },
   collectCoverageFrom: [
     "src/utils/**/*.ts",
     "src/services/schoolRegistryMappers.ts",
