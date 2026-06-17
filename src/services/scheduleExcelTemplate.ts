@@ -4,7 +4,9 @@ import { downloadBase64AsFile } from "../utils/webFileDownload";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 
-export const SCHEDULE_TEMPLATE_FILENAME = "eduTrack-schedule-term-template.xlsx";
+import { APP_DISPLAY_NAME } from "../constants/brand";
+
+export const SCHEDULE_TEMPLATE_FILENAME = `${APP_DISPLAY_NAME.toLowerCase().replace(/\s+/g, "-")}-schedule-term-template.xlsx`;
 
 const SCHEDULE_HEADERS = [
   "className",
@@ -107,7 +109,7 @@ export async function shareScheduleImportTemplate(): Promise<void> {
   await Sharing.shareAsync(path, {
     mimeType:
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    dialogTitle: "eduTrack schedule template",
+    dialogTitle: `${APP_DISPLAY_NAME} schedule template`,
     UTI: "com.microsoft.excel.xlsx",
   });
 }

@@ -7,8 +7,10 @@ import {
   type ViewStyle,
 } from "react-native";
 
-/** Primary eduTrack brand logo (book + cap + eduTrack wordmark). */
-export const APP_LOGO = require("../assets/images/edutrack-logo.png");
+import { APP_DISPLAY_NAME, APP_LOGO } from "../src/constants/brand";
+
+/** Primary brand logo (per `EXPO_PUBLIC_APP_BRAND`). */
+export { APP_LOGO };
 
 type AppLogoProps = {
   size?: number;
@@ -28,7 +30,7 @@ export function AppLogo({ size = 96, style, imageStyle }: AppLogoProps) {
         ]}
         resizeMode="contain"
         accessibilityRole="image"
-        accessibilityLabel="eduTrack"
+        accessibilityLabel={APP_DISPLAY_NAME}
       />
     </View>
   );

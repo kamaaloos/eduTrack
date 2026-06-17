@@ -48,13 +48,29 @@ describe("schoolSubscriptionAccess", () => {
     ).toBe("usage_expired");
   });
 
-  it("falls back to testing expiry when usage is unset", () => {
+  it("falls back to testing expiry when usage is unset and grace ended", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-05-28T12:00:00"));
     expect(
       getSchoolSubscriptionBlockReason({
         active: true,
-        testingExpiresAt: past(),
+        testingExpiresAt: "2026-05-10",
         usageExpiresAt: null,
       }),
     ).toBe("testing_expired");
+    jest.useRealTimers();
+  });
+
+  it("allows activation grace after testing ends without usage", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-05-28T12:00:00"));
+    expect(
+      isSchoolEntitled({
+        active: true,
+        testingExpiresAt: "2026-05-27",
+        usageExpiresAt: null,
+      }),
+    ).toBe(true);
+    jest.useRealTimers();
   });
 });

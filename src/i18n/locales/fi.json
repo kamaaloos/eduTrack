@@ -94,7 +94,7 @@
     "profileMissingRole": "Tiliäsi ei ole määritetty oikein. Ota yhteyttä koulun ylläpitoon.",
     "somethingWentWrong": "Jokin meni pieleen. Yritä uudelleen.",
     "subscriptionExpired": "Tämän koulun tilaus on päättynyt. Ota yhteyttä kouluun tai MayleSoftiin.",
-    "subscriptionInactive": "Tämä koulu ei ole aktiivinen eduTrackissa. Ota yhteyttä MayleSoftiin.",
+    "subscriptionInactive": "Tämä koulu ei ole aktiivinen {{appName}}issa. Ota yhteyttä MayleSoftiin.",
     "subscriptionTestingExpired": "Tämän koulun kokeilujakso on päättynyt. Ota yhteyttä MayleSoftiin.",
     "subscriptionUsageExpired": "Tämän koulun maksullinen tilaus on päättynyt. Ota yhteyttä MayleSoftiin.",
     "subscriptionMissingPeriod": "Tämän koulun tilausta ei ole määritetty. Ota yhteyttä MayleSoftiin.",
@@ -125,7 +125,7 @@
   "about": {
     "title": "Tietoja ja asetukset",
     "shortTitle": "Tietoja",
-    "appName": "eduTrack",
+    "appName": "{{appName}}",
     "tagline": "Koulun hallinta opiskelijoille, opettajille, vanhemmille ja ylläpitäjille.",
     "appInfo": "Sovelluksen tiedot",
     "build": "Koonti",
@@ -147,15 +147,15 @@
     "title": "UKK",
     "shortTitle": "UKK",
     "heading": "Usein kysytyt kysymykset",
-    "subtitle": "Nopeita vastauksia eduTrackista kouluille, perheille ja henkilökunnalle.",
+    "subtitle": "Nopeita vastauksia {{appName}}ista kouluille, perheille ja henkilökunnalle.",
     "contactCta": "Eikö vastaus löytynyt? Ota yhteyttä",
     "items": {
       "whatIsEduTrack": {
-        "question": "Mikä on eduTrack?",
-        "answer": "eduTrack on MayleSoftin koulun hallinta-alusta. Se yhdistää kotitehtävät, kokeet, läsnäolon, opintotodistukset, aikataulut, tiedotteet ja viestinnän yhteen turvalliseen sovellukseen opiskelijoille, opettajille, vanhemmille ja koulun hallinnolle."
+        "question": "Mikä on {{appName}}?",
+        "answer": "{{appName}} on MayleSoftin koulun hallinta-alusta. Se yhdistää kotitehtävät, kokeet, läsnäolon, opintotodistukset, aikataulut, tiedotteet ja viestinnän yhteen turvalliseen sovellukseen opiskelijoille, opettajille, vanhemmille ja koulun hallinnolle."
       },
       "whoCanUse": {
-        "question": "Kuka voi käyttää eduTrackia?",
+        "question": "Kuka voi käyttää {{appName}}ia?",
         "answer": "Jokainen kirjautuu roolillaan: opiskelija, opettaja, vanhempi tai koulun ylläpitäjä. Koulun ylläpitäjä luo tilit ja linkittää oppilaat luokkiin sekä vanhemmat lapsiin. Alustan super-ylläpitäjät rekisteröivät koulut järjestelmään."
       },
       "howToSignIn": {
@@ -163,8 +163,8 @@
         "answer": "Napauta Aloita etusivulla, valitse koulusi (maa, kaupunki, koulu) ja kirjaudu koulun antamilla sähköposti- ja salasanatunnuksilla. Uudet käyttäjät voivat saada väliaikaisen salasanan ja heidän on asetettava oma salasana ensimmäisellä kirjautumisella."
       },
       "webAndMobile": {
-        "question": "Voinko käyttää eduTrackia verkossa ja puhelimella?",
-        "answer": "Kyllä. eduTrack toimii selaimessa ja mobiilisovelluksena Androidille ja iOS:lle. Opiskelijat, opettajat ja vanhemmat voivat käyttää kumpaa tahansa — valitse laitteeseesi sopiva."
+        "question": "Voinko käyttää {{appName}}ia verkossa ja puhelimella?",
+        "answer": "Kyllä. {{appName}} toimii selaimessa ja mobiilisovelluksena Androidille ja iOS:lle. Opiskelijat, opettajat ja vanhemmat voivat käyttää kumpaa tahansa — valitse laitteeseesi sopiva."
       },
       "students": {
         "question": "Mitä opiskelijat voivat tehdä?",
@@ -188,22 +188,22 @@
       },
       "dataSecurity": {
         "question": "Onko koulumme data turvassa?",
-        "answer": "eduTrack käyttää Firebase Authenticationia ja Firestorea roolipohjaisilla käyttöoikeussäännöillä. Jokainen koulu on eristetty alustalla, ja käyttäjät näkevät vain roolinsa salliman datan — esimerkiksi vanhemmat näkevät vain omat lapsensa ja opettajat omat luokkansa."
+        "answer": "{{appName}} käyttää Firebase Authenticationia ja Firestorea roolipohjaisilla käyttöoikeussäännöillä. Jokainen koulu on eristetty alustalla, ja käyttäjät näkevät vain roolinsa salliman datan — esimerkiksi vanhemmat näkevät vain omat lapsensa ja opettajat omat luokkansa."
       },
       "languages": {
         "question": "Mitä kieliä tuetaan?",
-        "answer": "eduTrack tukee englantia, suomea, arabiaa ja somalia. Voit vaihtaa kielen etusivulta, kirjautumisnäytöltä tai profiiliasetuksista."
+        "answer": "{{appName}} tukee englantia, suomea, arabiaa ja somalia. Voit vaihtaa kielen etusivulta, kirjautumisnäytöltä tai profiiliasetuksista."
       },
       "getSupport": {
         "question": "Miten saan apua tai pyydän demon?",
-        "answer": "Käytä etusivun Ota yhteyttä -sivua lähettääksesi viestin eduTrack-tiimille. Mainitse koulusi nimi ja mitä tarvitset — käyttöönottoapua, demoa tai teknistä tukea."
+        "answer": "Käytä etusivun Ota yhteyttä -sivua lähettääksesi viestin {{appName}}-tiimille. Mainitse koulusi nimi ja mitä tarvitset — käyttöönottoapua, demoa tai teknistä tukea."
       }
     }
   },
   "contact": {
     "title": "Ota yhteyttä",
     "heading": "Ota yhteyttä",
-    "subtitle": "Kerro koulustasi — autamme sinut alkuun eduTrackin kanssa.",
+    "subtitle": "Kerro koulustasi — autamme sinut alkuun {{appName}}in kanssa.",
     "name": "Nimesi",
     "namePlaceholder": "Koko nimi",
     "email": "Sähköposti",
@@ -216,7 +216,7 @@
     "success": "Kiitos! Viestisi on lähetetty.",
     "successSavedAndMail": "Viestisi tallennettiin ja sähköpostisovellus avattiin — lähetä viesti tai otamme yhteyttä tallennetun kopion perusteella.",
     "mailClientOpened": "Sähköpostisovellus avattiin viestilläsi osoitteeseemme.",
-    "mailSubject": "eduTrack-kysely henkilöltä {{name}}",
+    "mailSubject": "{{appName}}-kysely henkilöltä {{name}}",
     "directEmail": "Tai lähetä sähköpostia suoraan: {{email}}",
     "errorName": "Anna nimesi.",
     "errorEmail": "Anna kelvollinen sähköpostiosoite.",
@@ -225,7 +225,7 @@
   },
   "download": {
     "title": "Lataa sovellus",
-    "heading": "Lataa eduTrack",
+    "heading": "Lataa {{appName}}",
     "subtitle": "Asenna mobiilisovellus opiskelijoille, opettajille, vanhemmille ja koulun hallinnolle.",
     "googlePlayEyebrow": "Hae",
     "googlePlayTitle": "Google Playsta",
@@ -238,7 +238,7 @@
   "onboarding": {
     "skipA11y": "Ohita esittely",
     "languageHint": "Valitse haluamasi kieli. Voit vaihtaa sen myöhemmin asetuksista.",
-    "slide1Title": "Tervetuloa EduTrackiin",
+    "slide1Title": "Tervetuloa {{appName}}iin",
     "slide1Desc": "Koulusi keskus läsnäololle, kotitehtäville, kokeille ja edistymiselle — kaikki yhdessä paikassa.",
     "slide2Title": "Oppilaat ja huoltajat",
     "slide2Desc": "Katso tehtäviä, koetilauksia, raporttikortteja, huomautuksia ja pysy ajan tasalla tiedotteista.",
@@ -322,7 +322,7 @@
       "scanCardHint": "Osoita kamera koulun ylläpitäjän antaman kortin QR-koodiin.",
       "scanCardPermission": "Kameran käyttöoikeus tarvitaan kirjautumiskortin skannaukseen.",
       "scanCardAllowCamera": "Salli kamera",
-      "scanCardInvalid": "Tämä QR-koodi ei ole kelvollinen eduTrack-kirjautumiskortti.",
+      "scanCardInvalid": "Tämä QR-koodi ei ole kelvollinen {{appName}}-kirjautumiskortti.",
       "scanCardFilled": "Sähköposti ja salasana täytetty kortista. Jatka painamalla Kirjaudu sisään."
     },
     "changePassword": {
@@ -367,13 +367,13 @@
     "loading": "Ladataan…"
   },
   "landing": {
-    "brandName": "eduTrack",
+    "brandName": "{{appName}}",
     "brandTag": "Koulun hallinta-alusta",
-    "heroBadge": "EduTrack-alusta",
+    "heroBadge": "{{appName}}-alusta",
     "heroTitlePrefix": "Yhtenäinen koulun keskus",
     "heroTitleHighlight": "jokaiselle roolille",
     "heroSubtitle": "Kotitehtävät, kokeet, läsnäolo, opintotodistukset ja viestintä vanhempien kanssa — yhdessä turvallisessa alustassa opiskelijoille, opettajille, vanhemmille ja koulun hallinnolle.",
-    "openWebApp": "Avaa eduTrack-verkkosovellus",
+    "openWebApp": "Avaa {{appName}}-verkkosovellus",
     "downloadApp": "Lataa mobiilisovellus",
     "signIn": "Kirjaudu sisään",
     "getStarted": "Aloita",
@@ -394,7 +394,7 @@
     "featureParentsBody": "Seuraa lapsen edistymistä, vastaa poissaoloihin ja vastaanota koulun päivityksiä.",
     "featureAdminsTitle": "Hallinto",
     "featureAdminsBody": "Hallitse käyttäjiä, luokkia, aikatauluja, analytiikkaa ja koulun ilmoituksia.",
-    "promoVideoAria": "EduTrack-alustan esittelyvideo",
+    "promoVideoAria": "{{appName}}-alustan esittelyvideo",
     "copyright": "© 2026 - MayleSoft koulusovellus — eng. Hasan Kamaal."
   },
   "tabs": {
@@ -974,10 +974,14 @@
     "testingContactHint": "Pyydä alustan super-ylläpitäjää jatkamaan testausjaksoa.",
     "usageExpiredNotice": "Rekisteröity käyttö on päättynyt. Ota yhteyttä alustan super-ylläpitäjään uusimista varten.",
     "usageRechargeHint": "Pyydä alustan super-ylläpitäjää uusimaan rekisteröity käyttö.",
+    "usageActivationNoticeTitle": "Aktivoi rekisteröity käyttö",
+    "usageActivationRemainingDays": "{{count}} päivää jäljellä rekisteröidyn käytön aktivointiin",
+    "usageActivationExpiredNotice": "Testausjakso päättyi eikä rekisteröityä käyttöä aktivoitu. Ota yhteyttä alustan super-ylläpitäjään.",
+    "usageActivationHint": "Pyydä alustan super-ylläpitäjää aktivoimaan rekisteröity käyttö ennen kuin pääsy keskeytetään.",
     "testingExpiringNotificationTitle": "Testausjakso päättymässä",
     "testingExpiringNotificationMessage": "Testausjaksosta jäljellä {{count}} päivää. Ota yhteyttä alustan super-ylläpitäjään.",
     "testingEndedNotificationTitle": "Testausjakso päättyi",
-    "testingEndedNotificationMessage": "Koulusi testausjakso on päättynyt. Ota yhteyttä alustan super-ylläpitäjään jatkaaksesi eduTrackin käyttöä.",
+    "testingEndedNotificationMessage": "Koulusi testausjakso on päättynyt. Ota yhteyttä alustan super-ylläpitäjään jatkaaksesi {{appName}}in käyttöä.",
     "usageExpiringNotificationTitle": "Rekisteröity käyttö päättymässä",
     "usageExpiringNotificationMessage": "Rekisteröidystä käytöstä jäljellä {{count}} päivää. Ota yhteyttä alustan super-ylläpitäjään.",
     "usageEndedNotificationTitle": "Rekisteröity käyttö päättyi",
@@ -1021,6 +1025,10 @@
     "syncComplete": "Synkronointi valmis",
     "syncFailed": "Synkronointi epäonnistui",
     "classDirectorySubtitle": "Nimeä uudelleen tai poista luokkaryhmiä",
+    "classBrowseTitle": "Luokkalistat",
+    "classBrowseHint": "Napauta luokkaa nähdäksesi oppilaiden nimet.",
+    "classDetailSubtitle": "Luokan oppilaat",
+    "classStudentsEmpty": "Tähän luokkaan ei ole vielä liitetty oppilaita.",
     "studentDirSubtitle": "Päivitä tiedot, nollaa salasanat tai poista poistuneet",
     "teacherDirSubtitle": "Poistuneet työntekijät, sähköpostimuutokset, salasanan nollaukset",
     "parentDirSubtitle": "Muuttaneet perheet tai tilit, jotka tarvitsevat päivitystä",
@@ -1234,7 +1242,7 @@
     "saveSchool": "Tallenna koulu",
     "deleteSchool": "Poista koulu",
     "loginTitle": "Pääylläpitäjä",
-    "loginSubtitle": "Hallitse kouluja EduTrack-alustalla",
+    "loginSubtitle": "Hallitse kouluja {{appName}}-alustalla",
     "backToSchoolList": "Takaisin koululistalle",
     "enterEmailPassword": "Syötä sähköposti ja salasana.",
     "loginFailed": "Alustan ylläpitäjän kirjautuminen epäonnistui.",
@@ -1331,7 +1339,7 @@
     "onboardingStepWebApp": "Lisää web-sovellus ja kopioi asetukset",
     "onboardingStepWebAppHint": "Project settings → Your apps → Web. Liitä kentät tähän lomakkeeseen.",
     "onboardingStepDeploy": "Julkaise säännöt, indeksit, storage ja push-funktio",
-    "onboardingStepDeployHint": "Aja eduTrack-repon juuresta (vaatii firebase login).",
+    "onboardingStepDeployHint": "Aja {{appName}}-repon juuresta (vaatii firebase login).",
     "onboardingStepRegister": "Rekisteröi koulu tähän paneeliin",
     "onboardingStepRegisterHint": "Tallenna lomake, jotta koulu näkyy sovelluksen valitsimessa.",
     "onboardingStepSyncSubscription": "Synkronoi tilaus koulun projektiin",
@@ -1344,7 +1352,7 @@
     "contactEmptyHint": "Kun vierailijat lähettävät lomakkeen, kopiot näkyvät täällä. Heidän sähköpostisovelluksensa avautuu myös suoraan viestiä varten.",
     "contactLoadFailed": "Yhteydenottoviestejä ei voitu ladata",
     "contactReply": "Vastaa",
-    "contactReplySubject": "Re: eduTrack-kysely",
+    "contactReplySubject": "Re: {{appName}}-kysely",
     "contactReplyFailed": "Sähköpostisovellusta ei voitu avata.",
     "contactDeleteTitle": "Poista viesti",
     "contactDeleteMessage": "Poistetaanko viesti henkilöltä {{name}}?",

@@ -11,6 +11,9 @@ export type SchoolSubscriptionFields = {
 };
 
 /** Keep in sync with `src/utils/schoolSubscriptionAccess.ts`. */
+export const USAGE_ACTIVATION_GRACE_DAYS = 7;
+
+/** Keep in sync with `src/utils/schoolSubscriptionAccess.ts`. */
 function getUsageRemainingDays(
   usageExpiresAt: string | null | undefined,
 ): number | null {
@@ -56,8 +59,10 @@ export function getSchoolSubscriptionBlockReason(
   if (testing) {
     const days = getUsageRemainingDays(testing);
     if (days == null) return "missing_period";
-    if (days < 0) return "testing_expired";
-    return null;
+    if (days >= 0) return null;
+    const graceRemaining = USAGE_ACTIVATION_GRACE_DAYS + days;
+    if (graceRemaining >= 0) return null;
+    return "testing_expired";
   }
 
   return "missing_period";

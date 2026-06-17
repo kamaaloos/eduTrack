@@ -94,7 +94,7 @@
     "profileMissingRole": "حسابك غير مُكوَّن بشكل صحيح. تواصل مع مسؤول المدرسة.",
     "somethingWentWrong": "حدث خطأ ما. يُرجى المحاولة مرة أخرى.",
     "subscriptionExpired": "انتهى اشتراك هذه المدرسة. تواصل مع مدرستك أو MayleSoft لتجديد الوصول.",
-    "subscriptionInactive": "هذه المدرسة غير نشطة في eduTrack. تواصل مع MayleSoft لاستعادة الوصول.",
+    "subscriptionInactive": "هذه المدرسة غير نشطة في {{appName}}. تواصل مع MayleSoft لاستعادة الوصول.",
     "subscriptionTestingExpired": "انتهت فترة التجربة لهذه المدرسة. تواصل مع MayleSoft للاشتراك.",
     "subscriptionUsageExpired": "انتهى الاشتراك المدفوع لهذه المدرسة. تواصل مع MayleSoft للتجديد.",
     "subscriptionMissingPeriod": "لم يتم إعداد اشتراك هذه المدرسة. تواصل مع MayleSoft.",
@@ -125,7 +125,7 @@
   "about": {
     "title": "حول التطبيق والإعدادات",
     "shortTitle": "حول",
-    "appName": "eduTrack",
+    "appName": "{{appName}}",
     "tagline": "إدارة المدرسة للطلاب والمعلمين وأولياء الأمور والمسؤولين.",
     "appInfo": "معلومات التطبيق",
     "build": "رقم البناء",
@@ -147,15 +147,15 @@
     "title": "الأسئلة الشائعة",
     "shortTitle": "الأسئلة الشائعة",
     "heading": "الأسئلة المتكررة",
-    "subtitle": "إجابات سريعة عن eduTrack للمدارس والعائلات والطاقم.",
+    "subtitle": "إجابات سريعة عن {{appName}} للمدارس والعائلات والطاقم.",
     "contactCta": "لا تزال لديك أسئلة؟ تواصل معنا",
     "items": {
       "whatIsEduTrack": {
-        "question": "ما هو eduTrack؟",
-        "answer": "eduTrack منصة إدارة مدرسية من MayleSoft. تجمع الواجبات والاختبارات والحضور وكشوف الدرجات والجداول والإعلانات والرسائل في تطبيق آمن واحد للطلاب والمعلمين وأولياء الأمور ومسؤولي المدرسة."
+        "question": "ما هو {{appName}}؟",
+        "answer": "{{appName}} منصة إدارة مدرسية من MayleSoft. تجمع الواجبات والاختبارات والحضور وكشوف الدرجات والجداول والإعلانات والرسائل في تطبيق آمن واحد للطلاب والمعلمين وأولياء الأمور ومسؤولي المدرسة."
       },
       "whoCanUse": {
-        "question": "من يمكنه استخدام eduTrack؟",
+        "question": "من يمكنه استخدام {{appName}}؟",
         "answer": "يسجل كل شخص دخوله بدوره: طالب، معلم، ولي أمر، أو مسؤول مدرسة. ينشئ مسؤول المدرسة الحسابات ويربط الطلاب بالفصول وأولياء الأمور بأبنائهم. يسجل مسؤولو المنصة المدارس على النظام."
       },
       "howToSignIn": {
@@ -163,8 +163,8 @@
         "answer": "اضغط ابدأ في الصفحة الرئيسية، اختر مدرستك (البلد، المدينة، المدرسة)، ثم سجّل الدخول بالبريد وكلمة المرور من مدرستك. قد يحصل المستخدمون الجدد على كلمة مرور مؤقتة ويجب عليهم تعيين كلمة مرور خاصة عند أول دخول."
       },
       "webAndMobile": {
-        "question": "هل يمكنني استخدام eduTrack على الويب والهاتف؟",
-        "answer": "نعم. يعمل eduTrack في المتصفح وك تطبيق جوال على Android وiOS. يمكن للطلاب والمعلمين وأولياء الأمور استخدام أي منهما."
+        "question": "هل يمكنني استخدام {{appName}} على الويب والهاتف؟",
+        "answer": "نعم. يعمل {{appName}} في المتصفح وك تطبيق جوال على Android وiOS. يمكن للطلاب والمعلمين وأولياء الأمور استخدام أي منهما."
       },
       "students": {
         "question": "ماذا يمكن للطلاب فعله؟",
@@ -188,22 +188,22 @@
       },
       "dataSecurity": {
         "question": "هل بيانات مدرستنا آمنة؟",
-        "answer": "يستخدم eduTrack Firebase Authentication وFirestore مع قواعد وصول حسب الدور. كل مدرسة معزولة على المنصة، ويرى المستخدمون فقط ما يسمح به دورهم."
+        "answer": "يستخدم {{appName}} Firebase Authentication وFirestore مع قواعد وصول حسب الدور. كل مدرسة معزولة على المنصة، ويرى المستخدمون فقط ما يسمح به دورهم."
       },
       "languages": {
         "question": "ما اللغات المدعومة؟",
-        "answer": "يدعم eduTrack الإنجليزية والفنلندية والعربية والصومالية. يمكنك تغيير اللغة من الصفحة الرئيسية أو شاشة الدخول أو إعدادات الملف."
+        "answer": "يدعم {{appName}} الإنجليزية والفنلندية والعربية والصومالية. يمكنك تغيير اللغة من الصفحة الرئيسية أو شاشة الدخول أو إعدادات الملف."
       },
       "getSupport": {
         "question": "كيف أحصل على مساعدة أو أطلب عرضًا؟",
-        "answer": "استخدم صفحة تواصل معنا على الموقع لإرسال رسالة إلى فريق eduTrack. اذكر اسم مدرستك وما تحتاجه — مساعدة في البدء أو عرضًا أو دعمًا فنيًا."
+        "answer": "استخدم صفحة تواصل معنا على الموقع لإرسال رسالة إلى فريق {{appName}}. اذكر اسم مدرستك وما تحتاجه — مساعدة في البدء أو عرضًا أو دعمًا فنيًا."
       }
     }
   },
   "contact": {
     "title": "اتصل بنا",
     "heading": "تواصل معنا",
-    "subtitle": "أخبرنا عن مدرستك وسنساعدك على البدء مع eduTrack.",
+    "subtitle": "أخبرنا عن مدرستك وسنساعدك على البدء مع {{appName}}.",
     "name": "اسمك",
     "namePlaceholder": "الاسم الكامل",
     "email": "البريد الإلكتروني",
@@ -216,7 +216,7 @@
     "success": "شكراً لك! تم إرسال رسالتك.",
     "successSavedAndMail": "تم حفظ رسالتك وفتح تطبيق البريد — أرسل البريد للتواصل معنا، أو سنتابع من النسخة المحفوظة.",
     "mailClientOpened": "تم فتح تطبيق البريد مع رسالتك الموجهة إلينا.",
-    "mailSubject": "استفسار eduTrack من {{name}}",
+    "mailSubject": "استفسار {{appName}} من {{name}}",
     "directEmail": "أو راسلنا مباشرة على {{email}}",
     "errorName": "يرجى إدخال اسمك.",
     "errorEmail": "يرجى إدخال بريد إلكتروني صالح.",
@@ -225,7 +225,7 @@
   },
   "download": {
     "title": "تحميل التطبيق",
-    "heading": "حمّل eduTrack",
+    "heading": "حمّل {{appName}}",
     "subtitle": "ثبّت تطبيق الجوال للطلاب والمعلمين وأولياء الأمور وإدارة المدرسة.",
     "googlePlayEyebrow": "احصل عليه من",
     "googlePlayTitle": "Google Play",
@@ -238,7 +238,7 @@
   "onboarding": {
     "skipA11y": "تخطّي التعريف",
     "languageHint": "اختر اللغة التي تفضّلها. يمكنك تغييرها لاحقًا من الإعدادات.",
-    "slide1Title": "مرحبًا بك في EduTrack",
+    "slide1Title": "مرحبًا بك في {{appName}}",
     "slide1Desc": "منصة واحدة للحضور والواجبات والاختبارات ومتابعة التقدّم.",
     "slide2Title": "للطلاب وأولياء الأمور",
     "slide2Desc": "تابع الواجبات والاختبارات وبطاقات الدرجات والإعلانات بسهولة.",
@@ -322,7 +322,7 @@
       "scanCardHint": "امسح رمز QR على بطاقة تسجيل الدخول من مسؤول مدرستك.",
       "scanCardPermission": "يلزم السماح بالكاميرا لمسح بطاقة تسجيل الدخول.",
       "scanCardAllowCamera": "السماح بالكاميرا",
-      "scanCardInvalid": "رمز QR هذا ليس بطاقة تسجيل دخول eduTrack صالحة.",
+      "scanCardInvalid": "رمز QR هذا ليس بطاقة تسجيل دخول {{appName}} صالحة.",
       "scanCardFilled": "تم تعبئة البريد وكلمة المرور من البطاقة. اضغط تسجيل الدخول للمتابعة."
     },
     "changePassword": {
@@ -367,13 +367,13 @@
     "loading": "جارٍ التحميل…"
   },
   "landing": {
-    "brandName": "eduTrack",
+    "brandName": "{{appName}}",
     "brandTag": "منصة إدارة المدارس",
-    "heroBadge": "منصة EduTrack",
+    "heroBadge": "منصة {{appName}}",
     "heroTitlePrefix": "المركز المدرسي المتصل لـ",
     "heroTitleHighlight": "كل الأدوار",
     "heroSubtitle": "الواجبات والامتحانات والحضور وبطاقات التقرير والتواصل مع أولياء الأمور — في منصة آمنة واحدة للطلاب والمعلمين وأولياء الأمور وإدارة المدرسة.",
-    "openWebApp": "فتح تطبيق eduTrack على الويب",
+    "openWebApp": "فتح تطبيق {{appName}} على الويب",
     "downloadApp": "تحميل تطبيق الجوال",
     "signIn": "تسجيل الدخول",
     "getStarted": "ابدأ الآن",
@@ -394,7 +394,7 @@
     "featureParentsBody": "متابعة تقدم كل طفل، الرد على الغياب، واستلام تحديثات المدرسة.",
     "featureAdminsTitle": "الإدارة",
     "featureAdminsBody": "إدارة المستخدمين والصفوف والجداول والتحليلات والإعلانات المدرسية.",
-    "promoVideoAria": "فيديو ترويجي لمنصة EduTrack",
+    "promoVideoAria": "فيديو ترويجي لمنصة {{appName}}",
     "copyright": "© 2026 - تطبيق MayleSoft المدرسي — eng. Hasan Kamaal."
   },
   "tabs": {
@@ -974,10 +974,14 @@
     "testingContactHint": "اطلب من مسؤول المنصة (super admin) تمديد فترة التجربة.",
     "usageExpiredNotice": "انتهى الاستخدام المسجّل. تواصل مع مسؤول المنصة (super admin) للتجديد.",
     "usageRechargeHint": "اطلب من مسؤول المنصة (super admin) تجديد الاستخدام المسجّل.",
+    "usageActivationNoticeTitle": "تفعيل الاستخدام المسجّل",
+    "usageActivationRemainingDays": "متبقٍ {{count}} يوم/أيام لتفعيل الاستخدام المسجّل",
+    "usageActivationExpiredNotice": "انتهت فترة التجربة ولم يتم تفعيل الاستخدام المسجّل. تواصل مع مسؤول المنصة (super admin).",
+    "usageActivationHint": "اطلب من مسؤول المنصة (super admin) تفعيل الاستخدام المسجّل قبل تعليق الوصول.",
     "testingExpiringNotificationTitle": "فترة التجربة على وشك الانتهاء",
     "testingExpiringNotificationMessage": "متبقٍ {{count}} يوم/أيام من فترة التجربة. تواصل مع مسؤول المنصة (super admin).",
     "testingEndedNotificationTitle": "انتهت فترة التجربة",
-    "testingEndedNotificationMessage": "انتهت فترة تجربة مدرستك. تواصل مع مسؤول المنصة (super admin) لمتابعة استخدام eduTrack.",
+    "testingEndedNotificationMessage": "انتهت فترة تجربة مدرستك. تواصل مع مسؤول المنصة (super admin) لمتابعة استخدام {{appName}}.",
     "usageExpiringNotificationTitle": "الاستخدام المسجّل على وشك الانتهاء",
     "usageExpiringNotificationMessage": "متبقٍ {{count}} يوم/أيام من الاستخدام المسجّل. تواصل مع مسؤول المنصة (super admin).",
     "usageEndedNotificationTitle": "انتهى الاستخدام المسجّل",
@@ -1021,6 +1025,10 @@
     "syncComplete": "اكتملت المزامنة",
     "syncFailed": "فشلت المزامنة",
     "classDirectorySubtitle": "إعادة تسمية أو إزالة مجموعات الصفوف",
+    "classBrowseTitle": "قوائم الصفوف",
+    "classBrowseHint": "اضغط على صف لعرض أسماء الطلاب.",
+    "classDetailSubtitle": "طلاب هذا الصف",
+    "classStudentsEmpty": "لم يتم تعيين طلاب لهذا الصف بعد.",
     "studentDirSubtitle": "تحديث التفاصيل أو إعادة تعيين كلمات المرور أو إزالة المغادرين",
     "teacherDirSubtitle": "الموظفون المغادرون وتغيير البريد وإعادة تعيين كلمات المرور",
     "parentDirSubtitle": "العائلات التي انتقلت أو تحتاج تحديث الحساب",
@@ -1222,7 +1230,7 @@
     "saveSchool": "حفظ المدرسة",
     "deleteSchool": "إزالة المدرسة",
     "loginTitle": "المسؤول الأعلى",
-    "loginSubtitle": "إدارة المدارس على منصة EduTrack",
+    "loginSubtitle": "إدارة المدارس على منصة {{appName}}",
     "backToSchoolList": "العودة إلى قائمة المدارس",
     "enterEmailPassword": "أدخل البريد وكلمة المرور.",
     "loginFailed": "فشل تسجيل دخول مسؤول المنصة.",
@@ -1319,7 +1327,7 @@
     "onboardingStepWebApp": "إضافة تطبيق ويب ونسخ الإعدادات",
     "onboardingStepWebAppHint": "Project settings → Your apps → Web. الصق الحقول في هذا النموذج.",
     "onboardingStepDeploy": "نشر القواعد والفهارس والتخزين ودالة الإشعارات",
-    "onboardingStepDeployHint": "نفّذ من جذر مستودع eduTrack (يتطلب firebase login).",
+    "onboardingStepDeployHint": "نفّذ من جذر مستودع {{appName}} (يتطلب firebase login).",
     "onboardingStepRegister": "تسجيل المدرسة في هذه اللوحة",
     "onboardingStepRegisterHint": "احفظ النموذج لتظهر المدرسة في قائمة التطبيق.",
     "onboardingStepSyncSubscription": "مزامنة الاشتراك مع مشروع المدرسة",
@@ -1332,7 +1340,7 @@
     "contactEmptyHint": "عند إرسال الزوار نموذج التواصل، تظهر نسخة هنا. كما يُفتح تطبيق البريد لديهم للمراسلة المباشرة.",
     "contactLoadFailed": "تعذر تحميل رسائل التواصل",
     "contactReply": "رد",
-    "contactReplySubject": "Re: استفسار eduTrack",
+    "contactReplySubject": "Re: استفسار {{appName}}",
     "contactReplyFailed": "تعذر فتح تطبيق البريد.",
     "contactDeleteTitle": "حذف الرسالة",
     "contactDeleteMessage": "إزالة استفسار {{name}}؟",

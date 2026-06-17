@@ -7,8 +7,9 @@ import {
   ImportKind,
   WORKBOOK_SHEET_ORDER,
 } from "./adminExcelImport";
+import { APP_DISPLAY_NAME } from "../constants/brand";
 
-export const IMPORT_TEMPLATE_FILENAME = "eduTrack-import-template.xlsx";
+export const IMPORT_TEMPLATE_FILENAME = `${APP_DISPLAY_NAME.toLowerCase().replace(/\s+/g, "-")}-import-template.xlsx`;
 
 /** Header row per sheet (must match import column names). */
 export const TEMPLATE_SHEET_HEADERS: Record<ImportKind, string[]> = {
@@ -116,7 +117,7 @@ export async function shareImportTemplate(
   await Sharing.shareAsync(path, {
     mimeType:
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    dialogTitle: "eduTrack import template",
+    dialogTitle: `${APP_DISPLAY_NAME} import template`,
     UTI: "com.microsoft.excel.xlsx",
   });
 }

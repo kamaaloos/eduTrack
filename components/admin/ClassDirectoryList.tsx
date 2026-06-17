@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -37,6 +38,7 @@ function ClassDirectoryCard({
   layout,
   subjectCountLabel,
   subjectsPreview,
+  onOpen,
   onEdit,
   onDelete,
 }: {
@@ -44,6 +46,7 @@ function ClassDirectoryCard({
   layout: ReturnType<typeof usePlatformLayout>;
   subjectCountLabel: string;
   subjectsPreview: string;
+  onOpen: (cls: ClassData) => void;
   onEdit: (cls: ClassData) => void;
   onDelete: (cls: ClassData) => void;
 }) {
@@ -51,7 +54,11 @@ function ClassDirectoryCard({
 
   return (
     <View style={adminDirectoryCardStyle(layout)}>
-      <View style={styles.cardTop}>
+      <TouchableOpacity
+        style={styles.cardTop}
+        activeOpacity={0.85}
+        onPress={() => onOpen(item)}
+      >
         <View style={styles.iconWrap}>
           <Ionicons name="school" size={22} color="#D97706" />
         </View>
@@ -64,7 +71,8 @@ function ClassDirectoryCard({
             {subjectsPreview}
           </Text>
         </View>
-      </View>
+        <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+      </TouchableOpacity>
       <View style={styles.actions}>
         <TouchableOpacity
           style={styles.actionBtn}
@@ -102,6 +110,13 @@ export function ClassDirectoryList() {
   }, [classes, search]);
 
   const pagination = usePaginatedList(filtered, showTableLayout ? 8 : 4, search);
+
+  const openClass = (cls: ClassData) => {
+    router.push({
+      pathname: "/(admin)/class/[classId]",
+      params: { classId: cls.id },
+    });
+  };
 
   const openEdit = (cls: ClassData) => {
     setEditing(cls);
@@ -176,6 +191,7 @@ export function ClassDirectoryList() {
             layout={layout}
             subjectCountLabel={subjectCountLabel}
             subjectsPreview={subjectsPreview}
+            onOpen={openClass}
             onEdit={openEdit}
             onDelete={onDelete}
           />
@@ -203,14 +219,19 @@ export function ClassDirectoryList() {
 
         return (
           <View key={item.id} style={adminDirectoryTableRowStyle()}>
-            <View style={[styles.colName, styles.tableNameCell]}>
+            <TouchableOpacity
+              style={[styles.colName, styles.tableNameCell]}
+              activeOpacity={0.85}
+              onPress={() => openClass(item)}
+            >
               <View style={styles.iconWrapSmall}>
                 <Ionicons name="school" size={18} color="#D97706" />
               </View>
               <Text style={styles.tableName} numberOfLines={1}>
                 {item.name || t("common.classFallback")}
               </Text>
-            </View>
+              <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+            </TouchableOpacity>
             <Text style={[styles.tableCell, styles.colSubjects]} numberOfLines={2}>
               {subjectCountLabel}
               {subjectsPreview}
@@ -341,7 +362,12 @@ const styles = StyleSheet.create({
   },
   loader: { marginTop: 40 },
   empty: { textAlign: "center", color: "#64748B", marginTop: 32 },
-  cardTop: { flexDirection: "row", gap: 12, marginBottom: 12 },
+  cardTop: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 12,
+    alignItems: "center",
+  },
   iconWrap: {
     width: 44,
     height: 44,
@@ -391,6 +417,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    flex: 1.2,
+    minWidth: 0,
   },
   tableName: {
     flex: 1,

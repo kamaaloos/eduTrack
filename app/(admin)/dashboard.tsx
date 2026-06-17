@@ -33,6 +33,10 @@ import {
   notifySchoolUsageExpiring,
 } from "../../src/services/notificationEvents";
 import { getUsageRemainingDays } from "../../src/utils/usageExpiry";
+import {
+  isTestingPeriodActive,
+  resolveAdminDashboardPeriodNotice,
+} from "../../src/utils/adminDashboardPeriodNotice";
 import type { StoredSchool } from "../../src/types/school";
 
 type MenuRoute =
@@ -66,14 +70,12 @@ export default function AdminDashboard() {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const testingRemainingDays = useMemo(
-    () => getUsageRemainingDays(selectedSchool?.testingExpiresAt),
-    [selectedSchool?.testingExpiresAt],
-  );
-
-  const usageRemainingDays = useMemo(
-    () => getUsageRemainingDays(selectedSchool?.usageExpiresAt),
-    [selectedSchool?.usageExpiresAt],
+  const periodNotice = useMemo(
+    () =>
+      selectedSchool
+        ? resolveAdminDashboardPeriodNotice(selectedSchool)
+        : null,
+    [selectedSchool],
   );
 
   const directoryItems = useMemo(
@@ -224,27 +226,29 @@ export default function AdminDashboard() {
         t("admin.testingEndedNotificationMessage"),
       );
 
-      await notifyPeriod(
-        school.usageExpiresAt,
-        (title, message) =>
-          notifySchoolUsageExpiring({
-            schoolId: school.id,
-            title,
-            message,
-            actorId: user?.uid ?? null,
-          }),
-        (title, message) =>
-          notifySchoolUsageEnded({
-            schoolId: school.id,
-            title,
-            message,
-            actorId: user?.uid ?? null,
-          }),
-        t("admin.usageExpiringNotificationTitle"),
-        (count) => t("admin.usageExpiringNotificationMessage", { count }),
-        t("admin.usageEndedNotificationTitle"),
-        t("admin.usageEndedNotificationMessage"),
-      );
+      if (!isTestingPeriodActive(school)) {
+        await notifyPeriod(
+          school.usageExpiresAt,
+          (title, message) =>
+            notifySchoolUsageExpiring({
+              schoolId: school.id,
+              title,
+              message,
+              actorId: user?.uid ?? null,
+            }),
+          (title, message) =>
+            notifySchoolUsageEnded({
+              schoolId: school.id,
+              title,
+              message,
+              actorId: user?.uid ?? null,
+            }),
+          t("admin.usageExpiringNotificationTitle"),
+          (count) => t("admin.usageExpiringNotificationMessage", { count }),
+          t("admin.usageEndedNotificationTitle"),
+          t("admin.usageEndedNotificationMessage"),
+        );
+      }
     },
     [t, user?.uid],
   );
@@ -325,27 +329,39 @@ export default function AdminDashboard() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
-          {testingRemainingDays != null ? (
+          {periodNotice ? (
             <PeriodNoticeCard
-              remainingDays={testingRemainingDays}
-              title={t("admin.testingPeriodNoticeTitle")}
-              expiredText={t("admin.testingExpiredNotice")}
-              remainingText={t("admin.usageTimeRemainingDays", {
-                count: testingRemainingDays,
-              })}
-              hintText={t("admin.testingContactHint")}
-            />
-          ) : null}
-
-          {usageRemainingDays != null ? (
-            <PeriodNoticeCard
-              remainingDays={usageRemainingDays}
-              title={t("admin.usageSubscriptionNoticeTitle")}
-              expiredText={t("admin.usageExpiredNotice")}
-              remainingText={t("admin.usageTimeRemainingDays", {
-                count: usageRemainingDays,
-              })}
-              hintText={t("admin.usageRechargeHint")}
+              remainingDays={periodNotice.remainingDays}
+              title={
+                periodNotice.kind === "testing"
+                  ? t("admin.testingPeriodNoticeTitle")
+                  : periodNotice.kind === "usage"
+                    ? t("admin.usageSubscriptionNoticeTitle")
+                    : t("admin.usageActivationNoticeTitle")
+              }
+              expiredText={
+                periodNotice.kind === "testing"
+                  ? t("admin.testingExpiredNotice")
+                  : periodNotice.kind === "usage"
+                    ? t("admin.usageExpiredNotice")
+                    : t("admin.usageActivationExpiredNotice")
+              }
+              remainingText={
+                periodNotice.kind === "activation_grace"
+                  ? t("admin.usageActivationRemainingDays", {
+                      count: periodNotice.remainingDays,
+                    })
+                  : t("admin.usageTimeRemainingDays", {
+                      count: periodNotice.remainingDays,
+                    })
+              }
+              hintText={
+                periodNotice.kind === "testing"
+                  ? t("admin.testingContactHint")
+                  : periodNotice.kind === "usage"
+                    ? t("admin.usageRechargeHint")
+                    : t("admin.usageActivationHint")
+              }
             />
           ) : null}
 

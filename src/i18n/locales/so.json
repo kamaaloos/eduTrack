@@ -94,7 +94,7 @@
     "profileMissingRole": "Akoonkaaga si sax ah looma habeeyn. La xiriir maamulaha dugsiga.",
     "somethingWentWrong": "Wax baa khaldamay. Fadlan isku day mar kale.",
     "subscriptionExpired": "Rukumashada dugsigan way dhammaatay. La xiriir dugsigaaga ama MayleSoft.",
-    "subscriptionInactive": "Dugsigan kuma firfircoona eduTrack. La xiriir MayleSoft.",
+    "subscriptionInactive": "Dugsigan kuma firfircoona {{appName}}. La xiriir MayleSoft.",
     "subscriptionTestingExpired": "Muddada tijaabada dugsigan way dhammaatay. La xiriir MayleSoft.",
     "subscriptionUsageExpired": "Rukumashada lacag bixinta dugsigan way dhammaatay. La xiriir MayleSoft.",
     "subscriptionMissingPeriod": "Rukumashada dugsigan lama qaabeyn. La xiriir MayleSoft.",
@@ -125,7 +125,7 @@
   "about": {
     "title": "Ku saabsan iyo dejinta",
     "shortTitle": "Ku saabsan",
-    "appName": "eduTrack",
+    "appName": "{{appName}}",
     "tagline": "Maamulka dugsiga ardayda, macallimiinta, waalidiinta, iyo maamulayaasha.",
     "appInfo": "Macluumaadka app-ka",
     "build": "Dhismaha",
@@ -147,15 +147,15 @@
     "title": "Su'aalaha badanaa la isweydiiyo",
     "shortTitle": "FAQ",
     "heading": "Su'aalaha badanaa la isweydiiyo",
-    "subtitle": "Jawaabo degdeg ah oo ku saabsan eduTrack dugsiyada, qoysaska, iyo shaqaalaha.",
+    "subtitle": "Jawaabo degdeg ah oo ku saabsan {{appName}} dugsiyada, qoysaska, iyo shaqaalaha.",
     "contactCta": "Weli su'aalo ma haysaa? Nala soo xiriir",
     "items": {
       "whatIsEduTrack": {
-        "question": "Waa maxay eduTrack?",
-        "answer": "eduTrack waa madal maamul dugsiyeed oo ay sameysay MayleSoft. Waxay isku keentaa shaqo guriga, imtixaannada, xaadirka, warbixinnada, jadwalka, ogeysiisyada, iyo fariimaha hal app ammaan ah ardayda, macalimiinta, waalidiinta, iyo maamulayaasha dugsiga."
+        "question": "Waa maxay {{appName}}?",
+        "answer": "{{appName}} waa madal maamul dugsiyeed oo ay sameysay MayleSoft. Waxay isku keentaa shaqo guriga, imtixaannada, xaadirka, warbixinnada, jadwalka, ogeysiisyada, iyo fariimaha hal app ammaan ah ardayda, macalimiinta, waalidiinta, iyo maamulayaasha dugsiga."
       },
       "whoCanUse": {
-        "question": "Yaa isticmaali kara eduTrack?",
+        "question": "Yaa isticmaali kara {{appName}}?",
         "answer": "Qof kastaa wuxuu galaa doorkiisa: arday, macallin, waalid, ama maamule dugsiyeed. Maamulaha dugsiga wuxuu abuuraa akoonnada wuxuuna xiriiriyaa ardayda fasallada iyo waalidiinta carruurtooda."
       },
       "howToSignIn": {
@@ -164,7 +164,7 @@
       },
       "webAndMobile": {
         "question": "Ma isticmaali karaa webka iyo taleefankayga?",
-        "answer": "Haa. eduTrack wuxuu ka shaqeeyaa browserka iyo app mobayl Android iyo iOS. Ardayda, macalimiinta, iyo waalidiintu waxay isticmaali karaan labadaba."
+        "answer": "Haa. {{appName}} wuxuu ka shaqeeyaa browserka iyo app mobayl Android iyo iOS. Ardayda, macalimiinta, iyo waalidiintu waxay isticmaali karaan labadaba."
       },
       "students": {
         "question": "Maxay ardaydu sameyn karaan?",
@@ -188,22 +188,22 @@
       },
       "dataSecurity": {
         "question": "Xogteena dugsiga ma ammaan baa?",
-        "answer": "eduTrack wuxuu isticmaalaa Firebase Authentication iyo Firestore oo leh xeerar gelitaan oo ku salaysan doorka. Dugsi kastaa waa go'doonsan, isticmaalayaashuna waxay arkaan kaliya waxa doorkoodu ogol yahay."
+        "answer": "{{appName}} wuxuu isticmaalaa Firebase Authentication iyo Firestore oo leh xeerar gelitaan oo ku salaysan doorka. Dugsi kastaa waa go'doonsan, isticmaalayaashuna waxay arkaan kaliya waxa doorkoodu ogol yahay."
       },
       "languages": {
         "question": "Luqadaha noocee ah ayaa la taageeray?",
-        "answer": "eduTrack wuxuu taageeraa Ingiriisi, Finnish, Carabi, iyo Soomaali. Waxaad beddeli kartaa luqadda bogga hore, shaashadda gelitaanka, ama goobaha profile-kaaga."
+        "answer": "{{appName}} wuxuu taageeraa Ingiriisi, Finnish, Carabi, iyo Soomaali. Waxaad beddeli kartaa luqadda bogga hore, shaashadda gelitaanka, ama goobaha profile-kaaga."
       },
       "getSupport": {
         "question": "Sideen caawimaad u helaa ama demo u codsadaa?",
-        "answer": "Isticmaal bogga Nala soo xiriir si aad fariin ugu dirto kooxda eduTrack. Sheeg magaca dugsigaaga iyo waxa aad u baahan tahay."
+        "answer": "Isticmaal bogga Nala soo xiriir si aad fariin ugu dirto kooxda {{appName}}. Sheeg magaca dugsigaaga iyo waxa aad u baahan tahay."
       }
     }
   },
   "contact": {
     "title": "Nala soo xiriir",
     "heading": "Nala soo xiriir",
-    "subtitle": "Noo sheeg dugsigaaga waxaanan kaa caawin doonnaa inaad bilowdo eduTrack.",
+    "subtitle": "Noo sheeg dugsigaaga waxaanan kaa caawin doonnaa inaad bilowdo {{appName}}.",
     "name": "Magacaaga",
     "namePlaceholder": "Magaca oo dhan",
     "email": "Iimaylka",
@@ -216,7 +216,7 @@
     "success": "Mahadsanid! Fariintaada waa la diray.",
     "successSavedAndMail": "Fariintaada waa la kaydiyay app-ka iimaylkana waa la furay — dir iimaylka si aad noogu soo xiriirto, ama waan ka jawaabi doonnaa nuqulka la kaydiyay.",
     "mailClientOpened": "App-ka iimaylka ayaa la furay fariintaada oo loo dirayo.",
-    "mailSubject": "Su'aal eduTrack oo ka timid {{name}}",
+    "mailSubject": "Su'aal {{appName}} oo ka timid {{name}}",
     "directEmail": "Ama noo soo dir iimayl toos ah: {{email}}",
     "errorName": "Fadlan geli magacaaga.",
     "errorEmail": "Fadlan geli iimayl sax ah.",
@@ -225,7 +225,7 @@
   },
   "download": {
     "title": "Soo deji app-ka",
-    "heading": "Soo deji eduTrack",
+    "heading": "Soo deji {{appName}}",
     "subtitle": "Ku rakib app-ka mobilka ardayda, macallimiinta, waalidiinta iyo maamulka dugsiga.",
     "googlePlayEyebrow": "Ka hel",
     "googlePlayTitle": "Google Play",
@@ -238,7 +238,7 @@
   "onboarding": {
     "skipA11y": "Ka bood hordhaca",
     "languageHint": "Dooro luqadda aad doorbidayso. Waxaad ka beddeli kartaa goobaha dambe.",
-    "slide1Title": "Ku soo dhawoow EduTrack",
+    "slide1Title": "Ku soo dhawoow {{appName}}",
     "slide1Desc": "Xarunta dugsigaaga ee imaanshaha, shaqo guri, imtixaanada, iyo horumarka — dhammaan hal meel.",
     "slide2Title": "Ardayda & Waalidiinta",
     "slide2Desc": "Eeg hawlaha, jadwalka imtixaanada, kaararka warbixinta, faallooyinka, oo la soco ogeysiisyada.",
@@ -322,7 +322,7 @@
       "scanCardHint": "U jeedi kamaradaada QR code-ka kaarka ee maamulaha dugsigaaga.",
       "scanCardPermission": "Helitaanka kamarada ayaa loo baahan yahay si loo sawiro kaarka gelitaanka.",
       "scanCardAllowCamera": "Oggolow kamarada",
-      "scanCardInvalid": "QR code-kan ma aha kaar gelitaan eduTrack sax ah.",
+      "scanCardInvalid": "QR code-kan ma aha kaar gelitaan {{appName}} sax ah.",
       "scanCardFilled": "Iimaylka iyo furaha sirta waa la buuxiyey kaarka. Taabo Soo gal si aad u sii wadato."
     },
     "changePassword": {
@@ -367,13 +367,13 @@
     "loading": "Waa la soo rarayaa…"
   },
   "landing": {
-    "brandName": "eduTrack",
+    "brandName": "{{appName}}",
     "brandTag": "Madalada maaraynta dugsiga",
-    "heroBadge": "Madaladda EduTrack",
+    "heroBadge": "Madaladda {{appName}}",
     "heroTitlePrefix": "Xarunta isku-xirka dugsiga ee",
     "heroTitleHighlight": "door kasta",
     "heroSubtitle": "Shaqada guriga, imtixaannada, imaanshaha, warbixinnada iyo xiriirka waalidka — hal madal ammaan ah ardayda, macallimiinta, waalidiinta iyo maamulka dugsiga.",
-    "openWebApp": "Fur eduTrack web-ka",
+    "openWebApp": "Fur {{appName}} web-ka",
     "downloadApp": "Soo deji app-ka mobilka",
     "signIn": "Gal",
     "getStarted": "Bilow",
@@ -394,7 +394,7 @@
     "featureParentsBody": "La soco horumarka ilmaha, ka jawaab maqnaanshaha, hel wararka dugsiga.",
     "featureAdminsTitle": "Maamulka",
     "featureAdminsBody": "Maamul isticmaaleyaal, fasallo, jadwal, falanqayn iyo ogeysiisyada dugsiga.",
-    "promoVideoAria": "Fiidiyowga EduTrack",
+    "promoVideoAria": "Fiidiyowga {{appName}}",
     "copyright": "© 2026 - App-ka dugsiga MayleSoft — eng. Hasan Kamaal."
   },
   "tabs": {
@@ -974,10 +974,14 @@
     "testingContactHint": "Ka codsado super-maamulaha madasha inuu kordhiyo muddada tijaabada.",
     "usageExpiredNotice": "Isticmaalka diiwaangashan wuu dhacay. La xiriir super-maamulaha madasha si aad u cusbooneysiiso.",
     "usageRechargeHint": "Ka codsado super-maamulaha madasha inuu cusbooneysiiyo isticmaalka diiwaangashan.",
+    "usageActivationNoticeTitle": "Hawlgeli isticmaalka diiwaangashan",
+    "usageActivationRemainingDays": "{{count}} maalmood ayaa ka haray hawlgelinta isticmaalka diiwaangashan",
+    "usageActivationExpiredNotice": "Muddada tijaabada way dhammaatay isticmaalka diiwaangashanna lama hawlgelin. La xiriir super-maamulaha madasha.",
+    "usageActivationHint": "Ka codsado super-maamulaha madasha inuu hawlgeliyo isticmaalka diiwaangashan ka hor inta aan la joojin gelitaanka.",
     "testingExpiringNotificationTitle": "Muddada tijaabada way dhammaanaysaa",
     "testingExpiringNotificationMessage": "{{count}} maalmood ayaa ka haray muddada tijaabada. La xiriir super-maamulaha madasha.",
     "testingEndedNotificationTitle": "Muddada tijaabada way dhammaatay",
-    "testingEndedNotificationMessage": "Muddada tijaabada dugsigaaga way dhammaatay. La xiriir super-maamulaha madasha si aad u sii isticmaasho eduTrack.",
+    "testingEndedNotificationMessage": "Muddada tijaabada dugsigaaga way dhammaatay. La xiriir super-maamulaha madasha si aad u sii isticmaasho {{appName}}.",
     "usageExpiringNotificationTitle": "Isticmaalka diiwaangashan wuu dhammaanayaa",
     "usageExpiringNotificationMessage": "{{count}} maalmood ayaa ka haray isticmaalka diiwaangashan. La xiriir super-maamulaha madasha.",
     "usageEndedNotificationTitle": "Isticmaalka diiwaangashan wuu dhacay",
@@ -1021,6 +1025,10 @@
     "syncComplete": "Isku xirka waa dhammaystiran",
     "syncFailed": "Isku xirku wuu fashilmay",
     "classDirectorySubtitle": "Magac beddel ama ka saar kooxaha fasalka",
+    "classBrowseTitle": "Liisaska fasalka",
+    "classBrowseHint": "Taabo fasal si aad u aragto magacyada ardayda.",
+    "classDetailSubtitle": "Ardayda fasalkan",
+    "classStudentsEmpty": "Weli lama xilsaarin arday fasalkan.",
     "studentDirSubtitle": "Cusbooneysii faahfaahinta, dib u deji furaha, ama ka saar kuwa baxay",
     "teacherDirSubtitle": "Shaqaalihii baxay, beddelka iimaylka, dib u dejinta furaha",
     "parentDirSubtitle": "Qoysaska u guuray ama u baahan cusbooneysiinta akoonka",
@@ -1222,7 +1230,7 @@
     "saveSchool": "Kaydi dugsiga",
     "deleteSchool": "Ka saar dugsiga",
     "loginTitle": "Maamulaha sare",
-    "loginSubtitle": "Maamul dugsiyada madasha EduTrack",
+    "loginSubtitle": "Maamul dugsiyada madasha {{appName}}",
     "backToSchoolList": "Ku noqo liiska dugsiyada",
     "enterEmailPassword": "Geli iimaylka iyo furaha sirta.",
     "loginFailed": "Soo gelitaanka maamulaha madashu wuu fashilmay.",
@@ -1319,7 +1327,7 @@
     "onboardingStepWebApp": "Ku dar web app oo nuqul config",
     "onboardingStepWebAppHint": "Project settings → Your apps → Web. Ku dheji foomkan.",
     "onboardingStepDeploy": "Deploy xeerarka, indexes, storage, iyo push function",
-    "onboardingStepDeployHint": "Ka ord xididka repo-ga eduTrack (waxay u baahan tahay firebase login).",
+    "onboardingStepDeployHint": "Ka ord xididka repo-ga {{appName}} (waxay u baahan tahay firebase login).",
     "onboardingStepRegister": "Ku diiwaangeli dugsiga panelkan",
     "onboardingStepRegisterHint": "Kaydi foomka si dugsigu ugu muuqdo app-ka.",
     "onboardingStepSyncSubscription": "Isku xidh rukhsadda mashruuca dugsiga",
@@ -1332,7 +1340,7 @@
     "contactEmptyHint": "Marka booqdayaashu diraan foomka, nuqul ayaa halkan ka muuqda. App-ka iimaylkooda sidoo kale waa la furaa si ay toos kuu soo qoraan.",
     "contactLoadFailed": "Fariimaha xiriirka lama soo rarin karin",
     "contactReply": "Ka jawaab",
-    "contactReplySubject": "Re: su'aal eduTrack",
+    "contactReplySubject": "Re: su'aal {{appName}}",
     "contactReplyFailed": "App-ka iimaylka lama furi karin.",
     "contactDeleteTitle": "Tirtir fariinta",
     "contactDeleteMessage": "Ka saar su'aasha {{name}}?",

@@ -95,7 +95,7 @@
     "profileMissingRole": "Your account is not configured correctly. Contact your school administrator.",
     "somethingWentWrong": "Something went wrong. Please try again.",
     "subscriptionExpired": "This school's subscription has ended. Contact your school or MayleSoft to renew access.",
-    "subscriptionInactive": "This school is not active in eduTrack. Contact MayleSoft to restore access.",
+    "subscriptionInactive": "This school is not active in {{appName}}. Contact MayleSoft to restore access.",
     "subscriptionTestingExpired": "This school's trial period has ended. Contact MayleSoft to subscribe.",
     "subscriptionUsageExpired": "This school's paid subscription has ended. Contact MayleSoft to renew.",
     "subscriptionMissingPeriod": "This school's subscription is not configured. Contact MayleSoft.",
@@ -126,7 +126,7 @@
   "about": {
     "title": "About and settings",
     "shortTitle": "About",
-    "appName": "eduTrack",
+    "appName": "{{appName}}",
     "tagline": "School management for students, teachers, parents, and administrators.",
     "appInfo": "App information",
     "build": "Build",
@@ -148,15 +148,15 @@
     "title": "FAQ",
     "shortTitle": "FAQ",
     "heading": "Frequently asked questions",
-    "subtitle": "Quick answers about eduTrack for schools, families, and staff.",
+    "subtitle": "Quick answers about {{appName}} for schools, families, and staff.",
     "contactCta": "Still have questions? Contact us",
     "items": {
       "whatIsEduTrack": {
-        "question": "What is eduTrack?",
-        "answer": "eduTrack is a school management platform by MayleSoft. It brings homework, exams, attendance, report cards, schedules, announcements, and messaging into one secure app for students, teachers, parents, and school administrators."
+        "question": "What is {{appName}}?",
+        "answer": "{{appName}} is a school management platform by MayleSoft. It brings homework, exams, attendance, report cards, schedules, announcements, and messaging into one secure app for students, teachers, parents, and school administrators."
       },
       "whoCanUse": {
-        "question": "Who can use eduTrack?",
+        "question": "Who can use {{appName}}?",
         "answer": "Each person signs in with a role: student, teacher, parent, or school administrator. Your school administrator creates accounts and links students to classes and parents to children. Platform super administrators register schools on the system."
       },
       "howToSignIn": {
@@ -164,8 +164,8 @@
         "answer": "Tap Get started on the landing page, choose your school (country, city, school), then sign in with the email and password provided by your school. New users may receive a temporary password and must set their own password on first login."
       },
       "webAndMobile": {
-        "question": "Can I use eduTrack on the web and on my phone?",
-        "answer": "Yes. eduTrack runs in the browser and as a mobile app for Android and iOS. Students, teachers, and parents can use either — pick what works best for your device."
+        "question": "Can I use {{appName}} on the web and on my phone?",
+        "answer": "Yes. {{appName}} runs in the browser and as a mobile app for Android and iOS. Students, teachers, and parents can use either — pick what works best for your device."
       },
       "students": {
         "question": "What can students do?",
@@ -189,22 +189,22 @@
       },
       "dataSecurity": {
         "question": "Is our school data secure?",
-        "answer": "eduTrack uses Firebase Authentication and Firestore with role-based access rules. Each school is isolated on the platform, and users only see data their role allows — for example, parents only see their own children, and teachers see their assigned classes."
+        "answer": "{{appName}} uses Firebase Authentication and Firestore with role-based access rules. Each school is isolated on the platform, and users only see data their role allows — for example, parents only see their own children, and teachers see their assigned classes."
       },
       "languages": {
         "question": "Which languages are supported?",
-        "answer": "eduTrack supports English, Finnish, Arabic, and Somali. You can change the language from the landing page, login screen, or your profile settings."
+        "answer": "{{appName}} supports English, Finnish, Arabic, and Somali. You can change the language from the landing page, login screen, or your profile settings."
       },
       "getSupport": {
         "question": "How do I get help or request a demo?",
-        "answer": "Use the Contact us page on the landing site to send a message to the eduTrack team. Include your school name and what you need — onboarding help, a demo, or technical support."
+        "answer": "Use the Contact us page on the landing site to send a message to the {{appName}} team. Include your school name and what you need — onboarding help, a demo, or technical support."
       }
     }
   },
   "contact": {
     "title": "Contact us",
     "heading": "Get in touch",
-    "subtitle": "Tell us about your school and we will help you get started with eduTrack.",
+    "subtitle": "Tell us about your school and we will help you get started with {{appName}}.",
     "name": "Your name",
     "namePlaceholder": "Full name",
     "email": "Email",
@@ -217,7 +217,7 @@
     "success": "Thank you! Your message was sent.",
     "successSavedAndMail": "Your message was saved and your email app was opened — send the email to reach us, or we'll follow up from the saved copy.",
     "mailClientOpened": "Your email app was opened with your message addressed to us.",
-    "mailSubject": "eduTrack inquiry from {{name}}",
+    "mailSubject": "{{appName}} inquiry from {{name}}",
     "directEmail": "Or email us directly at {{email}}",
     "errorName": "Please enter your name.",
     "errorEmail": "Please enter a valid email address.",
@@ -226,7 +226,7 @@
   },
   "download": {
     "title": "Get the app",
-    "heading": "Download eduTrack",
+    "heading": "Download {{appName}}",
     "subtitle": "Install the mobile app for students, teachers, parents, and school administrators.",
     "googlePlayEyebrow": "Get it on",
     "googlePlayTitle": "Google Play",
@@ -239,7 +239,7 @@
   "onboarding": {
     "skipA11y": "Skip onboarding",
     "languageHint": "Pick the language you prefer. You can change it later in settings.",
-    "slide1Title": "Welcome to EduTrack",
+    "slide1Title": "Welcome to {{appName}}",
     "slide1Desc": "Your school hub for attendance, homework, exams, and progress — all in one place.",
     "slide2Title": "Students & Parents",
     "slide2Desc": "View assignments, exam schedules, report cards, remarks, and stay updated with announcements.",
@@ -326,13 +326,13 @@
       "scanCardHint": "Point your camera at the QR code on the card from your school administrator.",
       "scanCardPermission": "Camera access is needed to scan your login card.",
       "scanCardAllowCamera": "Allow camera",
-      "scanCardInvalid": "That QR code is not a valid eduTrack login card.",
+      "scanCardInvalid": "That QR code is not a valid {{appName}} login card.",
       "scanCardFilled": "Email and password filled from login card. Tap Sign in to continue.",
       "enterCardCode": "Enter login card code",
       "enterCardCodeTitle": "Enter login card code",
       "enterCardCodeHint": "Paste the JSON code from your school login card (the same data encoded in the QR).",
       "enterCardCodePlaceholder": "{\"type\":\"edutrack-temp-login\",\"v\":1,\"email\":\"...\",\"password\":\"...\"}",
-      "enterCardCodeInvalid": "That code is not a valid eduTrack login card.",
+      "enterCardCodeInvalid": "That code is not a valid {{appName}} login card.",
       "enterCardCodeSubmit": "Use code"
     },
     "changePassword": {
@@ -377,13 +377,13 @@
     "loading": "Loading…"
   },
   "landing": {
-    "brandName": "eduTrack",
+    "brandName": "{{appName}}",
     "brandTag": "School management platform",
-    "heroBadge": "EduTrack Platform",
+    "heroBadge": "{{appName}} Platform",
     "heroTitlePrefix": "The connected school hub for",
     "heroTitleHighlight": "every role",
     "heroSubtitle": "Homework, exams, attendance, report cards, and parent communication — in one secure platform for students, teachers, parents, and school administrators.",
-    "openWebApp": "Open eduTrack web app",
+    "openWebApp": "Open {{appName}} web app",
     "downloadApp": "Get the mobile app",
     "signIn": "Sign in",
     "getStarted": "Get started",
@@ -404,7 +404,7 @@
     "featureParentsBody": "Follow each child's progress, respond to absences, and receive school updates.",
     "featureAdminsTitle": "Administrators",
     "featureAdminsBody": "Manage users, classes, schedules, analytics, and school-wide announcements.",
-    "promoVideoAria": "EduTrack platform promotional video",
+    "promoVideoAria": "{{appName}} platform promotional video",
     "copyright": "© 2026 - MayleSoft school-app by eng. Hasan Kamaal."
   },
   "tabs": {
@@ -988,10 +988,14 @@
     "testingContactHint": "Ask the platform super administrator to extend the testing period.",
     "usageExpiredNotice": "Registered usage has expired. Contact the platform super administrator to renew.",
     "usageRechargeHint": "Ask the platform super administrator to renew registered usage.",
+    "usageActivationNoticeTitle": "Activate registered usage",
+    "usageActivationRemainingDays": "{{count}} day(s) left to activate registered usage",
+    "usageActivationExpiredNotice": "Testing ended and registered usage was not activated. Contact the platform super administrator.",
+    "usageActivationHint": "Ask the platform super administrator to activate registered usage before access is suspended.",
     "testingExpiringNotificationTitle": "Testing period ending soon",
     "testingExpiringNotificationMessage": "{{count}} day(s) left in the testing period. Contact the platform super administrator.",
     "testingEndedNotificationTitle": "Testing period ended",
-    "testingEndedNotificationMessage": "Your school's testing period has ended. Contact the platform super administrator to continue using eduTrack.",
+    "testingEndedNotificationMessage": "Your school's testing period has ended. Contact the platform super administrator to continue using {{appName}}.",
     "usageExpiringNotificationTitle": "Registered usage ending soon",
     "usageExpiringNotificationMessage": "{{count}} day(s) left on registered usage. Contact the platform super administrator to renew.",
     "usageEndedNotificationTitle": "Registered usage expired",
@@ -1035,6 +1039,10 @@
     "syncComplete": "Sync Complete",
     "syncFailed": "Sync failed",
     "classDirectorySubtitle": "Rename or remove class groups",
+    "classBrowseTitle": "Class rosters",
+    "classBrowseHint": "Tap a class to view student names.",
+    "classDetailSubtitle": "Students in this class",
+    "classStudentsEmpty": "No students assigned to this class yet.",
     "studentDirSubtitle": "Update details, reset passwords, or remove leavers",
     "teacherDirSubtitle": "Staff who left, email changes, password resets",
     "parentDirSubtitle": "Families who moved out or need account updates",
@@ -1134,7 +1142,7 @@
     "tempPasswordShareTitle": "Share temporary password",
     "tempPasswordShareSubtitle": "Show, print, or save a card with QR code and barcode for the user.",
     "tempPasswordQrLabel": "QR code (email + password)",
-    "tempPasswordQrHint": "The user can scan this QR on the login screen in the eduTrack app, or read it with any QR reader.",
+    "tempPasswordQrHint": "The user can scan this QR on the login screen in the {{appName}} app, or read it with any QR reader.",
     "tempPasswordBarcodeLabel": "Barcode (password only)",
     "tempPasswordBarcodeHint": "CODE128 barcode of the temporary password for label printers.",
     "tempPasswordSecurityNote": "Give this only in person. Destroy printed copies after the user signs in and changes their password.",
@@ -1284,7 +1292,7 @@
     "saveSchool": "Save school",
     "deleteSchool": "Remove school",
     "loginTitle": "Super administrator",
-    "loginSubtitle": "Manage schools on the EduTrack platform",
+    "loginSubtitle": "Manage schools on the {{appName}} platform",
     "backToSchoolList": "Back to school list",
     "enterEmailPassword": "Enter email and password.",
     "loginFailed": "Platform admin sign in failed.",
@@ -1399,7 +1407,7 @@
     "onboardingStepWebApp": "Add a web app and copy config",
     "onboardingStepWebAppHint": "Project settings → Your apps → Web. Paste the config fields into this form.",
     "onboardingStepDeploy": "Deploy rules, indexes, storage, and push function",
-    "onboardingStepDeployHint": "Run from the eduTrack repo root (requires firebase login). Seeds platform/subscription when using --seed-subscription.",
+    "onboardingStepDeployHint": "Run from the {{appName}} repo root (requires firebase login). Seeds platform/subscription when using --seed-subscription.",
     "onboardingStepRegister": "Register school in this panel",
     "onboardingStepRegisterHint": "Save this form so the school appears in the app picker. Or use: node scripts/onboard-school.mjs --register scripts/school-registry.example.json",
     "onboardingStepSyncSubscription": "Sync subscription to school project",
@@ -1412,7 +1420,7 @@
     "contactEmptyHint": "When visitors submit the contact form, copies appear here. They also open their email app to write to you directly.",
     "contactLoadFailed": "Could not load contact messages",
     "contactReply": "Reply",
-    "contactReplySubject": "Re: eduTrack inquiry",
+    "contactReplySubject": "Re: {{appName}} inquiry",
     "contactReplyFailed": "Could not open your email app.",
     "contactDeleteTitle": "Delete message",
     "contactDeleteMessage": "Remove the inquiry from {{name}}?",

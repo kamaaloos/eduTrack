@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import { APP_DISPLAY_NAME } from "../constants/brand";
 import { DEFAULT_LANGUAGE } from "./languages";
 import en from "./locales/en.json";
 import ar from "./locales/ar.json";
@@ -19,7 +20,10 @@ void i18n.use(initReactI18next).init({
   lng: DEFAULT_LANGUAGE,
   fallbackLng: "en",
   compatibilityJSON: "v4",
-  interpolation: { escapeValue: false },
+  interpolation: {
+    escapeValue: false,
+    defaultVariables: { appName: APP_DISPLAY_NAME },
+  },
   react: { useSuspense: false },
 });
 

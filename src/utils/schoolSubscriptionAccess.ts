@@ -1,5 +1,8 @@
 import { getUsageRemainingDays } from "./usageExpiry";
 
+/** Days after testing ends to activate registered usage before access is blocked. */
+export const USAGE_ACTIVATION_GRACE_DAYS = 7;
+
 export type SchoolSubscriptionBlockReason =
   | "inactive"
   | "testing_expired"
@@ -41,8 +44,10 @@ export function getSchoolSubscriptionBlockReason(
   if (testing) {
     const days = getUsageRemainingDays(testing);
     if (days == null) return "missing_period";
-    if (days < 0) return "testing_expired";
-    return null;
+    if (days >= 0) return null;
+    const graceRemaining = USAGE_ACTIVATION_GRACE_DAYS + days;
+    if (graceRemaining >= 0) return null;
+    return "testing_expired";
   }
 
   return "missing_period";
