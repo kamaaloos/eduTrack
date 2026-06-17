@@ -92,6 +92,11 @@ export default function PerformanceCharts() {
   };
 
   const s = stats ?? EMPTY_STATS;
+  const attendanceAbsent = Math.max(0, s.attendanceRecords - s.attendancePresent);
+  const absentRate =
+    s.attendanceRecords > 0
+      ? Number(((attendanceAbsent / s.attendanceRecords) * 100).toFixed(1))
+      : 0;
 
   const roleItems = useMemo(
     () =>
@@ -114,9 +119,9 @@ export default function PerformanceCharts() {
   );
 
   const attendanceLine = chartValues([
-    s.attendanceRate,
-    Math.max(s.attendanceRate - 5, 0),
-    Math.min(s.attendanceRate + 5, 100),
+    absentRate,
+    Math.max(absentRate - 5, 0),
+    Math.min(absentRate + 5, 100),
   ]);
 
   const avgGradeDisplay = s.gradesCount > 0 ? `${s.avgGrade}%` : "—";
@@ -163,7 +168,7 @@ export default function PerformanceCharts() {
 
         <View style={styles.summaryRow}>
           <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>{s.attendanceRate}%</Text>
+            <Text style={styles.summaryValue}>{absentRate}%</Text>
             <Text style={styles.summaryLabel}>{t("common.attendance")}</Text>
             <Text style={styles.summaryHint}>
               {attendanceHistoryLabelT(t, s.attendanceWindowDays)}
@@ -177,13 +182,9 @@ export default function PerformanceCharts() {
 
         <ChartCard
           title={t("admin.attendanceTrend")}
-          caption={`${attendanceHistoryLabelT(t, s.attendanceWindowDays)} · ${t(
-            "admin.presentCount",
-            {
-              present: s.attendancePresent,
-              total: s.attendanceRecords,
-            },
-          )}`}
+          caption={`${attendanceHistoryLabelT(t, s.attendanceWindowDays)} · ${attendanceAbsent}/${s.attendanceRecords} ${t(
+            "common.absent",
+          ).toLowerCase()}`}
         >
           <LineChart
             data={{

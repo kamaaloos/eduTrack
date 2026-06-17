@@ -10,7 +10,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -258,11 +257,29 @@ export default function Login() {
     setResetEmail("");
   };
 
+  const topActions = (
+    <View style={styles.topActionsRowInner}>
+      <TouchableOpacity
+        style={styles.topActionLink}
+        onPress={handleChangeSchool}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={t("auth.login.changeSchool")}
+      >
+        <Ionicons name="swap-horizontal-outline" size={16} color="#1E3A8A" />
+        <Text style={styles.topActionLinkText}>
+          {t("auth.login.changeSchool")}
+        </Text>
+      </TouchableOpacity>
+      <AuthAboutLink />
+    </View>
+  );
+
   return (
     <View style={[styles.background, WEB_PAGE_ROOT_STYLE]}>
       <ScreenBackgroundLayer />
       <StatusBar style="dark" />
-      <KeyboardAvoidingView
+        <KeyboardAvoidingView
         style={styles.container}
         behavior={
           Platform.OS === "ios"
@@ -272,18 +289,26 @@ export default function Login() {
               : undefined
         }
       >
-        <AuthAboutLink
-          style={[
-            styles.aboutLink,
-            { top: insets.top + 8 },
-          ]}
-        />
+        {!layout.isWeb ? (
+          <View
+            style={[
+              styles.topActionsRow,
+              {
+                top: insets.top + 8,
+                paddingHorizontal: 16,
+              },
+            ]}
+          >
+            {topActions}
+          </View>
+        ) : null}
         <ScrollView
           contentContainerStyle={[
             styles.scrollContainer,
             webAuthContentStyle(),
             {
-              paddingTop: insets.top + (layout.isCompactWeb ? 16 : 24),
+              paddingTop:
+                insets.top + (layout.isWeb ? (layout.isCompactWeb ? 16 : 24) : 56),
               paddingBottom: insets.bottom + 56,
               paddingHorizontal: layout.isCompactWeb ? 16 : 24,
             },
@@ -292,6 +317,9 @@ export default function Login() {
           keyboardShouldPersistTaps="handled"
         >
           <WebPageCard style={layout.isWeb ? styles.webCard : undefined}>
+            {layout.isWeb ? (
+              <View style={styles.cardTopActions}>{topActions}</View>
+            ) : null}
             <View style={styles.header}>
               <AppLogo size={layout.isWeb ? 96 : 108} />
               <Text style={styles.title}>{t("auth.login.title")}</Text>
@@ -303,19 +331,6 @@ export default function Login() {
                   <Text style={styles.schoolPillText} numberOfLines={1}>
                     {selectedSchool.name}
                   </Text>
-                  <Pressable
-                    style={({ pressed }) => [
-                      styles.schoolPillActionBtn,
-                      pressed && styles.schoolPillActionPressed,
-                    ]}
-                    onPress={handleChangeSchool}
-                    accessibilityRole="button"
-                    accessibilityLabel={t("auth.login.changeSchool")}
-                  >
-                    <Text style={styles.schoolPillAction}>
-                      {t("auth.login.changeSchool")}
-                    </Text>
-                  </Pressable>
                 </View>
               ) : null}
             </View>
@@ -498,10 +513,44 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
 
-  aboutLink: {
+  topActionsRowInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    width: "100%",
+  },
+
+  cardTopActions: {
+    marginBottom: 12,
+  },
+
+  topActionsRow: {
     position: "absolute",
-    right: 16,
+    left: 0,
+    right: 0,
     zIndex: 10,
+  },
+
+  topActionLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.85)",
+    flexShrink: 1,
+    maxWidth: "58%",
+  },
+
+  topActionLinkText: {
+    color: "#1E3A8A",
+    fontSize: 13,
+    fontWeight: "700",
+    flexShrink: 1,
   },
 
   scrollContainer: {
@@ -546,8 +595,7 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     backgroundColor: "#EFF6FF",
     borderRadius: 999,
-    paddingLeft: 14,
-    paddingRight: 6,
+    paddingHorizontal: 14,
     paddingVertical: 8,
     borderWidth: 1,
     borderColor: "#BFDBFE",
@@ -558,23 +606,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
     color: "#1E3A8A",
-  },
-
-  schoolPillActionBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    flexShrink: 0,
-  },
-
-  schoolPillActionPressed: {
-    backgroundColor: "#DBEAFE",
-  },
-
-  schoolPillAction: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#2563EB",
   },
 
   formBody: {

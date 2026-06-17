@@ -1,7 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
-import { StyleSheet, Text, View, type ViewStyle } from "react-native";
-import { getInitials } from "../../src/utils/userAvatar";
+import { StyleSheet, View, type ViewStyle } from "react-native";
+import { parsePhotoURL } from "../../src/utils/userAvatar";
 
 type UserAvatarProps = {
   name?: string | null;
@@ -23,13 +24,14 @@ export function UserAvatar({
   backgroundColor = "#FFFFFF",
 }: UserAvatarProps) {
   const radius = size / 2;
-  const initials = getInitials(name, email);
-  const fontSize = Math.max(14, Math.round(size * 0.38));
+  const resolvedPhotoURL = parsePhotoURL(photoURL);
+  const label = name?.trim() || email?.trim() || undefined;
+  const iconSize = Math.max(18, Math.round(size * 0.45));
 
-  if (photoURL) {
+  if (resolvedPhotoURL) {
     return (
       <Image
-        source={{ uri: photoURL }}
+        source={{ uri: resolvedPhotoURL }}
         style={[
           {
             width: size,
@@ -40,7 +42,7 @@ export function UserAvatar({
           style,
         ]}
         contentFit="cover"
-        accessibilityLabel={name || email || initials}
+        accessibilityLabel={label}
       />
     );
   }
@@ -57,10 +59,10 @@ export function UserAvatar({
         },
         style,
       ]}
+      accessibilityRole="image"
+      accessibilityLabel={label}
     >
-      <Text style={[styles.initials, { color: textColor, fontSize }]}>
-        {initials}
-      </Text>
+      <Ionicons name="person" size={iconSize} color={textColor} />
     </View>
   );
 }
@@ -69,8 +71,5 @@ const styles = StyleSheet.create({
   fallback: {
     alignItems: "center",
     justifyContent: "center",
-  },
-  initials: {
-    fontWeight: "700",
   },
 });

@@ -30,6 +30,8 @@ import {
   showErrorAlert,
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
+import { UserAvatar } from "../common/UserAvatar";
+import { parsePhotoURL } from "../../src/utils/userAvatar";
 import { AuthFormField } from "../auth/AuthFormField";
 import { TempPasswordShareModal } from "./TempPasswordShareModal";
 import { DirectoryPagination } from "./DirectoryPagination";
@@ -50,6 +52,14 @@ type UserRowActionsProps = {
   onPassword: (user: UserData) => void;
   onRemove: (user: UserData) => void;
 };
+
+function resolveClassDisplayName(
+  classId: string | undefined,
+  classNameById: Record<string, string>,
+): string {
+  if (!classId) return "—";
+  return classNameById[classId] || classId;
+}
 
 function UserRowActions({
   item,
@@ -100,6 +110,7 @@ function UserDirectoryCard({
   item,
   layout,
   showClassMeta,
+  classNameById,
   onEdit,
   onPassword,
   onRemove,
@@ -107,6 +118,7 @@ function UserDirectoryCard({
   item: UserData;
   layout: ReturnType<typeof usePlatformLayout>;
   showClassMeta: boolean;
+  classNameById: Record<string, string>;
   onEdit: (user: UserData) => void;
   onPassword: (user: UserData) => void;
   onRemove: (user: UserData) => void;
@@ -116,11 +128,14 @@ function UserDirectoryCard({
   return (
     <View style={adminDirectoryCardStyle(layout)}>
       <View style={styles.cardTop}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {(item.name || item.email || "?").charAt(0).toUpperCase()}
-          </Text>
-        </View>
+        <UserAvatar
+          name={item.name}
+          email={item.email}
+          photoURL={parsePhotoURL(item.photoURL)}
+          size={44}
+          textColor="#2563EB"
+          backgroundColor="#EFF6FF"
+        />
         <View style={styles.cardBody}>
           <Text style={styles.name} numberOfLines={1}>
             {item.name || t("common.unnamed")}
@@ -135,7 +150,8 @@ function UserDirectoryCard({
           ) : null}
           {showClassMeta && item.classId ? (
             <Text style={styles.meta}>
-              {t("admin.classIdLabel", { id: item.classId })}
+              {t("common.class")}:{" "}
+              {resolveClassDisplayName(item.classId, classNameById)}
             </Text>
           ) : null}
         </View>
@@ -164,7 +180,7 @@ export function UserDirectoryList({
   const showTableLayout = layout.isDesktopWeb;
   const showClassColumn = role === "student";
   const roleLabel = t(`common.${role}`);
-  const { usersLoading, updateUser, setUserPassword, removeUser } =
+  const { usersLoading, updateUser, setUserPassword, removeUser, classes } =
     useAdminData();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<UserData | null>(null);
@@ -194,6 +210,13 @@ export function UserDirectoryList({
   }, [users, search]);
 
   const pagination = usePaginatedList(filtered, showTableLayout ? 8 : 4, search);
+  const classNameById = useMemo(
+    () =>
+      Object.fromEntries(
+        classes.map((cls) => [cls.id, cls.name || cls.id]),
+      ) as Record<string, string>,
+    [classes],
+  );
 
   const openEdit = (user: UserData) => {
     setEditing(user);
@@ -322,6 +345,7 @@ export function UserDirectoryList({
           item={item}
           layout={layout}
           showClassMeta={showClassColumn}
+          classNameById={classNameById}
           onEdit={openEdit}
           onPassword={openPasswordModal}
           onRemove={onRemove}
@@ -349,11 +373,14 @@ export function UserDirectoryList({
       {pagination.pageItems.map((item) => (
         <View key={item.id} style={adminDirectoryTableRowStyle()}>
           <View style={[styles.colName, styles.tableNameCell]}>
-            <View style={styles.avatarSmall}>
-              <Text style={styles.avatarTextSmall}>
-                {(item.name || item.email || "?").charAt(0).toUpperCase()}
-              </Text>
-            </View>
+            <UserAvatar
+              name={item.name}
+              email={item.email}
+              photoURL={parsePhotoURL(item.photoURL)}
+              size={32}
+              textColor="#2563EB"
+              backgroundColor="#EFF6FF"
+            />
             <Text style={styles.tableName} numberOfLines={1}>
               {item.name || t("common.unnamed")}
             </Text>
@@ -368,7 +395,7 @@ export function UserDirectoryList({
           </Text>
           {showClassColumn ? (
             <Text style={[styles.tableCell, styles.colClass]} numberOfLines={1}>
-              {item.classId || "—"}
+              {resolveClassDisplayName(item.classId, classNameById)}
             </Text>
           ) : null}
           <View style={styles.colActions}>
@@ -622,25 +649,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   cardTop: { flexDirection: "row", gap: 12, marginBottom: 12 },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarSmall: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  },
-  avatarText: { fontSize: 18, fontWeight: "800", color: "#2563EB" },
-  avatarTextSmall: { fontSize: 14, fontWeight: "800", color: "#2563EB" },
   cardBody: { flex: 1, minWidth: 0 },
   name: { fontSize: 16, fontWeight: "800", color: "#0F172A" },
   email: { fontSize: 13, color: "#64748B", marginTop: 2 },

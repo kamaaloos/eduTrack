@@ -14,6 +14,7 @@ const PARENT_STACK_SCREENS = [
   "dashboard",
   "report-card",
   "notifications",
+  "complaints",
   "account",
   "student/[id]",
   "report-absence",

@@ -39,6 +39,7 @@ type MenuRoute =
   | "/(admin)/users"
   | "/(admin)/classes"
   | "/(admin)/assignments"
+  | "/(admin)/complaints"
   | "/(admin)/system"
   | "/(admin)/profile";
 
@@ -146,6 +147,14 @@ export default function AdminDashboard() {
         route: "/(admin)/assignments" as MenuRoute,
         icon: "git-network-outline" as keyof typeof Ionicons.glyphMap,
         color: "#7C3AED",
+      },
+      {
+        key: "complaints",
+        label: t("admin.complaintsTitle"),
+        description: t("admin.complaintsSubtitle"),
+        route: "/(admin)/complaints" as MenuRoute,
+        icon: "chatbubble-ellipses-outline" as keyof typeof Ionicons.glyphMap,
+        color: "#DC2626",
       },
       {
         key: "system",

@@ -200,14 +200,16 @@ service cloud.firestore {
           )
         );
 
-      // Teachers may list students when querying role + classId for an owned class
+      // Teachers may list students when querying role + classId for an owned class.
+      // Parents may list admins so complaint flows can target admin notifications.
       allow list: if isAdmin()
         || (
           isTeacher()
           && resource.data.role == "student"
           && resource.data.classId != null
           && teacherOwnsClass(resource.data.classId)
-        );
+        )
+        || (isParent() && resource.data.role == "admin");
 
       // Only admins may create user profiles (e.g. after Auth account creation in admin UI).
       allow create: if isAdmin()
@@ -482,6 +484,31 @@ service cloud.firestore {
       allow delete: if isAdmin()
         || resource.data.targetUserId == request.auth.uid;
 
+    }
+
+    /* ---------------- PARENT COMPLAINTS ---------------- */
+
+    match /parentComplaints/{docId} {
+      allow read: if isAdmin()
+        || (isParent() && resource.data.parentId == request.auth.uid);
+
+      allow create: if isParent()
+        && request.resource.data.parentId == request.auth.uid
+        && request.resource.data.status == "open"
+        && request.resource.data.keys().hasAll([
+          "parentId",
+          "parentName",
+          "subject",
+          "message",
+          "status",
+          "createdAt",
+          "resolvedAt",
+          "resolvedBy"
+        ]);
+
+      allow update: if isAdmin();
+
+      allow delete: if isAdmin();
     }
 
     /* ---------------- CLASSES ---------------- */

@@ -17,6 +17,8 @@ import { useTranslation } from "react-i18next";
 import { addDoc, collection } from "firebase/firestore";
 
 import { ErrorBoundary } from "../../components/ErrorBoundary";
+import { ListPageNav } from "../../components/common/ListPageNav";
+import { usePaginatedList } from "../../hooks/usePaginatedList";
 import { AuthContext } from "../../src/context/authContext";
 import { useTeacherClassesContext } from "../../src/context/teacherClassesContext";
 import { notifyGradePosted } from "../../src/services/notificationEvents";
@@ -177,11 +179,16 @@ export default function GradesScreen() {
     }
   };
 
-  const filteredStudents = students.filter(
-    (s) =>
-      s.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
-      s.email.toLowerCase().includes(studentSearch.toLowerCase()),
+  const filteredStudents = useMemo(
+    () =>
+      students.filter(
+        (s) =>
+          s.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
+          s.email.toLowerCase().includes(studentSearch.toLowerCase()),
+      ),
+    [students, studentSearch],
   );
+  const studentPagination = usePaginatedList(filteredStudents, 4, studentSearch);
 
   if (loading) {
     return (
@@ -293,25 +300,35 @@ export default function GradesScreen() {
               </Text>
             </View>
           ) : (
-            <FlatList
-              data={filteredStudents}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.listItem}
-                  onPress={() => {
-                    setSelectedStudent(item);
-                    setShowStudentModal(false);
-                    setStudentSearch("");
-                  }}
-                >
-                  <View>
-                    <Text style={styles.listItemName}>{item.name}</Text>
-                    <Text style={styles.listItemEmail}>{item.email}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
+            <>
+              <FlatList
+                data={studentPagination.pageItems}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.listItem}
+                    onPress={() => {
+                      setSelectedStudent(item);
+                      setShowStudentModal(false);
+                      setStudentSearch("");
+                    }}
+                  >
+                    <View>
+                      <Text style={styles.listItemName}>{item.name}</Text>
+                      <Text style={styles.listItemEmail}>{item.email}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              />
+              <ListPageNav
+                page={studentPagination.page}
+                totalPages={studentPagination.totalPages}
+                canPrev={studentPagination.canPrev}
+                canNext={studentPagination.canNext}
+                onPrev={studentPagination.prevPage}
+                onNext={studentPagination.nextPage}
+              />
+            </>
           )}
         </View>
       </Modal>

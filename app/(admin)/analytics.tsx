@@ -10,6 +10,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { BarChart } from "react-native-chart-kit";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
   adminChartConfig,
   AdminPieChart,
@@ -57,6 +58,7 @@ function attendanceHistoryLabelT(
 
 export default function AnalyticsScreen() {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const chartWidth = useAdminChartWidth();
   const [stats, setStats] = useState<AdminAnalyticsStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -146,6 +148,11 @@ export default function AnalyticsScreen() {
 
   const hasActivityChart = activityItems.length > 0;
   const avgGradeDisplay = s.gradesCount > 0 ? `${s.avgGrade}%` : "—";
+  const attendanceAbsent = Math.max(0, s.attendanceRecords - s.attendancePresent);
+  const absenceRate =
+    s.attendanceRecords > 0
+      ? Number(((attendanceAbsent / s.attendanceRecords) * 100).toFixed(1))
+      : 0;
 
   if (loading && !stats) {
     return (
@@ -183,20 +190,23 @@ export default function AnalyticsScreen() {
           </View>
         ) : null}
 
-        <View style={styles.statsGrid}>
-          <Stat label={t("admin.students")} value={s.students} />
-          <Stat label={t("admin.teachers")} value={s.teachers} />
-          <Stat label={t("admin.parents")} value={s.parents} />
-          <Stat label={t("admin.classes")} value={s.classes} />
-          <Stat label={t("common.homework")} value={s.homeworks} />
-          <Stat label={t("common.exams")} value={s.exams} />
-          <Stat label={t("common.remarks")} value={s.remarks} />
-          <Stat label={t("common.average")} value={avgGradeDisplay} />
-          {s.gradesSampleSize > 0 ? (
-            <Text style={styles.gradeNote}>
-              {t("admin.gradeAverageSample", { count: s.gradesSampleSize })}
-            </Text>
-          ) : null}
+        <View style={[styles.summaryCard, layout.isWeb && styles.summaryCardWeb]}>
+          <Text style={styles.summaryTitle}>{t("admin.overview")}</Text>
+          <View style={styles.statsGrid}>
+            <Stat label={t("admin.students")} value={s.students} web={layout.isWeb} />
+            <Stat label={t("admin.teachers")} value={s.teachers} web={layout.isWeb} />
+            <Stat label={t("admin.parents")} value={s.parents} web={layout.isWeb} />
+            <Stat label={t("admin.classes")} value={s.classes} web={layout.isWeb} />
+            <Stat label={t("common.homework")} value={s.homeworks} web={layout.isWeb} />
+            <Stat label={t("common.exams")} value={s.exams} web={layout.isWeb} />
+            <Stat label={t("common.remarks")} value={s.remarks} web={layout.isWeb} />
+            <Stat label={t("common.average")} value={avgGradeDisplay} web={layout.isWeb} />
+            {s.gradesSampleSize > 0 ? (
+              <Text style={styles.gradeNote}>
+                {t("admin.gradeAverageSample", { count: s.gradesSampleSize })}
+              </Text>
+            ) : null}
+          </View>
         </View>
 
         {hasPie ? (
@@ -242,12 +252,8 @@ export default function AnalyticsScreen() {
         <View style={styles.card}>
           <Text style={styles.cardLabel}>{t("admin.attendanceRate")}</Text>
           <Text style={styles.cardValue}>
-            {s.attendanceRate}% (
-            {t("admin.presentCount", {
-              present: s.attendancePresent,
-              total: s.attendanceRecords,
-            })}
-            )
+            {absenceRate}% ({attendanceAbsent}/{s.attendanceRecords}{" "}
+            {t("common.absent").toLowerCase()})
           </Text>
           <Text style={styles.cardDetail}>
             {attendanceHistoryLabelT(t, s.attendanceWindowDays)}
@@ -272,13 +278,15 @@ function Stat({
   label,
   value,
   suffix,
+  web = false,
 }: {
   label: string;
   value: number | string;
   suffix?: string;
+  web?: boolean;
 }) {
   return (
-    <View style={styles.statBox}>
+    <View style={[styles.statBox, web && styles.statBoxWeb]}>
       <Text style={styles.statBoxValue}>
         {value}
         {suffix}
@@ -310,13 +318,38 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
+  },
+  summaryCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 12,
     marginBottom: 16,
+  },
+  summaryCardWeb: {
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    shadowColor: "#0F172A",
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  summaryTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#1E3A8A",
+    marginBottom: 10,
   },
   statBox: {
     width: "47%",
     backgroundColor: "#FFFFFF",
     padding: 14,
     borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  statBoxWeb: {
+    backgroundColor: "#F8FAFC",
+    borderColor: "#E2E8F0",
   },
   statBoxValue: {
     fontSize: 22,

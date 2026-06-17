@@ -3,11 +3,14 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { ExamResultRecord } from "../../../src/services/examResults";
 import type { TeacherStudent } from "../../../src/services/teacherStudents";
+import type { usePaginatedList } from "../../../hooks/usePaginatedList";
 import { SelectChips } from "../SelectChips";
+import { ListPageNav } from "../../common/ListPageNav";
 import type { ClassExam } from "./examReportsTypes";
-import { ExamReportsShowMore } from "./ExamReportsShowMore";
 import { ExamReportsStudentGradeRow } from "./ExamReportsStudentGradeRow";
 import { examReportsStyles as styles } from "./examReportsStyles";
+
+type StudentPagination = ReturnType<typeof usePaginatedList<TeacherStudent>>;
 
 type ExamReportsGradeSectionProps = {
   exams: ClassExam[];
@@ -29,9 +32,8 @@ type ExamReportsGradeSectionProps = {
   onExportCertificate: (student: TeacherStudent) => void;
   onExportAllCertificates?: () => void;
   exportingAllCertificates?: boolean;
-  onShowMore: () => void;
+  gradePagination: StudentPagination;
 };
-
 export function ExamReportsGradeFixedHeader({
   exams,
   examChipOptions,
@@ -146,7 +148,7 @@ export function ExamReportsGradeStudentList({
   onSaveScore,
   onOpenReport,
   onExportCertificate,
-  onShowMore,
+  gradePagination,
 }: Pick<
   ExamReportsGradeSectionProps,
   | "studentsInClass"
@@ -159,7 +161,7 @@ export function ExamReportsGradeStudentList({
   | "onSaveScore"
   | "onOpenReport"
   | "onExportCertificate"
-  | "onShowMore"
+  | "gradePagination"
 >) {
   const { t } = useTranslation();
 
@@ -175,7 +177,7 @@ export function ExamReportsGradeStudentList({
     <>
       <Text style={styles.listHint}>
         {t("teacher.examReports.showingStudents", {
-          shown: visibleGradeStudents.length,
+          shown: gradePagination.rangeEnd,
           total: studentsInClass.length,
         })}
       </Text>
@@ -193,11 +195,16 @@ export function ExamReportsGradeStudentList({
           onExportCertificate={() => onExportCertificate(student)}
         />
       ))}
-      <ExamReportsShowMore
-        shown={visibleGradeStudents.length}
-        total={studentsInClass.length}
-        onPress={onShowMore}
-      />
+      <View style={styles.listPagination}>
+        <ListPageNav
+          page={gradePagination.page}
+          totalPages={gradePagination.totalPages}
+          canPrev={gradePagination.canPrev}
+          canNext={gradePagination.canNext}
+          onPrev={gradePagination.prevPage}
+          onNext={gradePagination.nextPage}
+        />
+      </View>
     </>
   );
 }
@@ -222,7 +229,7 @@ export function ExamReportsGradeSection({
   onExportCertificate,
   onExportAllCertificates,
   exportingAllCertificates,
-  onShowMore,
+  gradePagination,
 }: ExamReportsGradeSectionProps) {
   return (
     <>
@@ -250,7 +257,7 @@ export function ExamReportsGradeSection({
         onSaveScore={onSaveScore}
         onOpenReport={onOpenReport}
         onExportCertificate={onExportCertificate}
-        onShowMore={onShowMore}
+        gradePagination={gradePagination}
       />
     </>
   );

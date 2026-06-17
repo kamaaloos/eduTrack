@@ -17,9 +17,9 @@ import {
   INNER_CARD_BORDER_RED,
 } from "../../src/constants/innerCardBorders";
 import {
-  NOTIFICATION_TYPE_LABELS,
   type AppNotification,
 } from "../../src/services/notifications";
+import { getLocalizedNotificationDisplay } from "../../src/utils/notificationDisplay";
 
 type NotificationAudience = "teacher" | "student" | "parent" | "admin";
 
@@ -113,7 +113,9 @@ export function NotificationsList({
               <Text style={styles.emptyMessage}>{emptyMessage}</Text>
             </View>
           ) : (
-            notifications.map((item) => (
+            notifications.map((item) => {
+              const display = getLocalizedNotificationDisplay(item, t);
+              return (
               <SwipeToDeleteRow
                 key={item.id}
                 onDelete={() => onDelete(item.id)}
@@ -129,13 +131,13 @@ export function NotificationsList({
                   <View style={styles.cardTop}>
                     <View style={styles.typePill}>
                       <Text style={styles.typePillText}>
-                        {NOTIFICATION_TYPE_LABELS[item.type] ?? item.type}
+                        {display.typeLabel}
                       </Text>
                     </View>
                     {!item.read ? <View style={styles.unreadDot} /> : null}
                   </View>
-                  <Text style={styles.cardTitle}>{item.title}</Text>
-                  <Text style={styles.cardMessage}>{item.message}</Text>
+                  <Text style={styles.cardTitle}>{display.title}</Text>
+                  <Text style={styles.cardMessage}>{display.message}</Text>
                   {item.type === "password_reset_request" && onPressItem ? (
                     <View style={styles.cardActionRow}>
                       <Text style={styles.cardActionText}>
@@ -151,7 +153,8 @@ export function NotificationsList({
                   ) : null}
                 </TouchableOpacity>
               </SwipeToDeleteRow>
-            ))
+            );
+            })
           )}
         </ScrollView>
       )}

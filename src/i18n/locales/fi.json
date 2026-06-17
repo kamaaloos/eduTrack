@@ -143,6 +143,63 @@
     "updatesWebOnly": "Asenna Android-APK saadaksesi päivitysilmoituksia.",
     "checkAgain": "Tarkista uudelleen"
   },
+  "faq": {
+    "title": "UKK",
+    "shortTitle": "UKK",
+    "heading": "Usein kysytyt kysymykset",
+    "subtitle": "Nopeita vastauksia eduTrackista kouluille, perheille ja henkilökunnalle.",
+    "contactCta": "Eikö vastaus löytynyt? Ota yhteyttä",
+    "items": {
+      "whatIsEduTrack": {
+        "question": "Mikä on eduTrack?",
+        "answer": "eduTrack on MayleSoftin koulun hallinta-alusta. Se yhdistää kotitehtävät, kokeet, läsnäolon, opintotodistukset, aikataulut, tiedotteet ja viestinnän yhteen turvalliseen sovellukseen opiskelijoille, opettajille, vanhemmille ja koulun hallinnolle."
+      },
+      "whoCanUse": {
+        "question": "Kuka voi käyttää eduTrackia?",
+        "answer": "Jokainen kirjautuu roolillaan: opiskelija, opettaja, vanhempi tai koulun ylläpitäjä. Koulun ylläpitäjä luo tilit ja linkittää oppilaat luokkiin sekä vanhemmat lapsiin. Alustan super-ylläpitäjät rekisteröivät koulut järjestelmään."
+      },
+      "howToSignIn": {
+        "question": "Miten kirjaudun sisään?",
+        "answer": "Napauta Aloita etusivulla, valitse koulusi (maa, kaupunki, koulu) ja kirjaudu koulun antamilla sähköposti- ja salasanatunnuksilla. Uudet käyttäjät voivat saada väliaikaisen salasanan ja heidän on asetettava oma salasana ensimmäisellä kirjautumisella."
+      },
+      "webAndMobile": {
+        "question": "Voinko käyttää eduTrackia verkossa ja puhelimella?",
+        "answer": "Kyllä. eduTrack toimii selaimessa ja mobiilisovelluksena Androidille ja iOS:lle. Opiskelijat, opettajat ja vanhemmat voivat käyttää kumpaa tahansa — valitse laitteeseesi sopiva."
+      },
+      "students": {
+        "question": "Mitä opiskelijat voivat tehdä?",
+        "answer": "Opiskelijat näkevät kojelaudalla päivän aikataulun, kotitehtävät, kokeet, läsnäolon, tiedotteet ja huomautukset. He voivat avata opintotodistuksen, tarkastella ilmoituksia ja päivittää profiilikuvan sekä tilin asetukset."
+      },
+      "teachers": {
+        "question": "Mitä opettajat voivat tehdä?",
+        "answer": "Opettajat merkitsevät läsnäolon, julkaisevat kotitehtäviä ja kokeita, syöttävät arvosanoja, kirjoittavat huomautuksia, hallitsevat luokan aikataulua, lähettävät tiedotteita, viestivät suoraan oppilaille tai vanhemmille ja käsittelevät vanhempien poissaoloilmoituksia."
+      },
+      "parents": {
+        "question": "Mitä vanhemmat voivat tehdä?",
+        "answer": "Vanhemmat seuraavat linkitetyn lapsen kotitehtäviä, kokeita, läsnäoloa ja opintotodistusta. He saavat koulun tiedotteita, voivat selittää poissaolot, ilmoittaa suunnitelluista poissaoloista ja viestiä koulun kanssa."
+      },
+      "administrators": {
+        "question": "Mitä koulun ylläpitäjät hallitsevat?",
+        "answer": "Ylläpitäjät luovat käyttäjiä ja luokkia, liittävät oppilaat ja opettajat luokkiin, linkittävät vanhemmat oppilaisiin, hallitsevat aikatauluja ja aineita, lähettävät koulun tiedotteita, tuovat dataa Excelistä, tarkastelevat analytiikkaa ja käyttävät koulun laajuisia työkaluja hallintapaneelista."
+      },
+      "excelImport": {
+        "question": "Voimmeko tuoda koulun datan Excelistä?",
+        "answer": "Kyllä. Koulun ylläpitäjät voivat tuoda luokkia, käyttäjiä, luokkaliitoksia, kotitehtäviä, kokeita, huomautuksia ja tiedotteita Excel-työkirjasta Järjestelmä-osiossa. Ladattava mallipohja näyttää vaaditut taulukoiden nimet ja sarakkeet."
+      },
+      "dataSecurity": {
+        "question": "Onko koulumme data turvassa?",
+        "answer": "eduTrack käyttää Firebase Authenticationia ja Firestorea roolipohjaisilla käyttöoikeussäännöillä. Jokainen koulu on eristetty alustalla, ja käyttäjät näkevät vain roolinsa salliman datan — esimerkiksi vanhemmat näkevät vain omat lapsensa ja opettajat omat luokkansa."
+      },
+      "languages": {
+        "question": "Mitä kieliä tuetaan?",
+        "answer": "eduTrack tukee englantia, suomea, arabiaa ja somalia. Voit vaihtaa kielen etusivulta, kirjautumisnäytöltä tai profiiliasetuksista."
+      },
+      "getSupport": {
+        "question": "Miten saan apua tai pyydän demon?",
+        "answer": "Käytä etusivun Ota yhteyttä -sivua lähettääksesi viestin eduTrack-tiimille. Mainitse koulusi nimi ja mitä tarvitset — käyttöönottoapua, demoa tai teknistä tukea."
+      }
+    }
+  },
   "contact": {
     "title": "Ota yhteyttä",
     "heading": "Ota yhteyttä",
@@ -321,6 +378,7 @@
     "signIn": "Kirjaudu sisään",
     "getStarted": "Aloita",
     "navFeatures": "Ominaisuudet",
+    "navFaq": "UKK",
     "contactUs": "Ota yhteyttä",
     "utilityTagline": "Turvallinen koulun hallinta jokaiselle roolille",
     "trustLine": "Yksi alusta koko kouluyhteisöllesi",
@@ -414,7 +472,15 @@
     "emptyParent": "Ei ilmoituksia vielä. Lastesi läsnäoloon ja koulupäivityksiin liittyvät hälytykset näkyvät täällä.",
     "emptyAdmin": "Ei ilmoituksia vielä. Käyttöajan hälytykset ja koulupäivitykset näkyvät täällä.",
     "markRead": "Merkitse luetuksi",
-    "openUserDirectory": "Avaa käyttäjäluettelo"
+    "openUserDirectory": "Avaa käyttäjäluettelo",
+    "types": {
+      "parent_complaint": "Vanhemman valitus",
+      "parent_complaint_resolved": "Valitus ratkaistu"
+    },
+    "parentComplaintTitle": "Uusi vanhemman valitus",
+    "parentComplaintMessage": "Tarkista valitukset. {{parentName}} lähetti valituksen: \"{{subject}}\".",
+    "parentComplaintResolvedTitle": "Valitus ratkaistu",
+    "parentComplaintResolvedMessage": "Valituksesi \"{{subject}}\" on ratkaistu. Tarkista mahdolliset jatkotoimet."
   },
   "teacher": {
     "dashboard": {
@@ -774,12 +840,26 @@
     "respondError": "Vastausta ei voitu lähettää",
     "reportCardTitle": "Raporttikortti",
     "notificationsTitle": "Ilmoitukset",
+    "complaintsTitle": "Valitukset",
+    "complaintsSubtitle": "Lähetä valitus suoraan koulun ylläpitäjille.",
+    "complaintSubject": "Aihe",
+    "complaintSubjectPlaceholder": "Valituksen otsikko",
+    "complaintMessage": "Viesti",
+    "complaintMessagePlaceholder": "Kuvaile valituksesi selkeästi…",
+    "complaintSubmit": "Lähetä valitus",
+    "complaintSubjectRequired": "Kirjoita valituksen aihe.",
+    "complaintMessageTooShort": "Kirjoita vähintään 10 merkkiä.",
+    "complaintSuccess": "Valituksesi lähetettiin koulun ylläpitäjille.",
+    "complaintError": "Valitusta ei voitu lähettää.",
     "studentDetail": "Oppilaan yleiskatsaus",
     "greetingMorning": "Hyvää huomenta",
     "greetingAfternoon": "Hyvää päivää",
     "greetingEvening": "Hyvää iltaa",
     "viewingChild": "Katsellaan: {{name}}",
-    "homeGreeting": "Hei, {{name}} 👋"
+    "homeGreeting": "Hei, {{name}} 👋",
+    "monthFeeStatus": "Tämän kuukauden maksutila",
+    "monthFeePaid": "Maksettu",
+    "monthFeeNotPaid": "Ei maksettu"
   },
   "dashboard": {
     "goodMorning": "Hyvää huomenta",
@@ -817,7 +897,7 @@
     "users": "Käyttäjät",
     "classes": "Luokat",
     "assignments": "Tehtavat",
-    "system": "Jarjestelma",
+    "system": "Järjestelmä",
     "analytics": "Analytiikka",
     "performanceCharts": "Suorituskykykaaviot",
     "dashboardTitle": "Yllapitajan kojelauta",
@@ -838,7 +918,7 @@
     "dirTeachersDesc": "Henkilöstön päivitykset ja poistot",
     "dirParentsDesc": "Perhetilit ja poistuneet",
     "parentOverviewTitle": "Vanhempien yhteenveto",
-    "parentOverviewHint": "Suodata maksutilan mukaan, hae (kokeile kyllä tai ei) tai avaa vanhemman vuosittainen maksukalenteri napauttamalla.",
+    "parentOverviewHint": "Suodata maksutilan mukaan, hae (kokeile kyllä tai ei) tai napauta vanhemman nimeä nähdäksesi lapset ja yhteystiedot.",
     "parentOverviewSearch": "Hae nimellä, sähköpostilla, puhelimella, kyllä tai ei…",
     "parentFeePaidCount": "Maksettu: {{count}}",
     "parentFeeUnpaidCount": "Ei maksettu: {{count}}",
@@ -846,6 +926,11 @@
     "parentMonthsColumn": "{{year}} kuukaudet",
     "parentMonthsPaidShort": "{{year}}: {{paid}} kuukautta maksettu",
     "parentPaymentTitle": "Vanhempien maksut",
+    "parentDetailTitle": "Vanhempi",
+    "parentDetailSubtitle": "Linkitetyt lapset ja yhteystiedot",
+    "parentDetailChildrenTitle": "Lapset",
+    "parentDetailChildrenHint": "Tälle vanhemmalle linkitetyt oppilaat.",
+    "parentDetailNoChildren": "Tälle vanhemmalle ei ole vielä linkitetty lapsia. Linkitä vanhempi oppilaisiin Kohdistukset-näkymässä.",
     "parentPaymentSubtitle": "Merkitse kuukausi maksetuksi tai maksamattomaksi napauttamalla",
     "parentPaymentYearSummary": "{{paid}} / 12 kuukautta maksettu vuonna {{year}}",
     "parentPaymentCalendarHint": "Vihreä = maksettu kyseiselle kuukaudelle. Päivittää myös nykyisen kuukauden Kyllä/Ei -tilan hallintapaneelin listassa.",
@@ -898,6 +983,19 @@
     "usageEndedNotificationTitle": "Rekisteröity käyttö päättyi",
     "usageEndedNotificationMessage": "Koulusi rekisteröity käyttöjakso on päättynyt. Ota yhteyttä alustan super-ylläpitäjään uusimista varten.",
     "notificationsTitle": "Ilmoitukset",
+    "complaintsTitle": "Valitukset",
+    "complaintsSubtitle": "Tarkastele vanhempien valituksia ja niiden käsittelytilaa",
+    "complaintsSearch": "Hae vanhempaa, aihetta tai viestiä…",
+    "complaintsEmpty": "Valituksia ei löytynyt valitulla suodatuksella.",
+    "complaintsLoadFailed": "Valituksia ei voitu ladata.",
+    "complaintFilterOpen": "Avoin",
+    "complaintFilterResolved": "Ratkaistu",
+    "complaintMarkResolved": "Merkitse ratkaistuksi",
+    "complaintMarkOpen": "Avaa uudelleen",
+    "complaintMarkedResolved": "Valitus merkitty ratkaistuksi.",
+    "complaintMarkedOpen": "Valitus avattu uudelleen.",
+    "complaintResolvedOn": "Ratkaistu",
+    "complaintStatusUpdateFailed": "Valituksen tilaa ei voitu päivittää.",
     "analyticsSubtitle": "Yleiskatsaus koulun toimintaan",
     "analyticsLoading": "Ladataan analytiikkaa…",
     "analyticsLoadError": "Analytiikkaa ei voitu ladata",
@@ -953,7 +1051,7 @@
     "openClassSchedule": "Avaa luokan aikataulu",
     "classIdPlaceholder": "Luokkatunnus (Firebase classes -kokoelmasta)",
     "messagesCard": "Viestit",
-    "messagePlaceholder": "Message",
+    "messagePlaceholder": "Kirjoita viesti…",
     "sendMessage": "Lähetä viesti",
     "homeworkCard": "Kotitehtävät",
     "titlePlaceholder": "Otsikko",
@@ -1019,35 +1117,35 @@
     "couldNotRemove": "Could not remove",
     "resetPasswordAction": "Reset password",
     "classIdLabel": "Class ID: {{id}}",
-    "broadcastMissingFields": "Enter a title and message.",
-    "broadcastNoClasses": "Create at least one class before broadcasting.",
-    "broadcastConfirmTitle": "Send to all classes?",
-    "broadcastConfirmMessage": "This announcement will be posted to all {{count}} class(es). Students see announcements for their assigned class.",
-    "announcementSent": "Announcement sent",
-    "announcementSentDetail": "Published to {{published}} of {{total}} classes.{{errors}}",
-    "broadcastErrors": "\n\nErrors:\n{{errors}}",
-    "sendToAllClasses": "Send to all classes ({{count}})",
-    "broadcastHint": "Sends the same announcement to every class ({{count}} total). Each class gets its own copy under classes/{classId}/announcements.",
-    "excelConfirmTitle": "Confirm import",
-    "excelConfirmWorkbook": "Import all recognized sheets in order (classes → users → assignments → academic data)?",
-    "excelConfirmSheet": "Import \"{{kind}}\" sheet into Firestore?",
-    "importCompleted": "Import completed",
-    "importNoRows": "No rows imported.",
-    "importFailed": "Import failed",
-    "couldNotDownloadTemplate": "Could not download template",
-    "couldNotReadFile": "Could not read file",
-    "excelHint": "Use one .xlsx workbook with named sheets, or a single sheet for one data type. First row must be column headers. Import classes and users before assignments and academic data.",
-    "fullWorkbook": "Full workbook",
-    "singleSheet": "Single sheet",
-    "downloadFullTemplate": "Download full template (.xlsx)",
-    "downloadSheetTemplate": "Download {{kind}} template (.xlsx)",
-    "chooseExcelFile": "Choose Excel file (.xlsx)",
-    "fileLabel": "File: {{name}}",
-    "noImportableRows": "File opened but no importable rows were detected. Check sheet tab names and column headers, or use the template.",
-    "unrecognizedSheets": "Unrecognized sheets (skipped): {{sheets}}",
+    "broadcastMissingFields": "Syötä otsikko ja viesti.",
+    "broadcastNoClasses": "Luo vähintään yksi luokka ennen lähettämistä.",
+    "broadcastConfirmTitle": "Lähetetäänkö kaikille luokille?",
+    "broadcastConfirmMessage": "Tämä tiedote julkaistaan kaikille {{count}} luokalle. Oppilaat näkevät tiedotteen omalle luokalleen.",
+    "announcementSent": "Tiedote lähetetty",
+    "announcementSentDetail": "Julkaistu {{published}} / {{total}} luokalle.{{errors}}",
+    "broadcastErrors": "\n\nVirheet:\n{{errors}}",
+    "sendToAllClasses": "Lähetä kaikille luokille ({{count}})",
+    "broadcastHint": "Lähettää saman tiedotteen jokaiselle luokalle (yhteensä {{count}}). Jokainen luokka saa oman kopions polkuun classes/{classId}/announcements.",
+    "excelConfirmTitle": "Vahvista tuonti",
+    "excelConfirmWorkbook": "Tuodaanko kaikki tunnistetut taulukot järjestyksessä (luokat → käyttäjät → määritykset → opintodata)?",
+    "excelConfirmSheet": "Tuodaanko taulukko \"{{kind}}\" Firestoreen?",
+    "importCompleted": "Tuonti valmis",
+    "importNoRows": "Rivejä ei tuotu.",
+    "importFailed": "Tuonti epäonnistui",
+    "couldNotDownloadTemplate": "Mallipohjan lataus epäonnistui",
+    "couldNotReadFile": "Tiedostoa ei voitu lukea",
+    "excelHint": "Käytä yhtä .xlsx-tiedostoa nimetyillä taulukoilla tai yhtä taulukkoa yhdelle datatyypille. Ensimmäisen rivin on oltava sarakeotsikot. Tuo luokat ja käyttäjät ennen määrityksiä ja opintodataa.",
+    "fullWorkbook": "Koko työkirja",
+    "singleSheet": "Yksi taulukko",
+    "downloadFullTemplate": "Lataa täysi mallipohja (.xlsx)",
+    "downloadSheetTemplate": "Lataa mallipohja: {{kind}} (.xlsx)",
+    "chooseExcelFile": "Valitse Excel-tiedosto (.xlsx)",
+    "fileLabel": "Tiedosto: {{name}}",
+    "noImportableRows": "Tiedosto avattiin, mutta tuontirivejä ei löytynyt. Tarkista taulukoiden nimet ja sarakeotsikot tai käytä mallipohjaa.",
+    "unrecognizedSheets": "Tunnistamattomat taulukot (ohitettu): {{sheets}}",
     "runImport": "Suorita tuonti",
-    "importSummary": "{{kind}}: {{created}} created, {{skipped}} skipped",
-    "importMoreErrors": "\n+{{count}} more",
+    "importSummary": "{{kind}}: {{created}} luotu, {{skipped}} ohitettu",
+    "importMoreErrors": "\n+{{count}} lisää",
     "sheetRowPreview": "{{preview}}",
     "selectBothFields": "Please select both {{left}} and {{right}}",
     "studentAssigned": "Student assigned to class",
@@ -1100,13 +1198,26 @@
     "selectorSelect": "Select {{title}}",
     "selectorSearch": "Search…",
     "selectorNoMatches": "No matches found",
+    "selectorMoreHint": "{{count}} more — use search to find them",
     "directoryShowing": "Showing {{start}}–{{end}} of {{total}}",
     "directoryPrevious": "Previous",
     "directoryNext": "Next",
     "defaultPassword": "123456",
     "tempPasswordHint": "Uudet käyttäjät kirjautuvat väliaikaisella salasanalla ja valitsevat oman salasanan ensimmäisellä kirjautumisella.",
     "broadcastFailed": "Lähetys epäonnistui",
-    "workbookSheetsList": "Sheets: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements",
+    "workbookSheetsList": "Taulukot: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements",
+    "importFormatHints": {
+      "classes": "Sarakkeet: name",
+      "schedule": "Sarakkeet: className, dayOfWeek, startTime, endTime, subject, teacherName (valinnainen), sortOrder (valinnainen)",
+      "users": "Sarakkeet: email, password, name, role (student|teacher|parent|admin), phone (valinnainen)",
+      "student_class": "Sarakkeet: studentEmail, className",
+      "teacher_class": "Sarakkeet: teacherEmail, className",
+      "parent_student": "Sarakkeet: parentEmail, studentEmail",
+      "homework": "Sarakkeet: className, subject, title, daysLeft, details (valinnainen)",
+      "exams": "Sarakkeet: className, subject, title, marks, details (valinnainen)",
+      "remarks": "Sarakkeet: className, studentEmail, text, type (valinnainen), rating (valinnainen)",
+      "announcements": "Sarakkeet: className, title, text"
+    },
     "directoryActionsColumn": "Actions",
     "classSubjectsColumn": "Subjects"
   },

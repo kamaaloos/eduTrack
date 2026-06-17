@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
+  Platform,
   Pressable,
   StyleSheet,
   TextInput,
@@ -13,8 +14,46 @@ import {
 
 type PasswordInputProps = TextInputProps & {
   containerStyle?: StyleProp<ViewStyle>;
-  inputStyle?: StyleProp<TextStyle>;
+  /** Border, padding, and spacing for the whole field (not just the text). */
+  inputStyle?: StyleProp<ViewStyle>;
 };
+
+type FlatFieldStyle = ViewStyle & Pick<TextStyle, "fontSize" | "color">;
+
+function splitFieldAndTextStyles(
+  ...styleList: (StyleProp<ViewStyle> | undefined)[]
+): { fieldStyle: ViewStyle; textStyle: TextStyle } {
+  const flat = (StyleSheet.flatten(styleList) ?? {}) as FlatFieldStyle;
+  const {
+    padding,
+    paddingHorizontal,
+    paddingVertical,
+    paddingTop,
+    paddingBottom,
+    paddingLeft,
+    paddingRight,
+    fontSize,
+    color,
+    ...box
+  } = flat;
+
+  const padH =
+    paddingHorizontal ?? (typeof padding === "number" ? padding : undefined) ?? 12;
+  const padV =
+    paddingVertical ?? (typeof padding === "number" ? padding : undefined) ?? 12;
+
+  return {
+    fieldStyle: box,
+    textStyle: {
+      paddingTop: paddingTop ?? padV,
+      paddingBottom: paddingBottom ?? padV,
+      paddingLeft: paddingLeft ?? padH,
+      paddingRight: paddingRight ?? 8,
+      ...(fontSize != null ? { fontSize } : null),
+      ...(color != null ? { color } : null),
+    },
+  };
+}
 
 export function PasswordInput({
   containerStyle,
@@ -25,15 +64,21 @@ export function PasswordInput({
   ...rest
 }: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
+  const { fieldStyle, textStyle } = splitFieldAndTextStyles(
+    styles.field,
+    containerStyle,
+    inputStyle,
+    style,
+  );
 
   return (
-    <View style={[styles.wrap, containerStyle]}>
+    <View style={fieldStyle}>
       <TextInput
         {...rest}
         editable={editable}
         placeholderTextColor={placeholderTextColor}
         secureTextEntry={!visible}
-        style={[inputStyle, style, styles.inputPadding]}
+        style={[styles.textInput, textStyle]}
       />
       <Pressable
         style={({ pressed }) => [
@@ -49,7 +94,7 @@ export function PasswordInput({
       >
         <Ionicons
           name={visible ? "eye-off" : "eye"}
-          size={20}
+          size={18}
           color={editable ? "#1D4ED8" : "#9CA3AF"}
         />
       </Pressable>
@@ -58,19 +103,32 @@ export function PasswordInput({
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    position: "relative",
-    justifyContent: "center",
+  field: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "stretch",
+    width: "100%",
+    maxWidth: "100%",
+    ...(Platform.OS === "web"
+      ? ({ boxSizing: "border-box" } as object)
+      : null),
   },
-  inputPadding: {
-    paddingRight: 52,
+  textInput: {
+    flex: 1,
+    minWidth: 0,
+    fontSize: 15,
+    color: "#111827",
+    backgroundColor: "transparent",
+    ...(Platform.OS === "web"
+      ? ({ outlineStyle: "none" } as object)
+      : null),
   },
   visibilityToggle: {
-    position: "absolute",
-    right: 8,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    marginRight: 6,
+    flexShrink: 0,
     backgroundColor: "#EFF6FF",
     borderWidth: 1,
     borderColor: "#BFDBFE",

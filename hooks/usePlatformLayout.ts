@@ -5,6 +5,9 @@ export const WEB_DESKTOP_BREAKPOINT = 1024;
 
 export const WEB_PAGE_MAX_WIDTH_DESKTOP = 1200;
 export const WEB_PAGE_MAX_WIDTH_TABLET = 960;
+/** Role pages with a left nav (teacher/parent desktop web). */
+export const WEB_ROLE_SIDEBAR_PAGE_MAX_WIDTH_DESKTOP = 720;
+export const WEB_ROLE_SIDEBAR_PAGE_MAX_WIDTH_TABLET = 640;
 export const WEB_AUTH_MAX_WIDTH = 520;
 export const WEB_DASHBOARD_MAX_WIDTH_DESKTOP = 1200;
 export const WEB_DASHBOARD_MAX_WIDTH_TABLET = 960;

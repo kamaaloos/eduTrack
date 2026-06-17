@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 import type { ClassExam, ExamReportsMode } from "../components/teachers/examReports/examReportsTypes";
 import { EXAM_REPORTS_STUDENTS_PAGE_SIZE } from "../components/teachers/examReports/examReportsTypes";
+import { usePaginatedList } from "./usePaginatedList";
 import { AuthContext } from "../src/context/authContext";
 import { useSchoolContext } from "../src/context/schoolContext";
 import { useTeacherClassesContext } from "../src/context/teacherClassesContext";
@@ -40,12 +41,6 @@ export function useTeacherExamReports() {
   const [refreshing, setRefreshing] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [reportSearch, setReportSearch] = useState("");
-  const [gradeListLimit, setGradeListLimit] = useState(
-    EXAM_REPORTS_STUDENTS_PAGE_SIZE,
-  );
-  const [reportListLimit, setReportListLimit] = useState(
-    EXAM_REPORTS_STUDENTS_PAGE_SIZE,
-  );
   const [exportingAllCertificates, setExportingAllCertificates] = useState(false);
 
   const classOptions = useMemo(
@@ -108,23 +103,20 @@ export function useTeacherExamReports() {
     [exams, t],
   );
 
-  useEffect(() => {
-    setGradeListLimit(EXAM_REPORTS_STUDENTS_PAGE_SIZE);
-  }, [selectedClassId, selectedExamId, mode]);
-
-  useEffect(() => {
-    setReportListLimit(EXAM_REPORTS_STUDENTS_PAGE_SIZE);
-  }, [selectedClassId, reportSearch, mode]);
-
-  const visibleGradeStudents = useMemo(
-    () => studentsInClass.slice(0, gradeListLimit),
-    [studentsInClass, gradeListLimit],
+  const gradePagination = usePaginatedList(
+    studentsInClass,
+    EXAM_REPORTS_STUDENTS_PAGE_SIZE,
+    `${selectedClassId}:${selectedExamId}:${mode}`,
   );
 
-  const visibleReportStudents = useMemo(
-    () => filteredReportStudents.slice(0, reportListLimit),
-    [filteredReportStudents, reportListLimit],
+  const reportPagination = usePaginatedList(
+    filteredReportStudents,
+    EXAM_REPORTS_STUDENTS_PAGE_SIZE,
+    `${selectedClassId}:${reportSearch}:${mode}`,
   );
+
+  const visibleGradeStudents = gradePagination.pageItems;
+  const visibleReportStudents = reportPagination.pageItems;
 
   const loadExamResults = useCallback(
     async (studentList: TeacherStudent[], examList: ClassExam[]) => {
@@ -423,21 +415,6 @@ export function useTeacherExamReports() {
     return name.replace(/[^\w.-]+/g, "_");
   }
 
-  const showMoreGradeStudents = () => {
-    setGradeListLimit((n) =>
-      Math.min(n + EXAM_REPORTS_STUDENTS_PAGE_SIZE, studentsInClass.length),
-    );
-  };
-
-  const showMoreReportStudents = () => {
-    setReportListLimit((n) =>
-      Math.min(
-        n + EXAM_REPORTS_STUDENTS_PAGE_SIZE,
-        filteredReportStudents.length,
-      ),
-    );
-  };
-
   return {
     classesLoading,
     classes,
@@ -472,7 +449,7 @@ export function useTeacherExamReports() {
     exportCertificate,
     exportAllCertificates,
     exportingAllCertificates,
-    showMoreGradeStudents,
-    showMoreReportStudents,
+    gradePagination,
+    reportPagination,
   };
 }

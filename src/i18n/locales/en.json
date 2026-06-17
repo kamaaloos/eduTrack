@@ -144,6 +144,63 @@
     "updatesWebOnly": "Install the Android APK to receive update notifications.",
     "checkAgain": "Check again"
   },
+  "faq": {
+    "title": "FAQ",
+    "shortTitle": "FAQ",
+    "heading": "Frequently asked questions",
+    "subtitle": "Quick answers about eduTrack for schools, families, and staff.",
+    "contactCta": "Still have questions? Contact us",
+    "items": {
+      "whatIsEduTrack": {
+        "question": "What is eduTrack?",
+        "answer": "eduTrack is a school management platform by MayleSoft. It brings homework, exams, attendance, report cards, schedules, announcements, and messaging into one secure app for students, teachers, parents, and school administrators."
+      },
+      "whoCanUse": {
+        "question": "Who can use eduTrack?",
+        "answer": "Each person signs in with a role: student, teacher, parent, or school administrator. Your school administrator creates accounts and links students to classes and parents to children. Platform super administrators register schools on the system."
+      },
+      "howToSignIn": {
+        "question": "How do I sign in?",
+        "answer": "Tap Get started on the landing page, choose your school (country, city, school), then sign in with the email and password provided by your school. New users may receive a temporary password and must set their own password on first login."
+      },
+      "webAndMobile": {
+        "question": "Can I use eduTrack on the web and on my phone?",
+        "answer": "Yes. eduTrack runs in the browser and as a mobile app for Android and iOS. Students, teachers, and parents can use either — pick what works best for your device."
+      },
+      "students": {
+        "question": "What can students do?",
+        "answer": "Students see a dashboard with today's schedule, homework, exams, attendance, announcements, and remarks. They can open report cards, view notifications, and update their profile photo and account settings."
+      },
+      "teachers": {
+        "question": "What can teachers do?",
+        "answer": "Teachers mark attendance, publish homework and exams, enter grades, write remarks, manage their class schedule, send announcements, message students or parents directly, and review absence reports from parents."
+      },
+      "parents": {
+        "question": "What can parents do?",
+        "answer": "Parents follow each linked child's homework, exams, attendance, and report card. They receive school announcements, can explain absences when a child is marked absent, report planned absences, and message the school."
+      },
+      "administrators": {
+        "question": "What do school administrators manage?",
+        "answer": "Administrators create users and classes, assign students and teachers to classes, link parents to students, manage class schedules and subjects, broadcast announcements, import data from Excel, view analytics, and run school-wide tools from the admin dashboard."
+      },
+      "excelImport": {
+        "question": "Can we import school data from Excel?",
+        "answer": "Yes. School administrators can import classes, users, class assignments, homework, exams, remarks, and announcements from an Excel workbook using the built-in import tool under System. A downloadable template shows the required sheet names and columns."
+      },
+      "dataSecurity": {
+        "question": "Is our school data secure?",
+        "answer": "eduTrack uses Firebase Authentication and Firestore with role-based access rules. Each school is isolated on the platform, and users only see data their role allows — for example, parents only see their own children, and teachers see their assigned classes."
+      },
+      "languages": {
+        "question": "Which languages are supported?",
+        "answer": "eduTrack supports English, Finnish, Arabic, and Somali. You can change the language from the landing page, login screen, or your profile settings."
+      },
+      "getSupport": {
+        "question": "How do I get help or request a demo?",
+        "answer": "Use the Contact us page on the landing site to send a message to the eduTrack team. Include your school name and what you need — onboarding help, a demo, or technical support."
+      }
+    }
+  },
   "contact": {
     "title": "Contact us",
     "heading": "Get in touch",
@@ -331,6 +388,7 @@
     "signIn": "Sign in",
     "getStarted": "Get started",
     "navFeatures": "Features",
+    "navFaq": "FAQ",
     "contactUs": "Contact us",
     "utilityTagline": "Secure school management for every role",
     "trustLine": "One platform for your whole school community",
@@ -424,7 +482,15 @@
     "emptyParent": "No notifications yet. Alerts about your children's attendance and school updates will appear here.",
     "emptyAdmin": "No notifications yet. Usage-time alerts and school updates will appear here.",
     "markRead": "Mark as read",
-    "openUserDirectory": "Open user directory"
+    "openUserDirectory": "Open user directory",
+    "types": {
+      "parent_complaint": "Parent complaint",
+      "parent_complaint_resolved": "Complaint resolved"
+    },
+    "parentComplaintTitle": "New parent complaint",
+    "parentComplaintMessage": "Please check complaints. {{parentName}} submitted \"{{subject}}\".",
+    "parentComplaintResolvedTitle": "Complaint resolved",
+    "parentComplaintResolvedMessage": "Your complaint \"{{subject}}\" has been resolved. Please check for any follow-up."
   },
   "teacher": {
     "dashboard": {
@@ -787,12 +853,26 @@
     "respondError": "Could not send response",
     "reportCardTitle": "Report card",
     "notificationsTitle": "Alerts",
+    "complaintsTitle": "Complaints",
+    "complaintsSubtitle": "Send a complaint directly to school administrators.",
+    "complaintSubject": "Subject",
+    "complaintSubjectPlaceholder": "Complaint title",
+    "complaintMessage": "Message",
+    "complaintMessagePlaceholder": "Describe your complaint clearly…",
+    "complaintSubmit": "Send complaint",
+    "complaintSubjectRequired": "Please enter a complaint subject.",
+    "complaintMessageTooShort": "Please enter at least 10 characters.",
+    "complaintSuccess": "Your complaint was sent to school administrators.",
+    "complaintError": "Could not send your complaint.",
     "studentDetail": "Student overview",
     "greetingMorning": "Good morning",
     "greetingAfternoon": "Good afternoon",
     "greetingEvening": "Good evening",
     "viewingChild": "Viewing {{name}}",
-    "homeGreeting": "Hello, {{name}} 👋"
+    "homeGreeting": "Hello, {{name}} 👋",
+    "monthFeeStatus": "This month fee status",
+    "monthFeePaid": "Paid",
+    "monthFeeNotPaid": "Not paid"
   },
   "dashboard": {
     "goodMorning": "Good morning",
@@ -852,7 +932,7 @@
     "dirTeachersDesc": "Staff updates and removals",
     "dirParentsDesc": "Family accounts and leavers",
     "parentOverviewTitle": "Parents overview",
-    "parentOverviewHint": "Filter by fee status, search (try yes or no), or tap a parent for the yearly payment calendar.",
+    "parentOverviewHint": "Filter by fee status, search (try yes or no), or tap a parent to see their children and fee calendar.",
     "parentOverviewSearch": "Search name, email, phone, yes, or no…",
     "parentFeePaidCount": "Paid: {{count}}",
     "parentFeeUnpaidCount": "Not paid: {{count}}",
@@ -860,6 +940,11 @@
     "parentMonthsColumn": "{{year}} months",
     "parentMonthsPaidShort": "{{year}}: {{paid}} months paid",
     "parentPaymentTitle": "Parent fees",
+    "parentDetailTitle": "Parent",
+    "parentDetailSubtitle": "Linked children and contact details",
+    "parentDetailChildrenTitle": "Children",
+    "parentDetailChildrenHint": "Students linked to this parent through assignments.",
+    "parentDetailNoChildren": "No children linked to this parent yet. Use Assignments to link a parent to students.",
     "parentPaymentSubtitle": "Tap each month to mark fee paid or not paid",
     "parentPaymentYearSummary": "{{paid}} of 12 months paid in {{year}}",
     "parentPaymentCalendarHint": "Green = paid for that month. This also updates the current month Yes/No on the dashboard list.",
@@ -912,6 +997,19 @@
     "usageEndedNotificationTitle": "Registered usage expired",
     "usageEndedNotificationMessage": "Your school's registered usage period has ended. Contact the platform super administrator to renew.",
     "notificationsTitle": "Notifications",
+    "complaintsTitle": "Complaints",
+    "complaintsSubtitle": "Review parent complaints and track resolution status",
+    "complaintsSearch": "Search parent, subject, or message…",
+    "complaintsEmpty": "No complaints found for the selected filter.",
+    "complaintsLoadFailed": "Failed to load complaints.",
+    "complaintFilterOpen": "Open",
+    "complaintFilterResolved": "Resolved",
+    "complaintMarkResolved": "Mark resolved",
+    "complaintMarkOpen": "Reopen",
+    "complaintMarkedResolved": "Complaint marked as resolved.",
+    "complaintMarkedOpen": "Complaint reopened.",
+    "complaintResolvedOn": "Resolved on",
+    "complaintStatusUpdateFailed": "Could not update complaint status.",
     "analyticsSubtitle": "Overview of school activity",
     "analyticsLoading": "Loading analytics…",
     "analyticsLoadError": "Unable to load analytics",
@@ -1152,13 +1250,26 @@
     "selectorSelect": "Select {{title}}",
     "selectorSearch": "Search…",
     "selectorNoMatches": "No matches found",
+    "selectorMoreHint": "{{count}} more — use search to find them",
     "directoryShowing": "Showing {{start}}–{{end}} of {{total}}",
     "directoryPrevious": "Previous",
     "directoryNext": "Next",
     "defaultPassword": "123456",
     "tempPasswordHint": "New users sign in with this temporary password and must choose their own password on first login.",
     "broadcastFailed": "Broadcast failed",
-    "workbookSheetsList": "Sheets: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements"
+    "workbookSheetsList": "Sheets: classes, users, student_class, teacher_class, parent_student, homework, exams, remarks, announcements",
+    "importFormatHints": {
+      "classes": "Columns: name",
+      "schedule": "Columns: className, dayOfWeek, startTime, endTime, subject, teacherName (optional), sortOrder (optional)",
+      "users": "Columns: email, password, name, role (student|teacher|parent|admin), phone (optional)",
+      "student_class": "Columns: studentEmail, className",
+      "teacher_class": "Columns: teacherEmail, className",
+      "parent_student": "Columns: parentEmail, studentEmail",
+      "homework": "Columns: className, subject, title, daysLeft, details (optional)",
+      "exams": "Columns: className, subject, title, marks, details (optional)",
+      "remarks": "Columns: className, studentEmail, text, type (optional), rating (optional)",
+      "announcements": "Columns: className, title, text"
+    }
   },
   "superAdmin": {
     "schools": "Schools",

@@ -18,6 +18,8 @@ type AppScreenBackgroundProps = {
   showCopyright?: boolean;
   /** Extra space above copyright (e.g. floating tab bar). */
   copyrightBottomOffset?: number;
+  /** Pad content above the copyright bar (disable on web tab screens — they pad internally). */
+  reserveContentFooterSpace?: boolean;
   style?: ViewStyle;
 };
 
@@ -29,12 +31,14 @@ export function AppScreenBackground({
   children,
   showCopyright = true,
   copyrightBottomOffset = 0,
+  reserveContentFooterSpace = true,
   style,
 }: AppScreenBackgroundProps) {
   const insets = useSafeAreaInsets();
-  const footerInset = showCopyright
-    ? copyrightFooterInset(insets.bottom, copyrightBottomOffset)
-    : 0;
+  const footerInset =
+    showCopyright && reserveContentFooterSpace
+      ? copyrightFooterInset(insets.bottom, copyrightBottomOffset)
+      : 0;
   const copyrightBottom = copyrightBarBottom(
     insets.bottom,
     copyrightBottomOffset,

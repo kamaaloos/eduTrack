@@ -31,6 +31,12 @@ export function useParentSideMenuItems(): AdminSideMenuItem[] {
         onPress: () => router.push("/(parent)/notifications"),
       },
       {
+        key: "complaints",
+        label: t("parent.complaintsTitle"),
+        icon: "chatbubble-ellipses-outline",
+        onPress: () => router.push("/(parent)/complaints"),
+      },
+      {
         key: "profile",
         label: t("tabs.parent.profile"),
         icon: "person-circle-outline",

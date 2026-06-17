@@ -16,7 +16,6 @@ import { TimeGreeting } from "./TimeGreeting";
 import { dashboardStyles as styles } from "./dashboardStyles";
 
 type DashboardHeaderProps = {
-  initials: string;
   displayName?: string;
   photoURL?: string | null;
   firstName: string;
@@ -32,7 +31,6 @@ type DashboardHeaderProps = {
 };
 
 export function DashboardHeader({
-  initials,
   displayName,
   photoURL,
   firstName,

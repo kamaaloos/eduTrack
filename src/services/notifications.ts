@@ -24,6 +24,8 @@ export type NotificationType =
   | "exam_published"
   | "announcement"
   | "remark"
+  | "parent_complaint"
+  | "parent_complaint_resolved"
   | "attendance_absent"
   | "attendance_late"
   | "grade_posted"
@@ -46,6 +48,8 @@ export type CreateNotificationInput = {
   actorId?: string | null;
   /** Role of the user who triggered the notification (e.g. password reset requester). */
   actorRole?: NotificationRole | null;
+  /** Interpolation values for localized notification copy at display time. */
+  localeParams?: Record<string, string> | null;
 };
 
 export type AppNotification = {
@@ -59,6 +63,7 @@ export type AppNotification = {
   classId: string | null;
   actorId: string | null;
   actorRole: NotificationRole | null;
+  localeParams: Record<string, string> | null;
   read: boolean;
   createdAt: Date | null;
 };
@@ -68,6 +73,8 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   exam_published: "Exam",
   announcement: "Announcement",
   remark: "Remark",
+  parent_complaint: "Parent complaint",
+  parent_complaint_resolved: "Complaint resolved",
   attendance_absent: "Absence",
   attendance_late: "Late",
   grade_posted: "Grade",
@@ -92,6 +99,14 @@ function toDate(value: unknown): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+function mapLocaleParams(value: unknown): Record<string, string> | null {
+  if (!value || typeof value !== "object") return null;
+  const entries = Object.entries(value as Record<string, unknown>).filter(
+    ([, entry]) => typeof entry === "string" && entry.length > 0,
+  ) as [string, string][];
+  return entries.length > 0 ? Object.fromEntries(entries) : null;
+}
+
 export function mapNotificationDoc(
   id: string,
   data: Record<string, unknown>,
@@ -107,6 +122,7 @@ export function mapNotificationDoc(
     classId: (data.classId as string) || null,
     actorId: (data.actorId as string) || null,
     actorRole: (data.actorRole as NotificationRole) || null,
+    localeParams: mapLocaleParams(data.localeParams),
     read: Boolean(data.read),
     createdAt: toDate(data.createdAt),
   };
@@ -128,6 +144,7 @@ export async function createNotification(
       classId: input.classId ?? null,
       actorId: input.actorId ?? null,
       actorRole: input.actorRole ?? null,
+      localeParams: input.localeParams ?? null,
       read: false,
       createdAt: serverTimestamp(),
     });
@@ -161,6 +178,7 @@ export async function createNotifications(
           classId: input.classId ?? null,
           actorId: input.actorId ?? null,
           actorRole: input.actorRole ?? null,
+          localeParams: input.localeParams ?? null,
           read: false,
           createdAt: serverTimestamp(),
         });

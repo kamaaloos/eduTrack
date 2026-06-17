@@ -143,6 +143,63 @@
     "updatesWebOnly": "ثبّت APK على أندرويد لتلقي إشعارات التحديث.",
     "checkAgain": "تحقق مرة أخرى"
   },
+  "faq": {
+    "title": "الأسئلة الشائعة",
+    "shortTitle": "الأسئلة الشائعة",
+    "heading": "الأسئلة المتكررة",
+    "subtitle": "إجابات سريعة عن eduTrack للمدارس والعائلات والطاقم.",
+    "contactCta": "لا تزال لديك أسئلة؟ تواصل معنا",
+    "items": {
+      "whatIsEduTrack": {
+        "question": "ما هو eduTrack؟",
+        "answer": "eduTrack منصة إدارة مدرسية من MayleSoft. تجمع الواجبات والاختبارات والحضور وكشوف الدرجات والجداول والإعلانات والرسائل في تطبيق آمن واحد للطلاب والمعلمين وأولياء الأمور ومسؤولي المدرسة."
+      },
+      "whoCanUse": {
+        "question": "من يمكنه استخدام eduTrack؟",
+        "answer": "يسجل كل شخص دخوله بدوره: طالب، معلم، ولي أمر، أو مسؤول مدرسة. ينشئ مسؤول المدرسة الحسابات ويربط الطلاب بالفصول وأولياء الأمور بأبنائهم. يسجل مسؤولو المنصة المدارس على النظام."
+      },
+      "howToSignIn": {
+        "question": "كيف أسجل الدخول؟",
+        "answer": "اضغط ابدأ في الصفحة الرئيسية، اختر مدرستك (البلد، المدينة، المدرسة)، ثم سجّل الدخول بالبريد وكلمة المرور من مدرستك. قد يحصل المستخدمون الجدد على كلمة مرور مؤقتة ويجب عليهم تعيين كلمة مرور خاصة عند أول دخول."
+      },
+      "webAndMobile": {
+        "question": "هل يمكنني استخدام eduTrack على الويب والهاتف؟",
+        "answer": "نعم. يعمل eduTrack في المتصفح وك تطبيق جوال على Android وiOS. يمكن للطلاب والمعلمين وأولياء الأمور استخدام أي منهما."
+      },
+      "students": {
+        "question": "ماذا يمكن للطلاب فعله؟",
+        "answer": "يرى الطلاب لوحة تحكم بجدول اليوم والواجبات والاختبارات والحضور والإعلانات والملاحظات. يمكنهم فتح كشف الدرجات وعرض الإشعارات وتحديث صورة الملف والإعدادات."
+      },
+      "teachers": {
+        "question": "ماذا يمكن للمعلمين فعله؟",
+        "answer": "يسجل المعلمون الحضور وينشرون الواجبات والاختبارات ويدخلون الدرجات ويكتبون الملاحظات ويديرون جدول الفصل ويرسلون الإعلانات ويراسلون الطلاب أو أولياء الأمور مباشرة ويراجعون تقارير الغياب."
+      },
+      "parents": {
+        "question": "ماذا يمكن لأولياء الأمور فعله؟",
+        "answer": "يتابع أولياء الأمور واجبات وأختبارات وحضور وكشف درجات كل طفل مرتبط. يتلقون إعلانات المدرسة ويمكنهم شرح الغياب والإبلاغ عن غياب مخطط والتواصل مع المدرسة."
+      },
+      "administrators": {
+        "question": "ماذا يدير مسؤولو المدرسة؟",
+        "answer": "ينشئ المسؤولون المستخدمين والفصول ويربطون الطلاب والمعلمين بالفصول ويربطون أولياء الأمور بالطلاب ويديرون الجداول والمواد ويبثون الإعلانات ويستوردون البيانات من Excel ويعرضون التحليلات."
+      },
+      "excelImport": {
+        "question": "هل يمكننا استيراد بيانات المدرسة من Excel؟",
+        "answer": "نعم. يمكن لمسؤولي المدرسة استيراد الفصول والمستخدمين والتعيينات والواجبات والاختبارات والملاحظات والإعلانات من ملف Excel عبر أداة الاستيراد في النظام. يوضح القالب الأسماء والأعمدة المطلوبة."
+      },
+      "dataSecurity": {
+        "question": "هل بيانات مدرستنا آمنة؟",
+        "answer": "يستخدم eduTrack Firebase Authentication وFirestore مع قواعد وصول حسب الدور. كل مدرسة معزولة على المنصة، ويرى المستخدمون فقط ما يسمح به دورهم."
+      },
+      "languages": {
+        "question": "ما اللغات المدعومة؟",
+        "answer": "يدعم eduTrack الإنجليزية والفنلندية والعربية والصومالية. يمكنك تغيير اللغة من الصفحة الرئيسية أو شاشة الدخول أو إعدادات الملف."
+      },
+      "getSupport": {
+        "question": "كيف أحصل على مساعدة أو أطلب عرضًا؟",
+        "answer": "استخدم صفحة تواصل معنا على الموقع لإرسال رسالة إلى فريق eduTrack. اذكر اسم مدرستك وما تحتاجه — مساعدة في البدء أو عرضًا أو دعمًا فنيًا."
+      }
+    }
+  },
   "contact": {
     "title": "اتصل بنا",
     "heading": "تواصل معنا",
@@ -321,6 +378,7 @@
     "signIn": "تسجيل الدخول",
     "getStarted": "ابدأ الآن",
     "navFeatures": "الميزات",
+    "navFaq": "الأسئلة الشائعة",
     "contactUs": "اتصل بنا",
     "utilityTagline": "إدارة مدرسية آمنة لكل دور",
     "trustLine": "منصة واحدة لمجتمع مدرستك بالكامل",
@@ -414,7 +472,15 @@
     "emptyParent": "لا توجد إشعارات بعد. ستظهر هنا تنبيهات حضور أبنائك وتحديثات المدرسة.",
     "emptyAdmin": "لا توجد إشعارات بعد. ستظهر هنا تنبيهات وقت الاستخدام وتحديثات المدرسة.",
     "markRead": "وضع علامة كمقروء",
-    "openUserDirectory": "فتح دليل المستخدمين"
+    "openUserDirectory": "فتح دليل المستخدمين",
+    "types": {
+      "parent_complaint": "شكوى ولي أمر",
+      "parent_complaint_resolved": "تم حل الشكوى"
+    },
+    "parentComplaintTitle": "شكوى ولي أمر جديدة",
+    "parentComplaintMessage": "يرجى مراجعة الشكاوى. قدم {{parentName}} شكوى بعنوان \"{{subject}}\".",
+    "parentComplaintResolvedTitle": "تم حل الشكوى",
+    "parentComplaintResolvedMessage": "تم حل شكواك \"{{subject}}\". يرجى التحقق من أي متابعات."
   },
   "teacher": {
     "dashboard": {
@@ -774,12 +840,26 @@
     "respondError": "تعذّر إرسال الرد",
     "reportCardTitle": "بطاقة التقرير",
     "notificationsTitle": "تنبيهات",
+    "complaintsTitle": "الشكاوى",
+    "complaintsSubtitle": "أرسل شكوى مباشرة إلى مسؤولي المدرسة.",
+    "complaintSubject": "الموضوع",
+    "complaintSubjectPlaceholder": "عنوان الشكوى",
+    "complaintMessage": "الرسالة",
+    "complaintMessagePlaceholder": "اشرح شكواك بوضوح…",
+    "complaintSubmit": "إرسال الشكوى",
+    "complaintSubjectRequired": "يرجى إدخال موضوع الشكوى.",
+    "complaintMessageTooShort": "يرجى إدخال 10 أحرف على الأقل.",
+    "complaintSuccess": "تم إرسال شكواك إلى مسؤولي المدرسة.",
+    "complaintError": "تعذر إرسال الشكوى.",
     "studentDetail": "نظرة عامة على الطالب",
     "greetingMorning": "صباح الخير",
     "greetingAfternoon": "مساء الخير",
     "greetingEvening": "مساء الخير",
     "viewingChild": "عرض {{name}}",
-    "homeGreeting": "مرحبًا، {{name}} 👋"
+    "homeGreeting": "مرحبًا، {{name}} 👋",
+    "monthFeeStatus": "حالة رسوم هذا الشهر",
+    "monthFeePaid": "مدفوع",
+    "monthFeeNotPaid": "غير مدفوع"
   },
   "dashboard": {
     "goodMorning": "صباح الخير",
@@ -838,7 +918,7 @@
     "dirTeachersDesc": "تحديثات الموظفين والإزالات",
     "dirParentsDesc": "حسابات العائلات والمغادرون",
     "parentOverviewTitle": "نظرة عامة على أولياء الأمور",
-    "parentOverviewHint": "تصفية حسب حالة الرسوم، ابحث (جرب نعم أو لا)، أو اضغط على ولي الأمر لعرض تقويم الدفع السنوي.",
+    "parentOverviewHint": "تصفية حسب حالة الرسوم، ابحث (جرب نعم أو لا)، أو اضغط على اسم ولي الأمر لعرض أبنائه وبيانات الاتصال.",
     "parentOverviewSearch": "بحث بالاسم، البريد، الهاتف، نعم، أو لا…",
     "parentFeePaidCount": "مدفوع: {{count}}",
     "parentFeeUnpaidCount": "غير مدفوع: {{count}}",
@@ -846,6 +926,11 @@
     "parentMonthsColumn": "أشهر {{year}}",
     "parentMonthsPaidShort": "{{year}}: {{paid}} شهر مدفوع",
     "parentPaymentTitle": "رسوم ولي الأمر",
+    "parentDetailTitle": "ولي الأمر",
+    "parentDetailSubtitle": "الأبناء المرتبطون وبيانات الاتصال",
+    "parentDetailChildrenTitle": "الأبناء",
+    "parentDetailChildrenHint": "الطلاب المرتبطون بهذا ولي الأمر عبر التعيينات.",
+    "parentDetailNoChildren": "لا يوجد أبناء مرتبطون بهذا ولي الأمر بعد. استخدم التعيينات لربط ولي الأمر بالطلاب.",
     "parentPaymentSubtitle": "اضغط على كل شهر لتحديد مدفوع أو غير مدفوع",
     "parentPaymentYearSummary": "{{paid}} من 12 شهر مدفوع في {{year}}",
     "parentPaymentCalendarHint": "الأخضر = مدفوع لذلك الشهر. يحدّث أيضاً نعم/لا للشهر الحالي في القائمة.",
@@ -898,6 +983,19 @@
     "usageEndedNotificationTitle": "انتهى الاستخدام المسجّل",
     "usageEndedNotificationMessage": "انتهت فترة الاستخدام المسجّلة لمدرستك. تواصل مع مسؤول المنصة (super admin) للتجديد.",
     "notificationsTitle": "الإشعارات",
+    "complaintsTitle": "الشكاوى",
+    "complaintsSubtitle": "راجع شكاوى أولياء الأمور وتتبع حالة الحل",
+    "complaintsSearch": "ابحث باسم ولي الأمر أو الموضوع أو الرسالة…",
+    "complaintsEmpty": "لا توجد شكاوى لهذا الفلتر.",
+    "complaintsLoadFailed": "تعذر تحميل الشكاوى.",
+    "complaintFilterOpen": "مفتوح",
+    "complaintFilterResolved": "تم الحل",
+    "complaintMarkResolved": "وضع علامة تم الحل",
+    "complaintMarkOpen": "إعادة فتح",
+    "complaintMarkedResolved": "تم وضع الشكوى كمحلولة.",
+    "complaintMarkedOpen": "تمت إعادة فتح الشكوى.",
+    "complaintResolvedOn": "تاريخ الحل",
+    "complaintStatusUpdateFailed": "تعذر تحديث حالة الشكوى.",
     "analyticsSubtitle": "نظرة عامة على نشاط المدرسة",
     "analyticsLoading": "جاري تحميل التحليلات…",
     "analyticsLoadError": "تعذر تحميل التحليلات",
@@ -1100,6 +1198,7 @@
     "selectorSelect": "Select {{title}}",
     "selectorSearch": "Search…",
     "selectorNoMatches": "No matches found",
+    "selectorMoreHint": "{{count}} more — use search to find them",
     "directoryShowing": "Showing {{start}}–{{end}} of {{total}}",
     "directoryPrevious": "Previous",
     "directoryNext": "Next",

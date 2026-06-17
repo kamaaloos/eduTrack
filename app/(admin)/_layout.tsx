@@ -28,6 +28,7 @@ export default function AdminLayout() {
             <Stack.Screen name="certificates" />
             <Stack.Screen name="profile" />
             <Stack.Screen name="notifications" />
+            <Stack.Screen name="complaints" />
             <Stack.Screen name="teachers" />
             <Stack.Screen name="academic" />
           </Stack>

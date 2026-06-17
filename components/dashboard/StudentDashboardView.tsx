@@ -78,13 +78,6 @@ export function StudentDashboardView({
       ? rawFirstName.charAt(0).toUpperCase() +
         rawFirstName.slice(1).toLowerCase()
       : rawFirstName.toUpperCase();
-  const initials =
-    displayName
-      ?.split(" ")
-      ?.map((n) => n[0])
-      ?.join("")
-      ?.toUpperCase() || "S";
-
   const todayKey = getTodayDayKey();
   const todayLabel = getWeekdayLabel(t, todayKey);
   const handleLogout = useDashboardLogout(logout);
@@ -95,7 +88,6 @@ export function StudentDashboardView({
       <ScreenBackgroundLayer />
       <WebPageCardFrame>
         <DashboardHeader
-          initials={initials}
           displayName={displayName}
           photoURL={photoURL}
           firstName={firstName}

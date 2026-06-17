@@ -8,7 +8,11 @@ export const FLOATING_TAB_BAR_BOTTOM_MARGIN = 16;
 /** Space above the floating tab bar (bar height + bottom offset). */
 export const FLOATING_TAB_BAR_INSET = 96;
 
-export const STUDENT_COPYRIGHT_BOTTOM_OFFSET = FLOATING_TAB_BAR_INSET - 8;
+/** Scroll/content clearance on web tab screens (tab bar + small gap). */
+export const WEB_TAB_SCREEN_BOTTOM_PADDING =
+  FLOATING_TAB_BAR_HEIGHT + FLOATING_TAB_BAR_BOTTOM_MARGIN + 8;
+
+export const STUDENT_COPYRIGHT_BOTTOM_OFFSET = WEB_TAB_SCREEN_BOTTOM_PADDING;
 
 export function floatingTabBarBottom(_safeAreaBottom: number): number {
   return FLOATING_TAB_BAR_BOTTOM_MARGIN;
@@ -68,6 +72,6 @@ export const tabBarActiveTintColor = "#1D4ED8";
 export const tabBarInactiveTintColor = "#64748B";
 
 export const tabSceneContainerStyle = {
-  paddingBottom: FLOATING_TAB_BAR_INSET,
+  paddingBottom: 0,
   backgroundColor: "transparent" as const,
 };

@@ -21,7 +21,7 @@ import {
 } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { OptionPickerModal } from "./OptionPickerModal";
-import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import { INNER_CARD_BORDER_GREEN, innerCardBorderStyle } from "../../src/constants/innerCardBorders";
 
 export type DirectMessageRecipientRole = "student" | "parent";
 
@@ -469,6 +469,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     marginBottom: 20,
+    ...innerCardBorderStyle,
     ...platformShadow("md"),
   },
   sectionTitle: {

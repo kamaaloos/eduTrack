@@ -91,6 +91,7 @@ export function StudentScreenShell({
           subtitle={subtitle}
           showBack={showBack}
           showMenu={showMenu}
+          hideMenuOnDesktopWeb={false}
           notificationCount={showNotifications ? notificationCount : 0}
           onNotificationsPress={
             showNotifications

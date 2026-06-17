@@ -143,7 +143,7 @@ export default function ChangePasswordScreen() {
           value={currentPassword}
           onChangeText={setCurrentPassword}
           placeholder={t("auth.changePassword.currentPlaceholder")}
-          style={styles.input}
+          inputStyle={styles.input}
         />
 
         <Text style={styles.label}>{t("auth.changePassword.new")}</Text>
@@ -151,7 +151,7 @@ export default function ChangePasswordScreen() {
           value={newPassword}
           onChangeText={setNewPassword}
           placeholder={t("auth.changePassword.newPlaceholder")}
-          style={styles.input}
+          inputStyle={styles.input}
         />
 
         <Text style={styles.label}>{t("auth.changePassword.confirm")}</Text>
@@ -159,7 +159,7 @@ export default function ChangePasswordScreen() {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           placeholder={t("auth.changePassword.confirmPlaceholder")}
-          style={styles.input}
+          inputStyle={styles.input}
         />
 
         <Text style={styles.hint}>{t("auth.changePassword.hint")}</Text>
@@ -254,5 +254,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
     backgroundColor: "#FFFFFF",
+    ...(Platform.OS === "web"
+      ? ({ boxSizing: "border-box" } as object)
+      : null),
   },
 });

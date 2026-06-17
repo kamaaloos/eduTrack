@@ -9,6 +9,9 @@ export const FLOATING_TAB_BAR_INSET =
   FLOATING_TAB_BAR_HEIGHT +
   FLOATING_TAB_BAR_VERTICAL_PADDING * 2;
 
+/** Web-only scroll padding alias (native uses FLOATING_TAB_BAR_INSET in dashboard). */
+export const WEB_TAB_SCREEN_BOTTOM_PADDING = FLOATING_TAB_BAR_INSET;
+
 /** Copyright baseline — slightly below tab-bar reserve (lower on screen). */
 export const STUDENT_COPYRIGHT_BOTTOM_OFFSET = FLOATING_TAB_BAR_INSET - 8;
 

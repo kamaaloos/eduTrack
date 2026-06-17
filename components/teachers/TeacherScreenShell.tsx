@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import React, { useContext, type ReactNode } from "react";
 import {
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -11,6 +12,7 @@ import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { AuthContext } from "../../src/context/authContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
+import { mobileScreenPaddingStyle } from "../../src/constants/webLayout";
 import { webRolePagePaddingStyle } from "../../src/constants/platformLayout";
 import { useTeacherMenu } from "../../src/context/teacherMenuContext";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
@@ -52,10 +54,11 @@ export function TeacherScreenShell({
     showNotifications ? user?.uid : null,
   );
 
-  const innerStyle = [
+  const innerStyle: ViewStyle[] = [
     styles.bodyInner,
     webRolePagePaddingStyle(layout),
-  ];
+    mobileScreenPaddingStyle(),
+  ].filter(Boolean) as ViewStyle[];
 
   const body = scroll ? (
     <ScrollView
@@ -80,7 +83,7 @@ export function TeacherScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame>
+      <WebPageCardFrame sidebarLayout>
         <StudentScreenHeader
           title={title}
           subtitle={subtitle}
@@ -108,6 +111,7 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
+    minHeight: 0,
     backgroundColor: APP_SCREEN_BACKGROUND,
   },
   scroll: {
@@ -115,10 +119,15 @@ const styles = StyleSheet.create({
   },
   bodyInner: {
     width: "100%",
+    ...Platform.select({
+      web: {},
+      default: { alignItems: "center" as const },
+    }),
   },
   bodyFill: {
     flex: 1,
     width: "100%",
-    paddingTop: 12,
+    minHeight: 0,
+    paddingTop: Platform.OS === "web" ? 0 : 12,
   },
 });

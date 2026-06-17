@@ -31,6 +31,12 @@ export function useAdminSideMenuItems(): AdminSideMenuItem[] {
         onPress: () => router.push("/(admin)/notifications" as never),
       },
       {
+        key: "complaints",
+        label: t("admin.complaintsTitle"),
+        icon: "chatbubble-ellipses-outline",
+        onPress: () => router.push("/(admin)/complaints" as never),
+      },
+      {
         key: "users",
         label: t("admin.users"),
         icon: "people-outline",

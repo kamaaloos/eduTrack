@@ -143,6 +143,63 @@
     "updatesWebOnly": "Rakib APK Android si aad u hesho ogeysiisyada cusbooneysiga.",
     "checkAgain": "Mar kale hubi"
   },
+  "faq": {
+    "title": "Su'aalaha badanaa la isweydiiyo",
+    "shortTitle": "FAQ",
+    "heading": "Su'aalaha badanaa la isweydiiyo",
+    "subtitle": "Jawaabo degdeg ah oo ku saabsan eduTrack dugsiyada, qoysaska, iyo shaqaalaha.",
+    "contactCta": "Weli su'aalo ma haysaa? Nala soo xiriir",
+    "items": {
+      "whatIsEduTrack": {
+        "question": "Waa maxay eduTrack?",
+        "answer": "eduTrack waa madal maamul dugsiyeed oo ay sameysay MayleSoft. Waxay isku keentaa shaqo guriga, imtixaannada, xaadirka, warbixinnada, jadwalka, ogeysiisyada, iyo fariimaha hal app ammaan ah ardayda, macalimiinta, waalidiinta, iyo maamulayaasha dugsiga."
+      },
+      "whoCanUse": {
+        "question": "Yaa isticmaali kara eduTrack?",
+        "answer": "Qof kastaa wuxuu galaa doorkiisa: arday, macallin, waalid, ama maamule dugsiyeed. Maamulaha dugsiga wuxuu abuuraa akoonnada wuxuuna xiriiriyaa ardayda fasallada iyo waalidiinta carruurtooda."
+      },
+      "howToSignIn": {
+        "question": "Sideen u galaa?",
+        "answer": "Taabo Bilow bogga hore, dooro dugsigaaga (waddan, magaalo, dugsi), ka dibna gal iimaylka iyo erayga sirta ah ee dugsigaagu bixiyo. Isticmaalayaasha cusub waxay heli karaan eray sirta ah oo ku meel gaar ah."
+      },
+      "webAndMobile": {
+        "question": "Ma isticmaali karaa webka iyo taleefankayga?",
+        "answer": "Haa. eduTrack wuxuu ka shaqeeyaa browserka iyo app mobayl Android iyo iOS. Ardayda, macalimiinta, iyo waalidiintu waxay isticmaali karaan labadaba."
+      },
+      "students": {
+        "question": "Maxay ardaydu sameyn karaan?",
+        "answer": "Ardaydu waxay arkaan dashboard jadwalka maanta, shaqo guriga, imtixaannada, xaadirka, ogeysiisyada, iyo faallooyinka. Waxay furi karaan warbixinta dugsiga iyo ogeysiisyada."
+      },
+      "teachers": {
+        "question": "Maxay macalimiintu sameyn karaan?",
+        "answer": "Macalimiintu waxay calaamadiyaan xaadirka, daabacaan shaqo guriga iyo imtixaannada, geliyaan dhibcaha, qoraan faallooyin, maamulaan jadwalka fasalka, diraan ogeysiisyada, fariimaan ardayda ama waalidiinta."
+      },
+      "parents": {
+        "question": "Maxay waalidiintu sameyn karaan?",
+        "answer": "Waalidiintu waxay la socdaan shaqo guriga, imtixaannada, xaadirka, iyo warbixinta ilmaha la xiriiriyay. Waxay helaan ogeysiisyada dugsiga waxayna sharxi karaan maqnaanshaha."
+      },
+      "administrators": {
+        "question": "Maxay maamulayaasha dugsigu maamulaan?",
+        "answer": "Maamulayaashu waxay abuuraan isticmaalayaasha iyo fasallada, xiriiriyaan ardayda iyo macalimiinta, maamulaan jadwalka, daabacaan ogeysiisyada, soo dejiyaan xogta Excel, waxayna eegaan falanqaynta."
+      },
+      "excelImport": {
+        "question": "Ma soo dejisan karnaa xogta dugsiga Excel?",
+        "answer": "Haa. Maamulayaasha dugsigu waxay soo dejisan karaan fasallada, isticmaalayaasha, shaqo guriga, imtixaannada, faallooyinka, iyo ogeysiisyada Excel iyagoo isticmaalaya qalabka soo dejinta ee Nidaamka."
+      },
+      "dataSecurity": {
+        "question": "Xogteena dugsiga ma ammaan baa?",
+        "answer": "eduTrack wuxuu isticmaalaa Firebase Authentication iyo Firestore oo leh xeerar gelitaan oo ku salaysan doorka. Dugsi kastaa waa go'doonsan, isticmaalayaashuna waxay arkaan kaliya waxa doorkoodu ogol yahay."
+      },
+      "languages": {
+        "question": "Luqadaha noocee ah ayaa la taageeray?",
+        "answer": "eduTrack wuxuu taageeraa Ingiriisi, Finnish, Carabi, iyo Soomaali. Waxaad beddeli kartaa luqadda bogga hore, shaashadda gelitaanka, ama goobaha profile-kaaga."
+      },
+      "getSupport": {
+        "question": "Sideen caawimaad u helaa ama demo u codsadaa?",
+        "answer": "Isticmaal bogga Nala soo xiriir si aad fariin ugu dirto kooxda eduTrack. Sheeg magaca dugsigaaga iyo waxa aad u baahan tahay."
+      }
+    }
+  },
   "contact": {
     "title": "Nala soo xiriir",
     "heading": "Nala soo xiriir",
@@ -321,6 +378,7 @@
     "signIn": "Gal",
     "getStarted": "Bilow",
     "navFeatures": "Astaamaha",
+    "navFaq": "FAQ",
     "contactUs": "Nala soo xiriir",
     "utilityTagline": "Maamul dugsiga oo ammaan ah door kasta",
     "trustLine": "Hal madal bulshada dugsigaaga oo dhan",
@@ -414,7 +472,15 @@
     "emptyParent": "Weli ma jiraan ogeysiisyo. Digniinaha ku saabsan imaanshaha carruurtaada iyo cusbooneysiinta dugsiga ayaa halkan ka muuqan doona.",
     "emptyAdmin": "Weli ma jiraan ogeysiisyo. Digniinaha waqtiga adeegga iyo cusbooneysiinta dugsiga ayaa halkan ka muuqan doona.",
     "markRead": "Calaamadee in la akhriyay",
-    "openUserDirectory": "Fur buugga isticmaaleyaasha"
+    "openUserDirectory": "Fur buugga isticmaaleyaasha",
+    "types": {
+      "parent_complaint": "Cabashada waalidka",
+      "parent_complaint_resolved": "Cabashada waa la xaliyay"
+    },
+    "parentComplaintTitle": "Cabasho cusub oo waalid ah",
+    "parentComplaintMessage": "Fadlan hubi cabashooyinka. {{parentName}} wuxuu soo gudbiyay: \"{{subject}}\".",
+    "parentComplaintResolvedTitle": "Cabashada waa la xaliyay",
+    "parentComplaintResolvedMessage": "Cabashadaada \"{{subject}}\" waa la xaliyay. Fadlan hubi haddii wax faahfaahin ah jiraan."
   },
   "teacher": {
     "dashboard": {
@@ -774,12 +840,26 @@
     "respondError": "Lama diri karin jawaabta",
     "reportCardTitle": "Kaarka warbixinta",
     "notificationsTitle": "Digniino",
+    "complaintsTitle": "Cabashooyin",
+    "complaintsSubtitle": "Cabasho toos ah ugu dir maamulayaasha dugsiga.",
+    "complaintSubject": "Mawduuca",
+    "complaintSubjectPlaceholder": "Cinwaanka cabashada",
+    "complaintMessage": "Fariinta",
+    "complaintMessagePlaceholder": "Si cad u sharax cabashadaada…",
+    "complaintSubmit": "Dir cabashada",
+    "complaintSubjectRequired": "Fadlan geli mawduuca cabashada.",
+    "complaintMessageTooShort": "Fadlan geli ugu yaraan 10 xaraf.",
+    "complaintSuccess": "Cabashadaada waxaa loo diray maamulayaasha dugsiga.",
+    "complaintError": "Lama diri karin cabashadaada.",
     "studentDetail": "Dulmar guud ee ardayga",
     "greetingMorning": "Subax wanaagsan",
     "greetingAfternoon": "Galab wanaagsan",
     "greetingEvening": "Fiid wanaagsan",
     "viewingChild": "Waxaad eegaysaa {{name}}",
-    "homeGreeting": "Salaan, {{name}} 👋"
+    "homeGreeting": "Salaan, {{name}} 👋",
+    "monthFeeStatus": "Xaaladda lacagta bishan",
+    "monthFeePaid": "La bixiyay",
+    "monthFeeNotPaid": "Lama bixin"
   },
   "dashboard": {
     "goodMorning": "Subax wanaagsan",
@@ -838,7 +918,7 @@
     "dirTeachersDesc": "Cusbooneysiinta shaqaalaha iyo ka saarista",
     "dirParentsDesc": "Akoonnada qoysaska iyo kuwa baxay",
     "parentOverviewTitle": "Dulmar waalidiinta",
-    "parentOverviewHint": "Shaandhee xaaladda lacagta, raadi (isku day haa ama maya), ama taabo waalid si aad u aragto jadwalka lacag bixinta sanadlaha ah.",
+    "parentOverviewHint": "Shaandhee xaaladda lacagta, raadi (isku day haa ama maya), ama taabo magaca waalidka si aad u aragto carruurta iyo xiriirka.",
     "parentOverviewSearch": "Raadi magac, iimayl, taleefan, haa, ama maya…",
     "parentFeePaidCount": "La bixiyay: {{count}}",
     "parentFeeUnpaidCount": "Aan la bixin: {{count}}",
@@ -846,6 +926,11 @@
     "parentMonthsColumn": "Bilaha {{year}}",
     "parentMonthsPaidShort": "{{year}}: {{paid}} bilood la bixiyay",
     "parentPaymentTitle": "Lacagaha waalidka",
+    "parentDetailTitle": "Waalid",
+    "parentDetailSubtitle": "Carruurta la xiriiriyay iyo xiriirka",
+    "parentDetailChildrenTitle": "Carruurta",
+    "parentDetailChildrenHint": "Ardayda la xiriiriyay waalidkan iyada oo loo marayo hawlgelinta.",
+    "parentDetailNoChildren": "Weli carruur lama xiriirin waalidkan. Isticmaal Hawlgelinta si aad u xiriiriso waalidka ardayda.",
     "parentPaymentSubtitle": "Taabo bil kasta si aad u calaamadiso la bixiyay ama aan la bixin",
     "parentPaymentYearSummary": "{{paid}} ka mid ah 12 bilood la bixiyay {{year}}",
     "parentPaymentCalendarHint": "Cagaar = la bixiyay bishaas. Waxay sidoo kale cusbooneysiisaa Haa/Maya bisha hadda ee liiska dashboard-ka.",
@@ -898,6 +983,19 @@
     "usageEndedNotificationTitle": "Isticmaalka diiwaangashan wuu dhacay",
     "usageEndedNotificationMessage": "Muddada isticmaalka diiwaangashan ee dugsigaaga way dhammaatay. La xiriir super-maamulaha madasha si aad u cusbooneysiiso.",
     "notificationsTitle": "Ogeysiisyada",
+    "complaintsTitle": "Cabashooyinka",
+    "complaintsSubtitle": "Dib u eeg cabashooyinka waalidiinta oo la soco xaaladda xallinta",
+    "complaintsSearch": "Raadi waalid, mawduuc, ama fariin…",
+    "complaintsEmpty": "Cabasho lagama helin shaandhayntan.",
+    "complaintsLoadFailed": "Cabashooyinka lama soo rarin karin.",
+    "complaintFilterOpen": "Furan",
+    "complaintFilterResolved": "La xalliyay",
+    "complaintMarkResolved": "U calaamadee la xalliyay",
+    "complaintMarkOpen": "Dib u fur",
+    "complaintMarkedResolved": "Cabashada waxaa loo calaamadeeyay la xalliyay.",
+    "complaintMarkedOpen": "Cabashada dib ayaa loo furay.",
+    "complaintResolvedOn": "La xalliyay",
+    "complaintStatusUpdateFailed": "Lama cusbooneysiin karin xaaladda cabashada.",
     "analyticsSubtitle": "Dulmar guud ee dhaqdhaqaaqa dugsiga",
     "analyticsLoading": "Falanqaynta waa la soo rarayaa…",
     "analyticsLoadError": "Lama soo rari karin falanqaynta",
@@ -1100,6 +1198,7 @@
     "selectorSelect": "Select {{title}}",
     "selectorSearch": "Search…",
     "selectorNoMatches": "No matches found",
+    "selectorMoreHint": "{{count}} more — use search to find them",
     "directoryShowing": "Showing {{start}}–{{end}} of {{total}}",
     "directoryPrevious": "Previous",
     "directoryNext": "Next",

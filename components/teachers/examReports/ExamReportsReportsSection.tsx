@@ -8,10 +8,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import type { usePaginatedList } from "../../../hooks/usePaginatedList";
 import type { TeacherStudent } from "../../../src/services/teacherStudents";
-import { ExamReportsShowMore } from "./ExamReportsShowMore";
+import { parsePhotoURL } from "../../../src/utils/userAvatar";
+import { ListPageNav } from "../../common/ListPageNav";
+import { UserAvatar } from "../../common/UserAvatar";
 import { examReportsStyles as styles } from "./examReportsStyles";
 import { EXAM_REPORTS_KEYBOARD_ACCESSORY_ID } from "./examReportsTypes";
+
+type StudentPagination = ReturnType<typeof usePaginatedList<TeacherStudent>>;
 
 type ExamReportsReportsSectionProps = {
   reportSearch: string;
@@ -19,7 +24,7 @@ type ExamReportsReportsSectionProps = {
   filteredReportStudents: TeacherStudent[];
   visibleReportStudents: TeacherStudent[];
   onOpenReport: (student: TeacherStudent) => void;
-  onShowMore: () => void;
+  reportPagination: StudentPagination;
 };
 
 export function ExamReportsReportsSearch({
@@ -48,13 +53,13 @@ export function ExamReportsReportsStudentList({
   filteredReportStudents,
   visibleReportStudents,
   onOpenReport,
-  onShowMore,
+  reportPagination,
 }: Pick<
   ExamReportsReportsSectionProps,
   | "filteredReportStudents"
   | "visibleReportStudents"
   | "onOpenReport"
-  | "onShowMore"
+  | "reportPagination"
 >) {
   const { t } = useTranslation();
 
@@ -70,7 +75,7 @@ export function ExamReportsReportsStudentList({
     <>
       <Text style={styles.listHint}>
         {t("teacher.examReports.showingStudents", {
-          shown: visibleReportStudents.length,
+          shown: reportPagination.rangeEnd,
           total: filteredReportStudents.length,
         })}
       </Text>
@@ -81,11 +86,14 @@ export function ExamReportsReportsStudentList({
           onPress={() => onOpenReport(student)}
           activeOpacity={0.85}
         >
-          <View style={styles.reportAvatar}>
-            <Text style={styles.reportAvatarText}>
-              {(student.name || "S").charAt(0).toUpperCase()}
-            </Text>
-          </View>
+          <UserAvatar
+            name={student.name}
+            email={student.email}
+            photoURL={parsePhotoURL(student.photoURL)}
+            size={44}
+            textColor="#1D4ED8"
+            backgroundColor="#DBEAFE"
+          />
           <View style={styles.reportRowText}>
             <Text style={styles.studentName}>
               {student.name || t("common.student")}
@@ -97,11 +105,16 @@ export function ExamReportsReportsStudentList({
           <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
         </TouchableOpacity>
       ))}
-      <ExamReportsShowMore
-        shown={visibleReportStudents.length}
-        total={filteredReportStudents.length}
-        onPress={onShowMore}
-      />
+      <View style={styles.listPagination}>
+        <ListPageNav
+          page={reportPagination.page}
+          totalPages={reportPagination.totalPages}
+          canPrev={reportPagination.canPrev}
+          canNext={reportPagination.canNext}
+          onPrev={reportPagination.prevPage}
+          onNext={reportPagination.nextPage}
+        />
+      </View>
     </>
   );
 }
@@ -112,7 +125,7 @@ export function ExamReportsReportsSection({
   filteredReportStudents,
   visibleReportStudents,
   onOpenReport,
-  onShowMore,
+  reportPagination,
 }: ExamReportsReportsSectionProps) {
   return (
     <>
@@ -124,7 +137,7 @@ export function ExamReportsReportsSection({
         filteredReportStudents={filteredReportStudents}
         visibleReportStudents={visibleReportStudents}
         onOpenReport={onOpenReport}
-        onShowMore={onShowMore}
+        reportPagination={reportPagination}
       />
     </>
   );

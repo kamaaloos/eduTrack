@@ -1,9 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,6 +20,7 @@ import {
 } from "../components/about/AboutFixedHeader";
 import { AppScreenBackground } from "../components/AppScreenBackground";
 import { AppLogo } from "../components/AppLogo";
+import { FaqAccordion } from "../components/faq/FaqAccordion";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { WebPageCard } from "../components/layout/WebPageCard";
 import { useAppUpdateCheck } from "../hooks/useAppUpdateCheck";
@@ -161,9 +164,24 @@ export default function AboutScreen() {
 
               <View style={styles.sectionDivider} />
 
-              <View style={styles.section}>
-                <LanguageSelector compact title={t("about.language")} showTitle />
-              </View>
+              {Platform.OS === "web" ? (
+                <View style={styles.section}>
+                  <LanguageSelector compact title={t("about.language")} showTitle />
+                </View>
+              ) : (
+                <View style={styles.section}>
+                  <Text style={styles.cardTitle}>{t("faq.heading")}</Text>
+                  <Text style={styles.faqSubtitle}>{t("faq.subtitle")}</Text>
+                  <FaqAccordion />
+                  <TouchableOpacity
+                    style={styles.contactBtn}
+                    onPress={() => router.push("/contact")}
+                    activeOpacity={0.88}
+                  >
+                    <Text style={styles.contactBtnText}>{t("faq.contactCta")}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
 
               <View style={styles.sectionDivider} />
 
@@ -243,6 +261,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     color: "#94A3B8",
+  },
+  faqSubtitle: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: "#64748B",
+    marginBottom: 16,
+  },
+  contactBtn: {
+    marginTop: 20,
+    backgroundColor: "#2563EB",
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  contactBtnText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 15,
   },
   bodyText: {
     fontSize: 14,

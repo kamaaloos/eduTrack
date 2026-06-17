@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { AdminParentChildrenList } from "../../../components/admin/AdminParentChildrenList";
 import { AdminScreenShell } from "../../../components/admin/AdminScreenShell";
 import { ParentPaymentCalendar } from "../../../components/admin/ParentPaymentCalendar";
 import { useAdminData } from "../../../src/context/adminDataContext";
@@ -20,10 +21,14 @@ import {
   setParentFeeMonthPaid,
   type FeeMonthsMap,
 } from "../../../src/services/parentFeePayments";
+import {
+  loadParentChildrenDetailed,
+  type ParentChild,
+} from "../../../src/services/parentChildren";
 import { showErrorAlert } from "../../../src/utils/confirmDialog";
 import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
 
-export default function AdminParentPaymentScreen() {
+export default function AdminParentDetailScreen() {
   const { t } = useTranslation();
   const { parentId: parentIdParam } = useLocalSearchParams<{ parentId: string }>();
   const parentId = String(parentIdParam ?? "");
@@ -34,14 +39,33 @@ export default function AdminParentPaymentScreen() {
     [parents, parentId],
   );
 
+  const [children, setChildren] = useState<ParentChild[]>([]);
+  const [loadingChildren, setLoadingChildren] = useState(true);
   const [year, setYear] = useState(() => new Date().getFullYear());
   const [feeMonths, setFeeMonths] = useState<FeeMonthsMap>({});
-  const [loading, setLoading] = useState(true);
+  const [loadingFees, setLoadingFees] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const loadChildren = useCallback(async () => {
+    if (!parentId) return;
+    setLoadingChildren(true);
+    try {
+      const result = await loadParentChildrenDetailed(parentId);
+      setChildren(result.children);
+    } catch (err) {
+      showErrorAlert(
+        t("common.error"),
+        err instanceof Error ? err.message : t("admin.parentOverviewLoadFailed"),
+      );
+      setChildren([]);
+    } finally {
+      setLoadingChildren(false);
+    }
+  }, [parentId, t]);
 
   const loadMonths = useCallback(async () => {
     if (!parentId) return;
-    setLoading(true);
+    setLoadingFees(true);
     try {
       const map = await loadParentFeeMonths(parentId);
       const legacyFeePaid = parents.find((item) => item.id === parentId)?.feePaid;
@@ -56,9 +80,13 @@ export default function AdminParentPaymentScreen() {
         err instanceof Error ? err.message : t("admin.parentPaymentLoadFailed"),
       );
     } finally {
-      setLoading(false);
+      setLoadingFees(false);
     }
   }, [parentId, year, t, parents]);
+
+  useEffect(() => {
+    void loadChildren();
+  }, [loadChildren]);
 
   useEffect(() => {
     void loadMonths();
@@ -91,8 +119,8 @@ export default function AdminParentPaymentScreen() {
 
   return (
     <AdminScreenShell
-      title={parent?.name || t("admin.parentPaymentTitle")}
-      subtitle={t("admin.parentPaymentSubtitle")}
+      title={parent?.name || t("admin.parentDetailTitle")}
+      subtitle={t("admin.parentDetailSubtitle")}
       showBack
     >
       <ScrollView
@@ -100,8 +128,17 @@ export default function AdminParentPaymentScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.card}>
-          <Text style={styles.label}>{t("admin.parentContactColumn")}</Text>
-          <Text style={styles.value}>{contact}</Text>
+          <Text style={styles.parentName}>{parent?.name || "—"}</Text>
+          <Text style={styles.contact}>{contact}</Text>
+
+          <Text style={styles.sectionTitle}>{t("admin.parentDetailChildrenTitle")}</Text>
+          <Text style={styles.sectionHint}>{t("admin.parentDetailChildrenHint")}</Text>
+          <AdminParentChildrenList linkedChildren={children} loading={loadingChildren} />
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>{t("admin.parentPaymentTitle")}</Text>
+          <Text style={styles.sectionHint}>{t("admin.parentPaymentSubtitle")}</Text>
 
           <View style={styles.yearRow}>
             <TouchableOpacity
@@ -119,7 +156,7 @@ export default function AdminParentPaymentScreen() {
             </TouchableOpacity>
           </View>
 
-          {loading ? (
+          {loadingFees ? (
             <ActivityIndicator color="#7C3AED" style={styles.loader} />
           ) : (
             <ParentPaymentCalendar
@@ -136,7 +173,7 @@ export default function AdminParentPaymentScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, paddingBottom: 40 },
+  content: { padding: 16, paddingBottom: 40, gap: 16 },
   card: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
@@ -144,14 +181,30 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: INNER_CARD_BORDER_GREEN,
   },
-  label: {
-    fontSize: 12,
-    fontWeight: "700",
+  parentName: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#0F172A",
+    marginBottom: 6,
+  },
+  contact: {
+    fontSize: 14,
+    lineHeight: 20,
     color: "#64748B",
-    textTransform: "uppercase",
+    marginBottom: 18,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#1E3A8A",
     marginBottom: 4,
   },
-  value: { fontSize: 15, color: "#0F172A", marginBottom: 16 },
+  sectionHint: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: "#64748B",
+    marginBottom: 12,
+  },
   yearRow: {
     flexDirection: "row",
     alignItems: "center",

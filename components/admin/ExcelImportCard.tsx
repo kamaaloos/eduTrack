@@ -13,7 +13,6 @@ import {
   useAdminExcelImport,
 } from "../../hooks/useAdminExcelImport";
 import {
-  IMPORT_FORMAT_HINTS,
   IMPORT_KINDS,
   ImportKind,
   ImportSummary,
@@ -193,7 +192,7 @@ export const ExcelImportCard: React.FC<ExcelImportCardProps> = ({
 
       <Text style={styles.formatHint}>
         {mode === "sheet"
-          ? IMPORT_FORMAT_HINTS[selectedKind]
+          ? t(`admin.importFormatHints.${selectedKind}`)
           : t("admin.workbookSheetsList")}
       </Text>
 

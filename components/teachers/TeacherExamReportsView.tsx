@@ -63,20 +63,105 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
     exportCertificate,
     exportAllCertificates,
     exportingAllCertificates,
-    showMoreGradeStudents,
-    showMoreReportStudents,
+    gradePagination,
+    reportPagination,
   } = props;
 
   const shellTitle = t("teacher.examReports.pageTitle");
   const shellSubtitle = t("teacher.examReports.pageSub");
 
+  const shellProps = {
+    title: shellTitle,
+    subtitle: shellSubtitle,
+    showBack: true as const,
+    scroll: false as const,
+  };
+
+  const showGradeStudents = mode === "grade" && exams.length > 0;
+  const showReportStudents = mode === "reports";
+
+  const scrollableBody =
+    !loading && (showGradeStudents || showReportStudents) ? (
+      <ScrollView
+        style={styles.studentScroll}
+        contentContainerStyle={styles.studentScrollContent}
+        showsVerticalScrollIndicator
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={
+          Platform.OS === "ios" ? "interactive" : "on-drag"
+        }
+        automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {mode === "grade" ? (
+          <ExamReportsGradeStudentList
+            studentsInClass={studentsInClass}
+            visibleGradeStudents={visibleGradeStudents}
+            resultByStudent={resultByStudent}
+            maxMarks={maxMarks}
+            scoreDrafts={scoreDrafts}
+            savingId={savingId}
+            onScoreChange={updateScoreDraft}
+            onSaveScore={saveScore}
+            onOpenReport={openReport}
+            onExportCertificate={exportCertificate}
+            gradePagination={gradePagination}
+          />
+        ) : (
+          <ExamReportsReportsStudentList
+            filteredReportStudents={filteredReportStudents}
+            visibleReportStudents={visibleReportStudents}
+            onOpenReport={openReport}
+            reportPagination={reportPagination}
+          />
+        )}
+      </ScrollView>
+    ) : null;
+
+  const mainPanel = (
+    <>
+      <View style={styles.fixedTop}>
+        <Text style={styles.label}>{t("common.class")}</Text>
+        <SelectChips
+          options={classOptions}
+          selectedValue={selectedClassId}
+          onSelect={setSelectedClassId}
+        />
+
+        <ExamReportsModeTabs mode={mode} onModeChange={setMode} />
+
+        {loading ? (
+          <ActivityIndicator style={styles.loader} color="#2563EB" />
+        ) : mode === "grade" ? (
+          <ExamReportsGradeFixedHeader
+            exams={exams}
+            examChipOptions={examChipOptions}
+            selectedExamId={selectedExamId}
+            onSelectExam={setSelectedExamId}
+            selectedExam={selectedExam}
+            maxMarks={maxMarks}
+            gradedCount={gradedCount}
+            classAverage={classAverage}
+            studentsInClass={studentsInClass}
+            onExportAllCertificates={() => void exportAllCertificates()}
+            exportingAllCertificates={exportingAllCertificates}
+          />
+        ) : (
+          <ExamReportsReportsSearch
+            reportSearch={reportSearch}
+            onReportSearchChange={setReportSearch}
+          />
+        )}
+      </View>
+      {scrollableBody}
+    </>
+  );
+
   if (classesLoading || (loading && classes.length === 0)) {
     return (
-      <TeacherScreenShell
-        title={shellTitle}
-        subtitle={shellSubtitle}
-        scroll={false}
-      >
+      <TeacherScreenShell {...shellProps}>
         <View style={styles.centered}>
           <ActivityIndicator size="large" color="#2563EB" />
         </View>
@@ -86,11 +171,7 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
 
   if (classes.length === 0) {
     return (
-      <TeacherScreenShell
-        title={shellTitle}
-        subtitle={shellSubtitle}
-        scroll={false}
-      >
+      <TeacherScreenShell {...shellProps}>
         <View style={styles.centered}>
           <Text style={styles.emptyTitle}>
             {t("teacher.examReports.noClassesAssigned")}
@@ -103,95 +184,23 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
     );
   }
 
-  const showGradeStudents = mode === "grade" && exams.length > 0;
-  const showReportStudents = mode === "reports";
-
   return (
     <TeacherScreenShell
-      title={shellTitle}
-      subtitle={shellSubtitle}
-      scroll={false}
+      {...shellProps}
       refreshing={refreshing}
       onRefresh={onRefresh}
     >
       <View style={styles.container}>
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoid}
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
-          <View style={styles.fixedTop}>
-            <Text style={styles.label}>{t("common.class")}</Text>
-            <SelectChips
-              options={classOptions}
-              selectedValue={selectedClassId}
-              onSelect={setSelectedClassId}
-            />
-
-            <ExamReportsModeTabs mode={mode} onModeChange={setMode} />
-
-            {loading ? (
-              <ActivityIndicator style={styles.loader} color="#2563EB" />
-            ) : mode === "grade" ? (
-              <ExamReportsGradeFixedHeader
-                exams={exams}
-                examChipOptions={examChipOptions}
-                selectedExamId={selectedExamId}
-                onSelectExam={setSelectedExamId}
-                selectedExam={selectedExam}
-                maxMarks={maxMarks}
-                gradedCount={gradedCount}
-                classAverage={classAverage}
-                studentsInClass={studentsInClass}
-                onExportAllCertificates={() => void exportAllCertificates()}
-                exportingAllCertificates={exportingAllCertificates}
-              />
-            ) : (
-              <ExamReportsReportsSearch
-                reportSearch={reportSearch}
-                onReportSearchChange={setReportSearch}
-              />
-            )}
-          </View>
-
-          {!loading && (showGradeStudents || showReportStudents) ? (
-          <ScrollView
-            style={styles.studentScroll}
-            contentContainerStyle={styles.studentScrollContent}
-            showsVerticalScrollIndicator
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode={
-              Platform.OS === "ios" ? "interactive" : "on-drag"
-            }
-            automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
+        {Platform.OS === "web" ? (
+          <View style={styles.keyboardAvoid}>{mainPanel}</View>
+        ) : (
+          <KeyboardAvoidingView
+            style={styles.keyboardAvoid}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
-            {mode === "grade" ? (
-              <ExamReportsGradeStudentList
-                studentsInClass={studentsInClass}
-                visibleGradeStudents={visibleGradeStudents}
-                resultByStudent={resultByStudent}
-                maxMarks={maxMarks}
-                scoreDrafts={scoreDrafts}
-                savingId={savingId}
-                onScoreChange={updateScoreDraft}
-                onSaveScore={saveScore}
-                onOpenReport={openReport}
-                onExportCertificate={exportCertificate}
-                onShowMore={showMoreGradeStudents}
-              />
-            ) : (
-              <ExamReportsReportsStudentList
-                filteredReportStudents={filteredReportStudents}
-                visibleReportStudents={visibleReportStudents}
-                onOpenReport={openReport}
-                onShowMore={showMoreReportStudents}
-              />
-            )}
-          </ScrollView>
-          ) : null}
-        </KeyboardAvoidingView>
+            {mainPanel}
+          </KeyboardAvoidingView>
+        )}
         <ExamReportsKeyboardAccessory />
       </View>
     </TeacherScreenShell>

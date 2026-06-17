@@ -22,6 +22,8 @@ type StudentScreenHeaderProps = {
   subtitle?: string;
   showBack?: boolean;
   showMenu?: boolean;
+  /** Hide hamburger on desktop web when a persistent sidebar is shown (teacher/parent). */
+  hideMenuOnDesktopWeb?: boolean;
   notificationCount?: number;
   onNotificationsPress?: () => void;
   onMenuPress?: () => void;
@@ -33,6 +35,7 @@ export function StudentScreenHeader({
   subtitle,
   showBack = false,
   showMenu = true,
+  hideMenuOnDesktopWeb = true,
   notificationCount = 0,
   onNotificationsPress,
   onMenuPress,
@@ -40,7 +43,10 @@ export function StudentScreenHeader({
 }: StudentScreenHeaderProps) {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
-  const showMenuButton = showMenu && onMenuPress && !layout.isDesktopWeb;
+  const showMenuButton =
+    showMenu &&
+    Boolean(onMenuPress) &&
+    !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>

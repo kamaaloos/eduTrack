@@ -1,12 +1,29 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { FLOATING_TAB_BAR_INSET } from "../../../src/constants/tabBar";
 import {
   INNER_CARD_BORDER_GREEN,
 } from "../../../src/constants/innerCardBorders";
+import { STUDENT_LIST_MAX_WIDTH } from "../../students/studentScreenStyles";
+
+const isWeb = Platform.OS === "web";
+
+/** Narrow centered column — native phone layout only (web uses full card width). */
+const nativeListColumn = isWeb
+  ? {}
+  : ({
+      width: "100%",
+      maxWidth: STUDENT_LIST_MAX_WIDTH,
+      alignSelf: "center",
+    } as const);
 
 export const examReportsStyles = StyleSheet.create({
-  container: { flex: 1 },
-  keyboardAvoid: { flex: 1 },
+  container: {
+    flex: 1,
+    width: "100%",
+    maxWidth: isWeb ? undefined : STUDENT_LIST_MAX_WIDTH,
+    minHeight: 0,
+  },
+  keyboardAvoid: { flex: 1, width: "100%", minHeight: 0 },
   content: { paddingTop: 8 },
   fixedTop: {
     paddingBottom: 8,
@@ -16,7 +33,8 @@ export const examReportsStyles = StyleSheet.create({
   },
   studentScrollContent: {
     paddingTop: 4,
-    paddingBottom: FLOATING_TAB_BAR_INSET,
+    paddingBottom: isWeb ? 24 : FLOATING_TAB_BAR_INSET,
+    ...(isWeb ? {} : { width: "100%", alignItems: "center" as const }),
   },
   scrollBottomSpacer: { height: 100 },
   centered: {
@@ -66,11 +84,20 @@ export const examReportsStyles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#BFDBFE",
+    ...nativeListColumn,
   },
   showMoreText: {
     color: "#2563EB",
     fontWeight: "700",
     fontSize: 14,
+  },
+  listPagination: {
+    ...nativeListColumn,
+    marginBottom: 8,
+    borderRadius: 12,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   summaryRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginVertical: 14 },
   summaryChip: {
@@ -90,6 +117,7 @@ export const examReportsStyles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: INNER_CARD_BORDER_GREEN,
+    ...nativeListColumn,
   },
   studentRowTop: {
     flexDirection: "row",
@@ -157,6 +185,7 @@ export const examReportsStyles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 15,
     marginBottom: 14,
+    ...nativeListColumn,
   },
   reportRow: {
     flexDirection: "row",
@@ -168,16 +197,8 @@ export const examReportsStyles = StyleSheet.create({
     gap: 12,
     borderWidth: 1,
     borderColor: INNER_CARD_BORDER_GREEN,
+    ...nativeListColumn,
   },
-  reportAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#DBEAFE",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  reportAvatarText: { color: "#1D4ED8", fontWeight: "800", fontSize: 18 },
   reportRowText: { flex: 1, minWidth: 0 },
   reportRowSub: { fontSize: 12, color: "#64748B", marginTop: 4 },
   emptyCard: {
@@ -186,6 +207,7 @@ export const examReportsStyles = StyleSheet.create({
     padding: 24,
     marginTop: 12,
     alignItems: "center",
+    ...nativeListColumn,
   },
   emptyTitle: { fontSize: 17, fontWeight: "700", color: "#475569" },
   emptySub: {
@@ -205,6 +227,7 @@ export const examReportsStyles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 14,
+    ...nativeListColumn,
   },
   exportAllBtnDisabled: { opacity: 0.7 },
   exportAllBtnText: {

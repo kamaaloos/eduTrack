@@ -201,7 +201,7 @@ export default function SelectSchoolScreen() {
             accessibilityRole="image"
             accessibilityLabel={t("selectSchool.title")}
           >
-            <AppLogo size={88} />
+            <AppLogo size={112} />
           </Pressable>
           <Text style={styles.title}>{t("selectSchool.title")}</Text>
           <Text style={styles.subtitle}>{t("selectSchool.subtitle")}</Text>

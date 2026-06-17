@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -155,6 +156,9 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 12,
     backgroundColor: "white",
+    ...(Platform.OS === "web"
+      ? ({ boxSizing: "border-box" } as object)
+      : null),
   },
   hint: {
     fontSize: 13,

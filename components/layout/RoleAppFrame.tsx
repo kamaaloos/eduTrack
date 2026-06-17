@@ -9,6 +9,8 @@ type RoleAppFrameProps = {
   children: React.ReactNode;
   /** Extra space above copyright (e.g. floating tab bar). */
   copyrightBottomOffset?: number;
+  /** Pad content above the copyright bar (disable on web tab screens — they pad internally). */
+  reserveContentFooterSpace?: boolean;
   showCopyright?: boolean;
 };
 
@@ -18,6 +20,7 @@ type RoleAppFrameProps = {
 export function RoleAppFrame({
   children,
   copyrightBottomOffset = 8,
+  reserveContentFooterSpace = true,
   showCopyright = true,
 }: RoleAppFrameProps) {
   useEffect(() => {
@@ -36,6 +39,7 @@ export function RoleAppFrame({
     <AppScreenBackground
       showCopyright={showCopyright}
       copyrightBottomOffset={copyrightBottomOffset}
+      reserveContentFooterSpace={reserveContentFooterSpace}
     >
       {children}
     </AppScreenBackground>

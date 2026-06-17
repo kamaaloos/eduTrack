@@ -15,7 +15,7 @@ export const dashboardStyles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: "transparent" },
   container: { flex: 1, paddingHorizontal: isWeb ? 0 : 16 },
   scrollContent: {
-    paddingBottom: isWeb ? 32 : FLOATING_TAB_BAR_INSET,
+    paddingBottom: isWeb ? 24 : FLOATING_TAB_BAR_INSET,
     ...(isWeb ? { paddingTop: 0 } : null),
   },
   horizontalScrollContent: {
@@ -51,15 +51,6 @@ export const dashboardStyles = StyleSheet.create({
     width: "100%",
     minHeight: isWeb ? 48 : undefined,
   },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#FFFFFF",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  avatarText: { color: "#1E3A8A", fontSize: 24, fontWeight: "700" },
   headerText: { flex: 1, minWidth: 0 },
   welcome: { color: "#BFDBFE", fontSize: 13, fontWeight: "500" },
   name: {
@@ -418,7 +409,7 @@ export const dashboardStyles = StyleSheet.create({
     alignItems: "center",
   },
   absenceButtonText: { color: "#FFFFFF", fontWeight: "700", fontSize: 15 },
-  scrollBottomSpacer: { height: isWeb ? 24 : 24 },
+  scrollBottomSpacer: { height: isWeb ? 0 : 24 },
 });
 
 /** Mobile: original slideCard only. Web carousel: fixed-width slideCardInCarousel. */

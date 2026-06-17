@@ -5,6 +5,7 @@ import {
   webAuthCardStyle,
   webPageCardFrameStyle,
   webPageFrameStyle,
+  webRoleSidebarPageCardStyle,
   webWideCardStyle,
 } from "../../src/constants/platformLayout";
 
@@ -46,13 +47,19 @@ export function WebPageCard({
 type WebPageCardFrameProps = {
   children: ReactNode;
   style?: ViewStyle;
+  /** Use a narrower centered card on desktop web with a left nav (teacher shells). */
+  sidebarLayout?: boolean;
 };
 
 /**
  * Full role screen frame on web: gradient backdrop + one large card
  * wrapping header and scrollable body.
  */
-export function WebPageCardFrame({ children, style }: WebPageCardFrameProps) {
+export function WebPageCardFrame({
+  children,
+  style,
+  sidebarLayout = false,
+}: WebPageCardFrameProps) {
   const layout = usePlatformLayout();
 
   if (!layout.isWeb) {
@@ -61,7 +68,15 @@ export function WebPageCardFrame({ children, style }: WebPageCardFrameProps) {
 
   return (
     <View style={webPageFrameStyle(layout)}>
-      <View style={[webPageCardFrameStyle(layout), style]}>{children}</View>
+      <View
+        style={[
+          webPageCardFrameStyle(layout),
+          sidebarLayout ? webRoleSidebarPageCardStyle(layout) : null,
+          style,
+        ]}
+      >
+        {children}
+      </View>
     </View>
   );
 }

@@ -23,6 +23,10 @@ import {
   loadParentChildrenDetailed,
   type ParentChild,
 } from "../../src/services/parentChildren";
+import {
+  feeMonthKey,
+  loadParentFeeMonths,
+} from "../../src/services/parentFeePayments";
 
 export default function ParentDashboard() {
   const { t } = useTranslation();
@@ -34,14 +38,19 @@ export default function ParentDashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [partialWarning, setPartialWarning] = useState<string | null>(null);
+  const [currentMonthPaid, setCurrentMonthPaid] = useState<boolean | null>(null);
 
   const load = useCallback(async () => {
     if (!user?.uid) return;
     setError(null);
     setPartialWarning(null);
     try {
-      const { children: list, failedStudentIds } =
-        await loadParentChildrenDetailed(user.uid);
+      const [{ children: list, failedStudentIds }, feeMonths] = await Promise.all([
+        loadParentChildrenDetailed(user.uid),
+        loadParentFeeMonths(user.uid),
+      ]);
+      const now = new Date();
+      setCurrentMonthPaid(feeMonths[feeMonthKey(now.getFullYear(), now.getMonth() + 1)] === true);
       setChildren(list);
       if (failedStudentIds.length > 0) {
         setPartialWarning(
@@ -115,6 +124,31 @@ export default function ParentDashboard() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
+          {currentMonthPaid != null ? (
+            <View style={styles.feeCard}>
+              <Text style={styles.feeTitle}>{t("parent.monthFeeStatus")}</Text>
+              <View
+                style={[
+                  styles.feePill,
+                  currentMonthPaid ? styles.feePillPaid : styles.feePillUnpaid,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.feePillText,
+                    currentMonthPaid
+                      ? styles.feePillTextPaid
+                      : styles.feePillTextUnpaid,
+                  ]}
+                >
+                  {currentMonthPaid
+                    ? t("parent.monthFeePaid")
+                    : t("parent.monthFeeNotPaid")}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+
           {error ? (
             <View style={styles.errorBox}>
               <Text style={styles.errorText}>{error}</Text>
@@ -152,6 +186,45 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  feeCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: INNER_CARD_BORDER_GREEN,
+    padding: 14,
+    marginBottom: 12,
+    maxWidth: 680,
+    alignSelf: "center",
+    width: "100%",
+    gap: 8,
+  },
+  feeTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  feePill: {
+    alignSelf: "flex-start",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  feePillPaid: {
+    backgroundColor: "#DCFCE7",
+  },
+  feePillUnpaid: {
+    backgroundColor: "#FEE2E2",
+  },
+  feePillText: {
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  feePillTextPaid: {
+    color: "#166534",
+  },
+  feePillTextUnpaid: {
+    color: "#B91C1C",
   },
   emptyBox: {
     alignItems: "center",

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -552,6 +553,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     backgroundColor: "#F9FAFB",
     marginBottom: 12,
+    ...(Platform.OS === "web"
+      ? ({ boxSizing: "border-box" } as object)
+      : null),
   },
   primaryBtn: {
     backgroundColor: "#2563EB",

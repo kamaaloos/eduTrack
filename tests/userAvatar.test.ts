@@ -1,19 +1,20 @@
 import {
   canUploadProfilePhoto,
-  getInitials,
+  parsePhotoURL,
 } from "../src/utils/userAvatar";
 
-describe("getInitials", () => {
-  it("uses first letters of first and last name", () => {
-    expect(getInitials("Ada Lovelace")).toBe("AL");
+describe("parsePhotoURL", () => {
+  it("returns trimmed url when valid", () => {
+    expect(parsePhotoURL(" https://cdn.example/a.jpg ")).toBe(
+      "https://cdn.example/a.jpg",
+    );
   });
 
-  it("uses single letter for one name", () => {
-    expect(getInitials("Ada")).toBe("A");
-  });
-
-  it("falls back to email", () => {
-    expect(getInitials(null, "ada@school.edu")).toBe("A");
+  it("returns null for empty or non-string values", () => {
+    expect(parsePhotoURL(null)).toBeNull();
+    expect(parsePhotoURL("")).toBeNull();
+    expect(parsePhotoURL("   ")).toBeNull();
+    expect(parsePhotoURL(undefined)).toBeNull();
   });
 });
 

@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { usePaginatedList } from "../../hooks/usePaginatedList";
+import { ListPageNav } from "../common/ListPageNav";
 
 export interface SelectableItem {
   id: string;
@@ -23,6 +25,8 @@ interface SelectorProps {
   searchable?: boolean;
   searchPlaceholder?: string;
   maxListHeight?: number;
+  /** Rows per page when searchable (default 4). */
+  visibleLimit?: number;
 }
 
 export const Selector: React.FC<SelectorProps> = ({
@@ -34,6 +38,7 @@ export const Selector: React.FC<SelectorProps> = ({
   searchable = false,
   searchPlaceholder,
   maxListHeight = 280,
+  visibleLimit = 4,
 }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -49,6 +54,17 @@ export const Selector: React.FC<SelectorProps> = ({
     }
     return items.filter((item) => item.name.toLowerCase().includes(query));
   }, [items, searchQuery]);
+
+  const pagination = usePaginatedList(
+    filteredItems,
+    searchable ? visibleLimit : filteredItems.length || 1,
+    searchQuery,
+  );
+  const displayItems = searchable ? pagination.pageItems : filteredItems;
+  const rowHeight = 49;
+  const listMaxHeight = searchable
+    ? Math.min(maxListHeight, visibleLimit * rowHeight)
+    : maxListHeight;
 
   if (items.length === 0) {
     return (
@@ -108,36 +124,48 @@ export const Selector: React.FC<SelectorProps> = ({
               </Text>
             </View>
           ) : (
-            <ScrollView
-              style={{ maxHeight: maxListHeight }}
-              nestedScrollEnabled
-              keyboardShouldPersistTaps="handled"
-            >
-              {filteredItems.map((item) => {
-                const selected = selectedId === item.id;
-                return (
-                  <TouchableOpacity
-                    key={item.id}
-                    style={[styles.option, selected && styles.selectedOption]}
-                    onPress={() => {
-                      onSelect(item.id);
-                      setOpen(false);
-                      setSearchQuery("");
-                    }}
-                    disabled={disabled}
-                  >
-                    <Text
-                      style={[
-                        styles.optionText,
-                        selected && styles.selectedOptionText,
-                      ]}
+            <>
+              <ScrollView
+                style={{ maxHeight: listMaxHeight }}
+                nestedScrollEnabled
+                keyboardShouldPersistTaps="handled"
+              >
+                {displayItems.map((item) => {
+                  const selected = selectedId === item.id;
+                  return (
+                    <TouchableOpacity
+                      key={item.id}
+                      style={[styles.option, selected && styles.selectedOption]}
+                      onPress={() => {
+                        onSelect(item.id);
+                        setOpen(false);
+                        setSearchQuery("");
+                      }}
+                      disabled={disabled}
                     >
-                      {item.name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+                      <Text
+                        style={[
+                          styles.optionText,
+                          selected && styles.selectedOptionText,
+                        ]}
+                      >
+                        {item.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+              {searchable ? (
+                <ListPageNav
+                  page={pagination.page}
+                  totalPages={pagination.totalPages}
+                  canPrev={pagination.canPrev}
+                  canNext={pagination.canNext}
+                  onPrev={pagination.prevPage}
+                  onNext={pagination.nextPage}
+                />
+              ) : null}
+            </>
           )}
         </View>
       )}

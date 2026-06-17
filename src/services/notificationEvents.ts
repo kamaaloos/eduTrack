@@ -1,5 +1,5 @@
 import type { CreateNotificationInput } from "./notifications";
-import { createNotifications } from "./notifications";
+import { createNotification, createNotifications } from "./notifications";
 import {
   collection,
   getDocs,
@@ -243,6 +243,65 @@ export async function notifyTeachersParentAttendanceResponse(params: {
     studentId: params.studentId,
     actorId: params.parentId,
   });
+}
+
+export async function notifyAdminsParentComplaint(params: {
+  parentId: string;
+  parentName: string;
+  subject: string;
+  message: string;
+}): Promise<void> {
+  if (!db) return;
+
+  try {
+    const admins = await getDocs(
+      query(collection(db, "users"), where("role", "==", "admin")),
+    );
+    if (admins.empty) return;
+
+    await createNotifications(
+      admins.docs.map((adminDoc) => ({
+        title: "New parent complaint",
+        message: `Please check complaints. ${params.parentName} submitted "${params.subject}".`,
+        type: "parent_complaint",
+        targetRole: "admin",
+        targetUserId: adminDoc.id,
+        actorId: params.parentId,
+        actorRole: "parent",
+        localeParams: {
+          parentName: params.parentName,
+          subject: params.subject,
+        },
+      })),
+    );
+  } catch (err) {
+    console.warn("notifyAdminsParentComplaint failed:", err);
+  }
+}
+
+export async function notifyParentComplaintResolved(params: {
+  parentId: string;
+  subject: string;
+  adminId: string;
+}): Promise<void> {
+  if (!db || !params.parentId) return;
+
+  try {
+    await createNotification({
+      title: "Complaint resolved",
+      message: `Your complaint "${params.subject}" has been resolved. Please check for any follow-up.`,
+      type: "parent_complaint_resolved",
+      targetRole: "parent",
+      targetUserId: params.parentId,
+      actorId: params.adminId,
+      actorRole: "admin",
+      localeParams: {
+        subject: params.subject,
+      },
+    });
+  } catch (err) {
+    console.warn("notifyParentComplaintResolved failed:", err);
+  }
 }
 
 export async function notifySchoolUsageExpiring(params: {

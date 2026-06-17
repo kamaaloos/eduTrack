@@ -14,6 +14,8 @@ import {
   View,
 } from "react-native";
 import type { ChipOption } from "../teachers/SelectChips";
+import { usePaginatedList } from "../../hooks/usePaginatedList";
+import { ListPageNav } from "../common/ListPageNav";
 
 const isWeb = Platform.OS === "web";
 
@@ -26,6 +28,8 @@ type OptionPickerModalProps = {
   onClose: () => void;
   loading?: boolean;
   emptyMessage?: string;
+  /** Max rows shown at once; use search to find others (default 4). */
+  visibleLimit?: number;
 };
 
 export function OptionPickerModal({
@@ -37,6 +41,7 @@ export function OptionPickerModal({
   onClose,
   loading = false,
   emptyMessage,
+  visibleLimit = 4,
 }: OptionPickerModalProps) {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
@@ -46,6 +51,8 @@ export function OptionPickerModal({
     if (!q) return options;
     return options.filter((opt) => opt.label.toLowerCase().includes(q));
   }, [options, search]);
+
+  const pagination = usePaginatedList(filtered, visibleLimit, search);
 
   const handleClose = () => {
     setSearch("");
@@ -89,36 +96,50 @@ export function OptionPickerModal({
               size="large"
             />
           ) : (
-            <FlatList
-              data={filtered}
-              keyExtractor={(item) => item.value}
-              keyboardShouldPersistTaps="handled"
-              style={styles.list}
-              renderItem={({ item }) => {
-                const active = item.value === selectedValue;
-                return (
-                  <Pressable
-                    style={[styles.item, active && styles.itemActive]}
-                    onPress={() => handleSelect(item.value)}
-                  >
-                    <Text
-                      style={[styles.itemText, active && styles.itemTextActive]}
-                      numberOfLines={2}
+            <>
+              <FlatList
+                data={pagination.pageItems}
+                keyExtractor={(item) => item.value}
+                keyboardShouldPersistTaps="handled"
+                style={styles.list}
+                renderItem={({ item }) => {
+                  const active = item.value === selectedValue;
+                  return (
+                    <Pressable
+                      style={[styles.item, active && styles.itemActive]}
+                      onPress={() => handleSelect(item.value)}
                     >
-                      {item.label}
-                    </Text>
-                    {active ? (
-                      <Ionicons name="checkmark-circle" size={22} color="#2563EB" />
-                    ) : null}
-                  </Pressable>
-                );
-              }}
-              ListEmptyComponent={
-                <Text style={styles.empty}>
-                  {emptyMessage ?? t("directMessage.noMatch")}
-                </Text>
-              }
-            />
+                      <Text
+                        style={[styles.itemText, active && styles.itemTextActive]}
+                        numberOfLines={2}
+                      >
+                        {item.label}
+                      </Text>
+                      {active ? (
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={22}
+                          color="#2563EB"
+                        />
+                      ) : null}
+                    </Pressable>
+                  );
+                }}
+                ListEmptyComponent={
+                  <Text style={styles.empty}>
+                    {emptyMessage ?? t("directMessage.noMatch")}
+                  </Text>
+                }
+              />
+              <ListPageNav
+                page={pagination.page}
+                totalPages={pagination.totalPages}
+                canPrev={pagination.canPrev}
+                canNext={pagination.canNext}
+                onPrev={pagination.prevPage}
+                onNext={pagination.nextPage}
+              />
+            </>
           )}
         </Pressable>
       </Pressable>

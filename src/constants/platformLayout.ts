@@ -10,6 +10,8 @@ import {
   WEB_DASHBOARD_MAX_WIDTH_TABLET,
   WEB_PAGE_MAX_WIDTH_DESKTOP,
   WEB_PAGE_MAX_WIDTH_TABLET,
+  WEB_ROLE_SIDEBAR_PAGE_MAX_WIDTH_DESKTOP,
+  WEB_ROLE_SIDEBAR_PAGE_MAX_WIDTH_TABLET,
 } from "../../hooks/usePlatformLayout";
 import { platformShadow } from "../utils/platformShadow";
 
@@ -249,6 +251,27 @@ export function webPageFrameStyle(layout: PlatformLayout): ViewStyle {
     paddingHorizontal: pad,
     paddingTop: 12,
     paddingBottom: 8,
+  };
+}
+
+/** Narrower centered card for role shells beside desktop sidebar nav. */
+export function webRoleSidebarPageCardStyle(layout: PlatformLayout): ViewStyle {
+  if (!layout.isWeb) {
+    return {};
+  }
+
+  const maxWidth = layout.isDesktopWeb
+    ? WEB_ROLE_SIDEBAR_PAGE_MAX_WIDTH_DESKTOP
+    : layout.isTabletWeb
+      ? WEB_ROLE_SIDEBAR_PAGE_MAX_WIDTH_TABLET
+      : ("100%" as const);
+
+  return {
+    flex: 1,
+    alignSelf: "center",
+    width: "100%",
+    maxWidth,
+    minHeight: 0,
   };
 }
 

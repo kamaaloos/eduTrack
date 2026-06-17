@@ -161,6 +161,9 @@ export function WebLandingPage() {
               <TouchableOpacity onPress={() => router.push("/about")}>
                 <Text style={styles.utilityLink}>{t("about.shortTitle")}</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/faq")}>
+                <Text style={styles.utilityLink}>{t("faq.shortTitle")}</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/contact")}>
                 <Text style={styles.utilityLink}>{t("landing.contactUs")}</Text>
               </TouchableOpacity>
@@ -189,6 +192,9 @@ export function WebLandingPage() {
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/about")}>
                 <Text style={styles.navLink}>{t("about.shortTitle")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/faq")}>
+                <Text style={styles.navLink}>{t("faq.shortTitle")}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/contact")}>
                 <Text style={styles.navLink}>{t("landing.contactUs")}</Text>
@@ -322,6 +328,9 @@ export function WebLandingPage() {
             <View style={styles.footerLinks}>
               <TouchableOpacity onPress={() => router.push("/about")}>
                 <Text style={styles.footerLink}>{t("about.shortTitle")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/faq")}>
+                <Text style={styles.footerLink}>{t("faq.shortTitle")}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/contact")}>
                 <Text style={styles.footerLink}>{t("landing.contactUs")}</Text>
