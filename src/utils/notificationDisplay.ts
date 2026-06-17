@@ -1,9 +1,13 @@
-import type { TFunction } from "i18next";
 import {
   NOTIFICATION_TYPE_LABELS,
   type AppNotification,
   type NotificationType,
 } from "../services/notifications";
+
+export type NotificationTranslate = (
+  key: string,
+  params?: Record<string, string>,
+) => string;
 
 function parseComplaintParams(item: AppNotification): {
   parentName?: string;
@@ -35,7 +39,7 @@ function extractParentComplaintParentName(message: string): string | null {
 
 export function getLocalizedNotificationTypeLabel(
   type: NotificationType,
-  t: TFunction,
+  t: NotificationTranslate,
 ): string {
   const key = `notifications.types.${type}`;
   const translated = t(key);
@@ -45,7 +49,7 @@ export function getLocalizedNotificationTypeLabel(
 
 export function getLocalizedNotificationDisplay(
   item: AppNotification,
-  t: TFunction,
+  t: NotificationTranslate,
 ): { title: string; message: string; typeLabel: string } {
   const typeLabel = getLocalizedNotificationTypeLabel(item.type, t);
 

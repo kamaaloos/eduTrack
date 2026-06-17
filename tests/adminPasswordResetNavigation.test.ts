@@ -16,6 +16,7 @@ function notification(partial: Partial<AppNotification> & Pick<AppNotification, 
     classId: partial.classId ?? null,
     actorId: partial.actorId ?? null,
     actorRole: partial.actorRole ?? null,
+    localeParams: partial.localeParams ?? null,
     read: partial.read ?? false,
     createdAt: partial.createdAt ?? null,
   };
