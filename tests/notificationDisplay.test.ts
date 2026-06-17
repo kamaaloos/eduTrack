@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import type { AppNotification } from "../src/services/notifications";
 import { getLocalizedNotificationDisplay } from "../src/utils/notificationDisplay";
 
