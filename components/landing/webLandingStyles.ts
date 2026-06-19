@@ -1,8 +1,9 @@
 import { Platform, StyleSheet } from "react-native";
+import { WEB_PAGE_MAX_WIDTH_DESKTOP } from "../../hooks/usePlatformLayout";
 
 const isWeb = Platform.OS === "web";
 
-export const WEB_LANDING_MAX_WIDTH = 1200;
+export const WEB_LANDING_MAX_WIDTH = WEB_PAGE_MAX_WIDTH_DESKTOP;
 
 const webOnly = (style: object) => (isWeb ? style : {});
 
@@ -49,8 +50,18 @@ export const webLandingStyles = StyleSheet.create({
   utilityRight: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-end",
     gap: 16,
     flexWrap: "wrap",
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  utilityTagline: {
+    color: "#64748B",
+    fontSize: 13,
+    fontWeight: "600",
+    flexShrink: 1,
+    textAlign: "right",
   },
   utilityLink: {
     color: "#64748B",
@@ -60,10 +71,9 @@ export const webLandingStyles = StyleSheet.create({
   navbar: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     paddingVertical: isWeb ? 18 : 14,
-    gap: 16,
-    flexWrap: "wrap",
+    gap: isWeb ? 20 : 12,
+    flexWrap: isWeb ? "nowrap" : "wrap",
     ...webOnly({
       position: "sticky",
       top: 0,
@@ -71,6 +81,9 @@ export const webLandingStyles = StyleSheet.create({
       backgroundColor: "rgba(250, 250, 250, 0.92)",
       backdropFilter: "blur(12px)",
       WebkitBackdropFilter: "blur(12px)",
+      display: "grid",
+      gridTemplateColumns: "auto minmax(0, 1fr) auto",
+      columnGap: 20,
     }),
   },
   brandRow: {
@@ -78,6 +91,10 @@ export const webLandingStyles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     flexShrink: 0,
+    ...webOnly({
+      gridColumn: 1,
+      gridRow: 1,
+    }),
   },
   brandTextWrap: {
     minWidth: 0,
@@ -97,30 +114,41 @@ export const webLandingStyles = StyleSheet.create({
   navLinks: {
     flexDirection: "row",
     alignItems: "center",
-    gap: isWeb ? 28 : 16,
-    flexWrap: "wrap",
-    flex: 1,
     justifyContent: "center",
+    gap: isWeb ? 20 : 16,
+    flexWrap: isWeb ? "nowrap" : "wrap",
+    flex: isWeb ? undefined : 1,
+    minWidth: 0,
+    ...webOnly({
+      gridColumn: 2,
+      gridRow: 1,
+      justifySelf: "center",
+    }),
+  },
+  navLinkBtn: {
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+    flexShrink: 0,
   },
   navLink: {
     color: "#334155",
     fontSize: 14,
     fontWeight: "600",
-  },
-  navActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    flexShrink: 0,
-    flexWrap: "wrap",
+    ...webOnly({
+      whiteSpace: "nowrap",
+    }),
   },
   navCta: {
     backgroundColor: "#0F172A",
     paddingHorizontal: 20,
     paddingVertical: 11,
     borderRadius: 999,
+    flexShrink: 0,
     ...webOnly({
       boxShadow: "0 4px 14px rgba(15, 23, 42, 0.18)",
+      gridColumn: 3,
+      gridRow: 1,
+      justifySelf: "end",
     }),
   },
   navCtaText: {
@@ -294,6 +322,9 @@ export const webLandingStyles = StyleSheet.create({
   },
   featuresSection: {
     paddingBottom: 8,
+    ...webOnly({
+      scrollMarginTop: 96,
+    }),
   },
   featuresCard: {
     borderRadius: isWeb ? 28 : 22,
@@ -325,10 +356,38 @@ export const webLandingStyles = StyleSheet.create({
     color: "rgba(255,255,255,0.88)",
     textAlign: "center",
     marginTop: 16,
-    marginBottom: isWeb ? 36 : 24,
+    marginBottom: isWeb ? 28 : 20,
     lineHeight: isWeb ? 28 : 24,
     maxWidth: 640,
     alignSelf: "center",
+  },
+  capabilityRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 10,
+    marginBottom: isWeb ? 32 : 24,
+    maxWidth: 820,
+    alignSelf: "center",
+  },
+  capabilityPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.92)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.7)",
+    ...webOnly({
+      boxShadow: "0 2px 10px rgba(15, 23, 42, 0.06)",
+    }),
+  },
+  capabilityText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#334155",
   },
   featureGrid: {
     flexDirection: "row",

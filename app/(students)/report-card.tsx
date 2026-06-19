@@ -1,4 +1,4 @@
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Platform, Text, View } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../src/context/authContext";
@@ -6,7 +6,10 @@ import { ReportCardView } from "../../components/report/ReportCardView";
 import { generateReportCard } from "../../src/services/reportCardEngine";
 import type { ReportCardData } from "../../src/services/reportCardEngine";
 import { StudentScreenShell } from "../../components/students/StudentScreenShell";
-import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
+import {
+  STUDENT_MENU_REPORT_WEB_MAX_WIDTH,
+  studentScreenStyles as styles,
+} from "../../components/students/studentScreenStyles";
 
 export default function ReportCardScreen() {
   const { t } = useTranslation();
@@ -64,7 +67,15 @@ export default function ReportCardScreen() {
 
   return (
     <StudentScreenShell title={t("student.reportCard")} showMenu scroll={false}>
-      <ReportCardView report={report} embedded />
+      <View style={styles.reportShellContent}>
+        <ReportCardView
+          report={report}
+          embedded
+          contentMaxWidth={
+            Platform.OS === "web" ? STUDENT_MENU_REPORT_WEB_MAX_WIDTH : undefined
+          }
+        />
+      </View>
     </StudentScreenShell>
   );
 }

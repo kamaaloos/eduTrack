@@ -46,28 +46,25 @@ export function FaqAccordion() {
 
 const styles = StyleSheet.create({
   list: {
-    gap: 10,
+    gap: 8,
   },
   item: {
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FAFAFA",
     overflow: "hidden",
   },
   questionRow: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "space-between",
     gap: 12,
     paddingHorizontal: 16,
-    paddingVertical: 14,
-    backgroundColor: "#F8FAFC",
+    paddingVertical: 15,
   },
   questionRowOpen: {
     backgroundColor: "#EFF6FF",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
   },
   question: {
     flex: 1,
@@ -78,7 +75,11 @@ const styles = StyleSheet.create({
   },
   answerWrap: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingTop: 4,
+    paddingBottom: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#E2E8F0",
+    backgroundColor: "#FFFFFF",
   },
   answer: {
     fontSize: 14,

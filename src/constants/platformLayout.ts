@@ -6,6 +6,7 @@ import {
 } from "./innerCardBorders";
 import {
   WEB_AUTH_MAX_WIDTH,
+  WEB_CONTENT_MAX_WIDTH,
   WEB_DASHBOARD_MAX_WIDTH_DESKTOP,
   WEB_DASHBOARD_MAX_WIDTH_TABLET,
   WEB_PAGE_MAX_WIDTH_DESKTOP,
@@ -323,6 +324,21 @@ export function webWideCardStyle(layout: PlatformLayout): ViewStyle {
     width: "100%",
     maxWidth: webPageMaxWidth(layout),
     alignSelf: "center",
+  };
+}
+
+/** Readable content pages (FAQ). */
+export function webContentCardStyle(layout: PlatformLayout): ViewStyle {
+  if (!layout.isWeb) {
+    return {};
+  }
+
+  return {
+    width: "100%",
+    maxWidth: WEB_CONTENT_MAX_WIDTH,
+    alignSelf: "center",
+    paddingHorizontal: layout.isCompactWeb ? 20 : 28,
+    paddingVertical: layout.isCompactWeb ? 24 : 32,
   };
 }
 

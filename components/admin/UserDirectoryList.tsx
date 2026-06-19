@@ -1,5 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { collection, getDocs } from "firebase/firestore";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -12,6 +14,7 @@ import {
   View,
 } from "react-native";
 import type { UserData, UserRole } from "../../hooks/useAdminUsers";
+import type { TeacherSubjectLink } from "../../hooks/useAdminRelations";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useAdminData } from "../../src/context/adminDataContext";
@@ -32,6 +35,12 @@ import {
 } from "../../src/utils/confirmDialog";
 import { UserAvatar } from "../common/UserAvatar";
 import { parsePhotoURL } from "../../src/utils/userAvatar";
+import { db } from "../../src/services/firebase";
+import {
+  formatTeacherClassAssigned,
+  formatTeacherSubjects,
+  type TeacherClassLink,
+} from "../../src/utils/teacherDirectoryDisplay";
 import { AuthFormField } from "../auth/AuthFormField";
 import { TempPasswordShareModal } from "./TempPasswordShareModal";
 import { DirectoryPagination } from "./DirectoryPagination";
@@ -110,7 +119,9 @@ function UserDirectoryCard({
   item,
   layout,
   showClassMeta,
+  showTeacherMeta,
   classNameById,
+  teacherMetaById,
   onEdit,
   onPassword,
   onRemove,
@@ -118,12 +129,15 @@ function UserDirectoryCard({
   item: UserData;
   layout: ReturnType<typeof usePlatformLayout>;
   showClassMeta: boolean;
+  showTeacherMeta: boolean;
   classNameById: Record<string, string>;
+  teacherMetaById: Record<string, { classes: string; subjects: string }>;
   onEdit: (user: UserData) => void;
   onPassword: (user: UserData) => void;
   onRemove: (user: UserData) => void;
 }) {
   const { t } = useTranslation();
+  const teacherMeta = teacherMetaById[item.id];
 
   return (
     <View style={adminDirectoryCardStyle(layout)}>
@@ -154,6 +168,16 @@ function UserDirectoryCard({
               {resolveClassDisplayName(item.classId, classNameById)}
             </Text>
           ) : null}
+          {showTeacherMeta ? (
+            <>
+              <Text style={styles.meta} numberOfLines={2}>
+                {t("admin.classAssignedColumn")}: {teacherMeta?.classes ?? "—"}
+              </Text>
+              <Text style={styles.meta} numberOfLines={2}>
+                {t("common.subject")}: {teacherMeta?.subjects ?? "—"}
+              </Text>
+            </>
+          ) : null}
         </View>
       </View>
 
@@ -179,10 +203,23 @@ export function UserDirectoryList({
   const layout = usePlatformLayout();
   const showTableLayout = layout.isDesktopWeb;
   const showClassColumn = role === "student";
+  const showTeacherColumns = role === "teacher";
   const roleLabel = t(`common.${role}`);
-  const { usersLoading, updateUser, setUserPassword, removeUser, classes } =
-    useAdminData();
+  const {
+    usersLoading,
+    updateUser,
+    setUserPassword,
+    removeUser,
+    classes,
+    loadTeacherSubjectAssignments,
+  } = useAdminData();
   const [search, setSearch] = useState("");
+  const [teacherSubjectLinks, setTeacherSubjectLinks] = useState<
+    TeacherSubjectLink[]
+  >([]);
+  const [teacherClassLinks, setTeacherClassLinks] = useState<TeacherClassLink[]>(
+    [],
+  );
   const [editing, setEditing] = useState<UserData | null>(null);
   const [passwordUser, setPasswordUser] = useState<UserData | null>(null);
   const [newPassword, setNewPassword] = useState("");
@@ -217,6 +254,63 @@ export function UserDirectoryList({
       ) as Record<string, string>,
     [classes],
   );
+
+  const loadTeacherMeta = useCallback(async () => {
+    if (role !== "teacher") return;
+
+    try {
+      const [subjectLinks, classSnap] = await Promise.all([
+        loadTeacherSubjectAssignments(),
+        getDocs(collection(db, "teacherClasses")),
+      ]);
+
+      setTeacherSubjectLinks(subjectLinks);
+      setTeacherClassLinks(
+        classSnap.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            teacherId: data.teacherId as string,
+            classId: data.classId as string,
+          };
+        }),
+      );
+    } catch (err) {
+      console.error("Load teacher directory assignments:", err);
+    }
+  }, [loadTeacherSubjectAssignments, role]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadTeacherMeta();
+    }, [loadTeacherMeta]),
+  );
+
+  const teacherMetaById = useMemo(() => {
+    if (!showTeacherColumns) {
+      return {};
+    }
+
+    return Object.fromEntries(
+      users.map((teacher) => [
+        teacher.id,
+        {
+          classes: formatTeacherClassAssigned(
+            teacher.id,
+            teacherSubjectLinks,
+            teacherClassLinks,
+            classNameById,
+          ),
+          subjects: formatTeacherSubjects(teacher.id, teacherSubjectLinks),
+        },
+      ]),
+    ) as Record<string, { classes: string; subjects: string }>;
+  }, [
+    classNameById,
+    showTeacherColumns,
+    teacherClassLinks,
+    teacherSubjectLinks,
+    users,
+  ]);
 
   const openEdit = (user: UserData) => {
     setEditing(user);
@@ -345,7 +439,9 @@ export function UserDirectoryList({
           item={item}
           layout={layout}
           showClassMeta={showClassColumn}
+          showTeacherMeta={showTeacherColumns}
           classNameById={classNameById}
+          teacherMetaById={teacherMetaById}
           onEdit={openEdit}
           onPassword={openPasswordModal}
           onRemove={onRemove}
@@ -364,6 +460,16 @@ export function UserDirectoryList({
         <Text style={[styles.th, styles.colPhone]}>{t("admin.phoneLabel")}</Text>
         {showClassColumn ? (
           <Text style={[styles.th, styles.colClass]}>{t("common.class")}</Text>
+        ) : null}
+        {showTeacherColumns ? (
+          <>
+            <Text style={[styles.th, styles.colTeacherClass]}>
+              {t("admin.classAssignedColumn")}
+            </Text>
+            <Text style={[styles.th, styles.colTeacherSubject]}>
+              {t("common.subject")}
+            </Text>
+          </>
         ) : null}
         <Text style={[styles.th, styles.colActions]}>
           {t("admin.directoryActionsColumn")}
@@ -397,6 +503,22 @@ export function UserDirectoryList({
             <Text style={[styles.tableCell, styles.colClass]} numberOfLines={1}>
               {resolveClassDisplayName(item.classId, classNameById)}
             </Text>
+          ) : null}
+          {showTeacherColumns ? (
+            <>
+              <Text
+                style={[styles.tableCell, styles.colTeacherClass]}
+                numberOfLines={2}
+              >
+                {teacherMetaById[item.id]?.classes ?? "—"}
+              </Text>
+              <Text
+                style={[styles.tableCell, styles.colTeacherSubject]}
+                numberOfLines={2}
+              >
+                {teacherMetaById[item.id]?.subjects ?? "—"}
+              </Text>
+            </>
           ) : null}
           <View style={styles.colActions}>
             <UserRowActions
@@ -688,6 +810,8 @@ const styles = StyleSheet.create({
   colEmail: { flex: 1.4, minWidth: 0 },
   colPhone: { flex: 1, minWidth: 0 },
   colClass: { width: 88, minWidth: 0 },
+  colTeacherClass: { flex: 1, minWidth: 0 },
+  colTeacherSubject: { flex: 1, minWidth: 0 },
   colActions: { width: 132, alignItems: "flex-end" },
   tableNameCell: {
     flexDirection: "row",

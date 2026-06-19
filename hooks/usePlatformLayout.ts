@@ -3,14 +3,16 @@ import { Platform, useWindowDimensions } from "react-native";
 export const WEB_TABLET_BREAKPOINT = 768;
 export const WEB_DESKTOP_BREAKPOINT = 1024;
 
-export const WEB_PAGE_MAX_WIDTH_DESKTOP = 1200;
-export const WEB_PAGE_MAX_WIDTH_TABLET = 960;
+export const WEB_PAGE_MAX_WIDTH_DESKTOP = 960;
+export const WEB_PAGE_MAX_WIDTH_TABLET = 900;
 /** Role pages with a left nav (teacher/parent desktop web). */
 export const WEB_ROLE_SIDEBAR_PAGE_MAX_WIDTH_DESKTOP = 720;
 export const WEB_ROLE_SIDEBAR_PAGE_MAX_WIDTH_TABLET = 640;
 export const WEB_AUTH_MAX_WIDTH = 520;
-export const WEB_DASHBOARD_MAX_WIDTH_DESKTOP = 1200;
-export const WEB_DASHBOARD_MAX_WIDTH_TABLET = 960;
+/** FAQ and other readable prose pages on web. */
+export const WEB_CONTENT_MAX_WIDTH = 680;
+export const WEB_DASHBOARD_MAX_WIDTH_DESKTOP = 960;
+export const WEB_DASHBOARD_MAX_WIDTH_TABLET = 900;
 
 export type PlatformLayout = {
   isWeb: boolean;

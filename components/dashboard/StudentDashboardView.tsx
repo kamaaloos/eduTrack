@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Platform, RefreshControl, ScrollView, View } from "react-native";
 import { useWebDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
 import { useUnreadNotificationCount } from "../../hooks/useNotifications";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { AuthContext } from "../../src/context/authContext";
 import { getTodayDayKey, getWeekdayLabel } from "../../src/utils/scheduleFormat";
 import { DashboardAbsenceReportSection } from "./DashboardAbsenceReportSection";
@@ -48,6 +49,7 @@ export function StudentDashboardView({
   gradedExamIds,
 }: StudentDashboardViewProps) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const { logout, user } = useContext(AuthContext);
   const notificationUnreadCount = useUnreadNotificationCount(
     showNotifications ? user?.uid : null,
@@ -86,7 +88,7 @@ export function StudentDashboardView({
   return (
     <View style={styles.mainContainer}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame>
+      <WebPageCardFrame sidebarLayout={layout.isDesktopWeb && useParentRoutes}>
         <DashboardHeader
           displayName={displayName}
           photoURL={photoURL}
@@ -151,15 +153,17 @@ export function StudentDashboardView({
                 listRoute={listRoute("/exams")}
               />
 
-              <DashboardRemarksSection
-                remarksAndAttendance={remarksAndAttendance}
-                studentId={studentId}
-                displayName={displayName}
-                classId={classId}
-                useParentRoutes={useParentRoutes}
-                navigation={navigation}
-                listRoute={listRoute("/attendance")}
-              />
+              {!layout.isDesktopWeb ? (
+                <DashboardRemarksSection
+                  remarksAndAttendance={remarksAndAttendance}
+                  studentId={studentId}
+                  displayName={displayName}
+                  classId={classId}
+                  useParentRoutes={useParentRoutes}
+                  navigation={navigation}
+                  listRoute={listRoute("/attendance")}
+                />
+              ) : null}
 
               {showAbsenceReport && parentId ? (
                 <DashboardAbsenceReportSection
@@ -171,6 +175,18 @@ export function StudentDashboardView({
             </>
           }
         />
+
+        {layout.isDesktopWeb ? (
+          <DashboardRemarksSection
+            remarksAndAttendance={remarksAndAttendance}
+            studentId={studentId}
+            displayName={displayName}
+            classId={classId}
+            useParentRoutes={useParentRoutes}
+            navigation={navigation}
+            listRoute={listRoute("/attendance")}
+          />
+        ) : null}
 
         <View style={styles.scrollBottomSpacer} />
       </ScrollView>

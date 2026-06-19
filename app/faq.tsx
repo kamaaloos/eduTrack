@@ -36,7 +36,7 @@ export default function FaqScreen() {
           ]}
           showsVerticalScrollIndicator={false}
         >
-          <WebPageCard variant="wide">
+          <WebPageCard variant="content">
             <Text style={styles.heading}>{t("faq.heading")}</Text>
             <Text style={styles.subtitle}>{t("faq.subtitle")}</Text>
             <FaqAccordion />
@@ -62,23 +62,24 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     alignItems: "center",
+    flexGrow: 1,
   },
   heading: {
     fontSize: 24,
     fontWeight: "800",
-    color: "#0C4A6E",
+    color: "#0F172A",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 15,
     lineHeight: 22,
     color: "#64748B",
-    marginBottom: 20,
+    marginBottom: 24,
   },
   contactBtn: {
-    marginTop: 24,
-    backgroundColor: "#2563EB",
-    borderRadius: 12,
+    marginTop: 8,
+    backgroundColor: "#0F172A",
+    borderRadius: 999,
     paddingVertical: 14,
     alignItems: "center",
   },

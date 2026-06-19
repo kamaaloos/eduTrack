@@ -54,7 +54,7 @@ export function TeacherDashboardView({
   return (
     <View style={styles.mainContainer}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame>
+      <WebPageCardFrame sidebarLayout>
         <TeacherDashboardHeader
           displayName={displayName}
           photoURL={photoURL}
@@ -90,6 +90,7 @@ export function TeacherDashboardView({
                 selectedClassId={selectedClassId}
                 onSelectClass={onSelectClass}
               />
+              <TeacherDashboardAnnouncementsSection announcements={announcements} />
             </>
           }
           secondary={
@@ -99,8 +100,6 @@ export function TeacherDashboardView({
                 selectedClassLabel={selectedClassLabel}
                 filteredStudents={filteredStudents}
               />
-
-              <TeacherDashboardAnnouncementsSection announcements={announcements} />
             </>
           }
         />

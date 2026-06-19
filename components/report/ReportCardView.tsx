@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import type { ReportCardData } from "../../src/services/reportCardEngine";
 import { attendanceHistoryLabel } from "../../src/constants/attendanceHistory";
@@ -8,11 +8,17 @@ import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import { getAttendanceColor } from "../../src/utils/dashboardUi";
 import { getAttendanceStatusLabel } from "../../src/utils/attendanceLabels";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import {
+  ReportCardWebAbsencesSection,
+  ReportCardWebExamsSection,
+} from "./ReportCardWebSections";
 
 type ReportCardViewProps = {
   report: ReportCardData;
   showParentSeen?: boolean;
   embedded?: boolean;
+  /** Override centered column width (e.g. student menu Reports on web). */
+  contentMaxWidth?: number;
 };
 
 function gradeColor(letter: string) {
@@ -27,19 +33,33 @@ export function ReportCardView({
   report,
   showParentSeen = true,
   embedded = false,
+  contentMaxWidth,
 }: ReportCardViewProps) {
   const { t } = useTranslation();
+  const columnMaxWidth = contentMaxWidth ?? STUDENT_LIST_MAX_WIDTH;
+  const useWideColumn = contentMaxWidth != null;
+  const useWebFilteredLists = Platform.OS === "web";
+  const absentCount = report.attendance.records.filter(
+    (row) => row.status === "absent",
+  ).length;
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, useWideColumn && styles.containerWide]}
       contentContainerStyle={[
         styles.content,
         embedded ? styles.contentEmbedded : null,
+        useWideColumn ? styles.contentWide : null,
       ]}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.cardColumn}>
+      <View
+        style={[
+          styles.cardColumn,
+          useWideColumn && styles.cardColumnWide,
+          { maxWidth: columnMaxWidth },
+        ]}
+      >
       <View style={styles.hero}>
         <Text style={styles.heroEyebrow}>{t("reportCard.heroEyebrow")}</Text>
         <Text style={styles.heroTitle}>{report.studentName}</Text>
@@ -76,15 +96,30 @@ export function ReportCardView({
         </View>
         {report.attendance.total > 0 ? (
           <Text style={styles.heroFootnote}>
-            {t("reportCard.attendanceFootnote", {
-              present: report.attendance.present,
-              total: report.attendance.total,
-              window: attendanceHistoryLabel(),
-            })}
+            {t(
+              useWebFilteredLists
+                ? "reportCard.attendanceFootnoteAbsent"
+                : "reportCard.attendanceFootnote",
+              useWebFilteredLists
+                ? {
+                    absent: absentCount,
+                    total: report.attendance.total,
+                    window: attendanceHistoryLabel(),
+                  }
+                : {
+                    present: report.attendance.present,
+                    total: report.attendance.total,
+                    window: attendanceHistoryLabel(),
+                  },
+            )}
           </Text>
         ) : null}
       </View>
 
+      {useWebFilteredLists ? (
+        <ReportCardWebAbsencesSection records={report.attendance.records} />
+      ) : (
+        <>
       <Text style={styles.sectionTitle}>{t("reportCard.sectionAttendance")}</Text>
       {report.attendance.records.length === 0 ? (
         <View style={styles.emptyCard}>
@@ -123,7 +158,16 @@ export function ReportCardView({
           );
         })
       )}
+        </>
+      )}
 
+      {useWebFilteredLists ? (
+        <ReportCardWebExamsSection
+          exams={report.exams}
+          showParentSeen={showParentSeen}
+        />
+      ) : (
+        <>
       <Text style={styles.sectionTitle}>{t("reportCard.sectionExams")}</Text>
       {report.exams.length === 0 ? (
         <View style={styles.emptyCard}>
@@ -203,6 +247,8 @@ export function ReportCardView({
           </View>
         ))
       )}
+        </>
+      )}
 
       <Text style={styles.sectionTitle}>{t("reportCard.sectionSubjectGrades")}</Text>
       {report.subjects.length === 0 ? (
@@ -239,6 +285,10 @@ export function ReportCardView({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "transparent" },
+  containerWide: {
+    width: "100%",
+    alignSelf: "stretch",
+  },
   content: {
     padding: 20,
     paddingBottom: FLOATING_TAB_BAR_INSET,
@@ -250,9 +300,16 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     alignItems: "center",
   },
+  contentWide: {
+    width: "100%",
+    alignItems: "stretch",
+  },
   cardColumn: {
     width: "100%",
-    maxWidth: STUDENT_LIST_MAX_WIDTH,
+  },
+  cardColumnWide: {
+    alignSelf: "center",
+    width: "100%",
   },
   hero: {
     backgroundColor: "#1E3A8A",
@@ -291,7 +348,11 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   statBoxAccent: { backgroundColor: "rgba(255,255,255,0.2)" },
-  statLabel: { color: "#BFDBFE", fontSize: 11, fontWeight: "600" },
+  statLabel: {
+    color: "#BFDBFE",
+    fontSize: 11,
+    fontWeight: "600",
+  },
   statValue: { color: "#FFFFFF", fontSize: 22, fontWeight: "800", marginTop: 4 },
   statGrade: { fontSize: 26, fontWeight: "800", marginTop: 2 },
   attendanceRow: {

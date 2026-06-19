@@ -3,6 +3,7 @@ import { Platform, StyleSheet, View, type ViewStyle } from "react-native";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
   webAuthCardStyle,
+  webContentCardStyle,
   webPageCardFrameStyle,
   webPageFrameStyle,
   webRoleSidebarPageCardStyle,
@@ -12,8 +13,8 @@ import {
 type WebPageCardProps = {
   children: ReactNode;
   style?: ViewStyle;
-  /** Narrow card for login / about; wide for standalone content */
-  variant?: "auth" | "wide";
+  /** Narrow card for login / about; content for FAQ; wide for full-width pages */
+  variant?: "auth" | "content" | "wide";
   fill?: boolean;
 };
 
@@ -34,7 +35,11 @@ export function WebPageCard({
     <View
       style={[
         styles.card,
-        variant === "wide" ? webWideCardStyle(layout) : webAuthCardStyle(layout),
+        variant === "wide"
+          ? webWideCardStyle(layout)
+          : variant === "content"
+            ? webContentCardStyle(layout)
+            : webAuthCardStyle(layout),
         fill && styles.cardFill,
         style,
       ]}

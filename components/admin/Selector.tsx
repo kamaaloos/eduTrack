@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  type ViewStyle,
 } from "react-native";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
 import { ListPageNav } from "../common/ListPageNav";
@@ -27,6 +28,7 @@ interface SelectorProps {
   maxListHeight?: number;
   /** Rows per page when searchable (default 4). */
   visibleLimit?: number;
+  containerStyle?: ViewStyle;
 }
 
 export const Selector: React.FC<SelectorProps> = ({
@@ -39,6 +41,7 @@ export const Selector: React.FC<SelectorProps> = ({
   searchPlaceholder,
   maxListHeight = 280,
   visibleLimit = 4,
+  containerStyle,
 }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -77,7 +80,7 @@ export const Selector: React.FC<SelectorProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <Text style={styles.title}>{title}</Text>
       <TouchableOpacity
         style={[styles.selectorButton, disabled && styles.disabledButton]}

@@ -1,46 +1,51 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { Text, TouchableOpacity, View } from "react-native";
-import type { ExamReportsMode } from "./examReportsTypes";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { examReportsStyles as styles } from "./examReportsStyles";
 
-type ExamReportsModeTabsProps = {
-  mode: ExamReportsMode;
-  onModeChange: (mode: ExamReportsMode) => void;
+type ExamReportsTopActionsProps = {
+  gradedCount: number;
+  canExport: boolean;
+  exporting: boolean;
+  onExportAllCertificates: () => void;
 };
 
-export function ExamReportsModeTabs({
-  mode,
-  onModeChange,
-}: ExamReportsModeTabsProps) {
+export function ExamReportsTopActions({
+  gradedCount,
+  canExport,
+  exporting,
+  onExportAllCertificates,
+}: ExamReportsTopActionsProps) {
   const { t } = useTranslation();
 
   return (
     <View style={styles.modeRow}>
-      <TouchableOpacity
-        style={[styles.modeBtn, mode === "grade" && styles.modeBtnActive]}
-        onPress={() => onModeChange("grade")}
-      >
-        <Text
-          style={[
-            styles.modeBtnText,
-            mode === "grade" && styles.modeBtnTextActive,
-          ]}
-        >
+      <View style={[styles.modeBtn, styles.modeBtnActive]}>
+        <Text style={[styles.modeBtnText, styles.modeBtnTextActive]}>
           {t("teacher.examReports.gradeExams")}
         </Text>
-      </TouchableOpacity>
+      </View>
       <TouchableOpacity
-        style={[styles.modeBtn, mode === "reports" && styles.modeBtnActive]}
-        onPress={() => onModeChange("reports")}
+        style={[
+          styles.modeBtn,
+          styles.exportTabBtn,
+          (!canExport || exporting) && styles.exportTabBtnDisabled,
+        ]}
+        onPress={onExportAllCertificates}
+        disabled={!canExport || exporting}
       >
-        <Text
-          style={[
-            styles.modeBtnText,
-            mode === "reports" && styles.modeBtnTextActive,
-          ]}
-        >
-          {t("teacher.examReports.studentReports")}
-        </Text>
+        {exporting ? (
+          <ActivityIndicator color="#FFFFFF" size="small" />
+        ) : (
+          <>
+            <Ionicons name="documents-outline" size={16} color="#FFFFFF" />
+            <Text style={styles.exportTabBtnText} numberOfLines={2}>
+              {t("teacher.examReports.exportAllCertificatesPdf", {
+                count: gradedCount,
+              })}
+            </Text>
+          </>
+        )}
       </TouchableOpacity>
     </View>
   );

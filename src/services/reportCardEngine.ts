@@ -9,6 +9,7 @@ import {
 import { db } from "./firebase";
 import { fetchStudentAttendanceHistory } from "./attendanceQueries";
 import { parseFirestoreDate } from "../utils/academicFilters";
+import { dateKeyFromValue } from "../utils/reportCardMonthFilter";
 import {
   getExamResultsForStudent,
   markExamResultsSeenByParent,
@@ -89,6 +90,8 @@ export type ReportExamRow = {
   subject: string;
   title: string;
   dateLabel?: string;
+  /** YYYY-MM-DD for month filtering on web report card. */
+  examDateKey?: string;
   maxMarks: number | null;
   score: number | null;
   graded: boolean;
@@ -98,6 +101,8 @@ export type ReportExamRow = {
 export type ReportAttendanceRow = {
   id: string;
   dateLabel: string;
+  /** YYYY-MM-DD for month filtering on web report card. */
+  dateKey?: string;
   status: string;
   parentResponse?: { reasonCode?: string; reason?: string } | null;
   remark?: string;
@@ -148,9 +153,10 @@ async function loadStudentAttendance(
       rate,
       present,
       total: rows.length,
-      records: rows.slice(0, 15).map((r) => ({
+      records: rows.map((r) => ({
         id: r.id,
         dateLabel: formatAttendanceDate(r.date),
+        dateKey: dateKeyFromValue(r.date),
         status: String(r.status || "unknown"),
         parentResponse:
           (r.parentResponse as ReportAttendanceRow["parentResponse"]) ?? null,
@@ -252,17 +258,21 @@ export async function generateReportCard(
         }
       }
 
+      const parsedExamDate = parseFirestoreDate(exam.examDate);
       const dateLabel =
         exam.date ||
-        (parseFirestoreDate(exam.examDate)
-          ? parseFirestoreDate(exam.examDate)!.toLocaleDateString()
-          : undefined);
+        (parsedExamDate ? parsedExamDate.toLocaleDateString() : undefined);
+      const examDateKey =
+        dateKeyFromValue(exam.examDate) ??
+        dateKeyFromValue(exam.date) ??
+        (parsedExamDate ? parsedExamDate.toISOString().slice(0, 10) : undefined);
 
       return {
         examId: exam.id,
         subject: exam.subject || "General",
         title: exam.title || exam.date || "Exam",
         dateLabel,
+        examDateKey,
         maxMarks:
           result?.maxMarks ??
           (exam.marks != null ? Number(exam.marks) : null),

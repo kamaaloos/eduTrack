@@ -1,10 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Text, View } from "react-native";
 import type { ExamResultRecord } from "../../../src/services/examResults";
 import type { TeacherStudent } from "../../../src/services/teacherStudents";
 import type { usePaginatedList } from "../../../hooks/usePaginatedList";
-import { SelectChips } from "../SelectChips";
+import { Selector } from "../../admin/Selector";
 import { ListPageNav } from "../../common/ListPageNav";
 import type { ClassExam } from "./examReportsTypes";
 import { ExamReportsStudentGradeRow } from "./ExamReportsStudentGradeRow";
@@ -14,7 +13,7 @@ type StudentPagination = ReturnType<typeof usePaginatedList<TeacherStudent>>;
 
 type ExamReportsGradeSectionProps = {
   exams: ClassExam[];
-  examChipOptions: { value: string; label: string }[];
+  examSelectorItems: { id: string; name: string }[];
   selectedExamId: string;
   onSelectExam: (id: string) => void;
   selectedExam?: ClassExam;
@@ -30,13 +29,11 @@ type ExamReportsGradeSectionProps = {
   onSaveScore: (student: TeacherStudent) => void;
   onOpenReport: (student: TeacherStudent) => void;
   onExportCertificate: (student: TeacherStudent) => void;
-  onExportAllCertificates?: () => void;
-  exportingAllCertificates?: boolean;
   gradePagination: StudentPagination;
 };
 export function ExamReportsGradeFixedHeader({
   exams,
-  examChipOptions,
+  examSelectorItems,
   selectedExamId,
   onSelectExam,
   selectedExam,
@@ -44,12 +41,10 @@ export function ExamReportsGradeFixedHeader({
   gradedCount,
   classAverage,
   studentsInClass,
-  onExportAllCertificates,
-  exportingAllCertificates,
 }: Pick<
   ExamReportsGradeSectionProps,
   | "exams"
-  | "examChipOptions"
+  | "examSelectorItems"
   | "selectedExamId"
   | "onSelectExam"
   | "selectedExam"
@@ -57,8 +52,6 @@ export function ExamReportsGradeFixedHeader({
   | "gradedCount"
   | "classAverage"
   | "studentsInClass"
-  | "onExportAllCertificates"
-  | "exportingAllCertificates"
 >) {
   const { t } = useTranslation();
 
@@ -72,68 +65,55 @@ export function ExamReportsGradeFixedHeader({
   }
 
   return (
-    <>
-      <Text style={styles.label}>{t("common.exams")}</Text>
-      <SelectChips
-        options={examChipOptions}
-        selectedValue={selectedExamId}
-        onSelect={onSelectExam}
-      />
+    <View style={styles.examStatsRow}>
+      <View style={styles.examPickerCol}>
+        <Selector
+          title={t("common.exams")}
+          items={examSelectorItems}
+          selectedId={selectedExamId}
+          onSelect={onSelectExam}
+          searchable={examSelectorItems.length > 3}
+          searchPlaceholder={t("teacher.examReports.searchExams")}
+          visibleLimit={6}
+          containerStyle={styles.examPickerSelector}
+        />
+      </View>
 
       {selectedExam ? (
-        <View style={styles.summaryRow}>
-          <View style={styles.summaryChip}>
-            <Text style={styles.summaryLabel}>
-              {t("teacher.examReports.graded")}
-            </Text>
-            <Text style={styles.summaryValue}>
-              {gradedCount}/{studentsInClass.length}
-            </Text>
-          </View>
-          <View style={styles.summaryChip}>
-            <Text style={styles.summaryLabel}>
-              {t("teacher.examReports.classAvg")}
-            </Text>
-            <Text style={styles.summaryValue}>
-              {classAverage != null
-                ? maxMarks != null
-                  ? `${classAverage}/${maxMarks}`
-                  : `${classAverage}%`
-                : "—"}
-            </Text>
-          </View>
-          {maxMarks != null ? (
+        <View style={styles.summaryCol}>
+          <View style={styles.summaryRow}>
             <View style={styles.summaryChip}>
               <Text style={styles.summaryLabel}>
-                {t("teacher.examReports.outOf")}
+                {t("teacher.examReports.graded")}
               </Text>
-              <Text style={styles.summaryValue}>{maxMarks}</Text>
+              <Text style={styles.summaryValue}>
+                {gradedCount}/{studentsInClass.length}
+              </Text>
             </View>
-          ) : null}
+            <View style={styles.summaryChip}>
+              <Text style={styles.summaryLabel}>
+                {t("teacher.examReports.classAvg")}
+              </Text>
+              <Text style={styles.summaryValue}>
+                {classAverage != null
+                  ? maxMarks != null
+                    ? `${classAverage}/${maxMarks}`
+                    : `${classAverage}%`
+                  : "—"}
+              </Text>
+            </View>
+            {maxMarks != null ? (
+              <View style={styles.summaryChip}>
+                <Text style={styles.summaryLabel}>
+                  {t("teacher.examReports.outOf")}
+                </Text>
+                <Text style={styles.summaryValue}>{maxMarks}</Text>
+              </View>
+            ) : null}
+          </View>
         </View>
       ) : null}
-
-      {selectedExam && gradedCount > 0 && onExportAllCertificates ? (
-        <TouchableOpacity
-          style={[styles.exportAllBtn, exportingAllCertificates && styles.exportAllBtnDisabled]}
-          onPress={onExportAllCertificates}
-          disabled={exportingAllCertificates}
-        >
-          {exportingAllCertificates ? (
-            <ActivityIndicator color="#FFFFFF" size="small" />
-          ) : (
-            <>
-              <Ionicons name="documents-outline" size={18} color="#FFFFFF" />
-              <Text style={styles.exportAllBtnText}>
-                {t("teacher.examReports.exportAllCertificatesPdf", {
-                  count: gradedCount,
-                })}
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
-      ) : null}
-    </>
+    </View>
   );
 }
 
@@ -181,6 +161,16 @@ export function ExamReportsGradeStudentList({
           total: studentsInClass.length,
         })}
       </Text>
+      <View style={styles.listPagination}>
+        <ListPageNav
+          page={gradePagination.page}
+          totalPages={gradePagination.totalPages}
+          canPrev={gradePagination.canPrev}
+          canNext={gradePagination.canNext}
+          onPrev={gradePagination.prevPage}
+          onNext={gradePagination.nextPage}
+        />
+      </View>
       {visibleGradeStudents.map((student) => (
         <ExamReportsStudentGradeRow
           key={student.id}
@@ -195,23 +185,13 @@ export function ExamReportsGradeStudentList({
           onExportCertificate={() => onExportCertificate(student)}
         />
       ))}
-      <View style={styles.listPagination}>
-        <ListPageNav
-          page={gradePagination.page}
-          totalPages={gradePagination.totalPages}
-          canPrev={gradePagination.canPrev}
-          canNext={gradePagination.canNext}
-          onPrev={gradePagination.prevPage}
-          onNext={gradePagination.nextPage}
-        />
-      </View>
     </>
   );
 }
 
 export function ExamReportsGradeSection({
   exams,
-  examChipOptions,
+  examSelectorItems,
   selectedExamId,
   onSelectExam,
   selectedExam,
@@ -227,15 +207,13 @@ export function ExamReportsGradeSection({
   onSaveScore,
   onOpenReport,
   onExportCertificate,
-  onExportAllCertificates,
-  exportingAllCertificates,
   gradePagination,
 }: ExamReportsGradeSectionProps) {
   return (
     <>
       <ExamReportsGradeFixedHeader
         exams={exams}
-        examChipOptions={examChipOptions}
+        examSelectorItems={examSelectorItems}
         selectedExamId={selectedExamId}
         onSelectExam={onSelectExam}
         selectedExam={selectedExam}
@@ -243,8 +221,6 @@ export function ExamReportsGradeSection({
         gradedCount={gradedCount}
         classAverage={classAverage}
         studentsInClass={studentsInClass}
-        onExportAllCertificates={onExportAllCertificates}
-        exportingAllCertificates={exportingAllCertificates}
       />
       <ExamReportsGradeStudentList
         studentsInClass={studentsInClass}

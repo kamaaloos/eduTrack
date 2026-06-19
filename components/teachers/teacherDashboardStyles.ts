@@ -265,7 +265,7 @@ export const teacherDashboardStyles = StyleSheet.create({
     marginBottom: 12,
   },
   studentListPagination: {
-    marginTop: 4,
+    marginBottom: 12,
     borderRadius: 12,
     overflow: "hidden",
     borderWidth: 1,

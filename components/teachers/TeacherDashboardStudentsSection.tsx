@@ -9,7 +9,7 @@ import { UserAvatar } from "../common/UserAvatar";
 import { DashboardSlideRow } from "../dashboard/DashboardSlideRow";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
-const STUDENT_LIST_PAGE_SIZE = 4;
+const STUDENT_LIST_PAGE_SIZE = 2;
 
 type TeacherDashboardStudentsSectionProps = {
   selectedClassId: string;
@@ -77,6 +77,16 @@ export function TeacherDashboardStudentsSection({
             <Text style={styles.emptyHint}>{t("admin.selectorNoMatches")}</Text>
           ) : (
             <>
+              <View style={styles.studentListPagination}>
+                <ListPageNav
+                  page={pagination.page}
+                  totalPages={pagination.totalPages}
+                  canPrev={pagination.canPrev}
+                  canNext={pagination.canNext}
+                  onPrev={pagination.prevPage}
+                  onNext={pagination.nextPage}
+                />
+              </View>
               <DashboardSlideRow>
                 {pagination.pageItems.map((item: any) => (
                   <TouchableOpacity
@@ -114,16 +124,6 @@ export function TeacherDashboardStudentsSection({
                   </TouchableOpacity>
                 ))}
               </DashboardSlideRow>
-              <View style={styles.studentListPagination}>
-                <ListPageNav
-                  page={pagination.page}
-                  totalPages={pagination.totalPages}
-                  canPrev={pagination.canPrev}
-                  canNext={pagination.canNext}
-                  onPrev={pagination.prevPage}
-                  onNext={pagination.nextPage}
-                />
-              </View>
             </>
           )}
         </>

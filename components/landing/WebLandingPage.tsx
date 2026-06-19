@@ -70,9 +70,26 @@ const TRUST_ROLES = [
   "landing.featureAdminsTitle",
 ] as const;
 
+const CAPABILITIES: {
+  icon: keyof typeof Ionicons.glyphMap;
+  labelKey: string;
+}[] = [
+  { icon: "calendar-outline", labelKey: "landing.capAttendance" },
+  { icon: "document-text-outline", labelKey: "landing.capExams" },
+  { icon: "book-outline", labelKey: "landing.capHomework" },
+  { icon: "chatbubbles-outline", labelKey: "landing.capMessages" },
+  { icon: "ribbon-outline", labelKey: "landing.capReports" },
+  { icon: "megaphone-outline", labelKey: "landing.capAnnouncements" },
+];
+
 function scrollToSection(sectionId: string) {
   if (Platform.OS !== "web") return;
-  document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+  const el = document.getElementById(sectionId);
+  if (!el) return;
+  const stickyOffset = 96;
+  const top =
+    el.getBoundingClientRect().top + window.scrollY - stickyOffset;
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
 }
 
 export function WebLandingPage() {
@@ -169,7 +186,12 @@ export function WebLandingPage() {
               </TouchableOpacity>
             </View>
             <View style={styles.utilityRight}>
-              <Text style={styles.utilityLink}>{t("landing.utilityTagline")}</Text>
+              {layout.isDesktopWeb ? (
+                <Text style={styles.utilityTagline}>
+                  {t("landing.utilityTagline")}
+                </Text>
+              ) : null}
+              <LanguageSelector variant="nav" compact showTitle={false} />
             </View>
           </View>
 
@@ -187,33 +209,33 @@ export function WebLandingPage() {
             </TouchableOpacity>
 
             <View style={styles.navLinks}>
-              <TouchableOpacity onPress={() => scrollToSection("landing-features")}>
+              <TouchableOpacity
+                style={styles.navLinkBtn}
+                onPress={() => scrollToSection("landing-features")}
+              >
                 <Text style={styles.navLink}>{t("landing.navFeatures")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push("/about")}>
-                <Text style={styles.navLink}>{t("about.shortTitle")}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push("/faq")}>
+              <TouchableOpacity
+                style={styles.navLinkBtn}
+                onPress={() => router.push("/faq")}
+              >
                 <Text style={styles.navLink}>{t("faq.shortTitle")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push("/contact")}>
+              <TouchableOpacity
+                style={styles.navLinkBtn}
+                onPress={() => router.push("/contact")}
+              >
                 <Text style={styles.navLink}>{t("landing.contactUs")}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={goToDownload}>
-                <Text style={styles.navLink}>{t("landing.downloadApp")}</Text>
               </TouchableOpacity>
             </View>
 
-            <View style={styles.navActions}>
-              <LanguageSelector variant="nav" compact showTitle={false} />
-              <TouchableOpacity
-                style={styles.navCta}
-                onPress={() => void enterApp()}
-                accessibilityRole="button"
-              >
-                <Text style={styles.navCtaText}>{t("landing.getStarted")}</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={styles.navCta}
+              onPress={() => void enterApp()}
+              accessibilityRole="button"
+            >
+              <Text style={styles.navCtaText}>{t("landing.getStarted")}</Text>
+            </TouchableOpacity>
           </View>
 
           <View nativeID="landing-top" style={styles.heroCard}>
@@ -293,13 +315,26 @@ export function WebLandingPage() {
             </View>
           </View>
 
-          <View nativeID="landing-features" style={styles.featuresSection}>
+          <View
+            nativeID="landing-features"
+            {...(Platform.OS === "web" ? { id: "landing-features" } : {})}
+            style={styles.featuresSection}
+          >
             <View style={styles.featuresCard}>
               <Text style={styles.sectionEyebrow}>{t("landing.featuresTitle")}</Text>
               <Text style={styles.sectionTitle}>
                 {t("landing.infrastructureTitle")}
               </Text>
               <Text style={styles.sectionHint}>{t("landing.featuresHint")}</Text>
+
+              <View style={styles.capabilityRow}>
+                {CAPABILITIES.map((cap) => (
+                  <View key={cap.labelKey} style={styles.capabilityPill}>
+                    <Ionicons name={cap.icon} size={16} color="#4F46E5" />
+                    <Text style={styles.capabilityText}>{t(cap.labelKey)}</Text>
+                  </View>
+                ))}
+              </View>
 
               <View style={styles.featureGrid}>
                 {FEATURES.map((feature) => (

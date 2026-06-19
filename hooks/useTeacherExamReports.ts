@@ -3,7 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
-import type { ClassExam, ExamReportsMode } from "../components/teachers/examReports/examReportsTypes";
+import type { ClassExam } from "../components/teachers/examReports/examReportsTypes";
 import { EXAM_REPORTS_STUDENTS_PAGE_SIZE } from "../components/teachers/examReports/examReportsTypes";
 import { usePaginatedList } from "./usePaginatedList";
 import { AuthContext } from "../src/context/authContext";
@@ -31,7 +31,6 @@ export function useTeacherExamReports() {
     loading: classesLoading,
   } = useTeacherClassesContext();
 
-  const [mode, setMode] = useState<ExamReportsMode>("grade");
   const [exams, setExams] = useState<ClassExam[]>([]);
   const [selectedExamId, setSelectedExamId] = useState("");
   const [students, setStudents] = useState<TeacherStudent[]>([]);
@@ -40,7 +39,6 @@ export function useTeacherExamReports() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
-  const [reportSearch, setReportSearch] = useState("");
   const [exportingAllCertificates, setExportingAllCertificates] = useState(false);
 
   const classOptions = useMemo(
@@ -84,21 +82,11 @@ export function useTeacherExamReports() {
     );
   }, [studentsInClass, resultByStudent]);
 
-  const filteredReportStudents = useMemo(() => {
-    const q = reportSearch.trim().toLowerCase();
-    if (!q) return studentsInClass;
-    return studentsInClass.filter(
-      (s) =>
-        (s.name || "").toLowerCase().includes(q) ||
-        (s.email || "").toLowerCase().includes(q),
-    );
-  }, [studentsInClass, reportSearch]);
-
-  const examChipOptions = useMemo(
+  const examSelectorItems = useMemo(
     () =>
       exams.map((e) => ({
-        value: e.id,
-        label: e.title || e.subject || t("teacher.examReports.examFallback"),
+        id: e.id,
+        name: e.title || e.subject || t("teacher.examReports.examFallback"),
       })),
     [exams, t],
   );
@@ -106,17 +94,10 @@ export function useTeacherExamReports() {
   const gradePagination = usePaginatedList(
     studentsInClass,
     EXAM_REPORTS_STUDENTS_PAGE_SIZE,
-    `${selectedClassId}:${selectedExamId}:${mode}`,
-  );
-
-  const reportPagination = usePaginatedList(
-    filteredReportStudents,
-    EXAM_REPORTS_STUDENTS_PAGE_SIZE,
-    `${selectedClassId}:${reportSearch}:${mode}`,
+    `${selectedClassId}:${selectedExamId}`,
   );
 
   const visibleGradeStudents = gradePagination.pageItems;
-  const visibleReportStudents = reportPagination.pageItems;
 
   const loadExamResults = useCallback(
     async (studentList: TeacherStudent[], examList: ClassExam[]) => {
@@ -421,8 +402,6 @@ export function useTeacherExamReports() {
     classOptions,
     selectedClassId,
     setSelectedClassId,
-    mode,
-    setMode,
     loading,
     refreshing,
     onRefresh,
@@ -431,18 +410,14 @@ export function useTeacherExamReports() {
     setSelectedExamId,
     selectedExam,
     maxMarks,
-    examChipOptions,
+    examSelectorItems,
     studentsInClass,
     gradedCount,
     classAverage,
     visibleGradeStudents,
-    visibleReportStudents,
-    filteredReportStudents,
     resultByStudent,
     scoreDrafts,
     savingId,
-    reportSearch,
-    setReportSearch,
     updateScoreDraft,
     saveScore,
     openReport,
@@ -450,6 +425,5 @@ export function useTeacherExamReports() {
     exportAllCertificates,
     exportingAllCertificates,
     gradePagination,
-    reportPagination,
   };
 }

@@ -11,7 +11,7 @@ export const WEB_AUTH_MAX_WIDTH = 520;
 export const WEB_CONTENT_MAX_WIDTH = 960;
 export const WEB_ADMIN_MAX_WIDTH = 960;
 /** Full app page card on desktop web (header + body). */
-export const WEB_PAGE_CARD_MAX_WIDTH = 1200;
+export const WEB_PAGE_CARD_MAX_WIDTH = 960;
 
 /** @deprecated Prefer `useWebAuthContentStyle()` or `webAuthCardStyle(layout)`. */
 export function webAuthContentStyle(): ViewStyle | undefined {

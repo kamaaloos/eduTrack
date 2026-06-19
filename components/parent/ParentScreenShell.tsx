@@ -84,7 +84,7 @@ export function ParentScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame>
+      <WebPageCardFrame sidebarLayout>
         <StudentScreenHeader
           title={title}
           subtitle={subtitle}

@@ -16,11 +16,7 @@ import {
   ExamReportsGradeStudentList,
 } from "./examReports/ExamReportsGradeSection";
 import { ExamReportsKeyboardAccessory } from "./examReports/ExamReportsKeyboardAccessory";
-import { ExamReportsModeTabs } from "./examReports/ExamReportsModeTabs";
-import {
-  ExamReportsReportsSearch,
-  ExamReportsReportsStudentList,
-} from "./examReports/ExamReportsReportsSection";
+import { ExamReportsTopActions } from "./examReports/ExamReportsModeTabs";
 import { examReportsStyles as styles } from "./examReports/examReportsStyles";
 
 export type TeacherExamReportsViewProps = ReturnType<
@@ -35,8 +31,6 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
     classOptions,
     selectedClassId,
     setSelectedClassId,
-    mode,
-    setMode,
     loading,
     refreshing,
     onRefresh,
@@ -45,18 +39,14 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
     setSelectedExamId,
     selectedExam,
     maxMarks,
-    examChipOptions,
+    examSelectorItems,
     studentsInClass,
     gradedCount,
     classAverage,
     visibleGradeStudents,
-    visibleReportStudents,
-    filteredReportStudents,
     resultByStudent,
     scoreDrafts,
     savingId,
-    reportSearch,
-    setReportSearch,
     updateScoreDraft,
     saveScore,
     openReport,
@@ -64,7 +54,6 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
     exportAllCertificates,
     exportingAllCertificates,
     gradePagination,
-    reportPagination,
   } = props;
 
   const shellTitle = t("teacher.examReports.pageTitle");
@@ -77,11 +66,10 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
     scroll: false as const,
   };
 
-  const showGradeStudents = mode === "grade" && exams.length > 0;
-  const showReportStudents = mode === "reports";
+  const showGradeStudents = exams.length > 0;
 
   const scrollableBody =
-    !loading && (showGradeStudents || showReportStudents) ? (
+    !loading && showGradeStudents ? (
       <ScrollView
         style={styles.studentScroll}
         contentContainerStyle={styles.studentScrollContent}
@@ -95,28 +83,19 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {mode === "grade" ? (
-          <ExamReportsGradeStudentList
-            studentsInClass={studentsInClass}
-            visibleGradeStudents={visibleGradeStudents}
-            resultByStudent={resultByStudent}
-            maxMarks={maxMarks}
-            scoreDrafts={scoreDrafts}
-            savingId={savingId}
-            onScoreChange={updateScoreDraft}
-            onSaveScore={saveScore}
-            onOpenReport={openReport}
-            onExportCertificate={exportCertificate}
-            gradePagination={gradePagination}
-          />
-        ) : (
-          <ExamReportsReportsStudentList
-            filteredReportStudents={filteredReportStudents}
-            visibleReportStudents={visibleReportStudents}
-            onOpenReport={openReport}
-            reportPagination={reportPagination}
-          />
-        )}
+        <ExamReportsGradeStudentList
+          studentsInClass={studentsInClass}
+          visibleGradeStudents={visibleGradeStudents}
+          resultByStudent={resultByStudent}
+          maxMarks={maxMarks}
+          scoreDrafts={scoreDrafts}
+          savingId={savingId}
+          onScoreChange={updateScoreDraft}
+          onSaveScore={saveScore}
+          onOpenReport={openReport}
+          onExportCertificate={exportCertificate}
+          gradePagination={gradePagination}
+        />
       </ScrollView>
     ) : null;
 
@@ -130,14 +109,19 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
           onSelect={setSelectedClassId}
         />
 
-        <ExamReportsModeTabs mode={mode} onModeChange={setMode} />
+        <ExamReportsTopActions
+          gradedCount={gradedCount}
+          canExport={Boolean(selectedExam && gradedCount > 0)}
+          exporting={exportingAllCertificates}
+          onExportAllCertificates={() => void exportAllCertificates()}
+        />
 
         {loading ? (
           <ActivityIndicator style={styles.loader} color="#2563EB" />
-        ) : mode === "grade" ? (
+        ) : (
           <ExamReportsGradeFixedHeader
             exams={exams}
-            examChipOptions={examChipOptions}
+            examSelectorItems={examSelectorItems}
             selectedExamId={selectedExamId}
             onSelectExam={setSelectedExamId}
             selectedExam={selectedExam}
@@ -145,13 +129,6 @@ export function TeacherExamReportsView(props: TeacherExamReportsViewProps) {
             gradedCount={gradedCount}
             classAverage={classAverage}
             studentsInClass={studentsInClass}
-            onExportAllCertificates={() => void exportAllCertificates()}
-            exportingAllCertificates={exportingAllCertificates}
-          />
-        ) : (
-          <ExamReportsReportsSearch
-            reportSearch={reportSearch}
-            onReportSearchChange={setReportSearch}
           />
         )}
       </View>

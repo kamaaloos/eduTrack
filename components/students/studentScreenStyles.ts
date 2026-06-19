@@ -9,6 +9,8 @@ const isWeb = Platform.OS === "web";
 
 /** Centered card column on student tab screens (attendance, messages, etc.). */
 export const STUDENT_LIST_MAX_WIDTH = 480;
+/** Student hamburger menu → Reports (`/(students)/report-card`) on web. */
+export const STUDENT_MENU_REPORT_WEB_MAX_WIDTH = 720;
 
 export const studentScreenStyles = StyleSheet.create({
   scrollContent: {
@@ -207,5 +209,16 @@ export const studentScreenStyles = StyleSheet.create({
     marginTop: 12,
     color: "#64748B",
     fontSize: 15,
+  },
+  reportShellContent: {
+    flex: 1,
+    width: "100%",
+    alignSelf: "stretch",
+    ...(isWeb
+      ? {
+          maxWidth: STUDENT_MENU_REPORT_WEB_MAX_WIDTH,
+          alignSelf: "center",
+        }
+      : null),
   },
 });
