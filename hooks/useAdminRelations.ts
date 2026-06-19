@@ -9,7 +9,7 @@ import {
     where,
 } from "firebase/firestore";
 import { useCallback, useState } from "react";
-import { db } from "../src/services/firebase";
+import { requireSchoolDb } from "../src/services/firebase";
 import { normalizeSubjectKey, subjectsMatch } from "../src/utils/subjectKey";
 import { syncParentClassAccess } from "../src/services/parentChildren";
 import {
@@ -47,7 +47,7 @@ export const useAdminRelations = () => {
             try {
                 const linkId = `${studentId}_${classId}`;
                 await setDoc(
-                    doc(db, "studentClasses", linkId),
+                    doc(requireSchoolDb(), "studentClasses", linkId),
                     {
                         studentId,
                         classId,
@@ -58,14 +58,14 @@ export const useAdminRelations = () => {
 
                 // Update user profile
                 await setDoc(
-                    doc(db, "users", studentId),
+                    doc(requireSchoolDb(), "users", studentId),
                     { classId },
                     { merge: true }
                 );
 
                 const parentLinks = await getDocs(
                     query(
-                        collection(db, "parentStudents"),
+                        collection(requireSchoolDb(), "parentStudents"),
                         where("studentId", "==", studentId),
                     ),
                 );
@@ -98,7 +98,7 @@ export const useAdminRelations = () => {
             try {
                 const docId = `${teacherId}_${classId}`;
                 await setDoc(
-                    doc(db, "teacherClasses", docId),
+                    doc(requireSchoolDb(), "teacherClasses", docId),
                     {
                         teacherId,
                         classId,
@@ -132,7 +132,7 @@ export const useAdminRelations = () => {
             setError(null);
 
             try {
-                const classSnap = await getDoc(doc(db, "classes", classId));
+                const classSnap = await getDoc(doc(requireSchoolDb(), "classes", classId));
                 if (!classSnap.exists()) {
                     throw new Error("Class not found");
                 }
@@ -155,7 +155,7 @@ export const useAdminRelations = () => {
                 const assignmentId = `${teacherId}_${classId}_${subjectKey}`;
 
                 await setDoc(
-                    doc(db, "teacherSubjects", assignmentId),
+                    doc(requireSchoolDb(), "teacherSubjects", assignmentId),
                     {
                         teacherId,
                         classId,
@@ -167,7 +167,7 @@ export const useAdminRelations = () => {
                 );
 
                 await setDoc(
-                    doc(db, "teacherClasses", `${teacherId}_${classId}`),
+                    doc(requireSchoolDb(), "teacherClasses", `${teacherId}_${classId}`),
                     {
                         teacherId,
                         classId,
@@ -192,7 +192,7 @@ export const useAdminRelations = () => {
     const loadTeacherSubjectAssignments = useCallback(async (): Promise<
         TeacherSubjectLink[]
     > => {
-        const snap = await getDocs(collection(db, "teacherSubjects"));
+        const snap = await getDocs(collection(requireSchoolDb(), "teacherSubjects"));
         return snap.docs.map((d) => {
             const data = d.data();
             return {
@@ -214,7 +214,7 @@ export const useAdminRelations = () => {
             setLoading(true);
             setError(null);
             try {
-                await deleteDoc(doc(db, "teacherSubjects", assignmentId));
+                await deleteDoc(doc(requireSchoolDb(), "teacherSubjects", assignmentId));
             } catch (err) {
                 const message =
                     err instanceof Error
@@ -258,8 +258,8 @@ export const useAdminRelations = () => {
 
             try {
                 const [linksSnap, usersSnapshot] = await Promise.all([
-                    getDocs(collection(db, "studentClasses")),
-                    getDocs(collection(db, "users")),
+                    getDocs(collection(requireSchoolDb(), "studentClasses")),
+                    getDocs(collection(requireSchoolDb(), "users")),
                 ]);
 
                 const usersData = usersSnapshot.docs.map((docSnap) => ({
@@ -307,7 +307,7 @@ export const useAdminRelations = () => {
                     await Promise.all(
                         toWrite.map(([studentId, { classId }]) =>
                             setDoc(
-                                doc(db, "users", studentId),
+                                doc(requireSchoolDb(), "users", studentId),
                                 { classId },
                                 { merge: true }
                             )
