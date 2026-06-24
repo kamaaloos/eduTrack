@@ -1,19 +1,11 @@
-import { getApps, initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
 import {
   FieldValue,
   type Firestore,
-  getFirestore,
 } from "firebase-admin/firestore";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
+import { getSchoolAdminAuth, getSchoolAdminDb } from "./firebaseAdmin";
 import { assertSchoolAdmin, parseRole, type SchoolUserRole } from "./schoolAdminAuth";
-
-function ensureAdminApp() {
-  if (getApps().length === 0) {
-    initializeApp();
-  }
-}
 
 async function commitDeletes(
   db: Firestore,
@@ -119,7 +111,7 @@ async function removeUserFirestore(
 
 async function deleteAuthUser(userId: string): Promise<boolean> {
   try {
-    await getAuth().deleteUser(userId);
+    await getSchoolAdminAuth().deleteUser(userId);
     return true;
   } catch (err) {
     const code =
@@ -156,8 +148,7 @@ export const removeSchoolUser = onCall({ invoker: "public" }, async (request) =>
     throw new HttpsError("failed-precondition", "You cannot remove your own account.");
   }
 
-  ensureAdminApp();
-  const db = getFirestore();
+  const db = getSchoolAdminDb();
   await assertSchoolAdmin(db, request.auth.uid);
 
   const targetSnap = await db.collection("users").doc(userId).get();

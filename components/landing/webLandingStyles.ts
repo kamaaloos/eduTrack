@@ -257,20 +257,45 @@ export const webLandingStyles = StyleSheet.create({
   },
   heroVideoWrap: {
     width: "100%",
-    maxWidth: isWeb ? 520 : 400,
-    aspectRatio: 16 / 9,
+    maxWidth: isWeb ? 300 : 260,
+    aspectRatio: 9 / 16,
     borderRadius: 18,
     overflow: "hidden",
     alignSelf: "center",
     borderWidth: 4,
     borderColor: "rgba(255,255,255,0.55)",
     backgroundColor: "#0F172A",
+    position: "relative",
     ...(isWeb
       ? ({
-          maxHeight: 292,
+          maxHeight: 520,
           boxShadow: "0 20px 40px rgba(15, 23, 42, 0.24)",
         } as object)
       : null),
+  },
+  heroVideoBuffering: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(15, 23, 42, 0.45)",
+  },
+  heroVideoMuteBtn: {
+    position: "absolute",
+    bottom: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(15, 23, 42, 0.72)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.25)",
+  },
+  heroVideoMuteBtnLtr: {
+    right: 10,
+  },
+  heroVideoMuteBtnRtl: {
+    left: 10,
   },
   heroRating: {
     marginTop: 14,

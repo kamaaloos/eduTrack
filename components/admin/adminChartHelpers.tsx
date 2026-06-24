@@ -120,6 +120,11 @@ export function AdminPieChart({
 export const ROLE_CHART_COLORS = ["#16A34A", "#2563EB", "#7C3AED"] as const;
 export const ACADEMIC_CHART_COLORS = ["#D97706", "#DC2626", "#0891B2"] as const;
 
+/** Per-bar fill colors for react-native-chart-kit BarChart (use with withCustomBarColorFromData). */
+export function barColorsFromHex(colors: string[]) {
+  return colors.map((hex) => () => hex);
+}
+
 export const chartStyles = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",

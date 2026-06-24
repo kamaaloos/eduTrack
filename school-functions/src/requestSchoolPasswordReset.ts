@@ -1,14 +1,7 @@
-import { getApps, initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
+import { getSchoolAdminDb } from "./firebaseAdmin";
 import { parseRole } from "./schoolAdminAuth";
-
-function ensureAdminApp() {
-  if (getApps().length === 0) {
-    initializeApp();
-  }
-}
 
 function normalizeEmail(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -23,7 +16,7 @@ async function notifySchoolAdmins(params: {
   requesterUserId: string;
   requesterRole: string;
 }): Promise<void> {
-  const db = getFirestore();
+  const db = getSchoolAdminDb();
   const admins = await db.collection("users").where("role", "==", "admin").get();
   if (admins.empty) return;
 
@@ -61,8 +54,7 @@ export const requestSchoolPasswordReset = onCall(
       throw new HttpsError("invalid-argument", "A valid email is required.");
     }
 
-    ensureAdminApp();
-    const db = getFirestore();
+    const db = getSchoolAdminDb();
 
     const matches = await db
       .collection("users")

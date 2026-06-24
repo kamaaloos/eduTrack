@@ -117,9 +117,6 @@ const styles = StyleSheet.create({
   fieldFocused: {
     borderColor: "#2563EB",
     backgroundColor: "#FFFFFF",
-    ...(Platform.OS === "web"
-      ? ({ outlineStyle: "none" } as object)
-      : null),
   },
   fieldDisabled: {
     opacity: 0.65,
@@ -137,6 +134,14 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingRight: 12,
     minWidth: 0,
+    ...(Platform.OS === "web"
+      ? ({
+          outlineStyle: "none",
+          borderWidth: 0,
+          backgroundColor: "transparent",
+          boxShadow: "none",
+        } as object)
+      : null),
   },
   visibilityToggle: {
     width: 40,

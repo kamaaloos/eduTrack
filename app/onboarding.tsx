@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import {
   Animated,
   Easing,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -13,6 +14,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { OnboardingWelcomeVideo } from "../components/onboarding/OnboardingWelcomeVideo";
 import { WebPageCard } from "../components/layout/WebPageCard";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { useLanguage } from "../src/context/languageContext";
@@ -37,7 +39,7 @@ type Slide = LanguageSlide | ContentSlide;
 
 export default function OnboardingScreen() {
   const { t } = useTranslation();
-  const { isRtl } = useLanguage();
+  const { isRtl, language } = useLanguage();
   const insets = useSafeAreaInsets();
   const [activeIndex, setActiveIndex] = useState(0);
   const fade = useRef(new Animated.Value(1)).current;
@@ -162,6 +164,13 @@ export default function OnboardingScreen() {
         <View style={[styles.onboardingColumn, webAuthContentStyle()]}>
           <WebPageCard fill style={styles.onboardingCard}>
         <View style={styles.body}>
+          {Platform.OS !== "web" ? (
+            <OnboardingWelcomeVideo
+              key={language}
+              visible={currentSlide?.id === "welcome"}
+            />
+          ) : null}
+
           <Animated.View
             style={[
               styles.slide,
@@ -186,14 +195,16 @@ export default function OnboardingScreen() {
               </>
             ) : currentSlide?.type === "content" ? (
               <>
-                <View
-                  style={[
-                    styles.iconCircle,
-                    { backgroundColor: currentSlide.iconBg },
-                  ]}
-                >
-                  <Ionicons name={currentSlide.icon} size={52} color="#1E3A8A" />
-                </View>
+                {currentSlide.id !== "welcome" ? (
+                  <View
+                    style={[
+                      styles.iconCircle,
+                      { backgroundColor: currentSlide.iconBg },
+                    ]}
+                  >
+                    <Ionicons name={currentSlide.icon} size={52} color="#1E3A8A" />
+                  </View>
+                ) : null}
                 <Text style={[styles.title, isRtl && styles.titleRtl]}>
                   {currentSlide.title}
                 </Text>

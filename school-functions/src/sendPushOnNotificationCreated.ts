@@ -1,7 +1,6 @@
-import { getApps, initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { getSchoolAdminDb } from "./firebaseAdmin";
 
 type NotificationDoc = {
   title?: string;
@@ -32,12 +31,6 @@ type ExpoPushMessage = {
 };
 
 const PUSH_CHANNEL_ID = "edutrack-alerts";
-
-function ensureAdminApp() {
-  if (getApps().length === 0) {
-    initializeApp();
-  }
-}
 
 async function sendExpoPush(message: ExpoPushMessage): Promise<void> {
   const response = await fetch("https://exp.host/--/api/v2/push/send", {
@@ -76,8 +69,7 @@ export const sendPushOnNotificationCreated = onDocumentCreated(
       return;
     }
 
-    ensureAdminApp();
-    const db = getFirestore();
+    const db = getSchoolAdminDb();
 
     const userSnap = await db.collection("users").doc(data.targetUserId).get();
     const pushToken = userSnap.data()?.expoPushToken as string | undefined;

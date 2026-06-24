@@ -61,5 +61,12 @@ coverage/
 /ios
 /android
 
+# Web promo videos (copied from assets/ by scripts/sync-web-videos.mjs)
+public/videos/*.mp4
+
+# Full-size promo sources — keep locally; run npm run encode:web-video (not for GitHub)
+assets/edutrack2.mp4
+assets/edutrack-promo2-full.mp4
+
 # Local debug logs
 crash-full.txt

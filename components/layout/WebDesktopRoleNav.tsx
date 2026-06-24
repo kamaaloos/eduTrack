@@ -51,7 +51,7 @@ export function WebDesktopRoleNav({
               <Ionicons
                 name={item.icon}
                 size={20}
-                color={item.destructive ? "#DC2626" : "#334155"}
+                color={item.destructive ? "#FCA5A5" : "#E0E7FF"}
               />
               <Text
                 style={[
@@ -71,6 +71,8 @@ export function WebDesktopRoleNav({
   );
 }
 
+const NAVY = "#1E3A8A";
+
 const styles = StyleSheet.create({
   shell: {
     flex: 1,
@@ -81,8 +83,8 @@ const styles = StyleSheet.create({
   sidebar: {
     width: 258,
     borderRightWidth: 1,
-    borderRightColor: "#E2E8F0",
-    backgroundColor: "#F8FAFC",
+    borderRightColor: "#172554",
+    backgroundColor: NAVY,
     paddingTop: 20,
     paddingHorizontal: 14,
     paddingBottom: 14,
@@ -90,12 +92,12 @@ const styles = StyleSheet.create({
   sidebarTitle: {
     fontSize: 17,
     fontWeight: "800",
-    color: "#0F172A",
+    color: "#FFFFFF",
     paddingHorizontal: 10,
   },
   sidebarSubtitle: {
     fontSize: 13,
-    color: "#64748B",
+    color: "#BFDBFE",
     marginTop: 6,
     marginBottom: 14,
     paddingHorizontal: 10,
@@ -115,28 +117,28 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     paddingHorizontal: 12,
     borderRadius: 12,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "rgba(255, 255, 255, 0.14)",
   },
   navItemDestructive: {
     marginTop: 10,
     borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
+    borderTopColor: "rgba(255, 255, 255, 0.14)",
     borderRadius: 12,
     paddingTop: 18,
-    backgroundColor: "#FEF2F2",
-    borderColor: "#FECACA",
+    backgroundColor: "rgba(254, 226, 226, 0.12)",
+    borderColor: "rgba(252, 165, 165, 0.35)",
   },
   navItemText: {
     flex: 1,
     fontSize: 14,
     fontWeight: "600",
-    color: "#1E293B",
+    color: "#F8FAFC",
     lineHeight: 20,
   },
   navItemTextDestructive: {
-    color: "#DC2626",
+    color: "#FCA5A5",
   },
   main: {
     flex: 1,

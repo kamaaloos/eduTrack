@@ -67,7 +67,8 @@
           "defaultChannel": "edutrack-alerts"
         }
       ],
-      "./plugins/withAdiRegistration"
+      "./plugins/withAdiRegistration",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true

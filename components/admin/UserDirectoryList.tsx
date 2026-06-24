@@ -33,6 +33,7 @@ import {
   showErrorAlert,
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
+import { getCallableErrorMessage } from "../../src/utils/callableErrorMessage";
 import { UserAvatar } from "../common/UserAvatar";
 import { parsePhotoURL } from "../../src/utils/userAvatar";
 import { db } from "../../src/services/firebase";
@@ -399,7 +400,7 @@ export function UserDirectoryList({
     } catch (err) {
       showErrorAlert(
         t("common.error"),
-        err instanceof Error ? err.message : t("common.connectionError"),
+        getCallableErrorMessage(err, t("admin.setPasswordFailed")),
       );
     } finally {
       setSettingPassword(false);

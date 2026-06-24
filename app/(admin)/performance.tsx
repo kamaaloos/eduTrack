@@ -13,6 +13,7 @@ import { BarChart, LineChart } from "react-native-chart-kit";
 import {
   ACADEMIC_CHART_COLORS,
   adminChartConfig,
+  barColorsFromHex,
   ChartCard,
   ChartLegend,
   ROLE_CHART_COLORS,
@@ -101,9 +102,21 @@ export default function PerformanceCharts() {
   const roleItems = useMemo(
     () =>
       [
-        { label: t("admin.students"), value: s.students },
-        { label: t("admin.teachers"), value: s.teachers },
-        { label: t("admin.parents"), value: s.parents },
+        {
+          label: t("admin.students"),
+          value: s.students,
+          color: ROLE_CHART_COLORS[0],
+        },
+        {
+          label: t("admin.teachers"),
+          value: s.teachers,
+          color: ROLE_CHART_COLORS[1],
+        },
+        {
+          label: t("admin.parents"),
+          value: s.parents,
+          color: ROLE_CHART_COLORS[2],
+        },
       ].filter((item) => item.value > 0),
     [s.students, s.teachers, s.parents, t],
   );
@@ -111,9 +124,21 @@ export default function PerformanceCharts() {
   const academicItems = useMemo(
     () =>
       [
-        { label: t("common.homework"), value: s.homeworks },
-        { label: t("common.exams"), value: s.exams },
-        { label: t("common.remarks"), value: s.remarks },
+        {
+          label: t("common.homework"),
+          value: s.homeworks,
+          color: ACADEMIC_CHART_COLORS[0],
+        },
+        {
+          label: t("common.exams"),
+          value: s.exams,
+          color: ACADEMIC_CHART_COLORS[1],
+        },
+        {
+          label: t("common.remarks"),
+          value: s.remarks,
+          color: ACADEMIC_CHART_COLORS[2],
+        },
       ].filter((item) => item.value > 0),
     [s.homeworks, s.exams, s.remarks, t],
   );
@@ -210,7 +235,12 @@ export default function PerformanceCharts() {
             <BarChart
               data={{
                 labels: roleItems.map((item) => item.label),
-                datasets: [{ data: chartValues(roleItems.map((i) => i.value)) }],
+                datasets: [
+                  {
+                    data: chartValues(roleItems.map((i) => i.value)),
+                    colors: barColorsFromHex(roleItems.map((i) => i.color)),
+                  },
+                ],
               }}
               width={chartWidth}
               height={220}
@@ -220,12 +250,15 @@ export default function PerformanceCharts() {
               style={styles.chart}
               fromZero
               showValuesOnTopOfBars
+              withCustomBarColorFromData
+              flatColor
+              showBarTops={false}
             />
             <ChartLegend
-              items={roleItems.map((item, index) => ({
+              items={roleItems.map((item) => ({
                 name: item.label,
                 value: item.value,
-                color: ROLE_CHART_COLORS[index % ROLE_CHART_COLORS.length],
+                color: item.color,
               }))}
             />
           </ChartCard>
@@ -242,7 +275,10 @@ export default function PerformanceCharts() {
               data={{
                 labels: academicItems.map((item) => item.label),
                 datasets: [
-                  { data: chartValues(academicItems.map((i) => i.value)) },
+                  {
+                    data: chartValues(academicItems.map((i) => i.value)),
+                    colors: barColorsFromHex(academicItems.map((i) => i.color)),
+                  },
                 ],
               }}
               width={chartWidth}
@@ -253,12 +289,15 @@ export default function PerformanceCharts() {
               style={styles.chart}
               fromZero
               showValuesOnTopOfBars
+              withCustomBarColorFromData
+              flatColor
+              showBarTops={false}
             />
             <ChartLegend
-              items={academicItems.map((item, index) => ({
+              items={academicItems.map((item) => ({
                 name: item.label,
                 value: item.value,
-                color: ACADEMIC_CHART_COLORS[index % ACADEMIC_CHART_COLORS.length],
+                color: item.color,
               }))}
             />
           </ChartCard>

@@ -14,6 +14,7 @@ import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
   adminChartConfig,
   AdminPieChart,
+  barColorsFromHex,
   ChartCard,
   ChartLegend,
   useAdminChartWidth,
@@ -135,13 +136,36 @@ export default function AnalyticsScreen() {
     value: item.population,
   }));
 
+  const ACTIVITY_CHART_COLORS = [
+    "#16A34A",
+    "#2563EB",
+    "#D97706",
+    "#7C3AED",
+  ] as const;
+
   const activityItems = useMemo(
     () =>
       [
-        { label: t("admin.students"), value: s.students },
-        { label: t("admin.teachers"), value: s.teachers },
-        { label: t("admin.homeworkShort"), value: s.homeworks },
-        { label: t("common.exams"), value: s.exams },
+        {
+          label: t("admin.students"),
+          value: s.students,
+          color: ACTIVITY_CHART_COLORS[0],
+        },
+        {
+          label: t("admin.teachers"),
+          value: s.teachers,
+          color: ACTIVITY_CHART_COLORS[1],
+        },
+        {
+          label: t("admin.homeworkShort"),
+          value: s.homeworks,
+          color: ACTIVITY_CHART_COLORS[2],
+        },
+        {
+          label: t("common.exams"),
+          value: s.exams,
+          color: ACTIVITY_CHART_COLORS[3],
+        },
       ].filter((item) => item.value > 0),
     [s.students, s.teachers, s.homeworks, s.exams, t],
   );
@@ -226,7 +250,12 @@ export default function AnalyticsScreen() {
             <BarChart
               data={{
                 labels: activityItems.map((item) => item.label),
-                datasets: [{ data: chartValues(activityItems.map((i) => i.value)) }],
+                datasets: [
+                  {
+                    data: chartValues(activityItems.map((i) => i.value)),
+                    colors: barColorsFromHex(activityItems.map((i) => i.color)),
+                  },
+                ],
               }}
               width={chartWidth}
               height={220}
@@ -236,12 +265,15 @@ export default function AnalyticsScreen() {
               style={styles.chart}
               fromZero
               showValuesOnTopOfBars
+              withCustomBarColorFromData
+              flatColor
+              showBarTops={false}
             />
             <ChartLegend
-              items={activityItems.map((item, index) => ({
+              items={activityItems.map((item) => ({
                 name: item.label,
                 value: item.value,
-                color: ["#16A34A", "#2563EB", "#D97706", "#7C3AED"][index % 4],
+                color: item.color,
               }))}
             />
           </ChartCard>

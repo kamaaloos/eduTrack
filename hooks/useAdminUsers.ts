@@ -9,6 +9,7 @@ import {
     setUserPassword,
     updateUserProfile,
 } from "../src/services/adminUserManagement";
+import { getCallableErrorMessage } from "../src/utils/callableErrorMessage";
 import { ensureAdminCreateAuth, requireSchoolDb } from "../src/services/firebase";
 
 export type UserRole = "student" | "teacher" | "parent" | "admin";
@@ -157,10 +158,9 @@ export const useAdminUsers = () => {
             try {
                 await setUserPassword(userId, newPassword);
             } catch (err) {
-                const message =
-                    err instanceof Error ? err.message : "Failed to set password";
+                const message = getCallableErrorMessage(err, "Failed to set password");
                 setError(message);
-                throw new Error(message);
+                throw err;
             } finally {
                 setLoading(false);
             }

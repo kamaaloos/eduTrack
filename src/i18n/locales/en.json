@@ -249,7 +249,9 @@
     "slide4Desc": "Sign in with the credentials provided by your school administrator to get started.",
     "getStarted": "Get started",
     "next": "Next",
-    "continue": "Continue"
+    "continue": "Continue",
+    "muteVideo": "Mute video",
+    "unmuteVideo": "Unmute video"
   },
   "directMessage": {
     "title": "Direct message",
@@ -488,6 +490,7 @@
     "emptyParent": "No notifications yet. Alerts about your children's attendance and school updates will appear here.",
     "emptyAdmin": "No notifications yet. Usage-time alerts and school updates will appear here.",
     "markRead": "Mark as read",
+    "dismiss": "Dismiss notification",
     "openUserDirectory": "Open user directory",
     "types": {
       "parent_complaint": "Parent complaint",
@@ -1151,14 +1154,14 @@
     "setPasswordMismatch": "Passwords do not match.",
     "setPasswordTooShort": "Password must be at least 6 characters.",
     "setPasswordSuccess": "Password updated. Share the temporary password with the user securely.",
+    "setPasswordFailed": "Could not set the password. Check that the user has a valid email in their profile and that Firebase Authentication matches their account. Redeploy school functions if this persists.",
     "setPasswordHint": "The user must change this password on first sign-in.",
     "setPasswordAction": "Set password",
     "tempPasswordShareTitle": "Share temporary password",
-    "tempPasswordShareSubtitle": "Show, print, or save a card with QR code and barcode for the user.",
+    "tempPasswordShareSubtitle": "Share a login card with QR code. The password stays hidden on printed copies.",
     "tempPasswordQrLabel": "QR code (email + password)",
-    "tempPasswordQrHint": "The user can scan this QR on the login screen in the {{appName}} app, or read it with any QR reader.",
-    "tempPasswordBarcodeLabel": "Barcode (password only)",
-    "tempPasswordBarcodeHint": "CODE128 barcode of the temporary password for label printers.",
+    "tempPasswordQrHint": "The user scans this on the sign-in screen in the {{appName}} app.",
+    "tempPasswordPrintSecureNote": "Printed cards show name, email, and QR only — not the password text.",
     "tempPasswordSecurityNote": "Give this only in person. Destroy printed copies after the user signs in and changes their password.",
     "tempPasswordPrint": "Print card",
     "tempPasswordSavePdf": "Save PDF",

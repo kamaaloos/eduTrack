@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import Barcode from "react-native-barcode-svg";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -22,7 +21,6 @@ import { showErrorAlert } from "../../src/utils/confirmDialog";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import {
   buildTempPasswordPayload,
-  buildTempPasswordPrintHtml,
   encodeTempPasswordPayload,
 } from "../../src/utils/tempPasswordCard";
 
@@ -63,8 +61,12 @@ export function TempPasswordShareModal({
     if (!user?.email) return;
     setPrinting(true);
     try {
+      const { buildTempPasswordPrintHtml } = await import(
+        "../../src/utils/tempPasswordCardPrint"
+      );
       const html = await buildTempPasswordPrintHtml({
         schoolName: selectedSchool?.name,
+        appName: t("common.appName"),
         userName: user.name || user.email,
         email: user.email,
         password: tempPassword,
@@ -148,22 +150,7 @@ export function TempPasswordShareModal({
                   <QRCode value={qrValue} size={180} />
                 </View>
                 <Text style={styles.codeHint}>{t("admin.tempPasswordQrHint")}</Text>
-              </View>
-            ) : null}
-
-            {tempPassword ? (
-              <View style={styles.codeBlock}>
-                <Text style={styles.codeTitle}>{t("admin.tempPasswordBarcodeLabel")}</Text>
-                <View style={styles.barcodeWrap}>
-                  <Barcode
-                    value={tempPassword}
-                    format="CODE128"
-                    singleBarWidth={2}
-                    maxWidth={isWeb ? 320 : 280}
-                    height={72}
-                  />
-                </View>
-                <Text style={styles.codeHint}>{t("admin.tempPasswordBarcodeHint")}</Text>
+                <Text style={styles.printNote}>{t("admin.tempPasswordPrintSecureNote")}</Text>
               </View>
             ) : null}
 
@@ -291,15 +278,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
   },
-  barcodeWrap: {
-    width: "100%",
-    alignItems: "center",
-    paddingHorizontal: 8,
-  },
   codeHint: {
     marginTop: 10,
     fontSize: 12,
     color: "#64748B",
+    textAlign: "center",
+    lineHeight: 17,
+  },
+  printNote: {
+    marginTop: 10,
+    fontSize: 12,
+    color: "#1D4ED8",
     textAlign: "center",
     lineHeight: 17,
   },

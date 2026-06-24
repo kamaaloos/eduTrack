@@ -32,7 +32,8 @@ export default function AttendanceScreen() {
     <StudentScreenShell
       title={t("student.attendanceTitle")}
       subtitle={t("common.last90Days")}
-      showMenu
+      showBack
+      showMenu={false}
     >
       {records.length === 0 ? (
         <Text style={styles.emptyText}>{t("student.noAttendance")}</Text>
