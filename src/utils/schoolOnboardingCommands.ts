@@ -9,6 +9,7 @@ export type SchoolOnboardingStep = {
 };
 
 const REGISTRY_PLACEHOLDER = "<registry-project-id>";
+const REGISTRY_JSON_PLACEHOLDER = "scripts/my-school.json";
 
 /** Registry project id for deploy hints (falls back to placeholder). */
 export function resolveRegistryProjectId(
@@ -18,7 +19,7 @@ export function resolveRegistryProjectId(
   return trimmed || REGISTRY_PLACEHOLDER;
 }
 
-/** One-liner run from repo root after Firebase CLI login. */
+/** One-liner deploy from repo root after Firebase CLI login. */
 export function buildSchoolDeployCommand(
   projectId: string,
   options?: { seedSubscription?: boolean },
@@ -28,13 +29,34 @@ export function buildSchoolDeployCommand(
   return `npm run onboard:school -- --project ${trimmed}${seedFlag}`;
 }
 
+/** Full provision: registry JSON → deploy + registry upsert + IAM + sync. */
+export function buildSchoolProvisionCommand(
+  registryJsonPath?: string,
+  options?: {
+    dryRun?: boolean;
+    adminEmail?: string;
+  },
+): string {
+  const jsonPath = registryJsonPath?.trim() || REGISTRY_JSON_PLACEHOLDER;
+  const dryRunFlag = options?.dryRun ? " --dry-run" : "";
+  const adminEmail = options?.adminEmail?.trim();
+  const adminFlags = adminEmail
+    ? ` --admin-email ${adminEmail} --admin-password '<password>' --admin-name 'School Admin'`
+    : "";
+  return `npm run provision:school -- ${jsonPath}${dryRunFlag}${adminFlags}`;
+}
+
 /** Steps shown in super-admin onboarding wizard. */
 export function buildSchoolOnboardingSteps(
   projectId: string,
   registryProjectId?: string | null,
+  registryJsonPath?: string | null,
 ): SchoolOnboardingStep[] {
   const project = projectId.trim() || "<school-project-id>";
   const registry = resolveRegistryProjectId(registryProjectId);
+  const provisionCmd = buildSchoolProvisionCommand(registryJsonPath ?? undefined, {
+    dryRun: true,
+  });
   const deployCmd = buildSchoolDeployCommand(project, {
     seedSubscription: true,
   });
@@ -59,6 +81,18 @@ export function buildSchoolOnboardingSteps(
       manual: true,
     },
     {
+      id: "export-registry-json",
+      titleKey: "onboardingStepExportJson",
+      descriptionKey: "onboardingStepExportJsonHint",
+      manual: true,
+    },
+    {
+      id: "provision-school",
+      titleKey: "onboardingStepProvision",
+      descriptionKey: "onboardingStepProvisionHint",
+      command: provisionCmd,
+    },
+    {
       id: "deploy-school",
       titleKey: "onboardingStepDeploy",
       descriptionKey: "onboardingStepDeployHint",
@@ -77,7 +111,7 @@ export function buildSchoolOnboardingSteps(
       command: [
         `firebase use ${registry}`,
         "firebase deploy --only functions:registry:refreshSchoolSubscriptions",
-        "# Then call refreshSchoolSubscriptions with {}",
+        "# Covered by provision:school — only needed if you skipped --provision",
       ].join("\n"),
     },
     {
@@ -97,6 +131,6 @@ export function buildSchoolDeployCommands(projectId: string): string[] {
     "cd school-functions && npm install && npm run build && cd ..",
     "firebase deploy --config firebase.school.json --only firestore:rules,firestore:indexes",
     "firebase deploy --config firebase.school.json --only storage",
-    "firebase deploy --config firebase.school.json --only functions:school:sendPushOnNotificationCreated",
+    "firebase deploy --config firebase.school.json --only functions:school",
   ];
 }

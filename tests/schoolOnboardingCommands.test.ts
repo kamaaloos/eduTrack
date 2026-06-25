@@ -2,6 +2,7 @@ import {
   buildSchoolDeployCommand,
   buildSchoolDeployCommands,
   buildSchoolOnboardingSteps,
+  buildSchoolProvisionCommand,
   resolveRegistryProjectId,
 } from "../src/utils/schoolOnboardingCommands";
 
@@ -17,9 +18,26 @@ describe("schoolOnboardingCommands", () => {
     );
   });
 
+  it("builds provision one-liner with dry-run and admin flags", () => {
+    expect(buildSchoolProvisionCommand("scripts/foo.json")).toBe(
+      "npm run provision:school -- scripts/foo.json",
+    );
+    expect(
+      buildSchoolProvisionCommand("scripts/foo.json", { dryRun: true }),
+    ).toBe("npm run provision:school -- scripts/foo.json --dry-run");
+    expect(
+      buildSchoolProvisionCommand(undefined, {
+        adminEmail: "admin@school.example",
+      }),
+    ).toContain("--admin-email admin@school.example");
+  });
+
   it("includes manual and automated onboarding steps", () => {
     const steps = buildSchoolOnboardingSteps("demo-school", "edutrack-694ec");
-    expect(steps.length).toBeGreaterThanOrEqual(6);
+    expect(steps.length).toBeGreaterThanOrEqual(8);
+    expect(steps.find((s) => s.id === "provision-school")?.command).toContain(
+      "provision:school",
+    );
     expect(steps.find((s) => s.id === "deploy-school")?.command).toContain(
       "demo-school",
     );
@@ -37,5 +55,6 @@ describe("schoolOnboardingCommands", () => {
     expect(cmds.some((c) => c.includes("firestore:rules,firestore:indexes"))).toBe(
       true,
     );
+    expect(cmds.some((c) => c.includes("functions:school"))).toBe(true);
   });
 });

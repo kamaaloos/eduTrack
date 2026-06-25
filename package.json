@@ -18,6 +18,7 @@
     "test": "jest",
     "test:rules": "firebase emulators:exec --config firebase.rules-test.json --only firestore --project demo-edutrack-rules-test \"cross-env GCLOUD_PROJECT=demo-edutrack-rules-test jest --config jest.rules.config.js --runInBand --testTimeout=30000\"",
     "onboard:school": "node scripts/onboard-school.mjs",
+    "provision:school": "node scripts/onboard-school.mjs --provision",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.ci.json",

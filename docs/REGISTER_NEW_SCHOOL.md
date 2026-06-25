@@ -24,13 +24,48 @@ In [Firebase Console](https://console.firebase.google.com/):
 
 ## 2. Deploy school Firebase assets (CLI)
 
+### Option A — full provision (recommended)
+
+After step 1, copy `scripts/school-registry.example.json` to `scripts/my-school.json` and fill in all fields (including `firebase.projectId` from step 1).
+
+From the repo root:
+
+```bash
+# Preview (no changes)
+npm run provision:school -- scripts/my-school.json --dry-run
+
+# Execute — registry service account + firebase login + gcloud for IAM
+set GOOGLE_APPLICATION_CREDENTIALS=path\to\registry-service-account.json
+npm run provision:school -- scripts/my-school.json
+```
+
+This single command:
+
+- Deploys Firestore rules, indexes, storage rules, and all school Cloud Functions
+- Upserts the school in `schoolRegistry` (steps 3 + 6 below)
+- Grants registry compute SA **Cloud Datastore User** on the school project (step 4)
+- Syncs `platform/subscription` and `userCount` (steps 5 + 6)
+
+Optional first admin:
+
+```bash
+npm run provision:school -- scripts/my-school.json ^
+  --admin-email admin@school.example ^
+  --admin-password "temporary-password" ^
+  --admin-name "School Admin"
+```
+
+If you use **Option A**, you can skip sections **3–6** below (keep section **7** if you did not pass admin flags).
+
+### Option B — deploy only
+
 From the repo root, with Firebase CLI logged in:
 
 ```bash
 npm run onboard:school -- --project edutrack-school-3
 ```
 
-This deploys Firestore rules, indexes, storage rules, and `sendPushOnNotificationCreated` (push).
+This deploys Firestore rules, indexes, storage rules, and all `functions:school`.
 
 Optional:
 
@@ -43,6 +78,8 @@ npm run onboard:school -- --project edutrack-school-3 --seed-subscription
 ```
 
 If push deploy fails on first run (Eventarc IAM), wait 5–10 minutes and redeploy the function only — see [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md).
+
+Continue with sections **3–7** below when using Option B.
 
 ---
 
@@ -65,7 +102,7 @@ cp scripts/school-registry.example.json scripts/my-school.json
 # Edit my-school.json — set firebase.projectId and all config fields; leave userCount null
 
 set GOOGLE_APPLICATION_CREDENTIALS=path\to\registry-service-account.json
-node scripts/onboard-school.mjs --register scripts/my-school.json
+npm run onboard:school -- --register scripts/my-school.json
 ```
 
 The script prints `schoolRegistry/{schoolId}` — keep that ID for later steps.
@@ -167,11 +204,14 @@ The admin can then sign in via the normal school login flow (after selecting the
 ## Quick reference — commands
 
 ```bash
-# Deploy school tenant
+# Full provision (deploy + registry + IAM + sync)
+npm run provision:school -- scripts/my-school.json
+
+# Deploy school tenant only
 npm run onboard:school -- --project edutrack-school-3
 
-# Register in registry (alternative to super-admin form)
-node scripts/onboard-school.mjs --register scripts/my-school.json
+# Register in registry only (alternative to super-admin form)
+npm run onboard:school -- --register scripts/my-school.json
 
 # Registry: subscription sync function (once per deploy, not per school)
 firebase use edutrack-694ec

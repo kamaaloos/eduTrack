@@ -87,7 +87,10 @@ export function SchoolOnboardingChecklist({
                     <TouchableOpacity
                       style={styles.copyButton}
                       onPress={() => void copyCommand(step.command!, t)}
-                      disabled={!hasProjectId && step.id === "deploy-school"}
+                      disabled={
+                        !hasProjectId &&
+                        (step.id === "deploy-school" || step.id === "provision-school")
+                      }
                     >
                       <Ionicons name="copy-outline" size={16} color="#1E3A8A" />
                       <Text style={styles.copyButtonText}>

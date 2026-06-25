@@ -1,6 +1,6 @@
 # School onboarding
 
-Automates the repeatable parts of adding a new school tenant. **Creating the Firebase project** still happens in [Firebase Console](https://console.firebase.google.com/) — Google does not expose full project creation in the super-admin app.
+Automates adding a new school tenant. **Creating the Firebase project** still happens in [Firebase Console](https://console.firebase.google.com/) — Google does not expose full project creation in the super-admin app.
 
 **Full numbered checklist (registry + IAM + billable user count):** [REGISTER_NEW_SCHOOL.md](./REGISTER_NEW_SCHOOL.md)
 
@@ -10,60 +10,76 @@ Automates the repeatable parts of adding a new school tenant. **Creating the Fir
 |------|--------|
 | Create Firebase project | Console (manual) |
 | Enable Auth / Firestore / Storage | Console (manual) |
-| Web app config → registry form | Super-admin school form |
-| Deploy rules, indexes, storage, push function | **`npm run onboard:school`** |
-| Register `schoolRegistry` doc | Super-admin form **or** `--register` JSON |
-| IAM: registry can read school `users` | Google Cloud IAM on **each school** project |
-| Billable `userCount` sync | Daily scheduled function; optional manual **Sync count** |
-| Sync `platform/subscription` | Registry Cloud Function `refreshSchoolSubscriptions` |
-| First school admin user | School project Auth + `users/{uid}` |
+| Web app config → registry JSON or super-admin form | JSON file or super-admin |
+| **Full provision** (deploy + registry + IAM + sync) | **`npm run provision:school`** |
+| Deploy rules/indexes/storage/functions only | `npm run onboard:school` |
+| Register `schoolRegistry` doc only | Super-admin form **or** `--register` |
+| First school admin user | `--admin-email` flags **or** manual Auth + `users/{uid}` |
 
-## CLI — deploy school project
+## CLI — full provision (recommended)
+
+Copy `scripts/school-registry.example.json` to `scripts/my-school.json`, fill in Firebase config and dates, then from repo root:
+
+```bash
+# Preview all steps (no changes)
+npm run provision:school -- scripts/my-school.json --dry-run
+
+# Full run — needs firebase login, registry service account, gcloud for IAM
+set GOOGLE_APPLICATION_CREDENTIALS=path\to\registry-service-account.json
+npm run provision:school -- scripts/my-school.json
+
+# Optional: create first admin in the same run
+npm run provision:school -- scripts/my-school.json ^
+  --admin-email admin@school.example ^
+  --admin-password "temporary-password" ^
+  --admin-name "School Admin"
+```
+
+**What `provision:school` does:**
+
+1. Deploy Firestore rules, indexes, storage rules, and **all** `functions:school` on the school project
+2. Upsert `schoolRegistry/{id}` in the registry project (by `firebase.projectId`)
+3. Grant registry compute SA **Cloud Datastore User** on the school project (`gcloud`)
+4. Sync `platform/subscription` and billable `userCount` via registry function code (no manual `refreshSchoolSubscriptions` call)
+
+**Skip flags:**
+
+- `--skip-iam` — skip gcloud IAM binding (do step 4 in Console manually)
+- `--skip-registry-sync` — skip subscription/userCount sync; add `--seed-subscription` to only write `platform/subscription`
+- `--registry-compute-sa <email>` — override compute SA (or set `REGISTRY_COMPUTE_SA` / `REGISTRY_PROJECT_NUMBER`)
+- `--skip-storage` / `--skip-functions` — passed through to deploy step
+
+## CLI — deploy school project only
 
 From repo root, with [Firebase CLI](https://firebase.google.com/docs/cli) logged in:
 
 ```bash
-# Preview commands
 npm run onboard:school -- --project edutrack-school-2 --dry-run
-
-# Full deploy (rules, indexes, storage, push function)
 npm run onboard:school -- --project edutrack-school-2
-
-# Also write platform/subscription { entitled: true } (needs service account)
 npm run onboard:school -- --project edutrack-school-2 --seed-subscription
 ```
 
-Options:
+Options: `--skip-storage`, `--skip-functions`, `--credentials <path>`
 
-- `--skip-storage` — skip Storage rules deploy
-- `--skip-functions` — skip `school-functions` build and push function
-- `--credentials <path>` — service account JSON (default: `GOOGLE_APPLICATION_CREDENTIALS` or `serviceAccountKey.json`)
-
-### Register in registry from JSON (headless)
-
-Copy `scripts/school-registry.example.json`, fill in values, then:
+### Register in registry only (headless)
 
 ```bash
-# Service account must have write access to schoolRegistry on the **registry** project
 set GOOGLE_APPLICATION_CREDENTIALS=path\to\registry-service-account.json
-node scripts/onboard-school.mjs --register scripts/my-school.json
+npm run onboard:school -- --register scripts/my-school.json
 ```
+
+Uses upsert semantics — re-running updates the existing `schoolRegistry` doc for the same `firebase.projectId`.
 
 ## Super-admin wizard
 
-On **Add school** / **Edit school**, the **School onboarding checklist** shows numbered steps and copyable commands using the project ID from the form.
+On **Add school** / **Edit school**, the **School onboarding checklist** shows numbered steps and copyable commands. The **Full provision** step is the recommended path after exporting registry JSON.
 
-## After deploy
+## After provision
 
-1. Save the school in super-admin (if not registered via JSON).
-2. **IAM (per new school):** on the school Google Cloud project, grant the registry compute service account **Cloud Datastore User** (see [REGISTER_NEW_SCHOOL.md](./REGISTER_NEW_SCHOOL.md) §4).
-3. **Billable user count:** wait for the nightly sync (03:00 UTC) or use super-admin **Sync count**; verify `userCount` on `schoolRegistry/{schoolId}` in the registry project.
-4. On the **registry** project:
-   ```bash
-   firebase use <registry-project-id>
-   firebase deploy --only functions:registry:refreshSchoolSubscriptions
-   ```
-5. Call **`refreshSchoolSubscriptions`** with `{}` (or `{ "schoolId": "<id>" }`).
-6. Create the first **admin** in the school project (Auth + Firestore `users/{uid}` with `role: "admin"`).
+If you used `provision:school` without `--skip-iam` or `--skip-registry-sync`, remaining work is usually:
+
+1. Verify `schoolRegistry/{schoolId}` has `userCount` (may be `0` until users exist).
+2. Create the first admin if you did not pass `--admin-email` flags.
+3. Test school login from the app picker.
 
 See also [REGISTER_NEW_SCHOOL.md](./REGISTER_NEW_SCHOOL.md), [REGISTRY_USER_COUNT_SYNC.md](./REGISTRY_USER_COUNT_SYNC.md), [DEPLOYMENT.md](./DEPLOYMENT.md), and [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md).
