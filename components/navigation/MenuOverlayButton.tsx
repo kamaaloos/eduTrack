@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { platformShadow } from "../../src/utils/platformShadow";
 
 type MenuOverlayButtonProps = {
   onPress: () => void;
@@ -41,11 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 6,
+    ...platformShadow("md"),
   },
   buttonLeft: {
     left: 16,

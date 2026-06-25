@@ -3,6 +3,7 @@ import {
   INNER_CARD_BORDER_GREEN,
   INNER_CARD_BORDER_RED,
 } from "../../src/constants/innerCardBorders";
+import { platformShadow } from "../../src/utils/platformShadow";
 
 const isWeb = Platform.OS === "web";
 
@@ -36,11 +37,7 @@ export const teacherDashboardStyles = StyleSheet.create({
     borderBottomLeftRadius: isWeb ? 0 : 28,
     borderBottomRightRadius: isWeb ? 0 : 28,
     paddingHorizontal: isWeb ? 0 : 16,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: isWeb ? 0.08 : 0.15,
-    shadowRadius: 8,
-    elevation: 6,
+    ...platformShadow("lg"),
   },
   headerInner: {
     width: "100%",

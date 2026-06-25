@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { SuperAdminScreenShell } from "../../components/superAdmin/SuperAdminScreenShell";
+import { FormDateInput } from "../../components/common/FormDateInput";
 import { SchoolLogoField } from "../../components/superAdmin/SchoolLogoField";
 import { SchoolOnboardingChecklist } from "../../components/superAdmin/SchoolOnboardingChecklist";
 import {
@@ -226,22 +227,20 @@ export default function SuperAdminSchoolFormScreen() {
           />
 
           <Text style={styles.label}>{t("superAdmin.testingExpiresAt")}</Text>
-          <TextInput
+          <FormDateInput
             style={styles.input}
             value={testingExpiresAt}
             onChangeText={setTestingExpiresAt}
             placeholder={t("superAdmin.usageExpiresAtPlaceholder")}
-            placeholderTextColor="#94A3B8"
           />
           <Text style={styles.hint}>{t("superAdmin.testingExpiresAtHint")}</Text>
 
           <Text style={styles.label}>{t("superAdmin.usageExpiresAt")}</Text>
-          <TextInput
+          <FormDateInput
             style={styles.input}
             value={usageExpiresAt}
             onChangeText={setUsageExpiresAt}
             placeholder={t("superAdmin.usageExpiresAtPlaceholder")}
-            placeholderTextColor="#94A3B8"
           />
           <Text style={styles.hint}>{t("superAdmin.usageExpiresAtHint")}</Text>
 

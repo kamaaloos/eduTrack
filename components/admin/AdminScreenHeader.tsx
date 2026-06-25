@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
   webAdminContentStyle,
   webAdminPagePaddingStyle,
@@ -20,6 +21,8 @@ type AdminScreenHeaderProps = {
   title: string;
   subtitle?: string;
   showBack?: boolean;
+  /** Hide hamburger on desktop web when a persistent sidebar is shown. */
+  hideMenuOnDesktopWeb?: boolean;
   notificationCount?: number;
   onNotificationsPress?: () => void;
   onMenuPress?: () => void;
@@ -29,11 +32,15 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
   title,
   subtitle,
   showBack = false,
+  hideMenuOnDesktopWeb = true,
   notificationCount = 0,
   onNotificationsPress,
   onMenuPress,
 }) => {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
+  const showMenuButton =
+    Boolean(onMenuPress) && !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -83,7 +90,7 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
               </TouchableOpacity>
             ) : null}
 
-            {onMenuPress ? (
+            {showMenuButton ? (
               <TouchableOpacity
                 style={styles.iconButton}
                 onPress={onMenuPress}

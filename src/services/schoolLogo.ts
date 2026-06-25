@@ -1,6 +1,8 @@
 import * as ImagePicker from "expo-image-picker";
+import { Platform } from "react-native";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { readImageBytes } from "../utils/readImageBytes";
+import { pickImageFromWeb } from "../utils/pickImageFromWeb";
 import { registryAuth, registryStorage } from "./firebase";
 
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -59,6 +61,10 @@ export function schoolLogoStoragePath(
 }
 
 export async function pickSchoolLogoUri(): Promise<string | null> {
+  if (Platform.OS === "web") {
+    return pickImageFromWeb("image/jpeg,image/png,image/webp");
+  }
+
   const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!permission.granted) {
     throw new Error("PHOTO_PERMISSION_DENIED");

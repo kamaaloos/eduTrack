@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 
 import { ErrorBoundary } from "../../components/ErrorBoundary";
+import { FormDateInput } from "../../components/common/FormDateInput";
 import { AuthContext } from "../../src/context/authContext";
 import { db } from "../../src/services/firebase";
 
@@ -217,7 +218,7 @@ export default function HomeworkScreen() {
 
         <View style={styles.section}>
           <Text style={styles.label}>{t("teacher.homework.dueDateLabel")}</Text>
-          <TextInput
+          <FormDateInput
             style={styles.input}
             placeholder={t("teacher.homework.dueDatePlaceholder")}
             value={dueDate}

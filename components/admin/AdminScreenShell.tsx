@@ -1,18 +1,15 @@
 import { router } from "expo-router";
-import React, { useContext, useState, type ReactNode } from "react";
-import { useTranslation } from "react-i18next";
+import React, { useContext, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
-import { useAdminSideMenuItems } from "../../hooks/useAdminSideMenuItems";
 import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { AuthContext } from "../../src/context/authContext";
-import { useSchoolContext } from "../../src/context/schoolContext";
+import { useAdminMenu } from "../../src/context/adminMenuContext";
 import { APP_SCREEN_BACKGROUND } from "../../src/constants/appTheme";
 import { webRolePagePaddingStyle } from "../../src/constants/platformLayout";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
 import { AdminScreenHeader } from "./AdminScreenHeader";
-import { AdminSideMenu } from "./AdminSideMenu";
 
 type AdminScreenShellProps = {
   title: string;
@@ -29,12 +26,9 @@ export function AdminScreenShell({
   showNotifications = false,
   children,
 }: AdminScreenShellProps) {
-  const { t } = useTranslation();
   const layout = usePlatformLayout();
   const { user } = useContext(AuthContext);
-  const { selectedSchool } = useSchoolContext();
-  const [sideMenuVisible, setSideMenuVisible] = useState(false);
-  const menuItems = useAdminSideMenuItems();
+  const { openMenu } = useAdminMenu();
   const notificationCount = useUnreadNotificationCount(
     showNotifications ? user?.uid : null,
   );
@@ -42,12 +36,13 @@ export function AdminScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame>
+      <WebPageCardFrame sidebarLayout={layout.isDesktopWeb}>
         <AdminScreenHeader
           title={title}
           subtitle={subtitle}
           showBack={showBack}
-          onMenuPress={() => setSideMenuVisible(true)}
+          hideMenuOnDesktopWeb
+          onMenuPress={openMenu}
           notificationCount={showNotifications ? notificationCount : 0}
           onNotificationsPress={
             showNotifications
@@ -61,14 +56,6 @@ export function AdminScreenShell({
           </View>
         </View>
       </WebPageCardFrame>
-      <AdminSideMenu
-        visible={sideMenuVisible}
-        onClose={() => setSideMenuVisible(false)}
-        title={t("admin.management")}
-        subtitle={selectedSchool?.name ?? null}
-        subtitleTone="accent"
-        items={menuItems}
-      />
     </View>
   );
 }

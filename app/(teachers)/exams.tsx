@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 
 import { addDoc, collection } from "firebase/firestore";
 
+import { FormDateInput } from "../../components/common/FormDateInput";
 import { db } from "../../src/services/firebase";
 import { AuthContext } from "../../src/context/authContext";
 
@@ -73,7 +74,7 @@ export default function ExamsScreen() {
         onChangeText={setSubject}
       />
 
-      <TextInput
+      <FormDateInput
         style={styles.input}
         placeholder={t("teacher.exams.examDatePlaceholder")}
         value={date}

@@ -14,6 +14,7 @@ import {
   webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
+import { platformShadow } from "../../src/utils/platformShadow";
 
 type SuperAdminScreenHeaderProps = {
   title: string;
@@ -85,11 +86,7 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === "web" ? 14 : 18,
     borderBottomLeftRadius: Platform.OS === "web" ? 0 : 24,
     borderBottomRightRadius: Platform.OS === "web" ? 0 : 24,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: Platform.OS === "web" ? 0.08 : 0.15,
-    shadowRadius: 8,
-    elevation: 6,
+    ...platformShadow("lg"),
   },
   headerInner: {
     width: "100%",

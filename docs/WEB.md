@@ -1,8 +1,6 @@
-# Web app (Phase 1)
+# Web app
 
-eduTrack runs in the browser from the **same Expo codebase** as the Android/iOS app. Phase 1 targets the core journey:
-
-**onboarding → select school → login → role home**
+eduTrack runs in the browser from the **same Expo codebase** as the Android/iOS app.
 
 ## Run locally
 
@@ -62,30 +60,31 @@ The web app uses **`usePlatformLayout()`** with three breakpoints:
 |------------|-------|--------|
 | Compact | &lt;768px | Single column, 16px padding, full-width cards |
 | Tablet | 768–1023px | Two-column grids where supported, max ~960px |
-| Desktop | ≥1024px | Multi-column dashboards, data tables, sidebar nav (teacher/parent), max ~1200px |
+| Desktop | ≥1024px | Multi-column dashboards, data tables, sidebar nav (admin/teacher/parent/student), max ~1200px |
 
 Shared helpers live in `src/constants/platformLayout.ts`. Role screens use `WebPageCardFrame` (responsive max-width). Dashboards use `WebDashboardColumns` for two-column desktop layouts.
 
-## Known Phase 1 limits
-
-These work on mobile first; web polish is ongoing:
+## Known limits (ongoing polish)
 
 | Area | Web status |
 |------|------------|
-| Login, school picker, role dashboards | Supported (Phase 1) |
+| Login, school picker, role dashboards | Supported |
 | Layout | Responsive breakpoints via `usePlatformLayout()` — see above |
 | Logout confirm | Branded modal via `AppDialogHost` |
 | Alerts / errors | Branded modal via `AppDialogHost` (web) |
 | Login card | Paste JSON code on web; QR scan on native |
 | Time pickers | Native `<input type="time">` on web (schedule, etc.) |
-| Delete / confirm actions | Use `confirmAction()` from `src/utils/confirmDialog.ts` |
-| Image picker / profile photos | Native picker; file input follow-up |
-| PDF share / print | May use download instead of native share |
-| Date/time pickers | May need web-specific controls on some screens |
+| Date pickers | Native `<input type="date">` on web (`FormDateInput` — homework, exams, school periods) |
+| Delete / dismiss lists | Swipe on native; **× dismiss button** on web (`SwipeToDeleteRow`) |
+| Notifications | Dismiss via `SwipeToDeleteRow` on web |
+| Profile / school logo upload | Browser file picker on web (`pickImageFromWeb`) |
+| PDF share / print | Download / print via `webFileDownload.ts` helpers |
+| Image picker / profile photos | File input on web; native picker on mobile |
 | Admin dashboard layout | Responsive grid at ≥1024px via `usePlatformLayout()` |
-| User / class directories | Table at ≥1024px; 2-column cards on compact web; cards on native |
-| Teacher / parent desktop | Persistent left sidebar navigation at ≥1024px |
-| Student / teacher dashboards | Two-column section layout at ≥1024px |
+| User / class directories | Table at ≥1024px; 2-column cards on compact web |
+| Teacher / parent / **student** / **admin** desktop | Persistent left navy sidebar at ≥1024px |
+| Shadows on web | `platformShadow()` / `platformShadowAccent()` — avoids RN Web `shadow*` deprecation warnings |
+| Student / teacher dashboards | Two-column section layout at ≥1024px; sidebar-aware card width |
 
 Report breakages by role and screen so we can prioritize follow-up polish.
 

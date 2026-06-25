@@ -10,6 +10,8 @@ type SwipeToDeleteRowProps = {
   enabled?: boolean;
   /** list — swipe left (vertical lists). carousel — swipe right (horizontal rows). */
   variant?: "list" | "carousel";
+  /** Web dismiss button accessibility label (defaults to common.delete). */
+  webDismissLabel?: string;
 };
 
 export function SwipeToDeleteRow({
@@ -17,12 +19,31 @@ export function SwipeToDeleteRow({
   onDelete,
   enabled = true,
   variant = "list",
+  webDismissLabel,
 }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const swipeRef = useRef<Swipeable>(null);
+  const dismissA11y = webDismissLabel ?? t("common.delete");
 
-  if (!enabled || Platform.OS === "web") {
+  if (!enabled) {
     return <>{children}</>;
+  }
+
+  if (Platform.OS === "web") {
+    return (
+      <View style={styles.webRow}>
+        <View style={styles.webContent}>{children}</View>
+        <TouchableOpacity
+          style={styles.webDismissBtn}
+          onPress={onDelete}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={dismissA11y}
+        >
+          <Ionicons name="close-circle-outline" size={22} color="#94A3B8" />
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   const handleDelete = () => {
@@ -39,7 +60,7 @@ export function SwipeToDeleteRow({
       onPress={handleDelete}
       activeOpacity={0.85}
       accessibilityRole="button"
-      accessibilityLabel={t("common.delete")}
+      accessibilityLabel={dismissA11y}
     >
       <Ionicons name="trash-outline" size={22} color="#FFFFFF" />
       <Text style={styles.deleteText}>{t("common.delete")}</Text>
@@ -70,6 +91,22 @@ const styles = StyleSheet.create({
   },
   rowCarousel: {
     flexShrink: 0,
+  },
+  webRow: {
+    width: "100%",
+    position: "relative",
+  },
+  webContent: {
+    width: "100%",
+  },
+  webDismissBtn: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 2,
+    padding: 4,
+    borderRadius: 999,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
   },
   deleteAction: {
     backgroundColor: "#DC2626",

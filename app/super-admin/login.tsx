@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../../components/AppScreenBackground";
 import { AuthFormField } from "../../components/auth/AuthFormField";
 import { WebPageCard } from "../../components/layout/WebPageCard";
+import { platformShadow } from "../../src/utils/platformShadow";
 import { useLanguage } from "../../src/context/languageContext";
 import { useSuperAdminAuth } from "../../src/context/superAdminAuthContext";
 import { WEB_PAGE_ROOT_STYLE } from "../../src/constants/webBackground";
@@ -302,11 +303,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E2E8F0",
     width: "100%",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
+    ...platformShadow("md"),
   },
   passwordField: {
     marginBottom: 8,

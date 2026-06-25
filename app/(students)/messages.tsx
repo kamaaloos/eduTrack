@@ -72,6 +72,7 @@ export default function MessagesScreen() {
             <SwipeToDeleteRow
               key={m.id}
               onDelete={() => handleDismiss(m.id)}
+              webDismissLabel={t("common.delete")}
             >
               <View
                 style={[

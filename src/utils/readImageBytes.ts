@@ -1,5 +1,6 @@
 import { File } from "expo-file-system";
 import * as FileSystem from "expo-file-system/legacy";
+import { Platform } from "react-native";
 
 function base64ToUint8Array(base64: string): Uint8Array {
   const atobFn =
@@ -29,6 +30,24 @@ export function guessImageContentType(uri: string): string {
 export async function readImageBytes(
   uri: string,
 ): Promise<{ bytes: Uint8Array; contentType: string }> {
+  if (
+    Platform.OS === "web" ||
+    uri.startsWith("blob:") ||
+    uri.startsWith("data:")
+  ) {
+    const response = await fetch(uri);
+    if (!response.ok) {
+      throw new Error("IMAGE_READ_FAILED");
+    }
+    const blob = await response.blob();
+    const buffer = await blob.arrayBuffer();
+    const contentType =
+      blob.type && blob.type.startsWith("image/")
+        ? blob.type
+        : guessImageContentType(uri);
+    return { bytes: new Uint8Array(buffer), contentType };
+  }
+
   const contentType = guessImageContentType(uri);
 
   try {

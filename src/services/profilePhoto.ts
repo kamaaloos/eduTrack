@@ -1,7 +1,9 @@
 import * as ImagePicker from "expo-image-picker";
+import { Platform } from "react-native";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import { readImageBytes } from "../utils/readImageBytes";
+import { pickImageFromWeb } from "../utils/pickImageFromWeb";
 import { auth, db, storage } from "./firebase";
 
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -53,6 +55,10 @@ export function getProfilePhotoErrorKey(err: unknown): string {
 }
 
 export async function pickProfileImageUri(): Promise<string | null> {
+  if (Platform.OS === "web") {
+    return pickImageFromWeb("image/jpeg,image/png,image/webp");
+  }
+
   const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!permission.granted) {
     throw new Error("PHOTO_PERMISSION_DENIED");

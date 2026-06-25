@@ -8,6 +8,7 @@ import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import { getAttendanceColor } from "../../src/utils/dashboardUi";
 import { getAttendanceStatusLabel } from "../../src/utils/attendanceLabels";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import { platformShadow } from "../../src/utils/platformShadow";
 import {
   ReportCardWebAbsencesSection,
   ReportCardWebExamsSection,
@@ -408,11 +409,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: INNER_CARD_BORDER_GREEN,
-    shadowColor: "#0F172A",
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    ...platformShadow("md"),
   },
   examHeader: {
     flexDirection: "row",

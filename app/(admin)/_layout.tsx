@@ -2,11 +2,13 @@ import { Stack } from "expo-router";
 import { RoleGate } from "../../components/auth/RoleGate";
 import { RoleAppFrame } from "../../components/layout/RoleAppFrame";
 import { AdminDataProvider } from "../../src/context/adminDataContext";
+import { AdminMenuProvider } from "../../src/context/adminMenuContext";
 
 export default function AdminLayout() {
   return (
     <RoleGate allowedRole="admin">
       <AdminDataProvider>
+        <AdminMenuProvider>
         <RoleAppFrame copyrightBottomOffset={8}>
           <Stack
             screenOptions={{
@@ -34,6 +36,7 @@ export default function AdminLayout() {
             <Stack.Screen name="academic" />
           </Stack>
         </RoleAppFrame>
+        </AdminMenuProvider>
       </AdminDataProvider>
     </RoleGate>
   );

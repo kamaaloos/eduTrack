@@ -87,13 +87,13 @@ export function StudentScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame>
+      <WebPageCardFrame sidebarLayout={layout.isDesktopWeb}>
         <StudentScreenHeader
           title={title}
           subtitle={subtitle}
           showBack={showBack}
           showMenu={showMenu}
-          hideMenuOnDesktopWeb={false}
+          hideMenuOnDesktopWeb
           notificationCount={showNotifications ? notificationCount : 0}
           onNotificationsPress={
             showNotifications

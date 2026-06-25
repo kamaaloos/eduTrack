@@ -1,11 +1,12 @@
 import { Platform, type ViewStyle } from "react-native";
 
-type ShadowSize = "sm" | "md" | "lg";
+type ShadowSize = "sm" | "md" | "lg" | "xl";
 
 const WEB: Record<ShadowSize, ViewStyle> = {
   sm: { boxShadow: "0 1px 3px rgba(15, 23, 42, 0.06)" },
   md: { boxShadow: "0 2px 8px rgba(15, 23, 42, 0.08)" },
   lg: { boxShadow: "0 4px 14px rgba(15, 23, 42, 0.12)" },
+  xl: { boxShadow: "0 8px 24px rgba(15, 23, 42, 0.12)" },
 };
 
 const NATIVE: Record<ShadowSize, ViewStyle> = {
@@ -29,6 +30,13 @@ const NATIVE: Record<ShadowSize, ViewStyle> = {
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
+  },
+  xl: {
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    elevation: 8,
   },
 };
 

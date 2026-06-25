@@ -88,7 +88,7 @@ export function StudentDashboardView({
   return (
     <View style={styles.mainContainer}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame sidebarLayout={layout.isDesktopWeb && useParentRoutes}>
+      <WebPageCardFrame sidebarLayout={layout.isDesktopWeb}>
         <DashboardHeader
           displayName={displayName}
           photoURL={photoURL}

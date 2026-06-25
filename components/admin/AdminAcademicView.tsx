@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import type { useAdminAcademic } from "../../hooks/useAdminAcademic";
+import { FormDateInput } from "../common/FormDateInput";
 import { AdminScreenShell } from "./AdminScreenShell";
 import {
   AdminAcademicButton,
@@ -109,7 +110,7 @@ export function AdminAcademicView(props: AdminAcademicViewProps) {
             onChangeText={setExamSubject}
             style={styles.input}
           />
-          <TextInput
+          <FormDateInput
             placeholder={t("admin.titlePlaceholder")}
             value={examDate}
             onChangeText={setExamDate}

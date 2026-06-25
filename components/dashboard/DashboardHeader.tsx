@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
   webAdminContentStyle,
   webAdminPagePaddingStyle,
@@ -28,6 +29,8 @@ type DashboardHeaderProps = {
   notificationUnreadCount: number;
   onLogout: () => void;
   onMenuPress?: () => void;
+  /** Hide hamburger on desktop web when persistent sidebar is shown. */
+  hideMenuOnDesktopWeb?: boolean;
 };
 
 export function DashboardHeader({
@@ -43,11 +46,31 @@ export function DashboardHeader({
   notificationUnreadCount,
   onLogout,
   onMenuPress,
+  hideMenuOnDesktopWeb = true,
 }: DashboardHeaderProps) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
 
   const iconButtonStyle =
     Platform.OS === "web" ? styles.headerIconButton : styles.alertButton;
+
+  const showMenuButton =
+    Boolean(onMenuPress) &&
+    !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
+
+  const menuButton = showMenuButton ? (
+    <TouchableOpacity
+      onPress={onMenuPress}
+      style={iconButtonStyle}
+      accessibilityLabel={t("admin.management")}
+    >
+      <Ionicons
+        name="menu"
+        size={Platform.OS === "web" ? 20 : 24}
+        color={Platform.OS === "web" ? "#1E3A8A" : "#FFFFFF"}
+      />
+    </TouchableOpacity>
+  ) : null;
 
   const headerInner = (
     <View style={styles.headerContent}>
@@ -69,19 +92,7 @@ export function DashboardHeader({
 
       {showHealthCheck && onHealthCheckPress ? (
         <View style={styles.headerActions}>
-          {onMenuPress ? (
-            <TouchableOpacity
-              onPress={onMenuPress}
-              style={iconButtonStyle}
-              accessibilityLabel={t("admin.management")}
-            >
-              <Ionicons
-                name="menu"
-                size={Platform.OS === "web" ? 20 : 24}
-                color={Platform.OS === "web" ? "#1E3A8A" : "#FFFFFF"}
-              />
-            </TouchableOpacity>
-          ) : null}
+          {menuButton}
           <TouchableOpacity
             onPress={onHealthCheckPress}
             style={iconButtonStyle}
@@ -96,19 +107,7 @@ export function DashboardHeader({
         </View>
       ) : (
         <View style={styles.headerActions}>
-          {onMenuPress ? (
-            <TouchableOpacity
-              onPress={onMenuPress}
-              style={iconButtonStyle}
-              accessibilityLabel={t("admin.management")}
-            >
-              <Ionicons
-                name="menu"
-                size={Platform.OS === "web" ? 20 : 24}
-                color={Platform.OS === "web" ? "#1E3A8A" : "#FFFFFF"}
-              />
-            </TouchableOpacity>
-          ) : null}
+          {menuButton}
           {showNotifications ? (
             <TouchableOpacity
               onPress={() => router.push(notificationRoute as never)}

@@ -30,6 +30,7 @@ import {
   showErrorAlert,
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
+import { platformShadowAccent } from "../../src/utils/platformShadow";
 
 export default function SuperAdminSchoolsScreen() {
   const { t } = useTranslation();
@@ -555,10 +556,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#1E3A8A",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#1E3A8A",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    ...platformShadowAccent("#1E3A8A"),
   },
 });

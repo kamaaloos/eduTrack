@@ -6,7 +6,6 @@ import {
   Alert,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -15,6 +14,7 @@ import {
   updateSchoolUsagePeriod,
 } from "../../src/services/schoolRegistryAdmin";
 import { validateUsageExpiryDate } from "../../src/utils/validation";
+import { FormDateInput } from "../common/FormDateInput";
 
 type SchoolPeriodEditorsProps = {
   schoolId: string;
@@ -101,14 +101,11 @@ export function SchoolPeriodEditors({
         <Text style={styles.blockTitle}>{t("superAdmin.editTestingPeriod")}</Text>
         <Text style={styles.hint}>{t("superAdmin.testingExpiresAtHint")}</Text>
         <Text style={styles.label}>{t("superAdmin.testingExpiresAt")}</Text>
-        <TextInput
+        <FormDateInput
           style={styles.input}
           value={testingDate}
           onChangeText={setTestingDate}
           placeholder={t("superAdmin.usageExpiresAtPlaceholder")}
-          placeholderTextColor="#94A3B8"
-          autoCapitalize="none"
-          autoCorrect={false}
           editable={!savingTesting}
         />
         <TouchableOpacity
@@ -131,14 +128,11 @@ export function SchoolPeriodEditors({
         <Text style={styles.blockTitle}>{t("superAdmin.editUsagePeriod")}</Text>
         <Text style={styles.hint}>{t("superAdmin.usageExpiresAtHint")}</Text>
         <Text style={styles.label}>{t("superAdmin.usageExpiresAt")}</Text>
-        <TextInput
+        <FormDateInput
           style={styles.input}
           value={usageDate}
           onChangeText={setUsageDate}
           placeholder={t("superAdmin.usageExpiresAtPlaceholder")}
-          placeholderTextColor="#94A3B8"
-          autoCapitalize="none"
-          autoCorrect={false}
           editable={!savingUsage}
         />
         <TouchableOpacity

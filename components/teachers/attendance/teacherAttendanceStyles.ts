@@ -3,6 +3,7 @@ import {
   INNER_CARD_BORDER_GREEN,
   innerCardBorderStyle,
 } from "../../../src/constants/innerCardBorders";
+import { platformShadow } from "../../../src/utils/platformShadow";
 
 const isWeb = Platform.OS === "web";
 
@@ -98,10 +99,7 @@ export const teacherAttendanceStyles = StyleSheet.create({
     padding: 18,
     borderRadius: 16,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    ...platformShadow("md"),
     ...innerCardBorderStyle,
   },
   cardName: { fontSize: 20, fontWeight: "800", marginBottom: 12, color: "#0F172A" },

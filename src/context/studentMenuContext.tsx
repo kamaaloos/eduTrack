@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { AdminSideMenu } from "../../components/admin/AdminSideMenu";
+import { WebDesktopRoleNav } from "../../components/layout/WebDesktopRoleNav";
 import { useStudentSideMenuItems } from "../../hooks/useStudentSideMenuItems";
 import { AuthContext } from "./authContext";
 
@@ -33,12 +34,18 @@ export function StudentMenuProvider({ children }: { children: ReactNode }) {
 
   return (
     <StudentMenuContext.Provider value={value}>
-      {children}
+      <WebDesktopRoleNav
+        title={t("tabs.student.home")}
+        subtitle={firstName}
+        items={menuItems}
+      >
+        {children}
+      </WebDesktopRoleNav>
       {visible ? (
         <AdminSideMenu
           visible
           onClose={closeMenu}
-          title={t("admin.management")}
+          title={t("tabs.student.home")}
           subtitle={firstName}
           items={menuItems}
         />

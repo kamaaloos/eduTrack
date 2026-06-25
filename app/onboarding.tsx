@@ -18,6 +18,7 @@ import { OnboardingWelcomeVideo } from "../components/onboarding/OnboardingWelco
 import { WebPageCard } from "../components/layout/WebPageCard";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { useLanguage } from "../src/context/languageContext";
+import { platformShadowAccent } from "../src/utils/platformShadow";
 import { webAuthContentStyle } from "../src/constants/webLayout";
 import { markOnboardingComplete } from "../src/utils/onboardingStorage";
 
@@ -384,11 +385,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 15,
     paddingHorizontal: 24,
-    shadowColor: "#1E3A8A",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    ...platformShadowAccent("#1E3A8A"),
   },
   primaryButtonRtl: {
     flexDirection: "row-reverse",

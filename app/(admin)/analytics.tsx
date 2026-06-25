@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { BarChart } from "react-native-chart-kit";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
+import { platformShadow } from "../../src/utils/platformShadow";
 import {
   adminChartConfig,
   AdminPieChart,
@@ -360,10 +361,7 @@ const styles = StyleSheet.create({
   summaryCardWeb: {
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    shadowColor: "#0F172A",
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
+    ...platformShadow("lg"),
   },
   summaryTitle: {
     fontSize: 16,

@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -120,6 +119,7 @@ export function NotificationsList({
               <SwipeToDeleteRow
                 key={item.id}
                 onDelete={() => onDelete(item.id)}
+                webDismissLabel={t("notifications.dismiss")}
               >
                 <TouchableOpacity
                   style={[styles.card, !item.read && styles.cardUnread]}
@@ -135,27 +135,7 @@ export function NotificationsList({
                         {display.typeLabel}
                       </Text>
                     </View>
-                    <View style={styles.cardTopRight}>
-                      {!item.read ? <View style={styles.unreadDot} /> : null}
-                      {Platform.OS === "web" ? (
-                        <TouchableOpacity
-                          style={styles.dismissBtn}
-                          onPress={(event) => {
-                            event.stopPropagation?.();
-                            onDelete(item.id);
-                          }}
-                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                          accessibilityRole="button"
-                          accessibilityLabel={t("notifications.dismiss")}
-                        >
-                          <Ionicons
-                            name="close-circle-outline"
-                            size={22}
-                            color="#94A3B8"
-                          />
-                        </TouchableOpacity>
-                      ) : null}
-                    </View>
+                    {!item.read ? <View style={styles.unreadDot} /> : null}
                   </View>
                   <Text style={styles.cardTitle}>{display.title}</Text>
                   <Text style={styles.cardMessage}>{display.message}</Text>
@@ -267,14 +247,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 8,
-  },
-  cardTopRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  dismissBtn: {
-    padding: 2,
   },
   typePill: {
     backgroundColor: "#EFF6FF",

@@ -15,6 +15,7 @@ import {
   type AlertDialogRequest,
   type ConfirmDialogRequest,
 } from "../../src/services/dialogBridge";
+import { platformShadow } from "../../src/utils/platformShadow";
 
 type PendingAlert = AlertDialogRequest & {
   resolve: () => void;
@@ -173,10 +174,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
+    ...platformShadow("xl"),
     zIndex: 1,
   },
   alertHeader: {

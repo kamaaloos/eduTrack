@@ -467,7 +467,10 @@ export default function ParentDetailScreen() {
 
           {showGenericBody ? (
             kind === "announcement" ? (
-              <SwipeToDeleteRow onDelete={handleDismissAnnouncement}>
+              <SwipeToDeleteRow
+                onDelete={handleDismissAnnouncement}
+                webDismissLabel={t("common.delete")}
+              >
                 <View style={[studentScreenStyles.detailCard, innerCardBorderStyle]}>
                   <Text style={studentScreenStyles.detailSectionLabel}>
                     {t("common.details")}
