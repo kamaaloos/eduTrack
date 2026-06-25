@@ -10,11 +10,19 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  EXPO_PUBLIC_FIREBASE_API_KEY: ci-placeholder
+  EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ci-placeholder.firebaseapp.com
+  EXPO_PUBLIC_FIREBASE_PROJECT_ID: ci-placeholder
+  EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ci-placeholder.appspot.com
+  EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "000000000000"
+  EXPO_PUBLIC_FIREBASE_APP_ID: "1:000000000000:web:0000000000000000000000"
+
 jobs:
   test-and-lint:
     name: Test & lint
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -35,16 +43,58 @@ jobs:
       - name: Run Firestore rules tests
         run: npm run test:rules
 
-      - name: Typecheck
+      - name: Typecheck (utils & tests)
         run: npm run typecheck
+
+      - name: Typecheck (full app)
+        run: npm run typecheck:app
 
       - name: Lint
         run: npm run lint
+
+  e2e-smoke:
+    name: E2E web smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build static web app
+        run: npm run build:web
+
+      - name: Run Playwright smoke tests
+        run: npm run test:e2e
         env:
-          # Expo lint loads env; CI has no secrets — placeholders satisfy config loaders.
-          EXPO_PUBLIC_FIREBASE_API_KEY: ci-placeholder
-          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ci-placeholder.firebaseapp.com
-          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ci-placeholder
-          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ci-placeholder.appspot.com
-          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "000000000000"
-          EXPO_PUBLIC_FIREBASE_APP_ID: "1:000000000000:web:0000000000000000000000"
+          E2E_SCHOOL_COUNTRY: ${{ secrets.E2E_SCHOOL_COUNTRY }}
+          E2E_SCHOOL_CITY: ${{ secrets.E2E_SCHOOL_CITY }}
+          E2E_SCHOOL_NAME: ${{ secrets.E2E_SCHOOL_NAME }}
+          E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+          E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+          E2E_TEACHER_EMAIL: ${{ secrets.E2E_TEACHER_EMAIL }}
+          E2E_TEACHER_PASSWORD: ${{ secrets.E2E_TEACHER_PASSWORD }}
+          E2E_STUDENT_EMAIL: ${{ secrets.E2E_STUDENT_EMAIL }}
+          E2E_STUDENT_PASSWORD: ${{ secrets.E2E_STUDENT_PASSWORD }}
+          E2E_PARENT_EMAIL: ${{ secrets.E2E_PARENT_EMAIL }}
+          E2E_PARENT_PASSWORD: ${{ secrets.E2E_PARENT_PASSWORD }}
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

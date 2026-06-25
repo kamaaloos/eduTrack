@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { BarChart } from "react-native-chart-kit";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
+import type { TranslateFn } from "../../src/types/i18n";
 import { platformShadow } from "../../src/utils/platformShadow";
 import {
   adminChartConfig,
@@ -50,7 +51,7 @@ const EMPTY_STATS: AdminAnalyticsStats = {
 };
 
 function attendanceHistoryLabelT(
-  t: (key: string, opts?: object) => string,
+  t: TranslateFn,
   days: number,
 ): string {
   return days === ATTENDANCE_HISTORY_DAYS

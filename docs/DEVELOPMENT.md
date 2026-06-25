@@ -38,12 +38,35 @@ npm run web            # browser — see docs/WEB.md
 ## Quality checks (run before PR)
 
 ```bash
-npm run ci             # test + lint + typecheck (utils, mappers, tests)
+npm run ci             # unit + rules + lint + typecheck (utils) + typecheck:app (baseline)
 npm run test:coverage  # optional coverage report
-npm run typecheck:app  # full app TypeScript (may report existing strict issues)
+npm run typecheck:app  # full app TS — fails only if errors exceed typecheck-app.baseline.json
 ```
 
-CI runs the same checks on push/PR to `main` / `master`.
+CI runs the same checks on push/PR to `main` / `master`, plus a **Playwright web smoke** job (`landing` always; role login tests when E2E secrets are set).
+
+### Web E2E smoke (Playwright)
+
+```bash
+cp .env.e2e.example .env.e2e   # school + role test accounts (auto-loaded by Playwright)
+# Use real EXPO_PUBLIC_* in .env for build
+npm run playwright:install       # once per machine / after @playwright/test upgrades
+npm run build:web
+npm run test:e2e                 # serves dist/ on :4173 unless E2E_BASE_URL is set
+```
+
+Playwright reads **`.env.e2e`** from the project root before tests run. **Do not set `E2E_BASE_URL` unless a server is already running** — the default is `serve dist` on `http://127.0.0.1:4173` after `npm run build:web`. For `E2E_SCHOOL_COUNTRY` / `CITY`, use the name only (not `Finland (2)`); school name must match the card title exactly.
+
+GitHub Actions secrets for role flows (optional; tests skip when unset):
+
+| Secret | Purpose |
+|--------|---------|
+| `E2E_SCHOOL_COUNTRY` / `CITY` / `NAME` | School picker labels |
+| `E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD` | Admin dashboard smoke |
+| `E2E_TEACHER_*` | Teacher dashboard |
+| `E2E_STUDENT_*` | Student dashboard |
+| `E2E_PARENT_*` | Parent dashboard |
+| `E2E_FIREBASE_*` or `E2E_REGISTRY_*` | Real Firebase config for `build:web` in CI |
 
 ## Adding a new screen
 

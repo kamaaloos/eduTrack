@@ -37,7 +37,18 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
-# Metro
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.env.e2e
+
+# Local typecheck scratch
+tsc-app.txt
+tsc-errors.txt
+tsconfig-resolved.json
+
 .metro-health-check*
 
 # debug

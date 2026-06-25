@@ -1,0 +1,4 @@
+{
+  "maxErrors": 246,
+  "note": "Full-app tsc debt — lower this number as errors are fixed. CI fails when error count exceeds maxErrors."
+}

@@ -1,5 +1,5 @@
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
-import type { ClassExam } from "../components/teachers/examReports/examReportsTypes";
+import type { ClassExam } from "../../components/teachers/examReports/examReportsTypes";
 import {
   buildTermExamClassCertificatesHtml,
   buildYearlyClassCertificatesHtml,

@@ -27,6 +27,7 @@ import {
 } from "../../src/services/adminAnalytics";
 import { ATTENDANCE_HISTORY_DAYS } from "../../src/constants/attendanceHistory";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import type { TranslateFn } from "../../src/types/i18n";
 
 const EMPTY_STATS: AdminAnalyticsStats = {
   students: 0,
@@ -50,7 +51,7 @@ const EMPTY_STATS: AdminAnalyticsStats = {
 };
 
 function attendanceHistoryLabelT(
-  t: (key: string, opts?: object) => string,
+  t: TranslateFn,
   days: number,
 ): string {
   return days === ATTENDANCE_HISTORY_DAYS

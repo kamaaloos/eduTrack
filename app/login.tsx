@@ -349,6 +349,7 @@ export default function Login() {
               ) : null}
 
               <AuthFormField
+                testID="login-email"
                 label={t("auth.login.email")}
                 icon="mail-outline"
                 placeholder={t("auth.login.email")}
@@ -364,6 +365,7 @@ export default function Login() {
 
               <View style={styles.passwordBlock}>
                 <AuthFormField
+                  testID="login-password"
                   label={t("auth.login.password")}
                   icon="lock-closed-outline"
                   isPassword
@@ -388,6 +390,7 @@ export default function Login() {
               </View>
 
               <TouchableOpacity
+                testID="login-submit"
                 style={[styles.primaryButton, busy && styles.buttonDisabled]}
                 onPress={handleLogin}
                 disabled={busy}
