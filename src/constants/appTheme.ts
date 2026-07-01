@@ -1,4 +1,4 @@
-export const APP_COPYRIGHT = "© 2026 - MayleSoft school-app by eng. Hasan Kamaal.";
+export const APP_COPYRIGHT = "© 2026 - MayleSoft school-app by Eng. Hasan Kamaal.";
 
 /** Approximate line height of the footer copyright label. */
 export const COPYRIGHT_TEXT_HEIGHT = 18;

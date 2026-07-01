@@ -2,6 +2,7 @@ import {
   CHANGE_PASSWORD_ROUTE,
   getPostLoginRoute,
   getRoleHomeRoute,
+  isAdminUsagePolicySegment,
   isChangePasswordSegment,
   isPublicEntrySegment,
 } from "./authNavigationCore";
@@ -10,6 +11,7 @@ export {
   CHANGE_PASSWORD_ROUTE,
   getPostLoginRoute,
   getRoleHomeRoute,
+  isAdminUsagePolicySegment,
   isChangePasswordSegment,
   isPublicEntrySegment,
 };

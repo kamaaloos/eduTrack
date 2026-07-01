@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useEvent } from "expo";
+import type { VideoPlayer } from "expo-video";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,20 +15,37 @@ import { useLanguage } from "../../src/context/languageContext";
 const PROMO_VIDEO_EN = require("../../assets/edutrack-web.mp4");
 const PROMO_VIDEO_AR = require("../../assets/edutrack-ar-web.mp4");
 
+type VideoSource = typeof PROMO_VIDEO_EN;
+
 type OnboardingWelcomeVideoProps = {
   /** When false, keep buffering off-screen until the welcome slide is shown. */
   visible?: boolean;
 };
 
-export function OnboardingWelcomeVideo({
-  visible = true,
-}: OnboardingWelcomeVideoProps) {
-  const { t } = useTranslation();
-  const { language, isRtl } = useLanguage();
-  const [muted, setMuted] = useState(true);
-  const [frameReady, setFrameReady] = useState(false);
-  const source = language === "ar" ? PROMO_VIDEO_AR : PROMO_VIDEO_EN;
+function safePlayerCall(player: VideoPlayer, fn: (instance: VideoPlayer) => void) {
+  try {
+    fn(player);
+  } catch {
+    // Player native object can be released during unmount, HMR, or source swap.
+  }
+}
 
+type VideoPlayerSurfaceProps = {
+  source: VideoSource;
+  visible: boolean;
+  muted: boolean;
+  onFrameReady: () => void;
+};
+
+/**
+ * Owns the expo-video player and view together so release/unmount stay in sync.
+ */
+function VideoPlayerSurface({
+  source,
+  visible,
+  muted,
+  onFrameReady,
+}: VideoPlayerSurfaceProps) {
   const player = useVideoPlayer(source, (instance) => {
     instance.loop = true;
     instance.muted = true;
@@ -39,34 +56,75 @@ export function OnboardingWelcomeVideo({
     };
   });
 
-  const { status } = useEvent(player, "statusChange", {
-    status: player.status,
-  });
+  const [status, setStatus] = useState(player.status);
 
   useEffect(() => {
-    player.muted = muted;
+    const subscription = player.addListener("statusChange", ({ status: next }) => {
+      setStatus(next);
+    });
+    return () => subscription.remove();
+  }, [player]);
+
+  useEffect(() => {
+    safePlayerCall(player, (instance) => {
+      instance.muted = muted;
+    });
   }, [player, muted]);
 
   useEffect(() => {
-    setFrameReady(false);
-  }, [source]);
+    safePlayerCall(player, (instance) => {
+      if (!visible) {
+        instance.pause();
+        return;
+      }
+      if (status === "readyToPlay" && !instance.playing) {
+        instance.play();
+      }
+    });
+  }, [visible, status, player]);
+
+  useEffect(
+    () => () => {
+      safePlayerCall(player, (instance) => {
+        instance.pause();
+      });
+    },
+    [player],
+  );
+
+  if (!visible) {
+    return <View style={styles.videoPlaceholder} />;
+  }
+
+  return (
+    <VideoView
+      player={player}
+      style={styles.video}
+      contentFit="cover"
+      nativeControls={false}
+      onFirstFrameRender={onFrameReady}
+    />
+  );
+}
+
+export function OnboardingWelcomeVideo({
+  visible = true,
+}: OnboardingWelcomeVideoProps) {
+  const { t } = useTranslation();
+  const { language, isRtl } = useLanguage();
+  const [muted, setMuted] = useState(true);
+  const [frameReady, setFrameReady] = useState(false);
+  const source = language === "ar" ? PROMO_VIDEO_AR : PROMO_VIDEO_EN;
 
   useEffect(() => {
-    if (!visible) {
-      player.pause();
-      return;
-    }
-    if (status === "readyToPlay" && !player.playing) {
-      player.play();
-    }
-  }, [visible, status, player]);
+    setFrameReady(false);
+  }, [language]);
 
   if (Platform.OS === "web") {
     return null;
   }
 
-  const showSpinner =
-    visible && (!frameReady || status === "loading" || status === "idle");
+  const showSpinner = visible && !frameReady;
 
   const toggleMute = () => {
     setMuted((current) => !current);
@@ -77,12 +135,12 @@ export function OnboardingWelcomeVideo({
       style={[styles.wrap, !visible && styles.preloadOnly]}
       pointerEvents={visible ? "auto" : "none"}
     >
-      <VideoView
-        player={player}
-        style={styles.video}
-        contentFit="cover"
-        nativeControls={false}
-        onFirstFrameRender={() => setFrameReady(true)}
+      <VideoPlayerSurface
+        key={language}
+        source={source}
+        visible={visible}
+        muted={muted}
+        onFrameReady={() => setFrameReady(true)}
       />
 
       {showSpinner ? (
@@ -131,6 +189,11 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     top: -1000,
     left: 0,
+  },
+  videoPlaceholder: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#0F172A",
   },
   video: {
     width: "100%",

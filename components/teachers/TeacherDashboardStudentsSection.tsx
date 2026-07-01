@@ -6,7 +6,6 @@ import { usePaginatedList } from "../../hooks/usePaginatedList";
 import { parsePhotoURL } from "../../src/utils/userAvatar";
 import { ListPageNav } from "../common/ListPageNav";
 import { UserAvatar } from "../common/UserAvatar";
-import { DashboardSlideRow } from "../dashboard/DashboardSlideRow";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 const STUDENT_LIST_PAGE_SIZE = 2;
@@ -87,7 +86,7 @@ export function TeacherDashboardStudentsSection({
                   onNext={pagination.nextPage}
                 />
               </View>
-              <DashboardSlideRow>
+              <View style={styles.studentCardRow}>
                 {pagination.pageItems.map((item: any) => (
                   <TouchableOpacity
                     key={item.id}
@@ -123,7 +122,7 @@ export function TeacherDashboardStudentsSection({
                     </Text>
                   </TouchableOpacity>
                 ))}
-              </DashboardSlideRow>
+              </View>
             </>
           )}
         </>

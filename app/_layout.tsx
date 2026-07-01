@@ -11,6 +11,7 @@ import { BrandedSplashGate } from "../components/BrandedSplashGate";
 import { FirebaseBootstrapGate } from "../components/FirebaseBootstrapGate";
 import { DeferredPushNotificationsSetup } from "../components/DeferredPushNotificationsSetup";
 import { MustChangePasswordGate } from "../components/auth/MustChangePasswordGate";
+import { AdminUsagePolicyGate } from "../components/auth/AdminUsagePolicyGate";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { AuthProvider } from "../src/context/authContext";
 import { LanguageProvider } from "../src/context/languageContext";
@@ -36,6 +37,7 @@ export default function RootLayout() {
                     <AuthProvider>
                       <DeferredPushNotificationsSetup />
                       <MustChangePasswordGate>
+                        <AdminUsagePolicyGate>
                         <Stack
                           screenOptions={{
                             headerShown: false,
@@ -43,6 +45,7 @@ export default function RootLayout() {
                           }}
                         />
                         <AppDialogHost />
+                        </AdminUsagePolicyGate>
                       </MustChangePasswordGate>
                     </AuthProvider>
                   </SuperAdminAuthProvider>

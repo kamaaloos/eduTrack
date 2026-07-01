@@ -17,6 +17,7 @@ import {
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
 import { platformShadow } from "../../src/utils/platformShadow";
+import { CurrentTermBadge } from "../common/CurrentTermBadge";
 
 type StudentScreenHeaderProps = {
   title: string;
@@ -29,6 +30,7 @@ type StudentScreenHeaderProps = {
   onNotificationsPress?: () => void;
   onMenuPress?: () => void;
   headerRight?: React.ReactNode;
+  showCurrentTerm?: boolean;
 };
 
 export function StudentScreenHeader({
@@ -41,6 +43,7 @@ export function StudentScreenHeader({
   onNotificationsPress,
   onMenuPress,
   headerRight,
+  showCurrentTerm = false,
 }: StudentScreenHeaderProps) {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
@@ -84,6 +87,7 @@ export function StudentScreenHeader({
                   {subtitle}
                 </Text>
               ) : null}
+              {showCurrentTerm ? <CurrentTermBadge variant="header" /> : null}
             </View>
 
             <View style={styles.headerActions}>

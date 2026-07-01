@@ -39,8 +39,11 @@ service cloud.firestore {
       return canUseSchoolData() && userRole() == "admin";
     }
 
+    /** Platform admin on the registry project — not gated by school subscription. */
     function isSuperAdmin() {
-      return canUseSchoolData() && userRole() == "superAdmin";
+      return isSignedIn()
+        && userDocExists()
+        && userRole() == "superAdmin";
     }
 
     function isTeacher() {
@@ -184,7 +187,8 @@ service cloud.firestore {
     /* ---------------- USERS ---------------- */
 
     match /users/{userId} {
-      allow get: if isAdmin()
+      allow get: if isSuperAdmin()
+        || isAdmin()
         || request.auth.uid == userId
         || (isParent() && parentOwnsStudent(userId))
         || teacherCanReadParentUser(userId)
@@ -245,6 +249,14 @@ service cloud.firestore {
               && request.resource.data.mustChangePassword == false
               && request.resource.data.diff(resource.data).affectedKeys()
                 .hasOnly(["mustChangePassword", "passwordChangedAt"])
+            )
+            || (
+              resource.data.role == "admin"
+              && request.resource.data.role == "admin"
+              && request.resource.data.usagePolicyAcceptedVersion is string
+              && request.resource.data.usagePolicyAcceptedAt is timestamp
+              && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(["usagePolicyAcceptedVersion", "usagePolicyAcceptedAt"])
             )
           )
         );
@@ -419,6 +431,8 @@ service cloud.firestore {
           && request.resource.data.classId != null
           && teacherOwnsClass(request.resource.data.classId)
         );
+
+      allow delete: if isAdmin();
     }
 
     /* ---------------- ROOT HOMEWORK / EXAMS (LEGACY / MIGRATION) ---------------- */
@@ -665,6 +679,8 @@ service cloud.firestore {
       allow read: if isAdmin()
         || (isParent() && resource.data.parentId == request.auth.uid)
         || teacherCanReadParentAbsence();
+
+      allow delete: if isAdmin();
     }
 
     /**
@@ -674,6 +690,12 @@ service cloud.firestore {
     match /platform/subscription {
       allow read: if isSignedIn();
       allow write: if false;
+    }
+
+    /** School term lifecycle — admin starts/finishes terms; finish clears term data. */
+    match /platform/schoolTerm {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
 
     /** Public marketing contact form — create only, validated fields. */

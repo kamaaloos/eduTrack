@@ -77,7 +77,9 @@ export function TeacherScreenShell({
       <View style={innerStyle}>{children}</View>
     </ScrollView>
   ) : (
-    <View style={[styles.bodyFill, ...innerStyle]}>{children}</View>
+    <View style={[styles.bodyFill, ...innerStyle, styles.bodyFillStretch]}>
+      {children}
+    </View>
   );
 
   return (
@@ -129,5 +131,8 @@ const styles = StyleSheet.create({
     width: "100%",
     minHeight: 0,
     paddingTop: Platform.OS === "web" ? 0 : 12,
+  },
+  bodyFillStretch: {
+    alignItems: "stretch",
   },
 });

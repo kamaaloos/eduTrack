@@ -14,6 +14,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppScreenBackground } from "../components/AppScreenBackground";
+import { AppLogo } from "../components/AppLogo";
 import { OnboardingWelcomeVideo } from "../components/onboarding/OnboardingWelcomeVideo";
 import { WebPageCard } from "../components/layout/WebPageCard";
 import { LanguageSelector } from "../components/LanguageSelector";
@@ -167,7 +168,6 @@ export default function OnboardingScreen() {
         <View style={styles.body}>
           {Platform.OS !== "web" ? (
             <OnboardingWelcomeVideo
-              key={language}
               visible={currentSlide?.id === "welcome"}
             />
           ) : null}
@@ -196,7 +196,11 @@ export default function OnboardingScreen() {
               </>
             ) : currentSlide?.type === "content" ? (
               <>
-                {currentSlide.id !== "welcome" ? (
+                {currentSlide.id === "welcome" && Platform.OS === "web" ? (
+                  <View style={styles.logoWrap}>
+                    <AppLogo size={112} />
+                  </View>
+                ) : currentSlide.id !== "welcome" ? (
                   <View
                     style={[
                       styles.iconCircle,
@@ -316,6 +320,9 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 28,
+  },
+  logoWrap: {
     marginBottom: 28,
   },
   languageIconCircle: {

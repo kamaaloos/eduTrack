@@ -37,20 +37,84 @@ Optional: `EXPO_PUBLIC_REGISTRY_STORAGE_BUCKET` for super-admin logo upload on w
 npm run build:web
 ```
 
-Output goes to `dist/`. Deploy to **Firebase Hosting**, Netlify, or any static host:
+Output goes to `dist/`. Test locally:
 
 ```bash
-# Example: Firebase Hosting (after firebase init hosting)
-firebase deploy --only hosting
+npx serve dist -l 4173
+# http://127.0.0.1:4173/landing
 ```
 
-Set the same `EXPO_PUBLIC_*` env vars in your CI/hosting build step before `npm run build:web`.
+## Firebase Hosting
+
+Hosting is configured in **`firebase.json`** for site **`maylesoft`** on the registry Firebase project.
+
+| URL | Purpose |
+|-----|---------|
+| `https://maylesoft.com` | **Custom domain** (primary — configure in Console + DNS) |
+| `https://www.maylesoft.com` | Optional; redirect to apex in Hosting settings |
+| `https://maylesoft.web.app` | Firebase default (works before DNS propagates) |
+
+### Custom domain `maylesoft.com`
+
+Custom domains are linked in **Firebase Console**, not in `firebase.json`.
+
+1. [Firebase Console](https://console.firebase.google.com/) → registry project → **Hosting** → site **maylesoft** → **Add custom domain**.
+2. Enter **`maylesoft.com`** — Firebase shows DNS records (usually **A** records to Google IPs and a **TXT** for verification).
+3. At your domain registrar (where you bought `maylesoft.com`), add those DNS records.
+4. Optional: add **`www.maylesoft.com`** as a second domain and choose **Redirect to maylesoft.com** in Hosting.
+5. Wait for SSL provisioning (often 24–48 hours; sometimes minutes).
+
+Verify with:
+
+```bash
+firebase hosting:sites:list
+```
+
+Deploy does not change DNS — only uploads `dist/` to the **maylesoft** site.
+
+### First-time setup
+
+```bash
+firebase login
+firebase use <registry-project-id>   # e.g. edutrack-694ec
+```
+
+Optional: `firebase init hosting` if you need to link the project — choose **`dist`** as the public directory and **Yes** for single-page app. The repo already includes the `hosting` block in `firebase.json`.
+
+### Deploy
+
+Ensure `.env` has your `EXPO_PUBLIC_REGISTRY_*` values (baked in at build time), then:
+
+```bash
+npm run deploy:web
+```
+
+Or step by step:
+
+```bash
+npm run build:web
+firebase deploy --only hosting:maylesoft
+```
+
+This deploys **only** static files — it does not change Firestore rules, Storage rules, or Cloud Functions.
+
+### After deploy
+
+1. Open **`https://maylesoft.com`** (or `https://maylesoft.web.app` until DNS is live).
+2. **Authentication → Settings → Authorized domains** — on the **registry** project and **each school** project, add:
+   - `maylesoft.com`
+   - `www.maylesoft.com` (if you serve or redirect www)
+   - `maylesoft.web.app`
+   - `maylesoft.firebaseapp.com`
+3. Landing page for visitors: **`https://maylesoft.com/landing`**
+
+Set the same `EXPO_PUBLIC_*` env vars in any CI build step before `npm run build:web`.
 
 ## Firebase Auth on web
 
 - School users and super-admin use the same Firebase projects as mobile.
 - Web auth persistence uses the browser session (IndexedDB/localStorage via Firebase SDK).
-- Add your hosting domain to **Authorized domains** in each Firebase project (Authentication → Settings).
+- Production sign-in URL: **`https://maylesoft.com`** — add `maylesoft.com` (and `www.maylesoft.com` if used) to **Authorized domains** in every Firebase project users authenticate against.
 
 ## Responsive web layout
 

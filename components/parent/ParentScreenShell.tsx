@@ -32,6 +32,7 @@ type ParentScreenShellProps = {
   onRefresh?: () => void;
   contentContainerStyle?: ViewStyle;
   headerRight?: ReactNode;
+  showCurrentTerm?: boolean;
   children: ReactNode;
 };
 
@@ -46,6 +47,7 @@ export function ParentScreenShell({
   onRefresh,
   contentContainerStyle,
   headerRight,
+  showCurrentTerm = false,
   children,
 }: ParentScreenShellProps) {
   const { user } = useContext(AuthContext);
@@ -98,6 +100,7 @@ export function ParentScreenShell({
           }
           onMenuPress={openMenu}
           headerRight={headerRight}
+          showCurrentTerm={showCurrentTerm}
         />
         <View style={[styles.body, webPageBodyStyle()]}>{body}</View>
       </WebPageCardFrame>

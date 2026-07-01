@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { ReportCardView } from "../../../components/report/ReportCardView";
 import { TeacherScreenShell } from "../../../components/teachers/TeacherScreenShell";
+import { studentScreenStyles } from "../../../components/students/studentScreenStyles";
 import { AuthContext } from "../../../src/context/authContext";
 import { generateReportCard } from "../../../src/services/reportCardEngine";
 import type { ReportCardData } from "../../../src/services/reportCardEngine";
@@ -73,7 +74,9 @@ export default function TeacherStudentReportScreen() {
           </TouchableOpacity>
         </View>
       ) : report ? (
-        <ReportCardView report={report} showParentSeen embedded />
+        <View style={studentScreenStyles.reportShellContent}>
+          <ReportCardView report={report} showParentSeen embedded />
+        </View>
       ) : null}
     </TeacherScreenShell>
   );

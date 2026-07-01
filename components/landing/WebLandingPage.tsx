@@ -21,8 +21,13 @@ import { getPostLoginRoute } from "../../src/utils/authNavigation";
 import { hasCompletedOnboarding } from "../../src/utils/onboardingStorage";
 import { safeRouterReplace } from "../../src/utils/safeNavigation";
 import { WebLandingHeroVideo } from "./WebLandingHeroVideo";
+import {
+  LandingCapabilityPills,
+  LandingTrustRolePills,
+} from "./LandingAnimatedPills";
 import { webLandingStyles as styles } from "./webLandingStyles";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
+import { useWebLandingGsap } from "../../hooks/useWebLandingGsap";
 
 type FeatureItem = {
   icon: keyof typeof Ionicons.glyphMap;
@@ -144,6 +149,7 @@ export function WebLandingPage() {
   }, []);
 
   const layout = usePlatformLayout();
+  useWebLandingGsap(language);
   const heroRowDirection =
     layout.isTabletWeb || layout.isDesktopWeb
       ? isRtl
@@ -306,13 +312,7 @@ export function WebLandingPage() {
 
           <View style={styles.trustSection}>
             <Text style={styles.trustLabel}>{t("landing.trustLine")}</Text>
-            <View style={styles.trustRoles}>
-              {TRUST_ROLES.map((roleKey) => (
-                <View key={roleKey} style={styles.trustRole}>
-                  <Text style={styles.trustRoleText}>{t(roleKey)}</Text>
-                </View>
-              ))}
-            </View>
+            <LandingTrustRolePills roleKeys={TRUST_ROLES} />
           </View>
 
           <View
@@ -327,14 +327,7 @@ export function WebLandingPage() {
               </Text>
               <Text style={styles.sectionHint}>{t("landing.featuresHint")}</Text>
 
-              <View style={styles.capabilityRow}>
-                {CAPABILITIES.map((cap) => (
-                  <View key={cap.labelKey} style={styles.capabilityPill}>
-                    <Ionicons name={cap.icon} size={16} color="#4F46E5" />
-                    <Text style={styles.capabilityText}>{t(cap.labelKey)}</Text>
-                  </View>
-                ))}
-              </View>
+              <LandingCapabilityPills capabilities={CAPABILITIES} />
 
               <View style={styles.featureGrid}>
                 {FEATURES.map((feature) => (

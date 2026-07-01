@@ -14,6 +14,7 @@ import {
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminParentsOverview } from "../../components/admin/AdminParentsOverview";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
+import { SchoolTermCard } from "../../components/admin/SchoolTermCard";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { AuthContext } from "../../src/context/authContext";
 import { useAdminData } from "../../src/context/adminDataContext";
@@ -171,7 +172,11 @@ export default function AdminDashboard() {
   );
 
   const reloadDashboard = useCallback(async () => {
-    await refreshAll();
+    try {
+      await refreshAll();
+    } catch (err) {
+      console.error("Dashboard refresh failed:", err);
+    }
     try {
       await syncClassIdsFromAssignments();
       await loadUsers();
@@ -317,6 +322,7 @@ export default function AdminDashboard() {
         title={t("admin.dashboardTitle")}
         subtitle={t("admin.dashboardSubtitle")}
         showNotifications
+        showCurrentTerm
       >
         <ScrollView
           style={styles.scroll}
@@ -364,6 +370,8 @@ export default function AdminDashboard() {
               }
             />
           ) : null}
+
+          {user?.uid ? <SchoolTermCard adminUid={user.uid} /> : null}
 
           <View style={[styles.statsSection, layout.isWeb && styles.statsSectionWeb]}>
             {layout.isNative ? (

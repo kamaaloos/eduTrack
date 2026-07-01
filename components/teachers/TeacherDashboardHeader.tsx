@@ -9,6 +9,7 @@ import {
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
 import { UserAvatar } from "../common/UserAvatar";
+import { CurrentTermBadge } from "../common/CurrentTermBadge";
 import { TimeGreeting } from "../dashboard/TimeGreeting";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
@@ -55,6 +56,7 @@ export function TeacherDashboardHeader({
           <Text style={styles.teacherName} numberOfLines={2}>
             {firstName}
           </Text>
+          <CurrentTermBadge variant="header" />
         </View>
 
         <View style={styles.headerActions}>

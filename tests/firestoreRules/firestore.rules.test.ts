@@ -310,5 +310,47 @@ describe("Firestore security rules — admin / teacher / parent", () => {
         db.doc("platform/subscription").set({ entitled: true }),
       );
     });
+
+    it("allows admin to write platform/schoolTerm", async () => {
+      await seedSchoolFixtures(testEnv, { subscriptionEntitled: true });
+      const adminDb = firestoreAs(testEnv, UIDS.admin);
+      await assertSucceeds(
+        adminDb.doc("platform/schoolTerm").set({
+          status: "active",
+          label: "2025-2026",
+          startedAt: "2025-08-01T00:00:00.000Z",
+          startedBy: UIDS.admin,
+        }),
+      );
+      const teacherDb = firestoreAs(testEnv, UIDS.teacher);
+      await assertFails(
+        teacherDb.doc("platform/schoolTerm").set({
+          status: "active",
+          label: "2025-2026",
+          startedAt: "2025-08-01T00:00:00.000Z",
+          startedBy: UIDS.teacher,
+        }),
+      );
+    });
+
+    it("allows super admin to list schoolRegistry even when subscription entitled is false", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const db = context.firestore();
+        await db.doc(`users/${UIDS.superAdmin}`).set({
+          role: "superAdmin",
+          email: "super@test.com",
+          name: "Super Admin",
+        });
+        await db.doc("schoolRegistry/school-1").set({
+          name: "Test School",
+          active: false,
+          firebase: { projectId: "demo-school" },
+        });
+        await db.doc("platform/subscription").set({ entitled: false });
+      });
+
+      const superDb = firestoreAs(testEnv, UIDS.superAdmin);
+      await assertSucceeds(superDb.collection("schoolRegistry").get());
+    });
   });
 });

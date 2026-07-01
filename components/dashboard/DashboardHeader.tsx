@@ -13,6 +13,7 @@ import {
   showErrorAlert,
 } from "../../src/utils/confirmDialog";
 import { UserAvatar } from "../common/UserAvatar";
+import { CurrentTermBadge } from "../common/CurrentTermBadge";
 import { TimeGreeting } from "./TimeGreeting";
 import { dashboardStyles as styles } from "./dashboardStyles";
 
@@ -88,6 +89,7 @@ export function DashboardHeader({
         {headerSubtitle ? (
           <Text style={styles.headerSubtitle}>{headerSubtitle}</Text>
         ) : null}
+        <CurrentTermBadge variant="header" />
       </View>
 
       {showHealthCheck && onHealthCheckPress ? (

@@ -106,6 +106,7 @@ export default function ParentDashboard() {
         name: userData?.name || t("common.parent"),
       })}
       subtitle={t("parent.dashboardSubtitle")}
+      showCurrentTerm
     >
       {loading && !refreshing ? (
         <View style={styles.centered}>

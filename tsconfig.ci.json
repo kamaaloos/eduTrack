@@ -23,6 +23,8 @@
     "src/utils/schoolRoles.ts",
     "src/utils/authNavigation.ts",
     "src/utils/mustChangePassword.ts",
+    "src/utils/usagePolicy.ts",
+    "src/constants/usagePolicy.ts",
     "src/utils/letterGrade.ts",
     "src/utils/subjectKey.ts",
     "src/utils/timeGreeting.ts",

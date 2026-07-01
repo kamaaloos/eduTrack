@@ -16,6 +16,7 @@ import {
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
 import { platformShadow } from "../../src/utils/platformShadow";
+import { CurrentTermBadge } from "../common/CurrentTermBadge";
 
 type AdminScreenHeaderProps = {
   title: string;
@@ -26,6 +27,7 @@ type AdminScreenHeaderProps = {
   notificationCount?: number;
   onNotificationsPress?: () => void;
   onMenuPress?: () => void;
+  showCurrentTerm?: boolean;
 };
 
 export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
@@ -36,6 +38,7 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
   notificationCount = 0,
   onNotificationsPress,
   onMenuPress,
+  showCurrentTerm = false,
 }) => {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
@@ -70,6 +73,7 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
                 {subtitle}
               </Text>
             ) : null}
+            {showCurrentTerm ? <CurrentTermBadge variant="header" /> : null}
           </View>
 
           <View style={styles.headerActions}>

@@ -46,7 +46,11 @@ export function ReportCardView({
 
   return (
     <ScrollView
-      style={[styles.container, useWideColumn && styles.containerWide]}
+      style={[
+        styles.container,
+        embedded && styles.containerEmbedded,
+        useWideColumn && styles.containerWide,
+      ]}
       contentContainerStyle={[
         styles.content,
         embedded ? styles.contentEmbedded : null,
@@ -286,6 +290,11 @@ export function ReportCardView({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "transparent" },
+  containerEmbedded: {
+    width: "100%",
+    alignSelf: "stretch",
+    minWidth: 0,
+  },
   containerWide: {
     width: "100%",
     alignSelf: "stretch",
@@ -299,7 +308,8 @@ const styles = StyleSheet.create({
     padding: 0,
     paddingTop: 4,
     paddingBottom: 32,
-    alignItems: "center",
+    width: "100%",
+    alignItems: "stretch",
   },
   contentWide: {
     width: "100%",
@@ -307,6 +317,8 @@ const styles = StyleSheet.create({
   },
   cardColumn: {
     width: "100%",
+    alignSelf: "stretch",
+    minWidth: 0,
   },
   cardColumnWide: {
     alignSelf: "center",
@@ -334,7 +346,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   heroSub: { color: "#BFDBFE", fontSize: 14, marginBottom: 18 },
-  heroStats: { flexDirection: "row", gap: 8 },
+  heroStats: { flexDirection: "row", gap: 8, minWidth: 0 },
   heroFootnote: {
     color: "#93C5FD",
     fontSize: 12,
@@ -344,6 +356,7 @@ const styles = StyleSheet.create({
   },
   statBox: {
     flex: 1,
+    minWidth: 0,
     backgroundColor: "rgba(255,255,255,0.12)",
     borderRadius: 14,
     padding: 12,
@@ -389,6 +402,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   emptyCard: {
+    width: "100%",
+    alignSelf: "stretch",
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 24,

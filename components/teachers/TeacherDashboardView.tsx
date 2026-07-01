@@ -84,25 +84,22 @@ export function TeacherDashboardView({
 
         <WebDashboardColumns
           primary={
-            <>
-              <TeacherDashboardClassesSection
-                classChipOptions={classChipOptions}
-                selectedClassId={selectedClassId}
-                onSelectClass={onSelectClass}
-              />
-              <TeacherDashboardAnnouncementsSection announcements={announcements} />
-            </>
+            <TeacherDashboardClassesSection
+              classChipOptions={classChipOptions}
+              selectedClassId={selectedClassId}
+              onSelectClass={onSelectClass}
+            />
           }
           secondary={
-            <>
-              <TeacherDashboardStudentsSection
-                selectedClassId={selectedClassId}
-                selectedClassLabel={selectedClassLabel}
-                filteredStudents={filteredStudents}
-              />
-            </>
+            <TeacherDashboardStudentsSection
+              selectedClassId={selectedClassId}
+              selectedClassLabel={selectedClassLabel}
+              filteredStudents={filteredStudents}
+            />
           }
         />
+
+        <TeacherDashboardAnnouncementsSection announcements={announcements} />
 
         <View style={styles.scrollBottomSpacer} />
       </ScrollView>

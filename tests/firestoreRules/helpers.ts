@@ -11,6 +11,7 @@ export const PROJECT_ID =
 
 export const UIDS = {
   admin: "admin1",
+  superAdmin: "superadmin1",
   teacher: "teacher1",
   teacherOther: "teacher2",
   parent: "parent1",

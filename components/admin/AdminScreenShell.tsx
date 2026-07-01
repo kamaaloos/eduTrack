@@ -16,6 +16,7 @@ type AdminScreenShellProps = {
   subtitle?: string;
   showBack?: boolean;
   showNotifications?: boolean;
+  showCurrentTerm?: boolean;
   children: ReactNode;
 };
 
@@ -24,6 +25,7 @@ export function AdminScreenShell({
   subtitle,
   showBack = false,
   showNotifications = false,
+  showCurrentTerm = false,
   children,
 }: AdminScreenShellProps) {
   const layout = usePlatformLayout();
@@ -49,6 +51,7 @@ export function AdminScreenShell({
               ? () => router.push("/(admin)/notifications" as never)
               : undefined
           }
+          showCurrentTerm={showCurrentTerm}
         />
         <View style={[styles.body, webPageBodyStyle()]}>
           <View style={[styles.bodyInner, webRolePagePaddingStyle(layout)]}>

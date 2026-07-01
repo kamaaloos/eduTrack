@@ -7,6 +7,11 @@ export function formatAcademicYear(startYear: number): string {
   return `${startYear}-${startYear + 1}`;
 }
 
+/** Default school-term label from the current academic year. */
+export function defaultSchoolTermLabel(date = new Date()): string {
+  return formatAcademicYear(getAcademicYearStart(date));
+}
+
 export function listAcademicYearStarts(count = 4): number[] {
   const current = getAcademicYearStart();
   return Array.from({ length: count }, (_, index) => current - index);
