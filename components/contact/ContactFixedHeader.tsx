@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -25,6 +26,7 @@ export function ContactFixedHeader() {
           accessibilityRole="button"
           accessibilityLabel={t("common.back")}
         >
+          <Ionicons name="chevron-back" size={18} color="#1E3A8A" />
           <Text style={styles.backLinkText}>{t("common.back")}</Text>
         </TouchableOpacity>
         <Text style={styles.title} numberOfLines={1}>
@@ -55,6 +57,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   backLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
     minWidth: 72,
   },
   backLinkText: {

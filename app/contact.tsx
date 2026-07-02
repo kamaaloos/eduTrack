@@ -19,6 +19,7 @@ import {
   ContactFixedHeader,
   contactHeaderTotalHeight,
 } from "../components/contact/ContactFixedHeader";
+import { ContactNativeView } from "../components/contact/ContactNativeView";
 import { AppScreenBackground } from "../components/AppScreenBackground";
 import { WebPageCard } from "../components/layout/WebPageCard";
 import { useLanguage } from "../src/context/languageContext";
@@ -120,6 +121,19 @@ export default function ContactScreen() {
     }
   }, [email, language, message, name, openMailFallback, schoolName, t]);
 
+  const formProps = {
+    name,
+    email,
+    schoolName,
+    message,
+    submitting,
+    onNameChange: setName,
+    onEmailChange: setEmail,
+    onSchoolNameChange: setSchoolName,
+    onMessageChange: setMessage,
+    onSubmit: () => void handleSubmit(),
+  };
+
   return (
     <AppScreenBackground>
       <View style={styles.screen}>
@@ -132,6 +146,7 @@ export default function ContactScreen() {
           <ScrollView
             contentContainerStyle={[
               styles.content,
+              Platform.OS !== "web" && styles.contentNative,
               {
                 paddingTop: headerHeight + 16,
                 paddingBottom: footerInset,
@@ -140,6 +155,7 @@ export default function ContactScreen() {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
+            {Platform.OS === "web" ? (
             <WebPageCard>
                 <Text style={styles.title}>{t("contact.heading")}</Text>
                 <Text style={styles.subtitle}>{t("contact.subtitle")}</Text>
@@ -213,6 +229,9 @@ export default function ContactScreen() {
 
                 <Text style={styles.hint}>{t("contact.directEmail", { email: CONTACT_EMAIL })}</Text>
             </WebPageCard>
+            ) : (
+              <ContactNativeView {...formProps} />
+            )}
           </ScrollView>
         </KeyboardAvoidingView>
       </View>
@@ -231,6 +250,10 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     alignItems: "center",
+  },
+  contentNative: {
+    paddingHorizontal: 0,
+    alignItems: "stretch",
   },
   title: {
     fontSize: 24,
