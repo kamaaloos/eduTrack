@@ -14,7 +14,7 @@
     "prepare:web-videos": "node scripts/sync-web-videos.mjs",
     "encode:web-video": "node scripts/encode-web-video.mjs && node scripts/sync-web-videos.mjs",
     "build:web": "node scripts/sync-web-videos.mjs && expo export --platform web",
-    "deploy:web": "npm run build:web && firebase deploy --only hosting:maylesoft",
+    "deploy:web": "npm run build:web && firebase deploy --only hosting:edutrack-694ec",
     "lint": "expo lint",
     "test": "jest",
     "test:rules": "firebase emulators:exec --config firebase.rules-test.json --only firestore --project demo-edutrack-rules-test \"cross-env GCLOUD_PROJECT=demo-edutrack-rules-test jest --config jest.rules.config.js --runInBand --testTimeout=30000\"",

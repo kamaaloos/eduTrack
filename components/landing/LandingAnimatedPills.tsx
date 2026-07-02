@@ -7,6 +7,7 @@ import { webLandingStyles as styles } from "./webLandingStyles";
 export type LandingCapability = {
   icon: keyof typeof Ionicons.glyphMap;
   labelKey: string;
+  descKey: string;
 };
 
 type LandingTrustRolePillsProps = {

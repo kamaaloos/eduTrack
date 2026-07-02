@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useCallback, useContext, useEffect } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Platform,
@@ -78,13 +78,38 @@ const TRUST_ROLES = [
 const CAPABILITIES: {
   icon: keyof typeof Ionicons.glyphMap;
   labelKey: string;
+  descKey: string;
 }[] = [
-  { icon: "calendar-outline", labelKey: "landing.capAttendance" },
-  { icon: "document-text-outline", labelKey: "landing.capExams" },
-  { icon: "book-outline", labelKey: "landing.capHomework" },
-  { icon: "chatbubbles-outline", labelKey: "landing.capMessages" },
-  { icon: "ribbon-outline", labelKey: "landing.capReports" },
-  { icon: "megaphone-outline", labelKey: "landing.capAnnouncements" },
+  {
+    icon: "calendar-outline",
+    labelKey: "landing.capAttendance",
+    descKey: "landing.capAttendanceDesc",
+  },
+  {
+    icon: "document-text-outline",
+    labelKey: "landing.capExams",
+    descKey: "landing.capExamsDesc",
+  },
+  {
+    icon: "book-outline",
+    labelKey: "landing.capHomework",
+    descKey: "landing.capHomeworkDesc",
+  },
+  {
+    icon: "chatbubbles-outline",
+    labelKey: "landing.capMessages",
+    descKey: "landing.capMessagesDesc",
+  },
+  {
+    icon: "ribbon-outline",
+    labelKey: "landing.capReports",
+    descKey: "landing.capReportsDesc",
+  },
+  {
+    icon: "megaphone-outline",
+    labelKey: "landing.capAnnouncements",
+    descKey: "landing.capAnnouncementsDesc",
+  },
 ];
 
 function scrollToSection(sectionId: string) {
@@ -149,7 +174,20 @@ export function WebLandingPage() {
   }, []);
 
   const layout = usePlatformLayout();
-  useWebLandingGsap(language);
+  const [gsapAnimationKey, setGsapAnimationKey] = useState(0);
+  const isFirstLandingFocus = useRef(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isFirstLandingFocus.current) {
+        isFirstLandingFocus.current = false;
+        return;
+      }
+      setGsapAnimationKey((key) => key + 1);
+    }, []),
+  );
+
+  useWebLandingGsap(language, gsapAnimationKey);
   const heroRowDirection =
     layout.isTabletWeb || layout.isDesktopWeb
       ? isRtl

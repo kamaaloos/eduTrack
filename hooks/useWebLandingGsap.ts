@@ -397,6 +397,22 @@ function revealBundlesOnScroll(
   };
 }
 
+function resetPillElements(bundles: PillBundle[]) {
+  bundles.forEach(({ floatEl, pill }) => {
+    gsap.killTweensOf([floatEl, pill]);
+    gsap.set(floatEl, { clearProps: "all" });
+    gsap.set(pill, { clearProps: "all" });
+
+    const label = getLabel(pill);
+    if (label) {
+      gsap.killTweensOf(label);
+      gsap.set(label, { clearProps: "color" });
+    }
+
+    pill.querySelectorAll(".landing-pill-ripple").forEach((node) => node.remove());
+  });
+}
+
 function waitForBundlesReady(onReady: () => void): () => void {
   let cancelled = false;
   let attempts = 0;
@@ -433,9 +449,9 @@ function waitForBundlesReady(onReady: () => void): () => void {
 
 /**
  * Web-only GSAP animations for landing page pill buttons (trust roles + capabilities).
- * Re-runs when `language` changes so translated content re-animates cleanly.
+ * Re-runs when `language` or `animationKey` changes (focus remount after logout, etc.).
  */
-export function useWebLandingGsap(language: string) {
+export function useWebLandingGsap(language: string, animationKey: number) {
   useLayoutEffect(() => {
     if (Platform.OS !== "web" || prefersReducedMotion()) {
       return undefined;
@@ -446,6 +462,7 @@ export function useWebLandingGsap(language: string) {
     const interactionCleanups: (() => void)[] = [];
     const revealCleanups: (() => void)[] = [];
     let ctx: gsap.Context | undefined;
+    let activeBundles: PillBundle[] = [];
 
     cleanupReady = waitForBundlesReady(() => {
       if (cancelled) {
@@ -454,23 +471,24 @@ export function useWebLandingGsap(language: string) {
 
       const trustBundles = getFloatBundles(TRUST_ROLES_ID);
       const capabilityBundles = getFloatBundles(CAPABILITY_PILLS_ID);
+      activeBundles = [...trustBundles, ...capabilityBundles];
 
-      ctx = gsap.context(() => {});
-
-      revealCleanups.push(
-        revealBundlesOnScroll(trustBundles, TRUST_ROLES_ID),
-        revealBundlesOnScroll(capabilityBundles, FEATURES_SECTION_ID),
-      );
-
-      trustBundles.forEach((bundle) => {
-        interactionCleanups.push(
-          attachPremiumInteractions(bundle, "trust"),
+      ctx = gsap.context(() => {
+        revealCleanups.push(
+          revealBundlesOnScroll(trustBundles, TRUST_ROLES_ID),
+          revealBundlesOnScroll(capabilityBundles, FEATURES_SECTION_ID),
         );
-      });
-      capabilityBundles.forEach((bundle) => {
-        interactionCleanups.push(
-          attachPremiumInteractions(bundle, "capability"),
-        );
+
+        trustBundles.forEach((bundle) => {
+          interactionCleanups.push(
+            attachPremiumInteractions(bundle, "trust"),
+          );
+        });
+        capabilityBundles.forEach((bundle) => {
+          interactionCleanups.push(
+            attachPremiumInteractions(bundle, "capability"),
+          );
+        });
       });
     });
 
@@ -479,9 +497,10 @@ export function useWebLandingGsap(language: string) {
       cleanupReady();
       revealCleanups.forEach((cleanup) => cleanup());
       interactionCleanups.forEach((cleanup) => cleanup());
+      resetPillElements(activeBundles);
       ctx?.revert();
     };
-  }, [language]);
+  }, [language, animationKey]);
 }
 
 export const landingGsapIds = {

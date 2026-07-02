@@ -21,9 +21,9 @@
     }
   ],
   "hosting": {
-    "site": "maylesoft",
+    "site": "edutrack-694ec",
     "public": "dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": ["firebase.json", "**/.*"],
     "rewrites": [
       { "source": "**", "destination": "/index.html" }
     ]

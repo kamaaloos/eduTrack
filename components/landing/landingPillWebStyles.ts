@@ -21,8 +21,6 @@ export const landingPillWebStyles = {
     alignItems: "center",
     gap: 10,
     width: "100%",
-    maxWidth: 820,
-    margin: "0 auto 32px",
   } satisfies CSSProperties,
 
   pillFloat: {
@@ -93,5 +91,55 @@ export const landingPillWebStyles = {
     lineHeight: 0,
     position: "relative",
     zIndex: 1,
+  } satisfies CSSProperties,
+
+  capabilitySection: {
+    width: "100%",
+    maxWidth: 820,
+    margin: "0 auto 32px",
+  } satisfies CSSProperties,
+
+  capabilityPillActive: {
+    backgroundColor: "#FFFFFF",
+    border: "1px solid #6366F1",
+    boxShadow: "0 14px 32px rgba(79, 70, 229, 0.22)",
+  } satisfies CSSProperties,
+
+  capabilityDescPanel: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 6,
+    minHeight: 56,
+    marginTop: 14,
+    padding: "12px 18px",
+    borderRadius: 14,
+    backgroundColor: "rgba(255, 255, 255, 0.88)",
+    border: "1px solid rgba(99, 102, 241, 0.18)",
+    boxShadow: "0 8px 24px rgba(79, 70, 229, 0.08)",
+    textAlign: "center",
+    opacity: 0,
+  } satisfies CSSProperties,
+
+  capabilityDescTitle: {
+    fontSize: 13,
+    fontWeight: 800,
+    color: "#312E81",
+    lineHeight: 1.3,
+  } satisfies CSSProperties,
+
+  capabilityDescBody: {
+    fontSize: 13,
+    fontWeight: 500,
+    color: "#475569",
+    lineHeight: 1.5,
+    maxWidth: 520,
+  } satisfies CSSProperties,
+
+  capabilityDescHint: {
+    fontSize: 12,
+    fontWeight: 500,
+    color: "#94A3B8",
+    lineHeight: 1.4,
   } satisfies CSSProperties,
 } as const;
