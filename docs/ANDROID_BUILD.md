@@ -69,6 +69,18 @@ Same output format, production profile (use after pilot sign-off):
 npm run build:android:production
 ```
 
+### Dugsi white-label APK
+
+The **Dugsi** app uses the same EAS project (`eduTrack` slug / `extra.eas.projectId`) but ships as a separate install with `com.maylesoft.dugsi` and display name **Dugsi**. Do **not** change the Expo `slug` for Dugsi builds — EAS rejects a slug that does not match the linked project.
+
+```bash
+npm run build:android:preview-dugsi
+# or
+npm run build:android:production-dugsi
+```
+
+Profiles `preview-dugsi` and `production-dugsi` in `eas.json` set `EXPO_PUBLIC_APP_BRAND=dugsi` and related package/scheme env vars at build time.
+
 ## Version bumps
 
 Before each new APK you ship:
@@ -108,10 +120,14 @@ You must configure signing (`android/app/build.gradle` + keystore). EAS is simpl
 | Permission denied in Firestore | Deploy rules to the **school** project the user selected |
 | Can’t install APK | Allow installs from unknown sources for the browser/files app |
 | Package conflict with old test build | Uninstall old `com.anonymous.eduTrack` APK; new package is `com.maylesoft.edutrack` |
+| `Slug ... does not match` on Dugsi build | Keep Expo slug as `eduTrack`; use `--profile preview-dugsi` (do not set slug to `dugsi`) |
 
 ## Package name
 
-Current Android application ID: **`com.maylesoft.edutrack`**
+Current Android application IDs:
+
+- **eduTrack:** `com.maylesoft.edutrack`
+- **Dugsi:** `com.maylesoft.dugsi` (via `preview-dugsi` / `production-dugsi` profiles)
 
 Changing it later requires a new app install for all users.
 

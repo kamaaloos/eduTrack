@@ -20,7 +20,9 @@ module.exports = ({ config }) => {
   return {
     ...config,
     name: displayName,
-    slug: isDugsi ? "dugsi" : config.slug,
+    // EAS projectId is bound to this slug (eduTrack). White-label builds change
+    // display name, package, and scheme — not the Expo slug.
+    slug: config.slug,
     scheme,
     ios: {
       ...config.ios,
