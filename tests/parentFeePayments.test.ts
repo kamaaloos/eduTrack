@@ -64,11 +64,14 @@ describe("overview fee patch", () => {
     expect(optimistic.feePaid).toBe(true);
     expect(optimistic.paidMonthsThisYear).toBe(1);
 
-    const map = { [feeMonthKey(2026, 6)]: true };
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const map = { [feeMonthKey(year, month)]: true };
     const patched = patchOverviewRowFromFeeMonths(
       baseRow,
       map,
-      2026,
+      year,
     );
     expect(patched.paidMonthsThisYear).toBe(1);
     expect(patched.feePaid).toBe(true);
