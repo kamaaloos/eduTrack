@@ -24,6 +24,10 @@ import { useSuperAdminAuth } from "../src/context/superAdminAuthContext";
 import { useSchoolContext } from "../src/context/schoolContext";
 import type { SchoolRecord } from "../src/types/school";
 import { clearLocalSessionPreferences } from "../src/utils/authNavigation";
+import {
+  copyrightBarBottom,
+  copyrightFooterInset,
+} from "../src/constants/appTheme";
 import { webAuthContentStyle } from "../src/constants/webLayout";
 import {
   confirmDestructiveAction,
@@ -126,8 +130,8 @@ export default function SelectSchoolScreen() {
 
   const isWeb = Platform.OS === "web";
   const Frame = AppScreenBackground;
-  const frameProps = { showCopyright: false };
   const contentColumn = webAuthContentStyle();
+  const footerInset = copyrightFooterInset(insets.bottom);
 
   const pickerBody =
     schools.length > 0 ? (
@@ -143,7 +147,7 @@ export default function SelectSchoolScreen() {
     contentColumn,
     {
       paddingTop: insets.top + (isWeb ? 20 : 56),
-      paddingBottom: Math.max(insets.bottom, 24) + 24,
+      paddingBottom: isWeb ? Math.max(insets.bottom, 24) + 24 : 16,
     },
   ];
 
@@ -166,7 +170,7 @@ export default function SelectSchoolScreen() {
   );
 
   return (
-    <Frame {...frameProps}>
+    <Frame reserveContentFooterSpace={!isWeb}>
     <View style={[styles.screen, isWeb && styles.screenWeb]}>
       <StatusBar style="dark" />
       {!isWeb ? (
@@ -250,7 +254,10 @@ export default function SelectSchoolScreen() {
 
       {PLATFORM_ADMIN_LINK_VISIBLE ? (
         <TouchableOpacity
-          style={[styles.adminLink, { bottom: Math.max(insets.bottom, 16) + 16 }]}
+          style={[
+            styles.adminLink,
+            { bottom: footerInset + 4 },
+          ]}
           onPress={openPlatformAdminLogin}
         >
           <Ionicons name="planet-outline" size={18} color="#1E3A8A" />

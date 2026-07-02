@@ -28,7 +28,11 @@ import { WebPageCard } from "../components/layout/WebPageCard";
 import { ScreenBackgroundLayer } from "../components/ScreenBackgroundLayer";
 import { usePlatformLayout } from "../hooks/usePlatformLayout";
 import { useSchoolContext } from "../src/context/schoolContext";
-import { APP_COPYRIGHT } from "../src/constants/appTheme";
+import {
+  APP_COPYRIGHT,
+  copyrightBarBottom,
+  copyrightFooterInset,
+} from "../src/constants/appTheme";
 import { webAuthContentStyle } from "../src/constants/webLayout";
 import { WEB_PAGE_ROOT_STYLE } from "../src/constants/webBackground";
 import { AuthContext } from "../src/context/authContext";
@@ -309,7 +313,9 @@ export default function Login() {
             {
               paddingTop:
                 insets.top + (layout.isWeb ? (layout.isCompactWeb ? 16 : 24) : 56),
-              paddingBottom: insets.bottom + 56,
+              paddingBottom: layout.isWeb
+                ? insets.bottom + 56
+                : copyrightFooterInset(insets.bottom),
               paddingHorizontal: layout.isCompactWeb ? 16 : 24,
             },
           ]}
@@ -468,16 +474,20 @@ export default function Login() {
             </View>
           </WebPageCard>
         </ScrollView>
-
-        {!busy ? (
-          <Text
-            style={[styles.copyright, { paddingBottom: insets.bottom + 12 }]}
-            accessibilityRole="text"
-          >
-            {APP_COPYRIGHT}
-          </Text>
-        ) : null}
       </KeyboardAvoidingView>
+
+      {!busy ? (
+        <Text
+          style={[
+            styles.copyright,
+            { bottom: copyrightBarBottom(insets.bottom) },
+          ]}
+          pointerEvents="none"
+          accessibilityRole="text"
+        >
+          {APP_COPYRIGHT}
+        </Text>
+      ) : null}
 
       <ForgotPasswordModal
         visible={showForgotPassword}
@@ -509,6 +519,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     position: "relative",
+    overflow: "hidden",
   },
 
   container: {
@@ -766,5 +777,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "rgba(12, 74, 110, 0.75)",
     letterSpacing: 0.3,
+    zIndex: 2,
   },
 });
