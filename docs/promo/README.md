@@ -46,6 +46,11 @@ ffmpeg -i assets/edutrack2.mp4 -c:v libx264 -profile:v main -vf "scale=1280:-2" 
 npm run prepare:web-videos
 ```
 
-The player prefers `edutrack2-web.mp4` and `edutrack-ar-web.mp4` when present, otherwise falls back to the full-size originals.
+The player prefers web-optimized encodes (`*-web.mp4`) when present, otherwise falls back to the full-size originals.
 
-`npm run encode:web-video` compresses English onboarding (`edutrack.mp4` → `edutrack-web.mp4`), web landing (`edutrack2.mp4` → `edutrack2-web.mp4`), and Arabic (`edutrack-ar.mp4` → `edutrack-ar-web.mp4`).
+`npm run encode:web-video` compresses:
+
+- **eduTrack:** onboarding (`edutrack.mp4` → `edutrack-web.mp4`), web landing (`edutrack2.mp4` → `edutrack2-web.mp4`), Arabic (`edutrack-ar.mp4` → `edutrack-ar-web.mp4`), and optional landing promo (`edutrack-promo2-full.mp4` → `edutrack-promo2.mp4`).
+- **Dugsi:** all four language promos (`dugsi.mp4`, `dugsi-ar.mp4`, `dugsi-so.mp4`, `dugsi-fi.mp4` → matching `*-web.mp4`).
+
+Video selection is brand- and language-aware (`src/constants/promoVideos.ts`): native onboarding and web landing pick the clip for the active language; eduTrack Somali/Finnish fall back to English.

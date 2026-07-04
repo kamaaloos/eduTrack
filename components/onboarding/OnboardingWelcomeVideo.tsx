@@ -11,11 +11,9 @@ import {
   View,
 } from "react-native";
 import { useLanguage } from "../../src/context/languageContext";
+import { getNativePromoVideoSource } from "../../src/constants/promoVideos";
 
-const PROMO_VIDEO_EN = require("../../assets/edutrack-web.mp4");
-const PROMO_VIDEO_AR = require("../../assets/edutrack-ar-web.mp4");
-
-type VideoSource = typeof PROMO_VIDEO_EN;
+type VideoSource = ReturnType<typeof getNativePromoVideoSource>;
 
 type OnboardingWelcomeVideoProps = {
   /** When false, keep buffering off-screen until the welcome slide is shown. */
@@ -114,7 +112,7 @@ export function OnboardingWelcomeVideo({
   const { language, isRtl } = useLanguage();
   const [muted, setMuted] = useState(true);
   const [frameReady, setFrameReady] = useState(false);
-  const source = language === "ar" ? PROMO_VIDEO_AR : PROMO_VIDEO_EN;
+  const source = getNativePromoVideoSource(language);
 
   useEffect(() => {
     setFrameReady(false);

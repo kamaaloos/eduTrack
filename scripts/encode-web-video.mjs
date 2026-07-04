@@ -15,6 +15,10 @@ const jobs = [
   { input: "assets/edutrack2.mp4", output: "assets/edutrack2-web.mp4" },
   { input: "assets/edutrack-ar.mp4", output: "assets/edutrack-ar-web.mp4" },
   { input: "assets/edutrack-promo2-full.mp4", output: "assets/edutrack-promo2.mp4", crf: 32 },
+  { input: "assets/dugsi.mp4", output: "assets/dugsi-web.mp4" },
+  { input: "assets/dugsi-ar.mp4", output: "assets/dugsi-ar-web.mp4" },
+  { input: "assets/dugsi-so.mp4", output: "assets/dugsi-so-web.mp4" },
+  { input: "assets/dugsi-fi.mp4", output: "assets/dugsi-fi-web.mp4" },
 ];
 
 if (!ffmpegPath || !fs.existsSync(ffmpegPath)) {

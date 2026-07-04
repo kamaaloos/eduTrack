@@ -15,13 +15,8 @@ import {
   View,
 } from "react-native";
 import { useLanguage } from "../../src/context/languageContext";
+import { getWebPromoVideoSources } from "../../src/constants/promoVideos";
 import { webLandingStyles as styles } from "./webLandingStyles";
-
-/** Static web paths (see scripts/sync-web-videos.mjs). */
-const WEB_VIDEO_EN = "/videos/edutrack-promo2.mp4";
-const WEB_VIDEO_EN_FALLBACK = "/videos/edutrack2-web.mp4";
-const WEB_VIDEO_AR = "/videos/edutrack-ar-web.mp4";
-const WEB_VIDEO_AR_FALLBACK = "/videos/edutrack-ar.mp4";
 
 export function WebLandingHeroVideo() {
   const { t } = useTranslation();
@@ -29,9 +24,8 @@ export function WebLandingHeroVideo() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [muted, setMuted] = useState(true);
   const [buffering, setBuffering] = useState(true);
-  const [videoSrc, setVideoSrc] = useState(
-    language === "ar" ? WEB_VIDEO_AR : WEB_VIDEO_EN,
-  );
+  const sources = getWebPromoVideoSources(language);
+  const [videoSrc, setVideoSrc] = useState(sources.primary);
 
   const ariaLabel = useMemo(() => t("landing.promoVideoAria"), [t]);
 
@@ -40,7 +34,8 @@ export function WebLandingHeroVideo() {
   }, []);
 
   useEffect(() => {
-    setVideoSrc(language === "ar" ? WEB_VIDEO_AR : WEB_VIDEO_EN);
+    const next = getWebPromoVideoSources(language);
+    setVideoSrc(next.primary);
     setBuffering(true);
   }, [language]);
 
@@ -81,15 +76,9 @@ export function WebLandingHeroVideo() {
   }, [muted]);
 
   const onVideoError = useCallback(() => {
-    if (language === "ar") {
-      if (videoSrc === WEB_VIDEO_AR) {
-        setVideoSrc(WEB_VIDEO_AR_FALLBACK);
-        setBuffering(true);
-      }
-      return;
-    }
-    if (videoSrc === WEB_VIDEO_EN) {
-      setVideoSrc(WEB_VIDEO_EN_FALLBACK);
+    const { primary, fallback } = getWebPromoVideoSources(language);
+    if (videoSrc === primary) {
+      setVideoSrc(fallback);
       setBuffering(true);
     }
   }, [language, videoSrc]);

@@ -78,6 +78,10 @@ public/videos/*.mp4
 # Full-size promo sources — keep locally; run npm run encode:web-video (not for GitHub)
 assets/edutrack2.mp4
 assets/edutrack-promo2-full.mp4
+assets/dugsi.mp4
+assets/dugsi-ar.mp4
+assets/dugsi-so.mp4
+assets/dugsi-fi.mp4
 
 # Local debug logs
 crash-full.txt

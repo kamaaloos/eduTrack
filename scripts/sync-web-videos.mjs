@@ -15,6 +15,14 @@ const copies = [
   { src: "assets/edutrack2.mp4", dest: "edutrack2.mp4", optional: true },
   { src: "assets/edutrack-ar-web.mp4", dest: "edutrack-ar-web.mp4", optional: true },
   { src: "assets/edutrack-ar.mp4", dest: "edutrack-ar.mp4", optional: true },
+  { src: "assets/dugsi-web.mp4", dest: "dugsi-web.mp4", optional: true },
+  { src: "assets/dugsi.mp4", dest: "dugsi.mp4", optional: true },
+  { src: "assets/dugsi-ar-web.mp4", dest: "dugsi-ar-web.mp4", optional: true },
+  { src: "assets/dugsi-ar.mp4", dest: "dugsi-ar.mp4", optional: true },
+  { src: "assets/dugsi-so-web.mp4", dest: "dugsi-so-web.mp4", optional: true },
+  { src: "assets/dugsi-so.mp4", dest: "dugsi-so.mp4", optional: true },
+  { src: "assets/dugsi-fi-web.mp4", dest: "dugsi-fi-web.mp4", optional: true },
+  { src: "assets/dugsi-fi.mp4", dest: "dugsi-fi.mp4", optional: true },
 ];
 
 function shouldCopy(srcPath, destPath) {
