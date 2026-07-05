@@ -29,5 +29,10 @@ export const IOS_BUNDLE_IDENTIFIER =
 export const PUSH_CHANNEL_ID =
   APP_BRAND === "dugsi" ? "dugsi-alerts" : "edutrack-alerts";
 
-/** Replace with `assets/images/dugsi-logo.png` when the Dugsi wordmark is ready. */
-export const APP_LOGO = require("../../assets/images/edutrack-logo.png");
+const isDugsiBrand =
+  process.env.EXPO_PUBLIC_APP_BRAND?.trim().toLowerCase() === "dugsi";
+
+/** In-app wordmark (landing, login, headers). */
+export const APP_LOGO = isDugsiBrand
+  ? require("../../assets/images/dugsi-logo.png")
+  : require("../../assets/images/edutrack-logo.png");

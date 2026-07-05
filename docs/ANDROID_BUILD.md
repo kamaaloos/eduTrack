@@ -81,6 +81,12 @@ npm run build:android:production-dugsi
 
 Profiles `preview-dugsi` and `production-dugsi` in `eas.json` set `EXPO_PUBLIC_APP_BRAND=dugsi` and related package/scheme env vars at build time.
 
+Dugsi uses `assets/images/dugsi-icon.png` (app icon) and `dugsi-logo.png` (in-app wordmark). After replacing the high-res sources, run:
+
+```bash
+npm run prepare:brand-images
+```
+
 ## Version bumps
 
 Before each new APK you ship:

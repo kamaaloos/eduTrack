@@ -76,12 +76,19 @@ coverage/
 public/videos/*.mp4
 
 # Full-size promo sources — keep locally; run npm run encode:web-video (not for GitHub)
+assets/edutrack.mp4
+assets/edutrack-ar.mp4
+assets/edutrack-promo.mp4
 assets/edutrack2.mp4
 assets/edutrack-promo2-full.mp4
 assets/dugsi.mp4
 assets/dugsi-ar.mp4
 assets/dugsi-so.mp4
 assets/dugsi-fi.mp4
+
+# High-res brand artwork — keep locally; run npm run prepare:brand-images
+assets/images/dugsi-icon.source.png
+assets/images/dugsi-logo.source.png
 
 # Local debug logs
 crash-full.txt

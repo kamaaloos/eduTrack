@@ -15,11 +15,17 @@ module.exports = ({ config }) => {
     process.env.EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER?.trim() ||
     (isDugsi ? "com.maylesoft.dugsi" : "com.maylesoft.edutrack");
   const pushChannel = isDugsi ? "dugsi-alerts" : "edutrack-alerts";
-  const logoPath = "./assets/images/edutrack-logo.png";
+  const iconPath = isDugsi
+    ? "./assets/images/dugsi-icon.png"
+    : "./assets/images/icon.png";
+  const logoPath = isDugsi
+    ? "./assets/images/dugsi-logo.png"
+    : "./assets/images/edutrack-logo.png";
 
   return {
     ...config,
     name: displayName,
+    icon: iconPath,
     // EAS projectId is bound to this slug (eduTrack). White-label builds change
     // display name, package, and scheme — not the Expo slug.
     slug: config.slug,
@@ -27,6 +33,10 @@ module.exports = ({ config }) => {
     ios: {
       ...config.ios,
       bundleIdentifier: iosBundleId,
+    },
+    web: {
+      ...config.web,
+      favicon: iconPath,
     },
     android: {
       ...config.android,
@@ -66,6 +76,7 @@ module.exports = ({ config }) => {
           "expo-notifications",
           {
             ...settings,
+            icon: iconPath,
             defaultChannel: pushChannel,
           },
         ];

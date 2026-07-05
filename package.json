@@ -11,7 +11,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "node scripts/sync-web-videos.mjs && cross-env EXPO_USE_FAST_RESOLVER=1 expo start --web",
-    "prepare:web-videos": "node scripts/sync-web-videos.mjs",
+    "prepare:brand-images": "node scripts/prepare-brand-images.mjs",
     "encode:web-video": "node scripts/encode-web-video.mjs && node scripts/sync-web-videos.mjs",
     "build:web": "node scripts/sync-web-videos.mjs && expo export --platform web",
     "deploy:web": "npm run build:web && firebase deploy --only hosting:edutrack-694ec",
