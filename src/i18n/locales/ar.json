@@ -16,6 +16,7 @@
     "teacher": "معلّم",
     "parent": "وليّ أمر",
     "admin": "مسؤول",
+    "secretary": "سكرتير",
     "class": "صف",
     "search": "بحث",
     "noData": "لا توجد بيانات للعرض",
@@ -1470,5 +1471,10 @@
     "contactDeleteMessage": "إزالة استفسار {{name}}؟",
     "contactDeleted": "تم حذف الرسالة.",
     "contactDeleteFailed": "تعذر حذف الرسالة."
+  },
+  "secretary": {
+    "management": "السكرتارية",
+    "dashboardTitle": "أولياء الأمور والرسوم",
+    "dashboardSubtitle": "عرض أولياء الأمور وتحديث سجلات الرسوم"
   }
 }

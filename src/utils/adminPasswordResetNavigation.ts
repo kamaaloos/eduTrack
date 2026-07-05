@@ -1,14 +1,20 @@
-import type { UserRole } from "../../hooks/useAdminUsers";
 import type { AppNotification, NotificationRole } from "../services/notifications";
 
-const DIRECTORY_ROLES: UserRole[] = ["student", "teacher", "parent"];
+const DIRECTORY_ROLES = ["student", "teacher", "parent"] as const;
 
-function isDirectoryRole(value: string | null | undefined): value is UserRole {
-  return DIRECTORY_ROLES.includes(value as UserRole);
+type DirectoryRole = (typeof DIRECTORY_ROLES)[number];
+
+function isDirectoryRole(
+  value: string | null | undefined,
+): value is DirectoryRole {
+  return (
+    typeof value === "string" &&
+    (DIRECTORY_ROLES as readonly string[]).includes(value)
+  );
 }
 
 export type PasswordResetDirectoryTarget = {
-  role: UserRole;
+  role: DirectoryRole;
   userId: string;
 };
 

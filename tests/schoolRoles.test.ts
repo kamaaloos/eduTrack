@@ -1,8 +1,14 @@
 import { isSchoolRole, SCHOOL_ROLES } from "../src/utils/schoolRoles";
 
 describe("schoolRoles", () => {
-  it("exports the four school roles", () => {
-    expect(SCHOOL_ROLES).toEqual(["student", "teacher", "parent", "admin"]);
+  it("exports the five school roles", () => {
+    expect(SCHOOL_ROLES).toEqual([
+      "student",
+      "teacher",
+      "parent",
+      "admin",
+      "secretary",
+    ]);
   });
 
   it("accepts valid roles", () => {

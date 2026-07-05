@@ -58,8 +58,12 @@ service cloud.firestore {
       return canUseSchoolData() && userRole() == "parent";
     }
 
+    function isSecretary() {
+      return canUseSchoolData() && userRole() == "secretary";
+    }
+
     function isValidSchoolRole(role) {
-      return role in ["student", "teacher", "parent", "admin"];
+      return role in ["student", "teacher", "parent", "admin", "secretary"];
     }
 
     /**
@@ -189,6 +193,7 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isSuperAdmin()
         || isAdmin()
+        || (isSecretary() && resource.data.role in ["parent", "student"])
         || request.auth.uid == userId
         || (isParent() && parentOwnsStudent(userId))
         || teacherCanReadParentUser(userId)
@@ -207,6 +212,7 @@ service cloud.firestore {
       // Teachers may list students when querying role + classId for an owned class.
       // Parents may list admins so complaint flows can target admin notifications.
       allow list: if isAdmin()
+        || (isSecretary() && resource.data.role == "parent")
         || (
           isTeacher()
           && resource.data.role == "student"
@@ -259,6 +265,13 @@ service cloud.firestore {
                 .hasOnly(["usagePolicyAcceptedVersion", "usagePolicyAcceptedAt"])
             )
           )
+        )
+        || (
+          isSecretary()
+          && resource.data.role == "parent"
+          && request.resource.data.role == "parent"
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(["feeMonths", "feePaid"])
         );
       allow delete: if isAdmin();
 
@@ -636,6 +649,7 @@ service cloud.firestore {
 
     match /studentClasses/{docId} {
       allow read: if isAdmin()
+        || isSecretary()
         || (isTeacher() && teacherOwnsClass(resource.data.classId))
         || (isStudent() && resource.data.studentId == request.auth.uid)
         || (isParent() && parentOwnsStudent(resource.data.studentId));
@@ -657,6 +671,7 @@ service cloud.firestore {
 
     match /parentStudents/{docId} {
       allow read: if isAdmin()
+        || isSecretary()
         || (isParent() && (
           resource.data.parentId == request.auth.uid
           || docId == request.auth.uid

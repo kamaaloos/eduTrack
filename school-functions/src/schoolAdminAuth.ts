@@ -1,13 +1,19 @@
 import type { Firestore } from "firebase-admin/firestore";
 import { HttpsError } from "firebase-functions/v2/https";
 
-export type SchoolUserRole = "student" | "teacher" | "parent" | "admin";
+export type SchoolUserRole =
+  | "student"
+  | "teacher"
+  | "parent"
+  | "admin"
+  | "secretary";
 
 export const SCHOOL_ROLES: SchoolUserRole[] = [
   "student",
   "teacher",
   "parent",
   "admin",
+  "secretary",
 ];
 
 export function parseRole(value: unknown): SchoolUserRole | null {

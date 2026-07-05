@@ -16,6 +16,7 @@
     "teacher": "Macallin",
     "parent": "Waalid",
     "admin": "Maamule",
+    "secretary": "Xoghayaha",
     "class": "Fasal",
     "search": "Raadi",
     "noData": "Ma jiraan xog la muujiyo",
@@ -1470,5 +1471,10 @@
     "contactDeleteMessage": "Ka saar su'aasha {{name}}?",
     "contactDeleted": "Fariinta waa la tirtiray.",
     "contactDeleteFailed": "Fariinta lama tirtiri karin."
+  },
+  "secretary": {
+    "management": "Xoghayn",
+    "dashboardTitle": "Waalidiinta & khidmadaha",
+    "dashboardSubtitle": "Eeg waalidiinta oo cusboonaysii diiwaanka khidmadaha"
   }
 }

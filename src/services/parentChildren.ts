@@ -35,7 +35,9 @@ export async function loadParentChildren(
 
 export async function loadParentChildrenDetailed(
   parentId: string,
+  options?: { syncClassAccess?: boolean },
 ): Promise<LoadParentChildrenResult> {
+  const syncClassAccess = options?.syncClassAccess !== false;
   const schoolDb = requireSchoolDb();
   const studentIds = await collectLinkedStudentIds(parentId);
 
@@ -69,7 +71,9 @@ export async function loadParentChildrenDetailed(
       }
 
       if (classId) {
-        await syncParentClassAccess(parentId, studentId);
+        if (syncClassAccess) {
+          await syncParentClassAccess(parentId, studentId);
+        }
         const classSnap = await getDoc(doc(schoolDb, "classes", classId));
         if (classSnap.exists()) {
           className = classSnap.data().name as string;

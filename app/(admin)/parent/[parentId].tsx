@@ -1,32 +1,8 @@
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { AdminParentChildrenList } from "../../../components/admin/AdminParentChildrenList";
 import { AdminScreenShell } from "../../../components/admin/AdminScreenShell";
-import { ParentPaymentCalendar } from "../../../components/admin/ParentPaymentCalendar";
+import { ParentFeeDetailContent } from "../../../components/admin/ParentFeeDetailContent";
 import { useAdminData } from "../../../src/context/adminDataContext";
-import {
-  applyMonthToFeeMap,
-  countPaidMonthsInYear,
-  effectiveFeeMonthsForYear,
-  loadParentFeeMonths,
-  setParentFeeMonthPaid,
-  type FeeMonthsMap,
-} from "../../../src/services/parentFeePayments";
-import {
-  loadParentChildrenDetailed,
-  type ParentChild,
-} from "../../../src/services/parentChildren";
-import { showErrorAlert } from "../../../src/utils/confirmDialog";
-import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
 
 export default function AdminParentDetailScreen() {
   const { t } = useTranslation();
@@ -34,88 +10,7 @@ export default function AdminParentDetailScreen() {
   const parentId = String(parentIdParam ?? "");
   const { parents, loadUsers } = useAdminData();
 
-  const parent = useMemo(
-    () => parents.find((item) => item.id === parentId),
-    [parents, parentId],
-  );
-
-  const [children, setChildren] = useState<ParentChild[]>([]);
-  const [loadingChildren, setLoadingChildren] = useState(true);
-  const [year, setYear] = useState(() => new Date().getFullYear());
-  const [feeMonths, setFeeMonths] = useState<FeeMonthsMap>({});
-  const [loadingFees, setLoadingFees] = useState(true);
-  const [saving, setSaving] = useState(false);
-
-  const loadChildren = useCallback(async () => {
-    if (!parentId) return;
-    setLoadingChildren(true);
-    try {
-      const result = await loadParentChildrenDetailed(parentId);
-      setChildren(result.children);
-    } catch (err) {
-      showErrorAlert(
-        t("common.error"),
-        err instanceof Error ? err.message : t("admin.parentOverviewLoadFailed"),
-      );
-      setChildren([]);
-    } finally {
-      setLoadingChildren(false);
-    }
-  }, [parentId, t]);
-
-  const loadMonths = useCallback(async () => {
-    if (!parentId) return;
-    setLoadingFees(true);
-    try {
-      const map = await loadParentFeeMonths(parentId);
-      const legacyFeePaid = parents.find((item) => item.id === parentId)?.feePaid;
-      const merged =
-        countPaidMonthsInYear(map, year) === 0 && legacyFeePaid === true
-          ? effectiveFeeMonthsForYear(map, year, true)
-          : map;
-      setFeeMonths(merged);
-    } catch (err) {
-      showErrorAlert(
-        t("common.error"),
-        err instanceof Error ? err.message : t("admin.parentPaymentLoadFailed"),
-      );
-    } finally {
-      setLoadingFees(false);
-    }
-  }, [parentId, year, t, parents]);
-
-  useEffect(() => {
-    void loadChildren();
-  }, [loadChildren]);
-
-  useEffect(() => {
-    void loadMonths();
-  }, [loadMonths]);
-
-  const handleToggleMonth = async (month: number, paid: boolean) => {
-    if (!parentId) return;
-    const previous = feeMonths;
-    setFeeMonths((current) => applyMonthToFeeMap(current, year, month, paid));
-    setSaving(true);
-    try {
-      const next = await setParentFeeMonthPaid(parentId, year, month, paid);
-      setFeeMonths(next);
-      void loadUsers();
-    } catch (err) {
-      setFeeMonths(previous);
-      showErrorAlert(
-        t("common.error"),
-        err instanceof Error ? err.message : t("admin.parentFeeUpdateFailed"),
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const contact =
-    [parent?.email, typeof parent?.phone === "string" ? parent.phone : ""]
-      .filter(Boolean)
-      .join(" · ") || "—";
+  const parent = parents.find((item) => item.id === parentId);
 
   return (
     <AdminScreenShell
@@ -123,104 +18,11 @@ export default function AdminParentDetailScreen() {
       subtitle={t("admin.parentDetailSubtitle")}
       showBack
     >
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.card}>
-          <Text style={styles.parentName}>{parent?.name || "—"}</Text>
-          <Text style={styles.contact}>{contact}</Text>
-
-          <Text style={styles.sectionTitle}>{t("admin.parentDetailChildrenTitle")}</Text>
-          <Text style={styles.sectionHint}>{t("admin.parentDetailChildrenHint")}</Text>
-          <AdminParentChildrenList linkedChildren={children} loading={loadingChildren} />
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>{t("admin.parentPaymentTitle")}</Text>
-          <Text style={styles.sectionHint}>{t("admin.parentPaymentSubtitle")}</Text>
-
-          <View style={styles.yearRow}>
-            <TouchableOpacity
-              style={styles.yearBtn}
-              onPress={() => setYear((y) => y - 1)}
-            >
-              <Text style={styles.yearBtnText}>‹</Text>
-            </TouchableOpacity>
-            <Text style={styles.yearText}>{year}</Text>
-            <TouchableOpacity
-              style={styles.yearBtn}
-              onPress={() => setYear((y) => y + 1)}
-            >
-              <Text style={styles.yearBtnText}>›</Text>
-            </TouchableOpacity>
-          </View>
-
-          {loadingFees ? (
-            <ActivityIndicator color="#7C3AED" style={styles.loader} />
-          ) : (
-            <ParentPaymentCalendar
-              year={year}
-              feeMonths={feeMonths}
-              onToggleMonth={(month, paid) => void handleToggleMonth(month, paid)}
-              disabled={saving}
-            />
-          )}
-        </View>
-      </ScrollView>
+      <ParentFeeDetailContent
+        parentId={parentId}
+        parents={parents}
+        loadUsers={loadUsers}
+      />
     </AdminScreenShell>
   );
 }
-
-const styles = StyleSheet.create({
-  content: { padding: 16, paddingBottom: 40, gap: 16 },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: INNER_CARD_BORDER_GREEN,
-  },
-  parentName: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#0F172A",
-    marginBottom: 6,
-  },
-  contact: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#64748B",
-    marginBottom: 18,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    color: "#1E3A8A",
-    marginBottom: 4,
-  },
-  sectionHint: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: "#64748B",
-    marginBottom: 12,
-  },
-  yearRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 16,
-    marginBottom: 16,
-  },
-  yearBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: "#F1F5F9",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  yearBtnText: { fontSize: 22, fontWeight: "700", color: "#334155" },
-  yearText: { fontSize: 22, fontWeight: "800", color: "#0F172A", minWidth: 72, textAlign: "center" },
-  loader: { marginVertical: 24 },
-});

@@ -1,4 +1,10 @@
-export const SCHOOL_ROLES = ["student", "teacher", "parent", "admin"] as const;
+export const SCHOOL_ROLES = [
+  "student",
+  "teacher",
+  "parent",
+  "admin",
+  "secretary",
+] as const;
 
 export type SchoolRole = (typeof SCHOOL_ROLES)[number];
 

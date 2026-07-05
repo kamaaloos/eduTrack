@@ -12,7 +12,12 @@ import {
 import { getCallableErrorMessage } from "../src/utils/callableErrorMessage";
 import { ensureAdminCreateAuth, requireSchoolDb } from "../src/services/firebase";
 
-export type UserRole = "student" | "teacher" | "parent" | "admin";
+export type UserRole =
+  | "student"
+  | "teacher"
+  | "parent"
+  | "admin"
+  | "secretary";
 
 export interface UserData {
     id: string;

@@ -353,4 +353,57 @@ describe("Firestore security rules — admin / teacher / parent", () => {
       await assertSucceeds(superDb.collection("schoolRegistry").get());
     });
   });
+
+  describe("secretary paths", () => {
+    it("allows secretary to list and read parent users", async () => {
+      const db = firestoreAs(testEnv, UIDS.secretary);
+      await assertSucceeds(
+        db.collection("users").where("role", "==", "parent").get(),
+      );
+      await assertSucceeds(db.doc(`users/${UIDS.parent}`).get());
+    });
+
+    it("denies secretary from reading admin users", async () => {
+      const db = firestoreAs(testEnv, UIDS.secretary);
+      await assertFails(db.doc(`users/${UIDS.admin}`).get());
+    });
+
+    it("allows secretary to read linked students and parentStudents", async () => {
+      const db = firestoreAs(testEnv, UIDS.secretary);
+      await assertSucceeds(db.doc(`users/${UIDS.student}`).get());
+      await assertSucceeds(
+        db.doc(`parentStudents/${UIDS.parent}_${UIDS.student}`).get(),
+      );
+    });
+
+    it("allows secretary to update parent fee fields only", async () => {
+      const db = firestoreAs(testEnv, UIDS.secretary);
+      await assertSucceeds(
+        db.doc(`users/${UIDS.parent}`).update({
+          feePaid: true,
+          feeMonths: { "2026-07": true },
+        }),
+      );
+    });
+
+    it("denies secretary from creating users", async () => {
+      const db = firestoreAs(testEnv, UIDS.secretary);
+      await assertFails(
+        db.doc("users/new-parent").set({
+          name: "New Parent",
+          email: "new-parent@test.com",
+          role: "parent",
+        }),
+      );
+    });
+
+    it("denies secretary from updating non-fee parent fields", async () => {
+      const db = firestoreAs(testEnv, UIDS.secretary);
+      await assertFails(
+        db.doc(`users/${UIDS.parent}`).update({
+          name: "Changed Name",
+        }),
+      );
+    });
+  });
 });

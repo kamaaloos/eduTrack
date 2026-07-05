@@ -20,6 +20,7 @@ describe("isPublicEntrySegment", () => {
     expect(isPublicEntrySegment("(teachers)")).toBe(false);
     expect(isPublicEntrySegment("(admin)")).toBe(false);
     expect(isPublicEntrySegment("(parent)")).toBe(false);
+    expect(isPublicEntrySegment("(secretary)")).toBe(false);
   });
 });
 
@@ -29,6 +30,7 @@ describe("getRoleHomeRoute", () => {
     expect(getRoleHomeRoute("teacher")).toBe("/(teachers)/dashboard");
     expect(getRoleHomeRoute("student")).toBe("/(students)/dashboard");
     expect(getRoleHomeRoute("parent")).toBe("/(parent)/dashboard");
+    expect(getRoleHomeRoute("secretary")).toBe("/(secretary)/dashboard");
   });
 
   it("falls back to login for unknown roles", () => {

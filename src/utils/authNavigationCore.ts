@@ -32,6 +32,8 @@ export function getRoleHomeRoute(role: string): string {
       return "/(students)/dashboard";
     case "parent":
       return "/(parent)/dashboard";
+    case "secretary":
+      return "/(secretary)/dashboard";
     default:
       return "/login";
   }

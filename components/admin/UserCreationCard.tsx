@@ -11,12 +11,19 @@ import {
 } from "react-native";
 import { PasswordInput } from "../PasswordInput";
 import { UserRole } from "../../hooks/useAdminUsers";
+import { RoleSelectPicker } from "./RoleSelectPicker";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { innerCardBorderStyle } from "../../src/constants/innerCardBorders";
 
-const ROLES: UserRole[] = ["student", "teacher", "parent", "admin"];
+const ROLES: UserRole[] = [
+  "student",
+  "teacher",
+  "parent",
+  "admin",
+  "secretary",
+];
 
 interface UserCreationCardProps {
   onUserCreated?: () => void | Promise<void>;
@@ -98,27 +105,13 @@ export const UserCreationCard: React.FC<UserCreationCardProps> = ({
       />
       <Text style={styles.hint}>{t("admin.tempPasswordHint")}</Text>
 
-      <Text style={styles.label}>{t("admin.selectRole")}</Text>
-
-      <View style={styles.roleContainer}>
-        {ROLES.map((item) => (
-          <TouchableOpacity
-            key={item}
-            style={[styles.roleButton, role === item && styles.selectedRole]}
-            onPress={() => setRole(item)}
-            disabled={loading}
-          >
-            <Text
-              style={{
-                color: role === item ? "white" : "black",
-                fontWeight: "600",
-              }}
-            >
-              {t(`common.${item}`).toUpperCase()}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <RoleSelectPicker
+        label={t("admin.selectRole")}
+        value={role}
+        roles={ROLES}
+        onChange={setRole}
+        disabled={loading}
+      />
 
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
@@ -166,26 +159,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: -4,
     marginBottom: 12,
-  },
-  label: {
-    marginBottom: 10,
-    fontWeight: "600",
-  },
-  roleContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-    marginBottom: 20,
-  },
-  roleButton: {
-    borderWidth: 1,
-    borderColor: "#007AFF",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 10,
-  },
-  selectedRole: {
-    backgroundColor: "#007AFF",
   },
   button: {
     backgroundColor: "#007AFF",

@@ -15,6 +15,7 @@ export const UIDS = {
   teacher: "teacher1",
   teacherOther: "teacher2",
   parent: "parent1",
+  secretary: "secretary1",
   student: "student1",
   studentOther: "student2",
 } as const;
@@ -43,7 +44,7 @@ export async function seedSchoolFixtures(
 ): Promise<void> {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     const db = context.firestore();
-    const { admin, teacher, teacherOther, parent, student, studentOther } =
+    const { admin, teacher, teacherOther, parent, secretary, student, studentOther } =
       UIDS;
 
     await db.doc(`users/${admin}`).set({
@@ -78,6 +79,13 @@ export async function seedSchoolFixtures(
       email: "parent@test.com",
       role: "parent",
       linkedStudentIds: [student],
+      feePaid: false,
+      feeMonths: {},
+    });
+    await db.doc(`users/${secretary}`).set({
+      name: "Secretary One",
+      email: "secretary@test.com",
+      role: "secretary",
     });
 
     await db.doc(`classes/${CLASS_A}`).set({ name: "Class A" });

@@ -13,6 +13,7 @@ import { router } from "expo-router";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { adminSurfaceCardStyle } from "../../src/constants/platformLayout";
+import type { UserData } from "../../hooks/useAdminUsers";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
 import {
   buildParentOverviewRows,
@@ -28,10 +29,24 @@ import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 type FeeFilter = "all" | "yes" | "no";
 
-export function AdminParentsOverview() {
+type ParentsOverviewData = {
+  parents: UserData[];
+  usersLoading: boolean;
+  loadUsers: () => Promise<void>;
+};
+
+type AdminParentsOverviewProps = {
+  parentDetailPath?: string;
+  useParentsData?: () => ParentsOverviewData;
+};
+
+export function AdminParentsOverview({
+  parentDetailPath = "/(admin)/parent/[parentId]",
+  useParentsData = useAdminData,
+}: AdminParentsOverviewProps) {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
-  const { parents, usersLoading, loadUsers } = useAdminData();
+  const { parents, usersLoading, loadUsers } = useParentsData();
   const [search, setSearch] = useState("");
   const [feeFilter, setFeeFilter] = useState<FeeFilter>("all");
   const [rows, setRows] = useState<ParentOverviewRow[]>([]);
@@ -90,7 +105,7 @@ export function AdminParentsOverview() {
 
   const openParentDetail = (parentId: string) => {
     router.push({
-      pathname: "/(admin)/parent/[parentId]",
+      pathname: parentDetailPath,
       params: { parentId },
     } as never);
   };
