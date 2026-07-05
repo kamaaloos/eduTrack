@@ -127,14 +127,23 @@ export default function OnboardingScreen() {
     setActiveIndex((index) => index + 1);
   };
 
-  const Frame = AppScreenBackground;
-  const frameProps = { showCopyright: false };
+  const goPrevious = () => {
+    if (activeIndex <= 0) return;
+    setActiveIndex((index) => index - 1);
+  };
+
+  const canGoBack = activeIndex > 0;
 
   const nextIcon = isLastSlide
     ? "log-in-outline"
     : isRtl
       ? "arrow-back"
       : "arrow-forward";
+
+  const backIcon = isRtl ? "arrow-forward" : "arrow-back";
+
+  const Frame = AppScreenBackground;
+  const frameProps = { showCopyright: false };
 
   return (
     <Frame {...frameProps}>
@@ -236,23 +245,47 @@ export default function OnboardingScreen() {
             ))}
           </View>
 
-          <Pressable
-            style={({ pressed }) => [
-              styles.primaryButton,
-              isRtl && styles.primaryButtonRtl,
-              pressed && styles.primaryButtonPressed,
+          <View
+            style={[
+              styles.footerActions,
+              isRtl && styles.footerActionsRtl,
             ]}
-            onPress={goNext}
           >
-            <Text style={styles.primaryButtonText}>
-              {isLastSlide
-                ? t("onboarding.getStarted")
-                : isLanguageSlide
-                  ? t("onboarding.continue")
-                  : t("onboarding.next")}
-            </Text>
-            <Ionicons name={nextIcon} size={20} color="#FFFFFF" />
-          </Pressable>
+            {canGoBack ? (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.backButton,
+                  isRtl && styles.backButtonRtl,
+                  pressed && styles.backButtonPressed,
+                ]}
+                onPress={goPrevious}
+                accessibilityRole="button"
+                accessibilityLabel={t("common.back")}
+              >
+                <Ionicons name={backIcon} size={20} color="#1E3A8A" />
+                <Text style={styles.backButtonText}>{t("common.back")}</Text>
+              </Pressable>
+            ) : null}
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.primaryButton,
+                isRtl && styles.primaryButtonRtl,
+                !canGoBack && styles.primaryButtonFull,
+                pressed && styles.primaryButtonPressed,
+              ]}
+              onPress={goNext}
+            >
+              <Text style={styles.primaryButtonText}>
+                {isLastSlide
+                  ? t("onboarding.getStarted")
+                  : isLanguageSlide
+                    ? t("onboarding.continue")
+                    : t("onboarding.next")}
+              </Text>
+              <Ionicons name={nextIcon} size={20} color="#FFFFFF" />
+            </Pressable>
+          </View>
         </View>
           </WebPageCard>
         </View>
@@ -380,19 +413,56 @@ const styles = StyleSheet.create({
     width: 22,
     backgroundColor: "#1E3A8A",
   },
-  primaryButton: {
+  footerActions: {
+    flexDirection: "row",
+    alignItems: "stretch",
+    gap: 12,
+    width: "100%",
+    maxWidth: 320,
+    alignSelf: "center",
+  },
+  footerActionsRtl: {
+    flexDirection: "row-reverse",
+  },
+  backButton: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "center",
+    gap: 6,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    paddingVertical: 15,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+  },
+  backButtonRtl: {
+    flexDirection: "row-reverse",
+  },
+  backButtonPressed: {
+    opacity: 0.92,
+    transform: [{ scale: 0.99 }],
+  },
+  backButtonText: {
+    color: "#1E3A8A",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  primaryButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 8,
-    width: "100%",
-    maxWidth: 320,
     backgroundColor: "#1E3A8A",
     borderRadius: 14,
     paddingVertical: 15,
     paddingHorizontal: 24,
     ...platformShadowAccent("#1E3A8A"),
+  },
+  primaryButtonFull: {
+    flex: 1,
   },
   primaryButtonRtl: {
     flexDirection: "row-reverse",

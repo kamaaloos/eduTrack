@@ -1,3 +1,4 @@
+import { useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
   createElement,
@@ -82,6 +83,46 @@ export function WebLandingHeroVideo() {
       setBuffering(true);
     }
   }, [language, videoSrc]);
+
+  const stopPlayback = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.pause();
+    video.muted = true;
+  }, []);
+
+  const resumePlayback = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = muted;
+    void video.play().catch(() => {});
+  }, [muted]);
+
+  useFocusEffect(
+    useCallback(() => {
+      resumePlayback();
+      return stopPlayback;
+    }, [resumePlayback, stopPlayback]),
+  );
+
+  useEffect(() => {
+    return () => stopPlayback();
+  }, [stopPlayback, videoSrc]);
+
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        stopPlayback();
+      } else {
+        resumePlayback();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [resumePlayback, stopPlayback]);
 
   if (Platform.OS !== "web") {
     return null;
