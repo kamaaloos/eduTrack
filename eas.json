@@ -27,10 +27,10 @@
     },
     "production": {
       "environment": "production",
-      "distribution": "internal",
+      "distribution": "store",
       "autoIncrement": true,
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       },
       "ios": {
         "simulator": false,
@@ -49,12 +49,30 @@
     },
     "production-dugsi": {
       "extends": "production",
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle"
+      },
       "env": {
         "EXPO_PUBLIC_APP_BRAND": "dugsi",
         "EXPO_PUBLIC_APP_DISPLAY_NAME": "Dugsi",
         "EXPO_PUBLIC_APP_SCHEME": "dugsi",
         "EXPO_PUBLIC_ANDROID_PACKAGE": "com.maylesoft.dugsi",
         "EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER": "com.maylesoft.dugsi"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
+      }
+    },
+    "production-dugsi": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
       }
     }
   }

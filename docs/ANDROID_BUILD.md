@@ -1,6 +1,6 @@
 # Android APK build (eduTrack)
 
-Pilot and distribution builds target **Android APK only** (no Play Store required for first rollout).
+Pilot builds can use **APK** sideloading; **Google Play** requires an **AAB** (Android App Bundle).
 
 ## Prerequisites
 
@@ -61,22 +61,29 @@ When the build finishes, open the link in the terminal or [expo.dev](https://exp
 
 Share the APK with pilot schools (install via file manager; enable “Install unknown apps” if Android asks).
 
-### Production-profile APK
+### Production AAB for Google Play
 
-Same output format, production profile (use after pilot sign-off):
+The `production` profile builds an **AAB** for Play Store upload (not an APK):
 
 ```bash
 npm run build:android:production
 ```
 
-### Dugsi white-label APK
+Dugsi Play Store build:
+
+```bash
+npm run build:android:production-dugsi
+```
+
+See [Google Play Store](#google-play-store) below.
+
+### Dugsi white-label
 
 The **Dugsi** app uses the same EAS project (`eduTrack` slug / `extra.eas.projectId`) but ships as a separate install with `com.maylesoft.dugsi` and display name **Dugsi**. Do **not** change the Expo `slug` for Dugsi builds — EAS rejects a slug that does not match the linked project.
 
 ```bash
-npm run build:android:preview-dugsi
-# or
-npm run build:android:production-dugsi
+npm run build:android:preview-dugsi   # APK pilot
+npm run build:android:production-dugsi # AAB for Play Store
 ```
 
 Profiles `preview-dugsi` and `production-dugsi` in `eas.json` set `EXPO_PUBLIC_APP_BRAND=dugsi` and related package/scheme env vars at build time.
@@ -89,10 +96,87 @@ npm run prepare:brand-images
 
 ## Version bumps
 
-Before each new APK you ship:
+Before each new release you ship:
 
 1. Bump `version` in `app.json` (e.g. `1.0.0` → `1.0.1`).
-2. Bump `android.versionCode` (integer, must increase every upload): `1` → `2`.
+2. Version code is auto-incremented by EAS (`autoIncrement: true` in `eas.json`). Or set `android.versionCode` manually in `app.json`.
+
+## Google Play Store
+
+### One-time Play Console setup
+
+1. Create a [Google Play Developer account](https://play.google.com/console/signup) ($25 one-time).
+2. **Create app** → name **eduTrack** → default language → app/game → free/paid.
+3. Use package name **`com.maylesoft.edutrack`** (must match `app.json` exactly).
+4. Complete required store listing:
+   - Short & full description
+   - App icon (512×512) and feature graphic (1024×500)
+   - Phone screenshots (min 2)
+   - Privacy policy URL (required)
+   - Content rating questionnaire
+   - Data safety form
+   - Target audience
+
+For **Dugsi**, create a **separate** Play Console app with package **`com.maylesoft.dugsi`**.
+
+### Firebase SHA-256 (important for Play)
+
+Play re-signs your app. Add **both** fingerprints in Firebase → Project settings → Android app → SHA certificate fingerprints:
+
+1. **Upload key** — from EAS: `eas credentials -p android`
+2. **App signing key** — from Play Console → **Setup** → **App signing** → **App signing key certificate** (available after first upload)
+
+### Build AAB
+
+```bash
+npm run build:android:production
+```
+
+Download the `.aab` from [expo.dev](https://expo.dev) → Builds, or submit directly (next step).
+
+### Submit to Play Console
+
+**Option A — EAS Submit (recommended)**
+
+1. In Play Console → **Setup** → **API access** → link Google Cloud project → create **service account** with Release manager rights → download JSON key.
+2. Store the key securely (never commit it). Example path: `play-store-key.json` (add to `.gitignore`).
+3. Submit:
+
+```bash
+npm run submit:android
+```
+
+First run may prompt for the service account JSON path. Or set in `eas.json` submit profile:
+
+```json
+"serviceAccountKeyPath": "./play-store-key.json"
+```
+
+Default track is **internal testing** (draft). Change `track` in `eas.json` to `alpha`, `beta`, or `production` when ready.
+
+**Option B — Manual upload**
+
+1. Play Console → your app → **Testing** → **Internal testing** → **Create release**
+2. Upload the `.aab` from EAS
+3. Add release notes → **Review release** → **Start rollout**
+
+### After first internal release
+
+1. Add testers (email list) under Internal testing.
+2. Testers get a Play Store link (not a raw APK).
+3. When stable, promote to **Closed testing** → **Open testing** → **Production**.
+
+### Play Store URL in the app
+
+After publishing, the download page uses:
+
+`https://play.google.com/store/apps/details?id=com.maylesoft.edutrack`
+
+Override with EAS secret if needed:
+
+```bash
+eas secret:create --scope project --name EXPO_PUBLIC_PLAY_STORE_URL --value "https://play.google.com/store/apps/details?id=com.maylesoft.edutrack"
+```
 
 ## Local release APK (optional, no EAS cloud)
 

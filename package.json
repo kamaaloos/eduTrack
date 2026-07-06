@@ -35,6 +35,8 @@
     "build:android:production": "eas build -p android --profile production",
     "build:android:preview-dugsi": "eas build -p android --profile preview-dugsi",
     "build:android:production-dugsi": "eas build -p android --profile production-dugsi",
+    "submit:android": "eas submit -p android --profile production --latest",
+    "submit:android:dugsi": "eas submit -p android --profile production-dugsi --latest",
     "build:ios:preview": "eas build -p ios --profile preview",
     "build:ios:production": "eas build -p ios --profile production",
     "build:ios:development": "eas build -p ios --profile development"
@@ -53,6 +55,7 @@
     "expo-application": "~7.0.8",
     "expo-camera": "~17.0.10",
     "expo-constants": "~18.0.13",
+    "expo-dev-client": "~6.0.21",
     "expo-device": "~8.0.10",
     "expo-document-picker": "~14.0.8",
     "expo-file-system": "~19.0.23",
