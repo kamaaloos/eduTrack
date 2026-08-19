@@ -5,14 +5,26 @@ export type GradeDisplay = {
   gradeSummary: string;
 };
 
+export type GradeDisplayLabels = {
+  emptySummary: string;
+  subjectsSummary: (grade: string, count: number) => string;
+  examsSummary: (grade: string, count: number) => string;
+};
+
 export function buildGradeDisplayFromReport(
   report: ReportCardData,
-  emptySummary = "No grades recorded yet",
+  labels: GradeDisplayLabels = {
+    emptySummary: "No grades recorded yet",
+    subjectsSummary: (grade, count) =>
+      `Overall ${grade} · ${count} subject grade(s)`,
+    examsSummary: (grade, count) =>
+      `Overall ${grade} · ${count} graded exam(s)`,
+  },
 ): GradeDisplay {
   if (report.subjects.length > 0) {
     return {
       gradeAverage: `${report.average}%`,
-      gradeSummary: `Overall ${report.grade} · ${report.subjects.length} subject grade(s)`,
+      gradeSummary: labels.subjectsSummary(report.grade, report.subjects.length),
     };
   }
 
@@ -35,13 +47,13 @@ export function buildGradeDisplayFromReport(
 
     return {
       gradeAverage: `${avg.toFixed(1)}%`,
-      gradeSummary: `Overall ${letter} · ${gradedExams.length} graded exam(s)`,
+      gradeSummary: labels.examsSummary(letter, gradedExams.length),
     };
   }
 
   return {
     gradeAverage: "—",
-    gradeSummary: emptySummary,
+    gradeSummary: labels.emptySummary,
   };
 }
 

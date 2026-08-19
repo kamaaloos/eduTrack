@@ -204,6 +204,33 @@
       }
     }
   },
+  "privacyPolicy": {
+    "title": "Tietosuojakäytäntö",
+    "shortTitle": "Tietosuoja",
+    "heading": "Tietosuojakäytäntö",
+    "subtitle": "Miten {{appName}} kerää, käyttää ja suojaa tietoja kouluille, oppilaille, perheille ja henkilökunnalle.",
+    "lastUpdated": "Päivitetty: heinäkuu 2026",
+    "sections": {
+      "introTitle": "1. Yleiskatsaus",
+      "introBody": "{{appName}} on MayleSoftin ylläpitämä palvelu. Tämä käytäntö kuvaa, miten käsittelemme henkilötietoja, kun käytät {{appName}}-verkkosovellusta ja mobiilisovelluksia. Jokainen koulu käyttää {{appName}}ia opinto- ja hallintotyöhön. Kouluylläpitäjä hallitsee useimpia käyttäjätilejä ja koulun tietoja.",
+      "collectTitle": "2. Keräämämme tiedot",
+      "collectBody": "Voimme kerätä: tilin tiedot (nimi, sähköposti, puhelin, rooli, koulu), profiilitiedot (esim. profiilikuva), opintotiedot (läksyt, kokeet, arvosanat, läsnäolo, huomautukset, todistukset), viestit ja ilmoitukset, laitteen push-ilmoitustunnukset sekä teknisiä tietoja palvelun toimintaa varten. Koulut voivat myös tallentaa oppilaisista, huoltajista, opettajista ja luokista saatuja tietoja.",
+      "useTitle": "3. Miten käytämme tietoja",
+      "useBody": "Käytämme tietoja {{appName}}in tarjoamiseen ja kehittämiseen, käyttäjien tunnistamiseen, kouluviestinnän ja ilmoitusten toimittamiseen, läsnäolon ja opintoprosessien tukemiseen, ylläpitäjien avustamiseen, tukipyyntöihin vastaamiseen ja alustan turvallisuuden ylläpitoon.",
+      "storageTitle": "4. Tallennus ja turvallisuus",
+      "storageBody": "Tiedot tallennetaan Google Firebaseen (Authentication ja Cloud Firestore) turvalliseen pilvi-infrastruktuuriin. Pääsyä valvotaan roolipohjaisilla tietoturvasäännöillä. Olet vastuussa salasanasi luottamuksellisuudesta.",
+      "sharingTitle": "5. Jakaminen",
+      "sharingBody": "Emme myy henkilötietoja. Tietoja jaetaan koulussasi roolien mukaisesti. Voimme käyttää luotettavia palveluntarjoajia, kuten Google Firebasea ja Expoa. Voimme luovuttaa tietoja, jos laki sitä vaatii tai käyttäjien ja alustan suojaamiseksi.",
+      "childrenTitle": "6. Oppilaat ja koulut",
+      "childrenBody": "{{appName}}ia käyttävät koulut oppilastietojen hallintaan. Oppilastilit luodaan ja hallinnoidaan koulussa. Huoltajat näkevät linkitettyjen lastensa tiedot. Koulut vastaavat siitä, että paikallisen lain edellyttämä suostumus on hankittu ennen oppilas- tai huoltajatietojen lisäämistä.",
+      "rightsTitle": "7. Valintasi ja oikeutesi",
+      "rightsBody": "Voit päivittää osan profiilistasi sovelluksessa. Sähköpostin, salasanan tai roolin muutoksiin ota yhteyttä kouluylläpitäjään. Tietojen oikaisu- tai poistopyyntöihin ota ensin yhteyttä kouluusi. Voit myös ottaa meihin yhteyttä alla olevilla tiedoilla.",
+      "contactTitle": "8. Yhteystiedot",
+      "contactBody": "Tietosuojaa koskevissa kysymyksissä ota yhteyttä MayleSoftiin: mayle.aden@gmail.com tai käytä sivuston Ota yhteyttä -sivua.",
+      "updatesTitle": "9. Muutokset tähän käytäntöön",
+      "updatesBody": "Voimme päivittää tätä tietosuojakäytäntöä aika ajoin. Uusin versio julkaistaan tällä sivulla päivitetyn päivämäärän kera."
+    }
+  },
   "contact": {
     "title": "Ota yhteyttä",
     "heading": "Ota yhteyttä",
@@ -240,7 +267,11 @@
     "appStoreTitle": "App Storesta",
     "comingSoon": "Tulossa pian",
     "appStorePendingHint": "App Store -linkki näkyy täällä, kun sovellus on julkaistu.",
-    "openFailed": "Kaupan linkkiä ei voitu avata."
+    "openFailed": "Kaupan linkkiä ei voitu avata.",
+    "androidQrTitle": "Asenna Androidille",
+    "androidQrHint": "Skannaa tämä koodi puhelimellasi asentaaksesi uusimman Android-version.",
+    "androidQrSteps": "Avaa Kamera-sovellus, osoita koodia ja napauta ilmoitusta asentaaksesi.",
+    "androidQrOpenLink": "Avaa asennuslinkki tällä laitteella"
   },
   "onboarding": {
     "skipA11y": "Ohita esittely",
@@ -822,7 +853,15 @@
     "noHomework": "Kotitehtäviä ei ole annettu",
     "dueDate": "Eräpäivä {{date}}",
     "submitted": "Lähetetty",
-    "pending": "Odottaa"
+    "pending": "Odottaa",
+    "attendancePresentOf": "{{present}} läsnä {{total}} kirjattuna päivänä ({{window}})",
+    "homeworkAssignedCount": "{{count}} tehtävä(ä) luokastasi",
+    "upcomingExamLine": "• {{subject}} — {{title}}",
+    "examSubjectFallback": "Aine",
+    "examScheduledFallback": "Ajoitettu",
+    "noGradesYet": "Arvosanoja ei ole vielä kirjattu",
+    "gradeSummarySubjects": "Yhteensä {{grade}} · {{count}} aineen arvosana(a)",
+    "gradeSummaryExams": "Yhteensä {{grade}} · {{count}} arvosteltu koe"
   },
   "certificates": {
     "adminMenu": "Tulostodistukset",
@@ -903,6 +942,7 @@
     "goodMorning": "Hyvää huomenta",
     "goodAfternoon": "Hyvää päivää",
     "goodEvening": "Hyvää iltaa",
+    "scheduleWeeklyTitle": "Tämän viikon lukujärjestys (tänään: {{day}})",
     "scheduleEmptyToday": "Olet valmis tältä päivältä — ei enää tunteja aikataulussasi.",
     "scheduleNoClass": "Luokkaa ei ole vielä linkitetty — aikataulu näkyy kun luokka on asetettu.",
     "homeworkNothingAssigned": "Ei vielä tehtäviä. Tarkista myöhemmin.",

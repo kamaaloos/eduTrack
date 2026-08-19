@@ -1,10 +1,12 @@
 import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../src/context/authContext";
 import { StudentDashboardView } from "../../components/dashboard/StudentDashboardView";
 import { useStudentDashboardData } from "../../hooks/useStudentDashboardData";
 import { useStudentMenu } from "../../src/context/studentMenuContext";
 
 export default function StudentDashboard() {
+  const { t } = useTranslation();
   const { user, userData } = useContext(AuthContext);
   const { openMenu } = useStudentMenu();
 
@@ -30,7 +32,7 @@ export default function StudentDashboard() {
     <StudentDashboardView
       studentId={user?.uid ?? ""}
       classId={classId}
-      displayName={userData?.name || "Student"}
+      displayName={userData?.name || t("common.student")}
       photoURL={userData?.photoURL ?? null}
       routePrefix="/(students)"
       showNotifications

@@ -1,5 +1,8 @@
-import { Platform, StyleSheet } from "react-native";
-import { WEB_PAGE_MAX_WIDTH_DESKTOP } from "../../hooks/usePlatformLayout";
+import { Platform, StyleSheet, type ViewStyle, type TextStyle } from "react-native";
+import {
+  WEB_PAGE_MAX_WIDTH_DESKTOP,
+  type PlatformLayout,
+} from "../../hooks/usePlatformLayout";
 
 const isWeb = Platform.OS === "web";
 
@@ -19,7 +22,10 @@ export const webLandingStyles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "#FAFAFA",
-    minHeight: isWeb ? ("100vh" as unknown as number) : undefined,
+    minHeight: isWeb ? ("100dvh" as unknown as number) : undefined,
+    ...webOnly({
+      overflowX: "hidden",
+    }),
   },
   scrollContent: {
     flexGrow: 1,
@@ -71,9 +77,10 @@ export const webLandingStyles = StyleSheet.create({
   navbar: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: isWeb ? 18 : 14,
-    gap: isWeb ? 20 : 12,
-    flexWrap: isWeb ? "nowrap" : "wrap",
+    gap: isWeb ? 16 : 12,
+    flexWrap: "wrap",
     ...webOnly({
       position: "sticky",
       top: 0,
@@ -81,20 +88,14 @@ export const webLandingStyles = StyleSheet.create({
       backgroundColor: "rgba(250, 250, 250, 0.92)",
       backdropFilter: "blur(12px)",
       WebkitBackdropFilter: "blur(12px)",
-      display: "grid",
-      gridTemplateColumns: "auto minmax(0, 1fr) auto",
-      columnGap: 20,
     }),
   },
   brandRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    flexShrink: 0,
-    ...webOnly({
-      gridColumn: 1,
-      gridRow: 1,
-    }),
+    flexShrink: 1,
+    minWidth: 0,
   },
   brandTextWrap: {
     minWidth: 0,
@@ -115,15 +116,11 @@ export const webLandingStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: isWeb ? 20 : 16,
-    flexWrap: isWeb ? "nowrap" : "wrap",
-    flex: isWeb ? undefined : 1,
+    gap: isWeb ? 16 : 16,
+    flexWrap: "wrap",
+    flexGrow: 1,
+    flexShrink: 1,
     minWidth: 0,
-    ...webOnly({
-      gridColumn: 2,
-      gridRow: 1,
-      justifySelf: "center",
-    }),
   },
   navLinkBtn: {
     paddingVertical: 4,
@@ -146,9 +143,6 @@ export const webLandingStyles = StyleSheet.create({
     flexShrink: 0,
     ...webOnly({
       boxShadow: "0 4px 14px rgba(15, 23, 42, 0.18)",
-      gridColumn: 3,
-      gridRow: 1,
-      justifySelf: "end",
     }),
   },
   navCtaText: {
@@ -165,8 +159,8 @@ export const webLandingStyles = StyleSheet.create({
     ...webOnly(LANDING_GRADIENT_CARD_WEB),
   },
   heroRow: {
-    flexDirection: isWeb ? "row" : "column",
-    alignItems: isWeb ? "center" : "stretch",
+    flexDirection: "column",
+    alignItems: "stretch",
     gap: isWeb ? 40 : 28,
   },
   heroCopy: {
@@ -214,8 +208,8 @@ export const webLandingStyles = StyleSheet.create({
     maxWidth: 520,
   },
   heroActions: {
-    flexDirection: isWeb ? "row" : "column",
-    alignItems: isWeb ? "center" : "stretch",
+    flexDirection: "column",
+    alignItems: "stretch",
     gap: 12,
     marginTop: 4,
   },
@@ -268,7 +262,7 @@ export const webLandingStyles = StyleSheet.create({
     position: "relative",
     ...(isWeb
       ? ({
-          maxHeight: 520,
+          maxHeight: "min(520px, 70dvh)",
           boxShadow: "0 20px 40px rgba(15, 23, 42, 0.24)",
         } as object)
       : null),
@@ -421,8 +415,9 @@ export const webLandingStyles = StyleSheet.create({
     justifyContent: "center",
   },
   featureCard: {
-    width: isWeb ? "47%" : "100%",
+    width: "100%",
     maxWidth: 540,
+    flexGrow: 1,
     backgroundColor: "rgba(255,255,255,0.96)",
     borderRadius: 20,
     padding: isWeb ? 24 : 20,
@@ -478,3 +473,63 @@ export const webLandingStyles = StyleSheet.create({
     lineHeight: 20,
   },
 });
+
+type LandingAdaptiveStyles = {
+  heroRow: ViewStyle;
+  heroCard: ViewStyle;
+  heroTitle: TextStyle;
+  heroSubtitle: TextStyle;
+  heroActions: ViewStyle;
+  featuresCard: ViewStyle;
+  sectionTitle: TextStyle;
+  featureCard: ViewStyle;
+};
+
+/** Width-based overrides so desktop landing also works in a narrow browser. */
+export function getLandingAdaptiveStyles(
+  layout: PlatformLayout,
+  isRtl: boolean,
+): LandingAdaptiveStyles {
+  const wide = layout.isTabletWeb || layout.isDesktopWeb;
+  const compact = layout.isCompactWeb;
+
+  return {
+    heroRow: wide
+      ? {
+          flexDirection: isRtl ? "row-reverse" : "row",
+          alignItems: "center",
+        }
+      : {},
+    heroCard: {
+      padding: layout.isDesktopWeb ? 48 : compact ? 20 : 32,
+    },
+    heroTitle: {
+      fontSize: layout.isDesktopWeb ? 46 : compact ? 28 : 36,
+      lineHeight: layout.isDesktopWeb ? 54 : compact ? 34 : 44,
+    },
+    heroSubtitle: {
+      fontSize: layout.isDesktopWeb ? 17 : 15,
+      lineHeight: layout.isDesktopWeb ? 28 : 24,
+    },
+    heroActions: wide
+      ? {
+          flexDirection: isRtl ? "row-reverse" : "row",
+          alignItems: "center",
+        }
+      : {},
+    featuresCard: {
+      padding: layout.isDesktopWeb ? 48 : compact ? 22 : 32,
+    },
+    sectionTitle: {
+      fontSize: layout.isDesktopWeb ? 38 : compact ? 24 : 30,
+      lineHeight: layout.isDesktopWeb ? 46 : compact ? 30 : 38,
+    },
+    featureCard: wide
+      ? {
+          width: "47%",
+        }
+      : {
+          width: "100%",
+        },
+  };
+}

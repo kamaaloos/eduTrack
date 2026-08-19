@@ -18,12 +18,14 @@ import {
   DownloadFixedHeader,
   downloadHeaderTotalHeight,
 } from "../components/download/DownloadFixedHeader";
+import { AndroidInstallQrCard } from "../components/download/AndroidInstallQrCard";
 import {
   APP_STORE_URL,
   isAppStoreConfigured,
   isPlayStoreConfigured,
   PLAY_STORE_URL,
 } from "../src/constants/appStores";
+import { isAndroidInstallQrConfigured } from "../src/constants/appInstall";
 import { copyrightFooterInset } from "../src/constants/appTheme";
 import { showErrorAlert } from "../src/utils/confirmDialog";
 
@@ -95,6 +97,7 @@ export default function DownloadScreen() {
 
   const playReady = isPlayStoreConfigured();
   const appStoreReady = isAppStoreConfigured();
+  const androidQrReady = isAndroidInstallQrConfigured();
 
   return (
     <AppScreenBackground>
@@ -119,15 +122,19 @@ export default function DownloadScreen() {
               </View>
 
               <View style={styles.storeList}>
-                <StoreButton
-                  variant="google"
-                  icon="logo-google-playstore"
-                  eyebrow={t("download.googlePlayEyebrow")}
-                  title={t("download.googlePlayTitle")}
-                  onPress={() => void openStoreUrl(PLAY_STORE_URL)}
-                  disabled={!playReady}
-                  subtitle={!playReady ? t("download.comingSoon") : undefined}
-                />
+                {androidQrReady ? (
+                  <AndroidInstallQrCard />
+                ) : (
+                  <StoreButton
+                    variant="google"
+                    icon="logo-google-playstore"
+                    eyebrow={t("download.googlePlayEyebrow")}
+                    title={t("download.googlePlayTitle")}
+                    onPress={() => void openStoreUrl(PLAY_STORE_URL)}
+                    disabled={!playReady}
+                    subtitle={!playReady ? t("download.comingSoon") : undefined}
+                  />
+                )}
 
                 <StoreButton
                   variant="apple"

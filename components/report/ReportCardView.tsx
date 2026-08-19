@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import type { ReportCardData } from "../../src/services/reportCardEngine";
-import { attendanceHistoryLabel } from "../../src/constants/attendanceHistory";
+import { attendanceHistoryLabelT } from "../../src/constants/attendanceHistory";
 import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import { getAttendanceColor } from "../../src/utils/dashboardUi";
@@ -109,12 +109,12 @@ export function ReportCardView({
                 ? {
                     absent: absentCount,
                     total: report.attendance.total,
-                    window: attendanceHistoryLabel(),
+                    window: attendanceHistoryLabelT(t),
                   }
                 : {
                     present: report.attendance.present,
                     total: report.attendance.total,
-                    window: attendanceHistoryLabel(),
+                    window: attendanceHistoryLabelT(t),
                   },
             )}
           </Text>

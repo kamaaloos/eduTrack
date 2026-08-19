@@ -57,7 +57,7 @@ export default function HomeworkDetailScreen() {
           <Text style={styles.detailMetaLabel}>{t("common.date")}</Text>
           <Text style={styles.detailMetaValue}>
             {item.daysLeft != null
-              ? t("student.dueDate", { date: `${item.daysLeft} day(s)` })
+              ? t("dashboard.daysLeft", { count: item.daysLeft })
               : "—"}
           </Text>
         </View>

@@ -29,6 +29,9 @@
       "environment": "production",
       "distribution": "store",
       "autoIncrement": true,
+      "buildArtifactPaths": [
+        "android/app/build/outputs/mapping/**/mapping.txt"
+      ],
       "android": {
         "buildType": "app-bundle"
       },

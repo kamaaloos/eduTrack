@@ -2,7 +2,7 @@ import { ActivityIndicator, Text, View } from "react-native";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { attendanceHistoryLabel } from "../../src/constants/attendanceHistory";
+import { attendanceHistoryLabelT } from "../../src/constants/attendanceHistory";
 import { AuthContext } from "../../src/context/authContext";
 import { db } from "../../src/services/firebase";
 import {
@@ -94,7 +94,13 @@ export default function StudentAnalyticsScreen() {
       const report = await generateReportCard(user.uid, {
         classId: resolvedClassId,
       });
-      const gradeDisplay = buildGradeDisplayFromReport(report);
+      const gradeDisplay = buildGradeDisplayFromReport(report, {
+        emptySummary: t("student.noGradesYet"),
+        subjectsSummary: (grade, count) =>
+          t("student.gradeSummarySubjects", { grade, count }),
+        examsSummary: (grade, count) =>
+          t("student.gradeSummaryExams", { grade, count }),
+      });
 
       let homeworkCount = 0;
       let upcomingExams: { label: string }[] = [];
@@ -118,7 +124,10 @@ export default function StudentAnalyticsScreen() {
           examSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
         );
         upcomingExams = exams.slice(0, 6).map((e: Record<string, unknown>) => ({
-          label: `• ${e.subject || "Subject"} — ${e.title || e.date || "Scheduled"}`,
+          label: t("student.upcomingExamLine", {
+            subject: e.subject || t("student.examSubjectFallback"),
+            title: e.title || e.date || t("student.examScheduledFallback"),
+          }),
         }));
 
         const remarks = remarkSnap.docs
@@ -141,14 +150,18 @@ export default function StudentAnalyticsScreen() {
         attendancePercent,
         attendanceSummary:
           attendancePercent != null
-            ? `${presentCount} present of ${attendanceSummary.total} recorded days (${attendanceHistoryLabel()})`
+            ? t("student.attendancePresentOf", {
+                present: presentCount,
+                total: attendanceSummary.total,
+                window: attendanceHistoryLabelT(t),
+              })
             : empty.attendanceSummary,
         gradeAverage: gradeDisplay.gradeAverage,
         gradeSummary: gradeDisplay.gradeSummary,
         homeworkCount,
         homeworkSummary:
           homeworkCount > 0
-            ? `${homeworkCount} assignment(s) from your class`
+            ? t("student.homeworkAssignedCount", { count: homeworkCount })
             : empty.homeworkSummary,
         upcomingExams,
         latestRemark,
@@ -159,7 +172,7 @@ export default function StudentAnalyticsScreen() {
     } finally {
       setLoading(false);
     }
-  }, [user?.uid, classId, userData?.classId, empty]);
+  }, [user?.uid, classId, userData?.classId, empty, t]);
 
   useEffect(() => {
     loadAnalytics();

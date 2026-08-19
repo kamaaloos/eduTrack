@@ -204,6 +204,33 @@
       }
     }
   },
+  "privacyPolicy": {
+    "title": "Siyaasadda asturnaanta",
+    "shortTitle": "Asturnaanta",
+    "heading": "Siyaasadda asturnaanta",
+    "subtitle": "Sida {{appName}} u ururiyo, u isticmaalo, uguna ilaaliyo macluumaadka dugsiyada, ardayda, qoysaska, iyo shaqaalaha.",
+    "lastUpdated": "Cusbooneysii ugu dambeeyay: Luulyo 2026",
+    "sections": {
+      "introTitle": "1. Dulmar",
+      "introBody": "{{appName}} waxaa maamula MayleSoft. Siyaasaddan waxay sharxisaa sida aan ula macaamilo macluumaadka shakhsiga ah markaad isticmaasho web-ka iyo app-yada mobilka. Dugsi kastaa wuxuu isticmaalaa {{appName}} si uu u maamulo hawlaha waxbarashada iyo maamulka. Maamulaha dugsiga ayaa xakameeya akoonnada isticmaalayaasha iyo xogta dugsiga.",
+      "collectTitle": "2. Macluumaadka aan ururino",
+      "collectBody": "Waxaan ururin karnaa: faahfaahinta akoonka (magac, iimayl, telefoon, door, dugsiga), macluumaadka astaanta (sida sawirka), diiwaannada waxbarashada (hawl-guri, imtixaan, dhibco, xaadir, faallo, warqadaha natiijada), fariimaha iyo ogeysiisyada, calaamadaha ogeysiinta qalabka, iyo xog farsamo oo loo baahan yahay adeegga. Dugsiyadu waxay sidoo kale kaydin karaan macluumaadka ardayda, waalidiinta, macalimiinta, iyo fasallada.",
+      "useTitle": "3. Sida aan u isticmaalno macluumaadka",
+      "useBody": "Waxaan u isticmaalnaa macluumaadka si aan u bixino oo aan u horumarino {{appName}}, xaqiijino isticmaalayaasha, gaarsiino isgaarsiinta dugsiga iyo ogeysiisyada, taageerno xaadirka iyo hawlaha waxbarashada, caawino maamulayaasha, ka jawaabno codsiyada taageerada, oo aan ilaalino amniga madasha.",
+      "storageTitle": "4. Kaydinta iyo amniga",
+      "storageBody": "Xogta waxaa lagu kaydiyaa Google Firebase (Authentication iyo Cloud Firestore) oo ah kaabayaal daruuri oo ammaan ah. Helitaanka waxaa xakameeya xeerarka amniga ee ku salaysan doorka. Adiga ayaa mas'uul ka ah ilaalinta sirta eraygaaga sirta ah.",
+      "sharingTitle": "5. Wadaagista",
+      "sharingBody": "Ma iibino macluumaadka shakhsiga ah. Macluumaadka waxaa lagu wadaagaa dugsigaaga iyadoo loo eegayo doorka. Waxaan isticmaali karnaa bixiyeyaasha adeegga la isku halayn karo sida Google Firebase iyo Expo. Waxaan shaacin karnaa macluumaad haddii sharcigu u baahdo ama si loo ilaaliyo isticmaalayaasha iyo madasha.",
+      "childrenTitle": "6. Ardayda iyo dugsiyada",
+      "childrenBody": "{{appName}} waxaa isticmaala dugsiyada si ay u maamulaan macluumaadka ardayda. Akoonnada ardayda waxaa abuura oo maamula dugsiga. Waalidiintu waxay helaan macluumaadka carruurtooda la xiriira. Dugsiyadu waxay mas'uul ka yihiin helitaanka ogolaanshaha loo baahan yahay sharciga deegaanka ka hor inta aan la darin xogta ardayda ama waalidiinta.",
+      "rightsTitle": "7. Doorashooyinkaaga iyo xuquuqdaada",
+      "rightsBody": "Waxaad cusbooneysiin kartaa qaybo ka mid ah astaantaada app-ka. Si aad u beddesho iimaylka, erayga sirta ah, ama doorka, la xiriir maamulaha dugsigaaga. Si aad u codsato sixid ama tirtirid xog, marka hore la xiriir dugsigaaga. Waxaad sidoo kale nala soo xiriiri kartaa adigoo isticmaalaya faahfaahinta hoose.",
+      "contactTitle": "8. Xiriir",
+      "contactBody": "Su'aalaha asturnaanta, la xiriir MayleSoft cinwaanka mayle.aden@gmail.com ama isticmaal bogga Nala soo xiriir ee boggan.",
+      "updatesTitle": "9. Isbeddelada siyaasaddan",
+      "updatesBody": "Waxaan cusbooneysiin karnaa siyaasaddan asturnaanta waqti ka waqti. Nooca ugu dambeeya waxaa lagu daabacayaa boggan oo leh taariikh cusub."
+    }
+  },
   "contact": {
     "title": "Nala soo xiriir",
     "heading": "Nala soo xiriir",
@@ -240,7 +267,11 @@
     "appStoreTitle": "App Store",
     "comingSoon": "Dhawaan",
     "appStorePendingHint": "Linkiga App Store halkan ayuu ka muuqan doonaa marka app-ka la daabaco.",
-    "openFailed": "Linkiga dukaanka lama furi karin."
+    "openFailed": "Linkiga dukaanka lama furi karin.",
+    "androidQrTitle": "Ku rakib Android",
+    "androidQrHint": "Ku sawir koodhkan taleefankaaga si aad u rakibto nooca Android ee ugu dambeeyay.",
+    "androidQrSteps": "Fur app-ka Kamera, u jeedi koodhka, ka dibna taabo ogeysiiska si aad u rakibto.",
+    "androidQrOpenLink": "Fur linkiga rakibidda qalabkan"
   },
   "onboarding": {
     "skipA11y": "Ka bood hordhaca",
@@ -822,7 +853,15 @@
     "noHomework": "Hawl guri lama qoondeyn",
     "dueDate": "Waqtiga {{date}}",
     "submitted": "La gudbiyay",
-    "pending": "Sugitaan"
+    "pending": "Sugitaan",
+    "attendancePresentOf": "{{present}} xaadir {{total}} maalmood oo la diiwaangeliyay ({{window}})",
+    "homeworkAssignedCount": "{{count}} hawl(ood) fasalkaaga",
+    "upcomingExamLine": "• {{subject}} — {{title}}",
+    "examSubjectFallback": "Maaddo",
+    "examScheduledFallback": "La qorsheeyay",
+    "noGradesYet": "Weli darajo lama diiwaangelin",
+    "gradeSummarySubjects": "Guud ahaan {{grade}} · {{count}} darajo maaddo",
+    "gradeSummaryExams": "Guud ahaan {{grade}} · {{count}} imtixaan la qiimeeyay"
   },
   "certificates": {
     "adminMenu": "Shahaadooyinka natiijada",
@@ -903,6 +942,7 @@
     "goodMorning": "Subax wanaagsan",
     "goodAfternoon": "Galab wanaagsan",
     "goodEvening": "Fiid wanaagsan",
+    "scheduleWeeklyTitle": "Jadwalka toddobaadkan (maanta: {{day}})",
     "scheduleEmptyToday": "Maanta waad dhammaystirtay — jadwalkaaga ma jiro waqti kale.",
     "scheduleNoClass": "Fasal weli lama xirin — jadwalku wuu muuqan doonaa marka fasalka la dejiyo.",
     "homeworkNothingAssigned": "Weli wax lama qoondeyn. Dib u eeg goor dambe.",

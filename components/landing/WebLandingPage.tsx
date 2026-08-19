@@ -25,7 +25,7 @@ import {
   LandingCapabilityPills,
   LandingTrustRolePills,
 } from "./LandingAnimatedPills";
-import { webLandingStyles as styles } from "./webLandingStyles";
+import { webLandingStyles as styles, getLandingAdaptiveStyles } from "./webLandingStyles";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useWebLandingGsap } from "../../hooks/useWebLandingGsap";
 
@@ -188,19 +188,15 @@ export function WebLandingPage() {
   );
 
   useWebLandingGsap(language, gsapAnimationKey);
-  const heroRowDirection =
-    layout.isTabletWeb || layout.isDesktopWeb
-      ? isRtl
-        ? "row-reverse"
-        : "row"
-      : undefined;
+  const adaptive = getLandingAdaptiveStyles(layout, isRtl);
+  const showNavLinks = !layout.isCompactWeb;
 
   const pagePaddingStyle =
     layout.isDesktopWeb
       ? { paddingHorizontal: 40 }
       : layout.isTabletWeb
-        ? { paddingHorizontal: 28 }
-        : { paddingHorizontal: 20 };
+        ? { paddingHorizontal: 24 }
+        : { paddingHorizontal: 16 };
 
   return (
     <View style={styles.root}>
@@ -228,6 +224,11 @@ export function WebLandingPage() {
               <TouchableOpacity onPress={() => router.push("/contact")}>
                 <Text style={styles.utilityLink}>{t("landing.contactUs")}</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/privacy-policy")}>
+                <Text style={styles.utilityLink}>
+                  {t("privacyPolicy.shortTitle")}
+                </Text>
+              </TouchableOpacity>
             </View>
             <View style={styles.utilityRight}>
               {layout.isDesktopWeb ? (
@@ -245,14 +246,18 @@ export function WebLandingPage() {
               onPress={() => scrollToSection("landing-top")}
               accessibilityRole="button"
             >
-              <AppLogo size={52} />
+              <AppLogo size={layout.isCompactWeb ? 40 : 52} />
               <View style={styles.brandTextWrap}>
                 <Text style={styles.brandName}>{t("landing.brandName")}</Text>
-                <Text style={styles.brandTag}>{t("landing.brandTag")}</Text>
+                {layout.isCompactWeb ? null : (
+                  <Text style={styles.brandTag}>{t("landing.brandTag")}</Text>
+                )}
               </View>
             </TouchableOpacity>
 
             <View style={styles.navLinks}>
+              {showNavLinks ? (
+                <>
               <TouchableOpacity
                 style={styles.navLinkBtn}
                 onPress={() => scrollToSection("landing-features")}
@@ -271,6 +276,14 @@ export function WebLandingPage() {
               >
                 <Text style={styles.navLink}>{t("landing.contactUs")}</Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.navLinkBtn}
+                onPress={() => router.push("/privacy-policy")}
+              >
+                <Text style={styles.navLink}>{t("privacyPolicy.shortTitle")}</Text>
+              </TouchableOpacity>
+                </>
+              ) : null}
             </View>
 
             <TouchableOpacity
@@ -282,28 +295,25 @@ export function WebLandingPage() {
             </TouchableOpacity>
           </View>
 
-          <View nativeID="landing-top" style={styles.heroCard}>
-            <View
-              style={[
-                styles.heroRow,
-                heroRowDirection ? { flexDirection: heroRowDirection } : null,
-              ]}
-            >
+          <View nativeID="landing-top" style={[styles.heroCard, adaptive.heroCard]}>
+            <View style={[styles.heroRow, adaptive.heroRow]}>
               <View style={styles.heroCopy}>
                 <View style={styles.heroBadge}>
                   <Text style={styles.heroBadgeText}>{t("landing.heroBadge")}</Text>
                 </View>
 
-                <Text style={styles.heroTitle}>
+                <Text style={[styles.heroTitle, adaptive.heroTitle]}>
                   {t("landing.heroTitlePrefix")}{" "}
                   <Text style={styles.heroHighlight}>
                     {t("landing.heroTitleHighlight")}
                   </Text>
                 </Text>
 
-                <Text style={styles.heroSubtitle}>{t("landing.heroSubtitle")}</Text>
+                <Text style={[styles.heroSubtitle, adaptive.heroSubtitle]}>
+                  {t("landing.heroSubtitle")}
+                </Text>
 
-                <View style={styles.heroActions}>
+                <View style={[styles.heroActions, adaptive.heroActions]}>
                   <TouchableOpacity
                     style={styles.primaryBtn}
                     onPress={() => void enterApp()}
@@ -358,9 +368,9 @@ export function WebLandingPage() {
             {...(Platform.OS === "web" ? { id: "landing-features" } : {})}
             style={styles.featuresSection}
           >
-            <View style={styles.featuresCard}>
+            <View style={[styles.featuresCard, adaptive.featuresCard]}>
               <Text style={styles.sectionEyebrow}>{t("landing.featuresTitle")}</Text>
-              <Text style={styles.sectionTitle}>
+              <Text style={[styles.sectionTitle, adaptive.sectionTitle]}>
                 {t("landing.infrastructureTitle")}
               </Text>
               <Text style={styles.sectionHint}>{t("landing.featuresHint")}</Text>
@@ -369,7 +379,10 @@ export function WebLandingPage() {
 
               <View style={styles.featureGrid}>
                 {FEATURES.map((feature) => (
-                  <View key={feature.titleKey} style={styles.featureCard}>
+                  <View
+                    key={feature.titleKey}
+                    style={[styles.featureCard, adaptive.featureCard]}
+                  >
                     <View
                       style={[
                         styles.featureIconWrap,
@@ -400,6 +413,11 @@ export function WebLandingPage() {
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/contact")}>
                 <Text style={styles.footerLink}>{t("landing.contactUs")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/privacy-policy")}>
+                <Text style={styles.footerLink}>
+                  {t("privacyPolicy.shortTitle")}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => void enterApp()}>
                 <Text style={styles.footerLink}>{t("landing.signIn")}</Text>

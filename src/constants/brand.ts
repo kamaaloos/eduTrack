@@ -36,3 +36,8 @@ const isDugsiBrand =
 export const APP_LOGO = isDugsiBrand
   ? require("../../assets/images/dugsi-logo.png")
   : require("../../assets/images/edutrack-logo.png");
+
+/** Full-screen splash artwork. */
+export const APP_SPLASH = isDugsiBrand
+  ? require("../../assets/images/dugsi-splash-screen.png")
+  : require("../../assets/images/edutrack-splash-screen.png");

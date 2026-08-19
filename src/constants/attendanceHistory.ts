@@ -16,3 +16,15 @@ export function attendanceHistoryLabel(
 ): string {
   return `Last ${days} days`;
 }
+
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
+
+/** Localized attendance window label (e.g. "Last 90 days"). */
+export function attendanceHistoryLabelT(
+  t: TranslateFn,
+  days: number = ATTENDANCE_HISTORY_DAYS,
+): string {
+  return days === ATTENDANCE_HISTORY_DAYS
+    ? t("common.last90Days")
+    : t("admin.lastNDays", { count: days });
+}

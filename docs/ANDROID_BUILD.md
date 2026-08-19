@@ -178,6 +178,33 @@ Override with EAS secret if needed:
 eas secret:create --scope project --name EXPO_PUBLIC_PLAY_STORE_URL --value "https://play.google.com/store/apps/details?id=com.maylesoft.edutrack"
 ```
 
+### Deobfuscation file (R8 / ProGuard mapping)
+
+Play Console may show:
+
+> There is no deobfuscation file associated with this App Bundle…
+
+This is a **warning**, not a blocker — you can still publish.
+
+**Why it appears:** Google wants a `mapping.txt` file so crash reports are readable when R8 minifies code. Your current bundle may not include it (especially if you uploaded the `.aab` manually).
+
+**Fix for the build you already uploaded**
+
+Older builds (before R8 was enabled) **do not have** a `mapping.txt` — there is nothing to download from Expo. That is normal. You can **ignore the Play Console warning** and continue publishing that release.
+
+**Fix for future builds**
+
+1. R8 is now enabled in `app.config.js` (`enableMinifyInReleaseBuilds`).
+2. `eas.json` uploads `mapping.txt` as a build artifact after each production build.
+3. Rebuild and submit:
+
+```bash
+npm run build:android:production-dugsi
+npm run submit:android:dugsi
+```
+
+After the new build finishes, check expo.dev → **Builds** → **Artifacts** for `mapping.txt`. If you upload manually, attach it in Play Console → **App bundle explorer** → **Downloads** → **Assets** → ReTrace mapping file.
+
 ## Local release APK (optional, no EAS cloud)
 
 Requires Android Studio / JDK installed:

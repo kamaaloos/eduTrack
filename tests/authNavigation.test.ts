@@ -13,6 +13,7 @@ describe("isPublicEntrySegment", () => {
     expect(isPublicEntrySegment("select-school")).toBe(true);
     expect(isPublicEntrySegment("login")).toBe(true);
     expect(isPublicEntrySegment("super-admin")).toBe(true);
+    expect(isPublicEntrySegment("privacy-policy")).toBe(true);
   });
 
   it("rejects role route groups", () => {

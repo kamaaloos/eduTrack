@@ -10,10 +10,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useSchoolContext } from "../src/context/schoolContext";
-import { APP_DISPLAY_NAME } from "../src/constants/brand";
-
-/** Full-screen splash artwork (logo, decorative shapes, loading tagline). */
-export const APP_SPLASH = require("../assets/images/splash-screen.png");
+import { APP_DISPLAY_NAME, APP_SPLASH } from "../src/constants/brand";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* Expo Go may reject; in-app splash still shows below. */

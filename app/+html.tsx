@@ -13,7 +13,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
         />
         <meta name="theme-color" content="#6B9FD4" />
         <meta
@@ -30,15 +30,22 @@ export default function Root({ children }: PropsWithChildren) {
                 min-height: 100%;
                 height: 100%;
               }
+              html {
+                -webkit-text-size-adjust: 100%;
+                text-size-adjust: 100%;
+              }
               body {
                 margin: 0;
                 background-color: #E8F2FA;
                 overflow: auto;
+                overflow-x: hidden;
               }
               #root {
                 display: flex;
                 flex: 1;
                 align-self: stretch;
+                min-height: 100vh;
+                min-height: 100dvh;
               }
               input, textarea {
                 outline-color: #2563EB;

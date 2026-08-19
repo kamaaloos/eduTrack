@@ -205,6 +205,33 @@
       }
     }
   },
+  "privacyPolicy": {
+    "title": "Privacy policy",
+    "shortTitle": "Privacy policy",
+    "heading": "Privacy policy",
+    "subtitle": "How {{appName}} collects, uses, and protects information for schools, students, families, and staff.",
+    "lastUpdated": "Last updated: July 2026",
+    "sections": {
+      "introTitle": "1. Overview",
+      "introBody": "{{appName}} is operated by MayleSoft. This policy explains how we handle personal information when you use the {{appName}} web app and mobile apps. Each school uses {{appName}} to manage academic and administrative workflows. Your school administrator controls most user accounts and school data.",
+      "collectTitle": "2. Information we collect",
+      "collectBody": "We may collect: account details (name, email, phone, role, school affiliation), profile information (such as a profile photo), academic records (homework, exams, grades, attendance, remarks, report cards), messages and announcements, device push notification tokens, and technical data needed to operate the service (such as app version and sign-in events). Schools may also store information they enter about students, parents, teachers, and classes.",
+      "useTitle": "3. How we use information",
+      "useBody": "We use information to provide and improve {{appName}}, authenticate users, deliver school communications and notifications, support attendance and academic workflows, help administrators manage their school, respond to support requests, and keep the platform secure.",
+      "storageTitle": "4. Storage and security",
+      "storageBody": "Data is stored in Google Firebase (Authentication and Cloud Firestore) in secure cloud infrastructure. Access is enforced by role-based security rules so users can only read and update data permitted for their role. You are responsible for keeping your password confidential.",
+      "sharingTitle": "5. Sharing",
+      "sharingBody": "We do not sell personal information. Information is shared within your school according to role permissions (for example, teachers see their classes; parents see their linked children). We may use trusted service providers such as Google Firebase and Expo to host and deliver the app. We may disclose information if required by law or to protect users and the platform.",
+      "childrenTitle": "6. Students and schools",
+      "childrenBody": "{{appName}} is used by schools to manage student information. Student accounts are created and managed by the school. Parents and guardians access information about their linked children. Schools are responsible for obtaining any consent required under local law before adding student or parent data to the platform.",
+      "rightsTitle": "7. Your choices and rights",
+      "rightsBody": "You may update parts of your profile in the app. To change your email, password, or role, contact your school administrator. To request correction or deletion of data, contact your school first; school administrators can manage user records. You may also contact us using the details below.",
+      "contactTitle": "8. Contact",
+      "contactBody": "For privacy questions, contact MayleSoft at mayle.aden@gmail.com or use the Contact us page on this site.",
+      "updatesTitle": "9. Changes to this policy",
+      "updatesBody": "We may update this privacy policy from time to time. The latest version will be published on this page with an updated date."
+    }
+  },
   "contact": {
     "title": "Contact us",
     "heading": "Get in touch",
@@ -241,7 +268,11 @@
     "appStoreTitle": "App Store",
     "comingSoon": "Coming soon",
     "appStorePendingHint": "The iOS App Store link will appear here once the app is published.",
-    "openFailed": "Could not open the store link."
+    "openFailed": "Could not open the store link.",
+    "androidQrTitle": "Install on Android",
+    "androidQrHint": "Scan this code with your phone to install the latest Android build.",
+    "androidQrSteps": "Open the Camera app, point it at the code, then tap the notification to install.",
+    "androidQrOpenLink": "Open install link on this device"
   },
   "onboarding": {
     "skipA11y": "Skip onboarding",
@@ -826,7 +857,15 @@
     "noHomework": "No homework assigned",
     "dueDate": "Due {{date}}",
     "submitted": "Submitted",
-    "pending": "Pending"
+    "pending": "Pending",
+    "attendancePresentOf": "{{present}} present of {{total}} recorded days ({{window}})",
+    "homeworkAssignedCount": "{{count}} assignment(s) from your class",
+    "upcomingExamLine": "• {{subject}} — {{title}}",
+    "examSubjectFallback": "Subject",
+    "examScheduledFallback": "Scheduled",
+    "noGradesYet": "No grades recorded yet",
+    "gradeSummarySubjects": "Overall {{grade}} · {{count}} subject grade(s)",
+    "gradeSummaryExams": "Overall {{grade}} · {{count}} graded exam(s)"
   },
   "certificates": {
     "adminMenu": "Result certificates",

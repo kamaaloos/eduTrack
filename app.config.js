@@ -21,6 +21,10 @@ module.exports = ({ config }) => {
   const logoPath = isDugsi
     ? "./assets/images/dugsi-logo.png"
     : "./assets/images/edutrack-logo.png";
+  const splashPath = isDugsi
+    ? "./assets/images/dugsi-splash-screen.png"
+    : "./assets/images/edutrack-splash-screen.png";
+  const splashBackground = isDugsi ? "#D6E6F5" : "#FFFFFF";
 
   return {
     ...config,
@@ -46,7 +50,8 @@ module.exports = ({ config }) => {
         foregroundImage: logoPath,
       },
     },
-    plugins: config.plugins.map((plugin) => {
+    plugins: [
+      ...config.plugins.map((plugin) => {
       const name = Array.isArray(plugin) ? plugin[0] : plugin;
       if (name === "./plugins/withAdiRegistration") {
         return [
@@ -70,6 +75,27 @@ module.exports = ({ config }) => {
           },
         ];
       }
+      if (name === "expo-splash-screen") {
+        return [
+          "expo-splash-screen",
+          {
+            image: splashPath,
+            resizeMode: "cover",
+            backgroundColor: splashBackground,
+            android: {
+              image: splashPath,
+              resizeMode: "cover",
+              backgroundColor: splashBackground,
+              enableFullScreenImage_legacy: true,
+            },
+            ios: {
+              image: splashPath,
+              resizeMode: "cover",
+              backgroundColor: splashBackground,
+            },
+          },
+        ];
+      }
       if (name === "expo-notifications") {
         const settings = Array.isArray(plugin) ? plugin[1] : {};
         return [
@@ -83,5 +109,22 @@ module.exports = ({ config }) => {
       }
       return plugin;
     }),
+      [
+        "expo-build-properties",
+        {
+          android: {
+            enableMinifyInReleaseBuilds: true,
+            enableShrinkResourcesInReleaseBuilds: true,
+            extraProguardRules: [
+              "-keepattributes SourceFile,LineNumberTable",
+              "-keep class com.facebook.react.** { *; }",
+              "-keep class com.facebook.hermes.** { *; }",
+              "-keep class com.swmansion.reanimated.** { *; }",
+              "-dontwarn com.facebook.react.**",
+            ].join("\n"),
+          },
+        },
+      ],
+    ],
   };
 };
