@@ -1,5 +1,4 @@
 import { Platform, StyleSheet } from "react-native";
-import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 import {
   INNER_CARD_BORDER_GREEN,
   INNER_CARD_BORDER_RED,
@@ -15,7 +14,7 @@ export const STUDENT_MENU_REPORT_WEB_MAX_WIDTH = 720;
 export const studentScreenStyles = StyleSheet.create({
   scrollContent: {
     paddingTop: isWeb ? 16 : 12,
-    paddingBottom: isWeb ? 32 : FLOATING_TAB_BAR_INSET,
+    paddingBottom: isWeb ? 32 : 24,
     flexGrow: 1,
   },
   listStack: {

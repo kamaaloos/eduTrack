@@ -1,5 +1,4 @@
 import { Platform, StyleSheet, type ViewStyle } from "react-native";
-import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 import {
   INNER_CARD_BORDER_GREEN,
   INNER_CARD_BORDER_RED,
@@ -15,7 +14,7 @@ export const dashboardStyles = StyleSheet.create({
   mainContainer: { flex: 1, backgroundColor: "transparent" },
   container: { flex: 1, paddingHorizontal: isWeb ? 0 : 16 },
   scrollContent: {
-    paddingBottom: isWeb ? 24 : FLOATING_TAB_BAR_INSET,
+    paddingBottom: 24,
     ...(isWeb ? { paddingTop: 0 } : null),
   },
   horizontalScrollContent: {

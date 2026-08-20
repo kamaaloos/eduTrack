@@ -3,7 +3,6 @@ import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import type { ReportCardData } from "../../src/services/reportCardEngine";
 import { attendanceHistoryLabelT } from "../../src/constants/attendanceHistory";
-import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import { getAttendanceColor } from "../../src/utils/dashboardUi";
 import { getAttendanceStatusLabel } from "../../src/utils/attendanceLabels";
@@ -301,7 +300,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingBottom: FLOATING_TAB_BAR_INSET,
+    paddingBottom: 24,
     alignItems: "center",
   },
   contentEmbedded: {

@@ -35,6 +35,7 @@
     "build:android:production": "eas build -p android --profile production",
     "build:android:preview-dugsi": "eas build -p android --profile preview-dugsi",
     "build:android:production-dugsi": "eas build -p android --profile production-dugsi",
+    "build:android:development-dugsi": "eas build -p android --profile development-dugsi",
     "submit:android": "eas submit -p android --profile production --latest",
     "submit:android:dugsi": "eas submit -p android --profile production-dugsi --latest",
     "build:ios:preview": "eas build -p ios --profile preview",

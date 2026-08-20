@@ -14,6 +14,16 @@
         "simulator": false
       }
     },
+    "development-dugsi": {
+      "extends": "development",
+      "env": {
+        "EXPO_PUBLIC_APP_BRAND": "dugsi",
+        "EXPO_PUBLIC_APP_DISPLAY_NAME": "Dugsi",
+        "EXPO_PUBLIC_APP_SCHEME": "dugsi",
+        "EXPO_PUBLIC_ANDROID_PACKAGE": "com.maylesoft.dugsi",
+        "EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER": "com.maylesoft.dugsi"
+      }
+    },
     "preview": {
       "environment": "preview",
       "distribution": "internal",
