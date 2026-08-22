@@ -52,78 +52,80 @@ export function DashboardHeader({
   const { t } = useTranslation();
   const layout = usePlatformLayout();
 
-  const iconButtonStyle =
-    Platform.OS === "web" ? styles.headerIconButton : styles.alertButton;
-
   const showMenuButton =
-    Boolean(onMenuPress) &&
-    !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
+    Boolean(onMenuPress) && !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
 
-  const menuButton = showMenuButton ? (
-    <TouchableOpacity
-      onPress={onMenuPress}
-      style={iconButtonStyle}
-      accessibilityLabel={t("admin.management")}
-    >
-      <Ionicons
-        name="menu"
-        size={Platform.OS === "web" ? 20 : 24}
-        color={Platform.OS === "web" ? "#1E3A8A" : "#FFFFFF"}
-      />
-    </TouchableOpacity>
-  ) : null;
+  const iconBtnStyle =
+    Platform.OS === "web"
+      ? styles.headerIconButton
+      : styles.headerIconButtonNative;
+  const iconColor = Platform.OS === "web" ? "#1E3A8A" : "#FFFFFF";
 
   const headerInner = (
-    <View style={styles.headerContent}>
-      <UserAvatar
-        name={displayName}
-        photoURL={photoURL}
-        size={Platform.OS === "web" ? 48 : 60}
-        textColor="#1E3A8A"
-        backgroundColor="#FFFFFF"
-      />
+    <View
+      style={[
+        styles.headerInner,
+        webAdminContentStyle(),
+        webAdminPagePaddingStyle(),
+      ]}
+    >
+      <View style={styles.headerRow}>
+        <UserAvatar
+          name={displayName}
+          photoURL={photoURL}
+          size={Platform.OS === "web" ? 48 : 52}
+          textColor="#1E3A8A"
+          backgroundColor="#FFFFFF"
+        />
 
-      <View style={styles.headerText}>
-        <TimeGreeting textStyle={styles.welcome} />
-        <Text style={styles.name}>{firstName}</Text>
-        {headerSubtitle ? (
-          <Text style={styles.headerSubtitle}>{headerSubtitle}</Text>
-        ) : null}
-        <CurrentTermBadge variant="header" />
-      </View>
-
-      {showHealthCheck && onHealthCheckPress ? (
-        <View style={styles.headerActions}>
-          {menuButton}
-          <TouchableOpacity
-            onPress={onHealthCheckPress}
-            style={iconButtonStyle}
-            accessibilityLabel={t("parent.reportAbsenceTitle")}
-          >
-            <Ionicons
-              name="medkit"
-              size={Platform.OS === "web" ? 20 : 24}
-              color={Platform.OS === "web" ? "#1E3A8A" : "#FFFFFF"}
-            />
-          </TouchableOpacity>
+        <View style={styles.headerTextBlock}>
+          <TimeGreeting textStyle={styles.greeting} iconColor="#BFDBFE" />
+          <Text style={styles.name} numberOfLines={2}>
+            {firstName}
+          </Text>
+          {headerSubtitle ? (
+            <Text style={styles.headerSubtitle} numberOfLines={1}>
+              {headerSubtitle}
+            </Text>
+          ) : null}
+          <CurrentTermBadge variant="header" />
         </View>
-      ) : (
+
         <View style={styles.headerActions}>
-          {menuButton}
+          {showMenuButton ? (
+            <TouchableOpacity
+              style={iconBtnStyle}
+              onPress={onMenuPress}
+              accessibilityLabel={t("admin.management")}
+            >
+              <Ionicons name="menu" size={20} color={iconColor} />
+            </TouchableOpacity>
+          ) : null}
+
+          {showHealthCheck && onHealthCheckPress ? (
+            <TouchableOpacity
+              style={iconBtnStyle}
+              onPress={onHealthCheckPress}
+              accessibilityLabel={t("parent.reportAbsenceTitle")}
+            >
+              <Ionicons name="medkit" size={20} color={iconColor} />
+            </TouchableOpacity>
+          ) : null}
+
           {showNotifications ? (
             <TouchableOpacity
+              style={iconBtnStyle}
               onPress={() => router.push(notificationRoute as never)}
-              style={iconButtonStyle}
-              accessibilityLabel={t("notifications.title")}
+              accessibilityLabel={t("common.alerts")}
             >
               <Ionicons
                 name="notifications-outline"
-                size={Platform.OS === "web" ? 20 : 24}
-                color={Platform.OS === "web" ? "#1E3A8A" : "#FFFFFF"}
+                size={20}
+                color={iconColor}
               />
               {notificationUnreadCount > 0 ? (
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationBadgeText}>
+                <View style={styles.headerBadge}>
+                  <Text style={styles.headerBadgeText}>
                     {notificationUnreadCount > 9
                       ? "9+"
                       : notificationUnreadCount}
@@ -132,6 +134,7 @@ export function DashboardHeader({
               ) : null}
             </TouchableOpacity>
           ) : null}
+
           {showHeaderLogout ? (
             <TouchableOpacity
               style={styles.logoutButton}
@@ -143,29 +146,22 @@ export function DashboardHeader({
             </TouchableOpacity>
           ) : null}
         </View>
-      )}
+      </View>
     </View>
   );
 
-  if (Platform.OS === "web") {
-    return (
-      <SafeAreaView style={styles.headerSafe} edges={["top"]}>
-        <View style={styles.headerGradient}>
-          <View
-            style={[
-              styles.headerInnerWrap,
-              webAdminContentStyle(),
-              webAdminPagePaddingStyle(),
-            ]}
-          >
-            {headerInner}
-          </View>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  return <View style={styles.headerGradient}>{headerInner}</View>;
+  return (
+    <SafeAreaView style={styles.headerSafe} edges={["top"]}>
+      <View
+        style={[
+          styles.header,
+          Platform.OS !== "web" ? { paddingTop: 4 } : null,
+        ]}
+      >
+        {headerInner}
+      </View>
+    </SafeAreaView>
+  );
 }
 
 export function useDashboardLogout(onLogout: () => Promise<void>) {

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, RefreshControl, ScrollView, View } from "react-native";
+import { RefreshControl, ScrollView, View } from "react-native";
 import { useWebDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
 import { useUnreadNotificationCount } from "../../hooks/useNotifications";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
@@ -76,10 +76,7 @@ export function StudentDashboardView({
 
   const rawFirstName = displayName?.split(" ")[0] || t("common.student");
   const firstName =
-    Platform.OS === "web"
-      ? rawFirstName.charAt(0).toUpperCase() +
-        rawFirstName.slice(1).toLowerCase()
-      : rawFirstName.toUpperCase();
+    rawFirstName.charAt(0).toUpperCase() + rawFirstName.slice(1).toLowerCase();
   const todayKey = getTodayDayKey();
   const todayLabel = getWeekdayLabel(t, todayKey);
   const handleLogout = useDashboardLogout(logout);
