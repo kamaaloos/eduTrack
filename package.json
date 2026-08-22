@@ -1,7 +1,7 @@
 {
   "name": "edutrack",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "start": "cross-env CHOKIDAR_USEPOLLING=true EXPO_USE_FAST_RESOLVER=1 expo start",
     "start:clear": "cross-env CHOKIDAR_USEPOLLING=true EXPO_USE_FAST_RESOLVER=1 expo start --clear",
