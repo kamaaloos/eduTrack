@@ -53,7 +53,7 @@ type AdminDataContextValue = {
     },
   ) => Promise<void>;
   setUserPassword: (userId: string, newPassword: string) => Promise<void>;
-  removeUser: (userId: string, role: UserRole) => Promise<void>;
+  removeUser: (userId: string, role: UserRole) => Promise<{ authDeleted: boolean }>;
   updateClass: (classId: string, name: string) => Promise<void>;
   deleteClass: (classId: string) => Promise<void>;
   refreshAll: () => Promise<void>;

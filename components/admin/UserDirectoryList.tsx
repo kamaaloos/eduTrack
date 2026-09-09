@@ -419,11 +419,18 @@ export function UserDirectoryList({
     if (!confirmed) return;
 
     try {
-      await removeUser(user.id, role);
-      showSuccessAlert(
-        t("common.success"),
-        t("admin.userRemoved", { role: roleLabel }),
-      );
+      const result = await removeUser(user.id, role);
+      if (result.authDeleted === false) {
+        showErrorAlert(
+          t("admin.userRemovedPartialTitle"),
+          t("admin.userRemovedPartialMessage", { role: roleLabel }),
+        );
+      } else {
+        showSuccessAlert(
+          t("common.success"),
+          t("admin.userRemoved", { role: roleLabel }),
+        );
+      }
     } catch (err) {
       showErrorAlert(
         t("common.error"),

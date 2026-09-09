@@ -79,6 +79,12 @@ npm run onboard:school -- --project edutrack-school-3 --seed-subscription
 
 If push deploy fails on first run (Eventarc IAM), wait 5–10 minutes and redeploy the function only — see [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md).
 
+Confirm the school is healthy (also runs automatically after onboard/provision unless `--skip-verify`):
+
+```bash
+npm run verify:school -- edutrack-school-3
+```
+
 Continue with sections **3–7** below when using Option B.
 
 ---

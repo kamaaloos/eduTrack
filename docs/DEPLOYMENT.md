@@ -100,6 +100,14 @@ School admins remove users from the app via **Remove** in the user directory. Th
 
 Deploy `removeSchoolUser`, `setSchoolUserPassword`, and `requestSchoolPasswordReset` with the push function (see command above). Without them, user removal may leave Auth accounts, and password reset falls back to manual Firebase Console steps.
 
+After any school deploy, run:
+
+```bash
+npm run verify:school -- <school-project-id>
+```
+
+This fails if any of the four school functions are missing. In the app, a client-only remove (function missing) shows a **partial removal** warning instead of a silent success.
+
 If password reset fails with a permissions error, open **Google Cloud Console → IAM** for the school project and grant the Cloud Functions runtime service account (often `PROJECT_ID@appspot.gserviceaccount.com` or the default compute service account) the **Firebase Authentication Admin** role.
 
 ## Usage expiry and subscription enforcement

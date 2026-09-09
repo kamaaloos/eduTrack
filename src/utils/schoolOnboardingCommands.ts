@@ -46,6 +46,16 @@ export function buildSchoolProvisionCommand(
   return `npm run provision:school -- ${jsonPath}${dryRunFlag}${adminFlags}`;
 }
 
+/** One-liner health check after school deploy / provision. */
+export function buildSchoolVerifyCommand(
+  projectId: string,
+  options?: { strict?: boolean },
+): string {
+  const trimmed = projectId.trim();
+  const strictFlag = options?.strict ? " --strict" : "";
+  return `npm run verify:school -- ${trimmed}${strictFlag}`;
+}
+
 /** Steps shown in super-admin onboarding wizard. */
 export function buildSchoolOnboardingSteps(
   projectId: string,
@@ -60,6 +70,7 @@ export function buildSchoolOnboardingSteps(
   const deployCmd = buildSchoolDeployCommand(project, {
     seedSubscription: true,
   });
+  const verifyCmd = buildSchoolVerifyCommand(project);
 
   return [
     {
@@ -97,6 +108,12 @@ export function buildSchoolOnboardingSteps(
       titleKey: "onboardingStepDeploy",
       descriptionKey: "onboardingStepDeployHint",
       command: deployCmd,
+    },
+    {
+      id: "verify-school",
+      titleKey: "onboardingStepVerify",
+      descriptionKey: "onboardingStepVerifyHint",
+      command: verifyCmd,
     },
     {
       id: "register-registry",

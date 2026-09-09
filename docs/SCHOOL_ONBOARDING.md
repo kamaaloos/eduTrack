@@ -78,8 +78,22 @@ On **Add school** / **Edit school**, the **School onboarding checklist** shows n
 
 If you used `provision:school` without `--skip-iam` or `--skip-registry-sync`, remaining work is usually:
 
-1. Verify `schoolRegistry/{schoolId}` has `userCount` (may be `0` until users exist).
-2. Create the first admin if you did not pass `--admin-email` flags.
-3. Test school login from the app picker.
+1. Confirm health: `npm run verify:school -- <school-project-id>` (also runs automatically after deploy unless `--skip-verify`).
+2. Verify `schoolRegistry/{schoolId}` has `userCount` (may be `0` until users exist).
+3. Create the first admin if you did not pass `--admin-email` flags.
+4. Test school login from the app picker.
+
+### Verify school deploy health
+
+Missing school functions or rules cause **silent** failures (no push, Auth leftovers on remove, empty attendance without indexes). Check any school project:
+
+```bash
+npm run verify:school -- edutrack-school-2
+npm run verify:school -- edutrack-school-2 --strict
+```
+
+**Required (exit 1 if missing):** `setSchoolUserPassword`, `requestSchoolPasswordReset`, `removeSchoolUser`, `sendPushOnNotificationCreated`.
+
+**Warnings (fail with `--strict`):** Firestore composite indexes, deployed rules markers (`subscriptionEntitled`, `expoPushToken`), `platform/subscription` (needs credentials).
 
 See also [REGISTER_NEW_SCHOOL.md](./REGISTER_NEW_SCHOOL.md), [REGISTRY_USER_COUNT_SYNC.md](./REGISTRY_USER_COUNT_SYNC.md), [DEPLOYMENT.md](./DEPLOYMENT.md), and [PUSH_NOTIFICATIONS.md](./PUSH_NOTIFICATIONS.md).

@@ -3,6 +3,7 @@ import {
   buildSchoolDeployCommands,
   buildSchoolOnboardingSteps,
   buildSchoolProvisionCommand,
+  buildSchoolVerifyCommand,
   resolveRegistryProjectId,
 } from "../src/utils/schoolOnboardingCommands";
 
@@ -32,14 +33,26 @@ describe("schoolOnboardingCommands", () => {
     ).toContain("--admin-email admin@school.example");
   });
 
+  it("builds verify one-liner with optional strict flag", () => {
+    expect(buildSchoolVerifyCommand("edutrack-school-2")).toBe(
+      "npm run verify:school -- edutrack-school-2",
+    );
+    expect(buildSchoolVerifyCommand("edutrack-school-2", { strict: true })).toBe(
+      "npm run verify:school -- edutrack-school-2 --strict",
+    );
+  });
+
   it("includes manual and automated onboarding steps", () => {
     const steps = buildSchoolOnboardingSteps("demo-school", "edutrack-694ec");
-    expect(steps.length).toBeGreaterThanOrEqual(8);
+    expect(steps.length).toBeGreaterThanOrEqual(9);
     expect(steps.find((s) => s.id === "provision-school")?.command).toContain(
       "provision:school",
     );
     expect(steps.find((s) => s.id === "deploy-school")?.command).toContain(
       "demo-school",
+    );
+    expect(steps.find((s) => s.id === "verify-school")?.command).toContain(
+      "verify:school",
     );
     expect(steps.find((s) => s.id === "create-project")?.manual).toBe(true);
   });

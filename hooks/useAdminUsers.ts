@@ -174,15 +174,21 @@ export const useAdminUsers = () => {
     );
 
     const removeUser = useCallback(
-        async (userId: string, role: UserRole): Promise<void> => {
+        async (
+            userId: string,
+            role: UserRole,
+        ): Promise<{ authDeleted: boolean }> => {
             setLoading(true);
             setError(null);
             try {
-                await removeUserAndLinks(userId, role);
+                const result = await removeUserAndLinks(userId, role);
                 await loadUsers();
+                return result;
             } catch (err) {
-                const message =
-                    err instanceof Error ? err.message : "Failed to remove user";
+                const message = getCallableErrorMessage(
+                    err,
+                    err instanceof Error ? err.message : "Failed to remove user",
+                );
                 setError(message);
                 throw new Error(message);
             } finally {

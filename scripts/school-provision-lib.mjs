@@ -284,6 +284,33 @@ export async function deploySchoolProject(opts) {
   if (opts.seedSubscription) {
     await seedSubscriptionDoc(project, opts.credentials, opts.dryRun);
   }
+
+  if (opts.skipVerify) {
+    console.warn(
+      "\nSkipping verify (--skip-verify). Run: npm run verify:school -- " +
+        project,
+    );
+  } else if (opts.skipFunctions) {
+    console.warn(
+      "\nSkipped functions deploy — verify will likely fail until you deploy functions:school.",
+    );
+    console.warn(
+      "  npm run verify:school -- " + project,
+    );
+  } else {
+    const { verifySchoolProject } = await import("./verify-school-lib.mjs");
+    const result = await verifySchoolProject({
+      project,
+      credentials: opts.credentials,
+      dryRun: opts.dryRun,
+      strict: Boolean(opts.strictVerify),
+    });
+    if (!result.ok) {
+      throw new Error(
+        "School deploy finished but verify failed (missing functions or strict checks).",
+      );
+    }
+  }
 }
 
 export function resolveRegistryComputeSa(registryProjectId, explicitSa) {
@@ -544,4 +571,8 @@ export async function provisionSchoolFromRegistryJson(opts) {
   if (opts.skipRegistrySync) {
     console.log("\nReminder: call refreshSchoolSubscriptions for this school on the registry project.");
   }
+
+  console.log(
+    `\nHealth check: npm run verify:school -- ${schoolProjectId}`,
+  );
 }

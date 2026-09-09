@@ -86,7 +86,7 @@ On logout, the app clears `expoPushToken` for that user so the device does not k
 |---------|--------|
 | No permission prompt | Physical device? Not web? |
 | Token not saved | Firestore rules deployed? User logged in? |
-| Token saved, no push | School function deployed to **that** school project? |
+| Token saved, no push | School function deployed to **that** school project? Run `npm run verify:school -- <id>`. |
 | Push on Android only in foreground | Rebuild APK with EAS after adding `expo-notifications` |
 | No sound (Android) | Open **Settings → Apps → eduTrack → Notifications → Alerts** and enable sound. Reinstall after app update (channel settings are cached). Ensure `sendPushOnNotificationCreated` is redeployed. |
 | No sound (iOS) | Check silent mode / Focus. Allow notifications with **Sounds** enabled in iOS Settings → eduTrack. |

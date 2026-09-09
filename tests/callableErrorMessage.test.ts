@@ -12,6 +12,13 @@ describe("getCallableErrorMessage", () => {
     );
   });
 
+  it("maps opaque NOT_FOUND to deploy guidance", () => {
+    const err = new FirebaseError("functions/not-found", "NOT_FOUND");
+    expect(getCallableErrorMessage(err, "fallback")).toContain(
+      "not available for your school yet",
+    );
+  });
+
   it("uses fallback when internal errors hide the server message", () => {
     const err = new FirebaseError("functions/internal", "internal");
     expect(getCallableErrorMessage(err, "Could not set password.")).toBe(

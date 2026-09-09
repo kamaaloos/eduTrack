@@ -35,6 +35,8 @@ Deploy options (--project):
   --dry-run                   Print commands without running them
   --skip-storage              Skip storage rules deploy
   --skip-functions            Skip school Cloud Functions build + deploy
+  --skip-verify               Skip post-deploy verify:school health check
+  --strict-verify             Fail verify on missing indexes / stale rules / subscription
   --seed-subscription         Write platform/subscription { entitled: true }
 
 Register options (--register):
@@ -64,6 +66,8 @@ function parseArgs(argv) {
     dryRun: false,
     skipStorage: false,
     skipFunctions: false,
+    skipVerify: false,
+    strictVerify: false,
     seedSubscription: false,
     skipIam: false,
     skipRegistrySync: false,
@@ -110,6 +114,12 @@ function parseArgs(argv) {
         break;
       case "--skip-functions":
         opts.skipFunctions = true;
+        break;
+      case "--skip-verify":
+        opts.skipVerify = true;
+        break;
+      case "--strict-verify":
+        opts.strictVerify = true;
         break;
       case "--seed-subscription":
         opts.seedSubscription = true;
