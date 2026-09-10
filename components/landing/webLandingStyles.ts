@@ -21,10 +21,11 @@ export const webLandingStyles = StyleSheet.create({
   root: {
     flex: 1,
     width: "100%",
-    backgroundColor: "#FAFAFA",
+    backgroundColor: "#0B1220",
     minHeight: isWeb ? ("100dvh" as unknown as number) : undefined,
     ...webOnly({
       overflowX: "hidden",
+      position: "relative",
     }),
   },
   scrollContent: {
@@ -43,7 +44,7 @@ export const webLandingStyles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
+    borderBottomColor: "rgba(148, 163, 184, 0.22)",
     gap: 12,
     flexWrap: "wrap",
   },
@@ -63,14 +64,14 @@ export const webLandingStyles = StyleSheet.create({
     minWidth: 0,
   },
   utilityTagline: {
-    color: "#64748B",
+    color: "rgba(226, 232, 240, 0.72)",
     fontSize: 13,
     fontWeight: "600",
     flexShrink: 1,
     textAlign: "right",
   },
   utilityLink: {
-    color: "#64748B",
+    color: "rgba(226, 232, 240, 0.78)",
     fontSize: 13,
     fontWeight: "600",
   },
@@ -85,9 +86,11 @@ export const webLandingStyles = StyleSheet.create({
       position: "sticky",
       top: 0,
       zIndex: 20,
-      backgroundColor: "rgba(250, 250, 250, 0.92)",
-      backdropFilter: "blur(12px)",
-      WebkitBackdropFilter: "blur(12px)",
+      backgroundColor: "rgba(7, 17, 31, 0.55)",
+      backdropFilter: "blur(16px) saturate(1.35)",
+      WebkitBackdropFilter: "blur(16px) saturate(1.35)",
+      borderBottomWidth: 1,
+      borderBottomColor: "rgba(255, 255, 255, 0.08)",
     }),
   },
   brandRow: {
@@ -103,13 +106,13 @@ export const webLandingStyles = StyleSheet.create({
   brandName: {
     fontSize: isWeb ? 20 : 18,
     fontWeight: "800",
-    color: "#0F172A",
+    color: "#F8FAFC",
     letterSpacing: -0.3,
   },
   brandTag: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#94A3B8",
+    color: "rgba(203, 213, 225, 0.78)",
     marginTop: 1,
   },
   navLinks: {
@@ -128,7 +131,7 @@ export const webLandingStyles = StyleSheet.create({
     flexShrink: 0,
   },
   navLink: {
-    color: "#334155",
+    color: "rgba(241, 245, 249, 0.88)",
     fontSize: 14,
     fontWeight: "600",
     ...webOnly({
@@ -136,17 +139,17 @@ export const webLandingStyles = StyleSheet.create({
     }),
   },
   navCta: {
-    backgroundColor: "#0F172A",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 20,
     paddingVertical: 11,
     borderRadius: 999,
     flexShrink: 0,
     ...webOnly({
-      boxShadow: "0 4px 14px rgba(15, 23, 42, 0.18)",
+      boxShadow: "0 8px 24px rgba(15, 23, 42, 0.35)",
     }),
   },
   navCtaText: {
-    color: "#FFFFFF",
+    color: "#0F172A",
     fontWeight: "700",
     fontSize: 14,
   },
@@ -156,7 +159,13 @@ export const webLandingStyles = StyleSheet.create({
     borderRadius: isWeb ? 28 : 22,
     overflow: "hidden",
     padding: isWeb ? 48 : 24,
-    ...webOnly(LANDING_GRADIENT_CARD_WEB),
+    ...webOnly({
+      ...LANDING_GRADIENT_CARD_WEB,
+      boxShadow:
+        "0 32px 80px rgba(2, 6, 23, 0.45), 0 12px 32px rgba(99, 102, 241, 0.22), inset 0 1px 0 rgba(255,255,255,0.35)",
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.22)",
+    }),
   },
   heroRow: {
     flexDirection: "column",
@@ -312,7 +321,7 @@ export const webLandingStyles = StyleSheet.create({
   trustLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#94A3B8",
+    color: "rgba(226, 232, 240, 0.72)",
     textAlign: "center",
     letterSpacing: 0.2,
   },
@@ -327,17 +336,19 @@ export const webLandingStyles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "rgba(255, 255, 255, 0.22)",
     ...webOnly({
-      boxShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
+      boxShadow: "0 8px 24px rgba(2, 6, 23, 0.25)",
+      backdropFilter: "blur(10px)",
+      WebkitBackdropFilter: "blur(10px)",
     }),
   },
   trustRoleText: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#475569",
+    color: "#F8FAFC",
   },
   featuresSection: {
     paddingBottom: 8,
@@ -349,7 +360,13 @@ export const webLandingStyles = StyleSheet.create({
     borderRadius: isWeb ? 28 : 22,
     overflow: "hidden",
     padding: isWeb ? 48 : 28,
-    ...webOnly(LANDING_GRADIENT_CARD_WEB),
+    ...webOnly({
+      ...LANDING_GRADIENT_CARD_WEB,
+      boxShadow:
+        "0 32px 80px rgba(2, 6, 23, 0.45), 0 12px 32px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255,255,255,0.32)",
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.2)",
+    }),
   },
   sectionEyebrow: {
     fontSize: 13,
@@ -451,7 +468,7 @@ export const webLandingStyles = StyleSheet.create({
     paddingTop: 28,
     paddingBottom: 12,
     borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
+    borderTopColor: "rgba(148, 163, 184, 0.22)",
     alignItems: "center",
     gap: 16,
   },
@@ -462,12 +479,12 @@ export const webLandingStyles = StyleSheet.create({
     gap: 20,
   },
   footerLink: {
-    color: "#334155",
+    color: "rgba(241, 245, 249, 0.88)",
     fontWeight: "600",
     fontSize: 14,
   },
   footerCopy: {
-    color: "#94A3B8",
+    color: "rgba(148, 163, 184, 0.85)",
     fontSize: 13,
     textAlign: "center",
     lineHeight: 20,

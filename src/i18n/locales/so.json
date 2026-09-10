@@ -224,11 +224,56 @@
       "childrenTitle": "6. Ardayda iyo dugsiyada",
       "childrenBody": "{{appName}} waxaa isticmaala dugsiyada si ay u maamulaan macluumaadka ardayda. Akoonnada ardayda waxaa abuura oo maamula dugsiga. Waalidiintu waxay helaan macluumaadka carruurtooda la xiriira. Dugsiyadu waxay mas'uul ka yihiin helitaanka ogolaanshaha loo baahan yahay sharciga deegaanka ka hor inta aan la darin xogta ardayda ama waalidiinta.",
       "rightsTitle": "7. Doorashooyinkaaga iyo xuquuqdaada",
-      "rightsBody": "Waxaad cusbooneysiin kartaa qaybo ka mid ah astaantaada app-ka. Si aad u beddesho iimaylka, erayga sirta ah, ama doorka, la xiriir maamulaha dugsigaaga. Si aad u codsato sixid ama tirtirid xog, marka hore la xiriir dugsigaaga. Waxaad sidoo kale nala soo xiriiri kartaa adigoo isticmaalaya faahfaahinta hoose.",
+      "rightsBody": "Waxaad cusbooneysiin kartaa qaybo ka mid ah astaantaada app-ka. Si aad u beddesho iimaylka, erayga sirta ah, ama doorka, la xiriir maamulaha dugsigaaga. Si aad u codsato sixid ama tirtirid xog, marka hore la xiriir dugsigaaga. Waxaad sidoo kale soo gudbin kartaa codsiga tirtiridda akoontiga bogga Tirtir akoontiga, ama nala soo xiriiri adigoo isticmaalaya faahfaahinta hoose.",
       "contactTitle": "8. Xiriir",
       "contactBody": "Su'aalaha asturnaanta, la xiriir MayleSoft cinwaanka mayle.aden@gmail.com ama isticmaal bogga Nala soo xiriir ee boggan.",
       "updatesTitle": "9. Isbeddelada siyaasaddan",
       "updatesBody": "Waxaan cusbooneysiin karnaa siyaasaddan asturnaanta waqti ka waqti. Nooca ugu dambeeya waxaa lagu daabacayaa boggan oo leh taariikh cusub."
+    }
+  },
+  "deleteAccount": {
+    "title": "Tirtir akoontiga",
+    "shortTitle": "Tirtir akoontiga",
+    "heading": "Tirtir akoontigaaga",
+    "subtitle": "Sida tirtiridda akoontiga u shaqeyso {{appName}}, iyo sida aad u dirto codsi kooxda platform-ka.",
+    "formHeading": "Codso tirtiridda akoontiga",
+    "formHint": "Geli cinwaanka iimaylka loo isticmaalay abuurista akoontigaaga {{appName}}. Codsiga waxaa loo diraa maamulaha sare ee platform-ka si loo eego.",
+    "accountEmail": "Iimaylka akoontiga",
+    "accountEmailPlaceholder": "email@example.com",
+    "notes": "Faahfaahin dheeraad ah (ikhtiyaari)",
+    "notesPlaceholder": "Magaca dugsiga, doorka, ama wax kaa caawinaya helitaanka akoontigaaga",
+    "submit": "Dir codsiga tirtiridda",
+    "requestName": "Codsiga tirtiridda akoontiga",
+    "messagePrefix": "[Codsiga tirtiridda akoontiga]",
+    "mailSubject": "Codsiga tirtiridda akoontiga {{appName}}",
+    "mailBodyIntro": "Fadlan tirtir akoontiga {{appName}} ee ku xiran iimaylka hoose.",
+    "directEmail": "Ama noo soo dir iimayl toos ah {{email}}",
+    "success": "Mahadsanid! Codsigaaga tirtiridda waa la diray.",
+    "successSavedAndMail": "Codsigaaga tirtiridda waa la keydiyay oo app-ka iimaylkaaga waa la furay — dir fariinta si aad nooga gaadho, ama waxaan ka raaci doonnaa nuqulka la keydiyay.",
+    "mailClientOpened": "App-ka iimaylkaaga waa la furay oo wuxuu ku jiraa codsigaaga tirtiridda.",
+    "errorEmail": "Fadlan geli iimaylka loo isticmaalay abuurista akoontigaaga.",
+    "errorSubmit": "Codsiga lama diri karin. Isku day mar kale ama noo soo dir iimayl toos ah.",
+    "items": {
+      "howItWorks": {
+        "question": "Sidee tirtiridda akoontiga u shaqeysaa?",
+        "answer": "Ku soo gudbi boggan iimaylka loo isticmaalay abuurista akoontigaaga. Codsiga wuxuu tagaa maamulaha sare ee platform-ka {{appName}}, oo dib u eega oo tirtira akoontiga marka la xaqiijiyo."
+      },
+      "whichEmail": {
+        "question": "Iimaylkee baan bixinayaa?",
+        "answer": "Isticmaal isla cinwaanka iimaylka ee akoontigaaga lagu abuuray — kan aad ku gasho {{appName}}."
+      },
+      "whatIsDeleted": {
+        "question": "Maxaa la tirtiraa?",
+        "answer": "Marka la oggolaado, akoontiga gelitaanka iyo xogta shakhsi ahaaneed ee ku xiran iimaylkaas waa la tirtiraa. Diiwaannada tacliinta ee dugsiga waxaa laga yaabaa in dugsigaagu haysto sida loogu baahan yahay shaqadiisa iyo sharciga maxalliga ah."
+      },
+      "schoolAdminFirst": {
+        "question": "Miyaan marka hore la xiriiraa dugsiga?",
+        "answer": "Haa haddii suurtagal tahay. Maamulaha dugsiga inta badan si dhakhso ah ayuu u joojin ama u tirtiri karaa diiwaankaaga. Isticmaal boggan markaad u baahan tahay kooxda platform-ka, ama haddii aadan mar dambe heli karin adeegga dugsigaaga."
+      },
+      "howLong": {
+        "question": "Immisaa ayay qaadataa?",
+        "answer": "Caadi ahaan waxaan eegnaa codsiyada tirtiridda dhowr maalmood oo shaqo gudahood. Waxaa lagaa yaabaa in lagula soo xiriiriyo iimaylka aad bixisay si loo xaqiijiyo ka hor tirtiridda kama dambaysta ah."
+      }
     }
   },
   "contact": {

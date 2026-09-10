@@ -22,6 +22,10 @@ import { hasCompletedOnboarding } from "../../src/utils/onboardingStorage";
 import { safeRouterReplace } from "../../src/utils/safeNavigation";
 import { WebLandingHeroVideo } from "./WebLandingHeroVideo";
 import {
+  WebLandingCinematicBackdrop,
+  cinematicBackdropLayerStyles,
+} from "./WebLandingCinematicBackdrop";
+import {
   LandingCapabilityPills,
   LandingTrustRolePills,
 } from "./LandingAnimatedPills";
@@ -200,11 +204,13 @@ export function WebLandingPage() {
 
   return (
     <View style={styles.root}>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
+      <WebLandingCinematicBackdrop />
       <ScrollView
         key={language}
         contentContainerStyle={[
           styles.scrollContent,
+          cinematicBackdropLayerStyles.contentAbove,
           { paddingTop: insets.top, paddingBottom: insets.bottom + 32 },
         ]}
         showsVerticalScrollIndicator={false}
@@ -227,6 +233,11 @@ export function WebLandingPage() {
               <TouchableOpacity onPress={() => router.push("/privacy-policy")}>
                 <Text style={styles.utilityLink}>
                   {t("privacyPolicy.shortTitle")}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/delete-account")}>
+                <Text style={styles.utilityLink}>
+                  {t("deleteAccount.shortTitle")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -417,6 +428,11 @@ export function WebLandingPage() {
               <TouchableOpacity onPress={() => router.push("/privacy-policy")}>
                 <Text style={styles.footerLink}>
                   {t("privacyPolicy.shortTitle")}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/delete-account")}>
+                <Text style={styles.footerLink}>
+                  {t("deleteAccount.shortTitle")}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => void enterApp()}>

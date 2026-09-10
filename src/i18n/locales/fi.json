@@ -224,11 +224,56 @@
       "childrenTitle": "6. Oppilaat ja koulut",
       "childrenBody": "{{appName}}ia käyttävät koulut oppilastietojen hallintaan. Oppilastilit luodaan ja hallinnoidaan koulussa. Huoltajat näkevät linkitettyjen lastensa tiedot. Koulut vastaavat siitä, että paikallisen lain edellyttämä suostumus on hankittu ennen oppilas- tai huoltajatietojen lisäämistä.",
       "rightsTitle": "7. Valintasi ja oikeutesi",
-      "rightsBody": "Voit päivittää osan profiilistasi sovelluksessa. Sähköpostin, salasanan tai roolin muutoksiin ota yhteyttä kouluylläpitäjään. Tietojen oikaisu- tai poistopyyntöihin ota ensin yhteyttä kouluusi. Voit myös ottaa meihin yhteyttä alla olevilla tiedoilla.",
+      "rightsBody": "Voit päivittää osan profiilistasi sovelluksessa. Sähköpostin, salasanan tai roolin muutoksiin ota yhteyttä kouluylläpitäjään. Tietojen oikaisu- tai poistopyyntöihin ota ensin yhteyttä kouluusi. Voit myös lähettää tilin poistopyynnön Poista tili -sivulla tai ottaa meihin yhteyttä alla olevilla tiedoilla.",
       "contactTitle": "8. Yhteystiedot",
       "contactBody": "Tietosuojaa koskevissa kysymyksissä ota yhteyttä MayleSoftiin: mayle.aden@gmail.com tai käytä sivuston Ota yhteyttä -sivua.",
       "updatesTitle": "9. Muutokset tähän käytäntöön",
       "updatesBody": "Voimme päivittää tätä tietosuojakäytäntöä aika ajoin. Uusin versio julkaistaan tällä sivulla päivitetyn päivämäärän kera."
+    }
+  },
+  "deleteAccount": {
+    "title": "Poista tili",
+    "shortTitle": "Poista tili",
+    "heading": "Poista tilisi",
+    "subtitle": "Miten tilin poisto toimii {{appName}}issa ja miten lähetät pyynnön alustatiimille.",
+    "formHeading": "Pyydä tilin poistoa",
+    "formHint": "Anna sähköpostiosoite, jolla {{appName}}-tilisi luotiin. Pyyntö lähetetään alustan pääylläpitäjälle käsiteltäväksi.",
+    "accountEmail": "Tilin sähköposti",
+    "accountEmailPlaceholder": "email@example.com",
+    "notes": "Lisätiedot (valinnainen)",
+    "notesPlaceholder": "Koulun nimi, rooli tai muu tieto, joka auttaa löytämään tilisi",
+    "submit": "Lähetä poistopyyntö",
+    "requestName": "Tilin poistopyyntö",
+    "messagePrefix": "[Tilin poistopyyntö]",
+    "mailSubject": "{{appName}} tilin poistopyyntö",
+    "mailBodyIntro": "Poistakaa alla olevaan sähköpostiin liitetty {{appName}}-tili.",
+    "directEmail": "Tai lähetä sähköpostia suoraan osoitteeseen {{email}}",
+    "success": "Kiitos! Poistopyyntösi lähetettiin.",
+    "successSavedAndMail": "Poistopyyntösi tallennettiin ja sähköpostiohjelmasi avattiin — lähetä viesti tai odota seurantaa tallennetun kopion perusteella.",
+    "mailClientOpened": "Sähköpostiohjelmasi avattiin poistopyynnölläsi.",
+    "errorEmail": "Anna sähköpostiosoite, jolla tilisi luotiin.",
+    "errorSubmit": "Pyyntöä ei voitu lähettää. Yritä uudelleen tai lähetä sähköpostia suoraan.",
+    "items": {
+      "howItWorks": {
+        "question": "Miten tilin poisto toimii?",
+        "answer": "Lähetä tällä sivulla sähköposti, jolla tilisi luotiin. Pyyntö menee {{appName}}-alustan pääylläpitäjälle, joka tarkistaa sen ja poistaa tilin, kun pyyntö on vahvistettu."
+      },
+      "whichEmail": {
+        "question": "Minkä sähköpostin annan?",
+        "answer": "Käytä samaa osoitetta, jolla tilisi luotiin — sitä, jolla kirjaudut {{appName}}iin."
+      },
+      "whatIsDeleted": {
+        "question": "Mitä poistetaan?",
+        "answer": "Hyväksynnän jälkeen kirjautumistilisi ja siihen liittyvät henkilökohtaiset profiilitiedot poistetaan. Koulun opintotietoja voidaan säilyttää koulun toiminnan ja paikallisen lain edellyttämällä tavalla."
+      },
+      "schoolAdminFirst": {
+        "question": "Pitäisikö ottaa ensin yhteyttä kouluun?",
+        "answer": "Kyllä, jos mahdollista. Kouluylläpitäjä voi usein poistaa tai poistaa käytöstä käyttäjätilisi nopeasti. Käytä tätä sivua, kun tarvitset alustatiimin apua tai et enää pääse palveluun koulusi kautta."
+      },
+      "howLong": {
+        "question": "Kuinka kauan se kestää?",
+        "answer": "Käsittelemme poistopyynnöt yleensä muutaman arkipäivän kuluessa. Voimme ottaa yhteyttä antamaasi sähköpostiin vahvistaaksemme pyynnön ennen tilin lopullista poistoa."
+      }
     }
   },
   "contact": {

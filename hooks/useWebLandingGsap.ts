@@ -7,13 +7,19 @@ const CAPABILITY_PILLS_ID = "landing-capability-pills";
 const FEATURES_SECTION_ID = "landing-features";
 
 const TRUST_COLORS = {
-  rest: { backgroundColor: "#FFFFFF", borderColor: "#E2E8F0" },
-  hover: { backgroundColor: "#EEF2FF", borderColor: "#A5B4FC" },
-  textRest: "#475569",
-  textHover: "#4338CA",
-  restShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
-  hoverShadow: "0 14px 34px rgba(79, 70, 229, 0.18)",
-  ripple: "rgba(79, 70, 229, 0.24)",
+  rest: {
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
+    borderColor: "rgba(255, 255, 255, 0.22)",
+  },
+  hover: {
+    backgroundColor: "rgba(255, 255, 255, 0.22)",
+    borderColor: "rgba(165, 180, 252, 0.75)",
+  },
+  textRest: "#F8FAFC",
+  textHover: "#EEF2FF",
+  restShadow: "0 8px 24px rgba(2, 6, 23, 0.25)",
+  hoverShadow: "0 16px 36px rgba(99, 102, 241, 0.35)",
+  ripple: "rgba(165, 180, 252, 0.35)",
 };
 
 const CAPABILITY_COLORS = {

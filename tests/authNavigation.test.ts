@@ -14,6 +14,7 @@ describe("isPublicEntrySegment", () => {
     expect(isPublicEntrySegment("login")).toBe(true);
     expect(isPublicEntrySegment("super-admin")).toBe(true);
     expect(isPublicEntrySegment("privacy-policy")).toBe(true);
+    expect(isPublicEntrySegment("delete-account")).toBe(true);
   });
 
   it("rejects role route groups", () => {

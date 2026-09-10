@@ -225,11 +225,56 @@
       "childrenTitle": "6. Students and schools",
       "childrenBody": "{{appName}} is used by schools to manage student information. Student accounts are created and managed by the school. Parents and guardians access information about their linked children. Schools are responsible for obtaining any consent required under local law before adding student or parent data to the platform.",
       "rightsTitle": "7. Your choices and rights",
-      "rightsBody": "You may update parts of your profile in the app. To change your email, password, or role, contact your school administrator. To request correction or deletion of data, contact your school first; school administrators can manage user records. You may also contact us using the details below.",
+      "rightsBody": "You may update parts of your profile in the app. To change your email, password, or role, contact your school administrator. To request correction or deletion of data, contact your school first; school administrators can manage user records. You may also submit an account deletion request on the Delete account page, or contact us using the details below.",
       "contactTitle": "8. Contact",
       "contactBody": "For privacy questions, contact MayleSoft at mayle.aden@gmail.com or use the Contact us page on this site.",
       "updatesTitle": "9. Changes to this policy",
       "updatesBody": "We may update this privacy policy from time to time. The latest version will be published on this page with an updated date."
+    }
+  },
+  "deleteAccount": {
+    "title": "Delete account",
+    "shortTitle": "Delete account",
+    "heading": "Delete your account",
+    "subtitle": "How account deletion works on {{appName}}, and how to send a request to the platform team.",
+    "formHeading": "Request account deletion",
+    "formHint": "Enter the email address used to create your {{appName}} account. Your request is sent to the platform super administrator for review.",
+    "accountEmail": "Account email",
+    "accountEmailPlaceholder": "email@example.com",
+    "notes": "Additional details (optional)",
+    "notesPlaceholder": "School name, role, or anything that helps us find your account",
+    "submit": "Send deletion request",
+    "requestName": "Account deletion request",
+    "messagePrefix": "[Account deletion request]",
+    "mailSubject": "{{appName}} account deletion request",
+    "mailBodyIntro": "Please delete the {{appName}} account associated with the email below.",
+    "directEmail": "Or email us directly at {{email}}",
+    "success": "Thank you! Your deletion request was sent.",
+    "successSavedAndMail": "Your deletion request was saved and your email app was opened — send the email to reach us, or we'll follow up from the saved copy.",
+    "mailClientOpened": "Your email app was opened with your deletion request addressed to us.",
+    "errorEmail": "Please enter the email address used to create your account.",
+    "errorSubmit": "Could not send your request. Please try again or email us directly.",
+    "items": {
+      "howItWorks": {
+        "question": "How does account deletion work?",
+        "answer": "Submit the email used to create your account on this page. The request goes to the {{appName}} platform super administrator, who reviews it and removes the account when the request is verified."
+      },
+      "whichEmail": {
+        "question": "Which email should I provide?",
+        "answer": "Use the same email address that was used when your account was created — the one you use to sign in to {{appName}}."
+      },
+      "whatIsDeleted": {
+        "question": "What gets deleted?",
+        "answer": "When approved, your sign-in account and personal profile data linked to that email are removed. School academic records may be retained by your school as required for their operations and local law."
+      },
+      "schoolAdminFirst": {
+        "question": "Should I contact my school first?",
+        "answer": "Yes, if possible. Your school administrator can often deactivate or remove your user record quickly. Use this page when you need the platform team to handle the request, or if you no longer have access through your school."
+      },
+      "howLong": {
+        "question": "How long does it take?",
+        "answer": "We typically review deletion requests within a few business days. You may be contacted at the email you provide to confirm the request before the account is permanently deleted."
+      }
     }
   },
   "contact": {

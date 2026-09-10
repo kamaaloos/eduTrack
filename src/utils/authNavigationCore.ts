@@ -17,6 +17,7 @@ const PUBLIC_ENTRY_SEGMENTS = new Set([
   "download",
   "faq",
   "privacy-policy",
+  "delete-account",
 ]);
 
 export function isPublicEntrySegment(segment: string | undefined): boolean {

@@ -45,9 +45,11 @@ export const landingPillWebStyles = {
     justifyContent: "center",
     padding: "8px 16px",
     borderRadius: 9999,
-    backgroundColor: "#FFFFFF",
-    border: "1px solid #E2E8F0",
-    boxShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
+    border: "1px solid rgba(255, 255, 255, 0.22)",
+    boxShadow: "0 8px 24px rgba(2, 6, 23, 0.25)",
+    backdropFilter: "blur(10px)",
+    WebkitBackdropFilter: "blur(10px)",
     whiteSpace: "nowrap",
   } satisfies CSSProperties,
 
@@ -68,7 +70,7 @@ export const landingPillWebStyles = {
   trustLabel: {
     fontSize: 13,
     fontWeight: 700,
-    color: "#475569",
+    color: "#F8FAFC",
     lineHeight: 1.2,
     position: "relative",
     zIndex: 1,
