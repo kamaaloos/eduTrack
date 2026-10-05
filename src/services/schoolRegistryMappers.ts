@@ -1,5 +1,6 @@
 import type { Timestamp } from "firebase/firestore";
 import type { SchoolFirebaseConfig, SchoolRecord } from "../types/school";
+import { normalizeSchoolThemeInput } from "../utils/schoolTheme";
 
 export function normalizeFirebaseConfig(
   raw: unknown,
@@ -62,6 +63,7 @@ export function mapSchoolRegistryDoc(
       typeof data.logoUrl === "string" && data.logoUrl.trim()
         ? data.logoUrl.trim()
         : null,
+    theme: normalizeSchoolThemeInput(data.theme),
     country: data.country ? String(data.country) : null,
     city: data.city ? String(data.city) : null,
     userCount:

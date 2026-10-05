@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 import { TeacherScreenShell } from "../../../components/teachers/TeacherScreenShell";
 import { useSchoolContext } from "../../../src/context/schoolContext";
+import { isIgnorableFirestoreListenerError } from "../../../src/services/firestoreSession";
 import { useFirestoreListenerEffect } from "../../../hooks/useFirestoreListenerEffect";
 import { INNER_CARD_BORDER_GREEN } from "../../../src/constants/innerCardBorders";
 
@@ -26,14 +27,22 @@ export default function ClassPage() {
       where("classId", "==", id),
     );
 
-    return onSnapshot(studentsQuery, (snapshot) => {
-      const studentsData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    return onSnapshot(
+      studentsQuery,
+      (snapshot) => {
+        const studentsData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-      setStudents(studentsData);
-    });
+        setStudents(studentsData);
+      },
+      (err) => {
+        if (isIgnorableFirestoreListenerError(err)) return;
+        console.error("class students listener:", err);
+        setStudents([]);
+      },
+    );
   }, [id, schoolKey]);
 
   return (

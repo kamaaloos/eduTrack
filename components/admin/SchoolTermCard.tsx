@@ -47,15 +47,13 @@ export function SchoolTermCard({ adminUid }: SchoolTermCardProps) {
         setLabelDraft(record.label);
       }
     } catch (err) {
-      console.error("school term load:", err);
-      showErrorAlert(
-        t("common.error"),
-        err instanceof Error ? err.message : t("admin.schoolTermLoadFailed"),
-      );
+      // Don't block admin dashboard on a failed term read (e.g. stale rules).
+      console.warn("school term load:", err);
+      setTerm(null);
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   const resolved = resolveSchoolTerm(term);
   const isActive = resolved.status === "active";

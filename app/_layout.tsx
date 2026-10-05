@@ -16,6 +16,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { AuthProvider } from "../src/context/authContext";
 import { LanguageProvider } from "../src/context/languageContext";
 import { SchoolProvider } from "../src/context/schoolContext";
+import { SchoolThemeProvider } from "../src/context/schoolThemeContext";
 import { SuperAdminAuthProvider } from "../src/context/superAdminAuthContext";
 
 export default function RootLayout() {
@@ -29,6 +30,7 @@ export default function RootLayout() {
         <LanguageProvider>
           <FirebaseBootstrapGate>
             <SchoolProvider>
+              <SchoolThemeProvider>
               <WebAppShell>
                 <WebIconFontGate>
                 <BrandedSplashGate>
@@ -53,6 +55,7 @@ export default function RootLayout() {
                 </BrandedSplashGate>
                 </WebIconFontGate>
               </WebAppShell>
+              </SchoolThemeProvider>
             </SchoolProvider>
           </FirebaseBootstrapGate>
         </LanguageProvider>

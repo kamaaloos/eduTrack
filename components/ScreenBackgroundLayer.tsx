@@ -5,20 +5,20 @@ import {
   View,
   type ViewStyle,
 } from "react-native";
-import {
-  WEB_PAGE_BACKGROUND_STYLE,
-} from "../src/constants/webBackground";
+import { useSchoolTheme } from "../src/context/schoolThemeContext";
 
 type ScreenBackgroundLayerProps = {
   style?: ViewStyle;
 };
 
-/** Decorative backdrop — CSS gradient on web, login-bg image on native. */
+/** Decorative backdrop — themed CSS gradient on web, login-bg image on native. */
 export function ScreenBackgroundLayer({ style }: ScreenBackgroundLayerProps) {
+  const { webPageBackgroundStyle } = useSchoolTheme();
+
   if (Platform.OS === "web") {
     return (
       <View
-        style={[StyleSheet.absoluteFillObject, WEB_PAGE_BACKGROUND_STYLE, style]}
+        style={[StyleSheet.absoluteFillObject, webPageBackgroundStyle, style]}
         pointerEvents="none"
       />
     );

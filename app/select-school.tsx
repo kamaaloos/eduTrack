@@ -19,7 +19,7 @@ import { AppScreenBackground } from "../components/AppScreenBackground";
 import { WebPageCard } from "../components/layout/WebPageCard";
 import { AppLogo } from "../components/AppLogo";
 import { AuthAboutLink } from "../components/auth/AuthAboutLink";
-import { SelectSchoolLocationPicker } from "../components/auth/SelectSchoolLocationPicker";
+import { SelectSchoolNameSearch } from "../components/auth/SelectSchoolNameSearch";
 import { useSuperAdminAuth } from "../src/context/superAdminAuthContext";
 import { useSchoolContext } from "../src/context/schoolContext";
 import type { SchoolRecord } from "../src/types/school";
@@ -135,7 +135,7 @@ export default function SelectSchoolScreen() {
 
   const pickerBody =
     schools.length > 0 ? (
-      <SelectSchoolLocationPicker
+      <SelectSchoolNameSearch
         schools={schools}
         connecting={connecting}
         onSelectSchool={(school) => void handleSelect(school)}
@@ -190,6 +190,7 @@ export default function SelectSchoolScreen() {
       <ScrollView
         contentContainerStyle={scrollContentStyle}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }

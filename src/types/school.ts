@@ -1,3 +1,5 @@
+import type { SchoolThemeInput } from "./schoolTheme";
+
 export type SchoolFirebaseConfig = {
   apiKey: string;
   authDomain: string;
@@ -17,6 +19,8 @@ export type SchoolRecord = {
   /** Registered usage subscription end date (YYYY-MM-DD). */
   usageExpiresAt?: string | null;
   logoUrl?: string | null;
+  /** Super-admin branding defaults for this school. */
+  theme?: SchoolThemeInput | null;
   country?: string | null;
   city?: string | null;
   /** Billable users — edited by super-admin or synced by registry Cloud Functions. */
@@ -31,4 +35,6 @@ export type StoredSchool = {
   firebase: SchoolFirebaseConfig;
   testingExpiresAt?: string | null;
   usageExpiresAt?: string | null;
+  logoUrl?: string | null;
+  theme?: SchoolThemeInput | null;
 };

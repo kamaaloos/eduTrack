@@ -214,10 +214,13 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     const currentTesting = selectedSchool.testingExpiresAt ?? null;
     const nextUsage = match.usageExpiresAt ?? null;
     const currentUsage = selectedSchool.usageExpiresAt ?? null;
+    const nextLogo = match.logoUrl ?? null;
+    const currentLogo = selectedSchool.logoUrl ?? null;
     if (
       match.name === selectedSchool.name &&
       nextTesting === currentTesting &&
-      nextUsage === currentUsage
+      nextUsage === currentUsage &&
+      nextLogo === currentLogo
     ) {
       return;
     }
@@ -227,6 +230,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
       name: match.name,
       testingExpiresAt: nextTesting,
       usageExpiresAt: nextUsage,
+      logoUrl: nextLogo,
     };
     void saveSelectedSchool(updated).then(() => setSelectedSchool(updated));
   }, [schools, selectedSchool]);

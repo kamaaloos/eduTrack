@@ -713,6 +713,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    /** Per-school colors/fonts — school admin may override registry defaults. */
+    match /platform/appearance {
+      allow read: if isSignedIn();
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+          'primaryColor', 'accentColor', 'backgroundColor', 'fontKey', 'updatedAt'
+        ])
+        && request.resource.data.primaryColor is string
+        && request.resource.data.primaryColor.matches('^#[0-9A-Fa-f]{6}$')
+        && request.resource.data.accentColor is string
+        && request.resource.data.accentColor.matches('^#[0-9A-Fa-f]{6}$')
+        && request.resource.data.backgroundColor is string
+        && request.resource.data.backgroundColor.matches('^#[0-9A-Fa-f]{6}$')
+        && request.resource.data.fontKey in ['system', 'rounded', 'serif'];
+    }
+
     /** Public marketing contact form — create only, validated fields. */
     match /contactInquiries/{docId} {
       allow create: if request.resource.data.keys().hasOnly([

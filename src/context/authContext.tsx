@@ -116,6 +116,31 @@ export const AuthProvider = ({ children }: any) => {
             setLoading(false);
             return;
           }
+
+          // School Firestore gates all role helpers on platform/subscription.entitled.
+          // Registry can still allow grace while a stale school doc blocks every query.
+          authLog("auth:platformSubscription:start", {
+            schoolId: selectedSchoolId,
+          });
+          const platformSubSnap = await withTimeout(
+            getDoc(doc(db, "platform", "subscription")),
+            REGISTRY_CHECK_TIMEOUT_MS,
+            "Platform subscription check",
+          );
+          const platformEntitled =
+            !platformSubSnap.exists() ||
+            platformSubSnap.data()?.entitled !== false;
+          authLog("auth:platformSubscription:done", {
+            exists: platformSubSnap.exists(),
+            entitled: platformEntitled,
+            blockReason: platformSubSnap.data()?.blockReason ?? null,
+          });
+          if (!platformEntitled) {
+            await denyAccess(i18n.t("common.subscriptionExpired"));
+            await resetSchoolSession();
+            setLoading(false);
+            return;
+          }
         }
 
         setUser(currentUser);

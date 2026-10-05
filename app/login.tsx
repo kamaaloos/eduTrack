@@ -7,6 +7,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -327,7 +328,23 @@ export default function Login() {
               <View style={styles.cardTopActions}>{topActions}</View>
             ) : null}
             <View style={styles.header}>
-              <AppLogo size={layout.isWeb ? 96 : 108} />
+              {selectedSchool?.logoUrl ? (
+                <Image
+                  source={{ uri: selectedSchool.logoUrl }}
+                  style={[
+                    styles.schoolLogo,
+                    {
+                      width: layout.isWeb ? 96 : 108,
+                      height: layout.isWeb ? 96 : 108,
+                    },
+                  ]}
+                  resizeMode="contain"
+                  accessibilityRole="image"
+                  accessibilityLabel={selectedSchool.name}
+                />
+              ) : (
+                <AppLogo size={layout.isWeb ? 96 : 108} />
+              )}
               <Text style={styles.title}>{t("auth.login.title")}</Text>
               <Text style={styles.subtitle}>{t("auth.login.subtitle")}</Text>
 
@@ -600,6 +617,11 @@ const styles = StyleSheet.create({
     maxWidth: 320,
   },
 
+  schoolLogo: {
+    borderRadius: 20,
+    backgroundColor: "#EFF6FF",
+    marginBottom: 4,
+  },
   schoolPill: {
     marginTop: 8,
     flexDirection: "row",

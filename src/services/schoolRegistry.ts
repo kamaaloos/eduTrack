@@ -74,7 +74,13 @@ export async function getSchoolRegistryEntry(
 ): Promise<
   Pick<
     SchoolRecord,
-    "id" | "name" | "active" | "testingExpiresAt" | "usageExpiresAt"
+    | "id"
+    | "name"
+    | "active"
+    | "testingExpiresAt"
+    | "usageExpiresAt"
+    | "logoUrl"
+    | "theme"
   > | null
 > {
   if (!schoolId || schoolId === "default" || !registryDb) return null;
@@ -89,6 +95,8 @@ export async function getSchoolRegistryEntry(
       active: mapped.active,
       testingExpiresAt: mapped.testingExpiresAt ?? null,
       usageExpiresAt: mapped.usageExpiresAt ?? null,
+      logoUrl: mapped.logoUrl ?? null,
+      theme: mapped.theme ?? null,
     };
   } catch (err) {
     console.warn("getSchoolRegistryEntry failed:", err);

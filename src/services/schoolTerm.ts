@@ -26,7 +26,6 @@ import {
 import { resolveSchoolTerm } from "../utils/schoolTerm";
 import { db, requireSchoolDb } from "./firebase";
 
-const SCHOOL_TERM_DOC = "platform/schoolTerm";
 const DELETE_BATCH_SIZE = 400;
 
 export type SchoolTermProgress = {
@@ -38,9 +37,13 @@ function schoolDbOrThrow(): Firestore {
   return requireSchoolDb();
 }
 
+function schoolTermDocRef(schoolDb: Firestore) {
+  return doc(schoolDb, "platform", "schoolTerm");
+}
+
 export async function getSchoolTermRecord(): Promise<SchoolTermRecord | null> {
   if (!db) return null;
-  const snap = await getDoc(doc(db, SCHOOL_TERM_DOC));
+  const snap = await getDoc(schoolTermDocRef(db));
   if (!snap.exists()) return null;
   const data = snap.data();
   if (data.status !== "active" && data.status !== "between") return null;
@@ -155,7 +158,7 @@ export async function startSchoolTerm(
     endedBy: null,
   };
 
-  await setDoc(doc(schoolDb, SCHOOL_TERM_DOC), record, { merge: true });
+  await setDoc(schoolTermDocRef(schoolDb), record, { merge: true });
   return record;
 }
 
@@ -181,6 +184,6 @@ export async function finishSchoolTerm(
     endedBy: adminUid,
   };
 
-  await setDoc(doc(schoolDb, SCHOOL_TERM_DOC), term, { merge: true });
+  await setDoc(schoolTermDocRef(schoolDb), term, { merge: true });
   return { term, deleted: counts };
 }

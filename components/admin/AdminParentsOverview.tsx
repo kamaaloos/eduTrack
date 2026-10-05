@@ -59,15 +59,13 @@ export function AdminParentsOverview({
       const counts = await loadParentStudentCounts();
       setRows(buildParentOverviewRows(parents, counts));
     } catch (err) {
-      showErrorAlert(
-        t("common.error"),
-        err instanceof Error ? err.message : t("admin.parentOverviewLoadFailed"),
-      );
+      // Don't block the admin dashboard with a dialog (e.g. permission-denied).
+      console.warn("parent overview load:", err);
       setRows(buildParentOverviewRows(parents, new Map()));
     } finally {
       setLoadingCounts(false);
     }
-  }, [parents, t]);
+  }, [parents]);
 
   useEffect(() => {
     void loadOverview();

@@ -6,6 +6,7 @@ import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { BroadcastAnnouncementCard } from "../../components/admin/BroadcastAnnouncementCard";
 import { ExcelImportCard } from "../../components/admin/ExcelImportCard";
+import { SchoolAppearanceCard } from "../../components/admin/SchoolAppearanceCard";
 import { DirectMessageCard } from "../../components/messaging/DirectMessageCard";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { AuthContext } from "../../src/context/authContext";
@@ -92,6 +93,8 @@ export default function AdminSystemScreen() {
               <Text style={styles.primaryButtonText}>{t("admin.syncClassIds")}</Text>
             </TouchableOpacity>
           </View>
+
+          <SchoolAppearanceCard />
 
           <BroadcastAnnouncementCard classCount={classes.length} />
 

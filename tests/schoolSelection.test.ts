@@ -55,4 +55,37 @@ describe("toStoredSchool", () => {
     };
     expect(toStoredSchool(record).usageExpiresAt).toBe("2026-01-01");
   });
+
+  it("maps logoUrl onto StoredSchool", () => {
+    const record: SchoolRecord = {
+      id: "s1",
+      name: "School",
+      active: true,
+      firebase: baseStored.firebase,
+      logoUrl: "https://example.com/logo.png",
+    };
+    expect(toStoredSchool(record).logoUrl).toBe("https://example.com/logo.png");
+  });
+
+  it("maps theme onto StoredSchool", () => {
+    const record: SchoolRecord = {
+      id: "s1",
+      name: "School",
+      active: true,
+      firebase: baseStored.firebase,
+      theme: { primaryColor: "#14532D", fontKey: "serif" },
+    };
+    expect(toStoredSchool(record).theme).toEqual({
+      primaryColor: "#14532D",
+      fontKey: "serif",
+    });
+  });
+});
+
+describe("theme persistence detection", () => {
+  it("detects theme changes", () => {
+    const before = { ...baseStored, theme: { primaryColor: "#1E3A8A" } };
+    const after = { ...baseStored, theme: { primaryColor: "#14532D" } };
+    expect(storedSchoolNeedsPersist(before, after)).toBe(true);
+  });
 });

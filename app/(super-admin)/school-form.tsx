@@ -17,6 +17,7 @@ import { SuperAdminScreenShell } from "../../components/superAdmin/SuperAdminScr
 import { FormDateInput } from "../../components/common/FormDateInput";
 import { SchoolLogoField } from "../../components/superAdmin/SchoolLogoField";
 import { SchoolOnboardingChecklist } from "../../components/superAdmin/SchoolOnboardingChecklist";
+import { SchoolThemeEditor } from "../../components/schoolTheme/SchoolThemeEditor";
 import {
   createSchoolRecord,
   getSchoolForAdmin,
@@ -27,7 +28,10 @@ import {
 } from "../../src/services/schoolRegistryAdmin";
 import { uploadSchoolLogo } from "../../src/services/schoolLogo";
 import { parseOptionalUserCount } from "../../src/services/schoolRegistryValidation";
+import { DEFAULT_SCHOOL_THEME } from "../../src/constants/schoolThemeDefaults";
 import type { SchoolFirebaseConfig } from "../../src/types/school";
+import type { SchoolThemeConfig } from "../../src/types/schoolTheme";
+import { resolveSchoolTheme } from "../../src/utils/schoolTheme";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 const EMPTY_FIREBASE: SchoolFirebaseConfig = {
@@ -57,6 +61,7 @@ export default function SuperAdminSchoolFormScreen() {
   const [city, setCity] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [pendingLogoUri, setPendingLogoUri] = useState<string | null>(null);
+  const [theme, setTheme] = useState<SchoolThemeConfig>({ ...DEFAULT_SCHOOL_THEME });
   const [active, setActive] = useState(true);
   const [testingExpiresAt, setTestingExpiresAt] = useState(defaultUsageExpiryDate());
   const [usageExpiresAt, setUsageExpiresAt] = useState("");
@@ -78,6 +83,7 @@ export default function SuperAdminSchoolFormScreen() {
         setCountry(school.country ?? "");
         setCity(school.city ?? "");
         setLogoUrl(school.logoUrl ?? "");
+        setTheme(resolveSchoolTheme(school.theme));
         setActive(school.active);
         setTestingExpiresAt(school.testingExpiresAt ?? defaultUsageExpiryDate());
         setUsageExpiresAt(school.usageExpiresAt ?? "");
@@ -116,6 +122,7 @@ export default function SuperAdminSchoolFormScreen() {
       country,
       city,
       logoUrl,
+      theme,
       active,
       testingExpiresAt,
       usageExpiresAt,
@@ -223,6 +230,14 @@ export default function SuperAdminSchoolFormScreen() {
             pendingLogoUri={pendingLogoUri}
             onLogoUrlChange={setLogoUrl}
             onPendingLogoUriChange={setPendingLogoUri}
+            disabled={saving}
+          />
+
+          <Text style={styles.label}>{t("schoolTheme.sectionTitle")}</Text>
+          <Text style={styles.hint}>{t("schoolTheme.superAdminHint")}</Text>
+          <SchoolThemeEditor
+            value={theme}
+            onChange={setTheme}
             disabled={saving}
           />
 

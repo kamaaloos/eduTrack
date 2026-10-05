@@ -33,6 +33,7 @@ import {
   notifySchoolUsageEnded,
   notifySchoolUsageExpiring,
 } from "../../src/services/notificationEvents";
+import { isIgnorableFirestoreListenerError } from "../../src/services/firestoreSession";
 import { getUsageRemainingDays } from "../../src/utils/usageExpiry";
 import {
   isTestingPeriodActive,
@@ -175,13 +176,17 @@ export default function AdminDashboard() {
     try {
       await refreshAll();
     } catch (err) {
-      console.error("Dashboard refresh failed:", err);
+      if (!isIgnorableFirestoreListenerError(err)) {
+        console.warn("Dashboard refresh failed:", err);
+      }
     }
     try {
       await syncClassIdsFromAssignments();
       await loadUsers();
     } catch (err) {
-      console.error("Dashboard sync failed:", err);
+      if (!isIgnorableFirestoreListenerError(err)) {
+        console.warn("Dashboard sync failed:", err);
+      }
     }
   }, [refreshAll, syncClassIdsFromAssignments, loadUsers]);
 
@@ -261,11 +266,19 @@ export default function AdminDashboard() {
   useFocusEffect(
     useCallback(() => {
       void (async () => {
-        const school =
-          (await refreshSelectedSchoolFromRegistry()) ?? selectedSchool;
-        await reloadDashboard();
-        if (school?.id && school.name) {
-          await maybeNotifySchoolPeriods(school);
+        try {
+          const school =
+            (await refreshSelectedSchoolFromRegistry()) ?? selectedSchool;
+          await reloadDashboard();
+          if (school?.id && school.name) {
+            try {
+              await maybeNotifySchoolPeriods(school);
+            } catch (err) {
+              console.warn("admin period notifications skipped:", err);
+            }
+          }
+        } catch (err) {
+          console.warn("admin dashboard focus refresh failed:", err);
         }
       })();
     }, [

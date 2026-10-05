@@ -22,6 +22,8 @@ type SchoolPeriodEditorsProps = {
   usageExpiresAt: string | null | undefined;
   onTestingSaved: (next: string) => void;
   onUsageSaved: (next: string | null) => void;
+  /** Called after a period save that reactivates the school in registry + platform. */
+  onReactivated?: () => void;
 };
 
 export function SchoolPeriodEditors({
@@ -30,6 +32,7 @@ export function SchoolPeriodEditors({
   usageExpiresAt,
   onTestingSaved,
   onUsageSaved,
+  onReactivated,
 }: SchoolPeriodEditorsProps) {
   const { t } = useTranslation();
   const [testingDate, setTestingDate] = useState(testingExpiresAt?.trim() ?? "");
@@ -60,7 +63,8 @@ export function SchoolPeriodEditors({
     try {
       await updateSchoolTestingPeriod(schoolId, trimmed);
       onTestingSaved(trimmed);
-      Alert.alert(t("common.success"), t("superAdmin.testingPeriodSaved"));
+      onReactivated?.();
+      Alert.alert(t("common.success"), t("superAdmin.testingPeriodSavedSynced"));
     } catch (err) {
       Alert.alert(
         t("common.error"),
@@ -82,7 +86,13 @@ export function SchoolPeriodEditors({
     try {
       await updateSchoolUsagePeriod(schoolId, trimmed);
       onUsageSaved(trimmed || null);
-      Alert.alert(t("common.success"), t("superAdmin.usagePeriodSaved"));
+      if (trimmed) onReactivated?.();
+      Alert.alert(
+        t("common.success"),
+        trimmed
+          ? t("superAdmin.usagePeriodSavedSynced")
+          : t("superAdmin.usagePeriodSaved"),
+      );
     } catch (err) {
       Alert.alert(
         t("common.error"),

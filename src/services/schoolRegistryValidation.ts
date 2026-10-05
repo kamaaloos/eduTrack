@@ -1,4 +1,6 @@
 import type { SchoolFirebaseConfig } from "../types/school";
+import type { SchoolThemeInput } from "../types/schoolTheme";
+import { validateThemeInput } from "../utils/schoolTheme";
 import { validateUsageExpiryDate } from "../utils/validation";
 
 export type SchoolRegistryInput = {
@@ -6,6 +8,7 @@ export type SchoolRegistryInput = {
   country?: string;
   city?: string;
   logoUrl?: string;
+  theme?: SchoolThemeInput | null;
   active: boolean;
   testingExpiresAt: string;
   /** Empty string clears registered usage expiry. */
@@ -40,6 +43,10 @@ export function validateSchoolInput(input: SchoolRegistryInput): string | null {
   }
   if (input.logoUrl?.trim() && !/^https?:\/\//i.test(input.logoUrl.trim())) {
     return "School logo URL must start with http:// or https://.";
+  }
+  if (input.theme) {
+    const themeError = validateThemeInput(input.theme);
+    if (themeError) return themeError;
   }
   if (!input.firebase.apiKey.trim()) return "Firebase API key is required.";
   if (!input.firebase.projectId.trim()) return "Firebase project ID is required.";

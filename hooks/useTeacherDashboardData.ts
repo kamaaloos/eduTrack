@@ -41,24 +41,33 @@ export function useTeacherDashboardData() {
       where("teacherId", "==", user.uid),
     );
 
-    return onSnapshot(classQuery, async (snapshot) => {
-      const teacherRelations = snapshot.docs.map((d) => d.data());
-      const ids = teacherRelations
-        .map((item: any) => item.classId)
-        .filter(Boolean);
-      setClassIds(ids);
+    return onSnapshot(
+      classQuery,
+      async (snapshot) => {
+        const teacherRelations = snapshot.docs.map((d) => d.data());
+        const ids = teacherRelations
+          .map((item: any) => item.classId)
+          .filter(Boolean);
+        setClassIds(ids);
 
-      const classPromises = ids.map(async (id: string) => {
-        const classSnap = await getDoc(doc(db, "classes", id));
-        return {
-          id: classSnap.id,
-          ...(classSnap.data() as any),
-        };
-      });
+        const classPromises = ids.map(async (id: string) => {
+          const classSnap = await getDoc(doc(db, "classes", id));
+          return {
+            id: classSnap.id,
+            ...(classSnap.data() as any),
+          };
+        });
 
-      const classData = await Promise.all(classPromises);
-      setClasses(classData);
-    });
+        const classData = await Promise.all(classPromises);
+        setClasses(classData);
+      },
+      (err) => {
+        if (isIgnorableFirestoreListenerError(err)) return;
+        console.error("teacherClasses listener:", err);
+        setClassIds([]);
+        setClasses([]);
+      },
+    );
   }, [user?.uid, schoolKey]);
 
   const reloadStudents = useCallback(async () => {

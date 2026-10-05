@@ -304,45 +304,63 @@ export async function notifyParentComplaintResolved(params: {
   }
 }
 
+async function notifySchoolPeriodAdmins(params: {
+  schoolId: string;
+  title: string;
+  message: string;
+  type:
+    | "school_usage_expiring"
+    | "school_usage_ended"
+    | "school_testing_expiring"
+    | "school_testing_ended";
+  actorId?: string | null;
+}): Promise<void> {
+  if (!db) return;
+
+  try {
+    const existing = await getDocs(
+      query(collection(db, "notifications"), where("type", "==", params.type)),
+    );
+    const now = Date.now();
+    const hasRecent = existing.docs.some((docSnap) => {
+      const data = docSnap.data();
+      if (data.classId !== params.schoolId) return false;
+      const raw = data.createdAt as { toDate?: () => Date } | undefined;
+      const createdAt = raw?.toDate?.();
+      return createdAt ? now - createdAt.getTime() < 24 * 60 * 60 * 1000 : false;
+    });
+    if (hasRecent) return;
+
+    const users = await getDocs(
+      query(collection(db, "users"), where("role", "==", "admin")),
+    );
+    if (users.empty) return;
+
+    const inputs: CreateNotificationInput[] = users.docs.map((u) => ({
+      title: params.title,
+      message: params.message,
+      type: params.type,
+      targetRole: "admin",
+      targetUserId: u.id,
+      classId: params.schoolId,
+      actorId: params.actorId ?? null,
+    }));
+    await createNotifications(inputs);
+  } catch (err) {
+    console.warn(`${params.type} notify failed:`, err);
+  }
+}
+
 export async function notifySchoolUsageExpiring(params: {
   schoolId: string;
   title: string;
   message: string;
   actorId?: string | null;
 }): Promise<void> {
-  if (!db) return;
-
-  const existing = await getDocs(
-    query(
-      collection(db, "notifications"),
-      where("type", "==", "school_usage_expiring"),
-    ),
-  );
-  const now = Date.now();
-  const hasRecent = existing.docs.some((docSnap) => {
-    const data = docSnap.data();
-    if (data.classId !== params.schoolId) return false;
-    const raw = data.createdAt as { toDate?: () => Date } | undefined;
-    const createdAt = raw?.toDate?.();
-    return createdAt ? now - createdAt.getTime() < 24 * 60 * 60 * 1000 : false;
-  });
-  if (hasRecent) return;
-
-  const users = await getDocs(
-    query(collection(db, "users"), where("role", "==", "admin")),
-  );
-  if (users.empty) return;
-
-  const inputs: CreateNotificationInput[] = users.docs.map((u) => ({
-    title: params.title,
-    message: params.message,
+  await notifySchoolPeriodAdmins({
+    ...params,
     type: "school_usage_expiring",
-    targetRole: "admin",
-    targetUserId: u.id,
-    classId: params.schoolId,
-    actorId: params.actorId ?? null,
-  }));
-  await createNotifications(inputs);
+  });
 }
 
 export async function notifySchoolUsageEnded(params: {
@@ -351,39 +369,10 @@ export async function notifySchoolUsageEnded(params: {
   message: string;
   actorId?: string | null;
 }): Promise<void> {
-  if (!db) return;
-
-  const existing = await getDocs(
-    query(
-      collection(db, "notifications"),
-      where("type", "==", "school_usage_ended"),
-    ),
-  );
-  const now = Date.now();
-  const hasRecent = existing.docs.some((docSnap) => {
-    const data = docSnap.data();
-    if (data.classId !== params.schoolId) return false;
-    const raw = data.createdAt as { toDate?: () => Date } | undefined;
-    const createdAt = raw?.toDate?.();
-    return createdAt ? now - createdAt.getTime() < 24 * 60 * 60 * 1000 : false;
-  });
-  if (hasRecent) return;
-
-  const users = await getDocs(
-    query(collection(db, "users"), where("role", "==", "admin")),
-  );
-  if (users.empty) return;
-
-  const inputs: CreateNotificationInput[] = users.docs.map((u) => ({
-    title: params.title,
-    message: params.message,
+  await notifySchoolPeriodAdmins({
+    ...params,
     type: "school_usage_ended",
-    targetRole: "admin",
-    targetUserId: u.id,
-    classId: params.schoolId,
-    actorId: params.actorId ?? null,
-  }));
-  await createNotifications(inputs);
+  });
 }
 
 export async function notifySchoolTestingExpiring(params: {
@@ -392,39 +381,10 @@ export async function notifySchoolTestingExpiring(params: {
   message: string;
   actorId?: string | null;
 }): Promise<void> {
-  if (!db) return;
-
-  const existing = await getDocs(
-    query(
-      collection(db, "notifications"),
-      where("type", "==", "school_testing_expiring"),
-    ),
-  );
-  const now = Date.now();
-  const hasRecent = existing.docs.some((docSnap) => {
-    const data = docSnap.data();
-    if (data.classId !== params.schoolId) return false;
-    const raw = data.createdAt as { toDate?: () => Date } | undefined;
-    const createdAt = raw?.toDate?.();
-    return createdAt ? now - createdAt.getTime() < 24 * 60 * 60 * 1000 : false;
-  });
-  if (hasRecent) return;
-
-  const users = await getDocs(
-    query(collection(db, "users"), where("role", "==", "admin")),
-  );
-  if (users.empty) return;
-
-  const inputs: CreateNotificationInput[] = users.docs.map((u) => ({
-    title: params.title,
-    message: params.message,
+  await notifySchoolPeriodAdmins({
+    ...params,
     type: "school_testing_expiring",
-    targetRole: "admin",
-    targetUserId: u.id,
-    classId: params.schoolId,
-    actorId: params.actorId ?? null,
-  }));
-  await createNotifications(inputs);
+  });
 }
 
 export async function notifySchoolTestingEnded(params: {
@@ -433,37 +393,8 @@ export async function notifySchoolTestingEnded(params: {
   message: string;
   actorId?: string | null;
 }): Promise<void> {
-  if (!db) return;
-
-  const existing = await getDocs(
-    query(
-      collection(db, "notifications"),
-      where("type", "==", "school_testing_ended"),
-    ),
-  );
-  const now = Date.now();
-  const hasRecent = existing.docs.some((docSnap) => {
-    const data = docSnap.data();
-    if (data.classId !== params.schoolId) return false;
-    const raw = data.createdAt as { toDate?: () => Date } | undefined;
-    const createdAt = raw?.toDate?.();
-    return createdAt ? now - createdAt.getTime() < 24 * 60 * 60 * 1000 : false;
-  });
-  if (hasRecent) return;
-
-  const users = await getDocs(
-    query(collection(db, "users"), where("role", "==", "admin")),
-  );
-  if (users.empty) return;
-
-  const inputs: CreateNotificationInput[] = users.docs.map((u) => ({
-    title: params.title,
-    message: params.message,
+  await notifySchoolPeriodAdmins({
+    ...params,
     type: "school_testing_ended",
-    targetRole: "admin",
-    targetUserId: u.id,
-    classId: params.schoolId,
-    actorId: params.actorId ?? null,
-  }));
-  await createNotifications(inputs);
+  });
 }

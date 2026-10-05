@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -13,7 +14,34 @@ import { registryDb } from "./firebase";
 import { mapSchoolRegistryDoc } from "./schoolRegistryMappers";
 import type { SchoolRegistryInput } from "./schoolRegistryValidation";
 import { registryUsageExpiresAt } from "./schoolRegistryValidation";
+import {
+  refreshSchoolSubscriptionSync,
+  type RefreshSubscriptionResult,
+} from "./schoolSubscriptionSync";
+import { DEFAULT_SCHOOL_THEME } from "../constants/schoolThemeDefaults";
+import { resolveSchoolTheme, themeToFirestore } from "../utils/schoolTheme";
 import { validateUsageExpiryDate } from "../utils/validation";
+
+/** Pushes registry entitlement into school platform/subscription (Admin SDK via CF). */
+async function syncPlatformSubscription(
+  schoolId: string,
+): Promise<RefreshSubscriptionResult> {
+  const result = await refreshSchoolSubscriptionSync(schoolId);
+  if (!result.ok) {
+    throw new Error(
+      result.error ||
+        "Could not sync platform/subscription on the school Firebase project.",
+    );
+  }
+  return result;
+}
+
+function clearSubscriptionDeactivationFields() {
+  return {
+    subscriptionBlockReason: deleteField(),
+    subscriptionDeactivatedAt: deleteField(),
+  };
+}
 
 export type { SchoolRegistryInput } from "./schoolRegistryValidation";
 export { validateSchoolInput } from "./schoolRegistryValidation";
@@ -49,11 +77,15 @@ export async function createSchoolRecord(
   input: SchoolRegistryInput,
 ): Promise<string> {
   const db = requireRegistryDb();
+  const theme = themeToFirestore(
+    resolveSchoolTheme(input.theme ?? DEFAULT_SCHOOL_THEME),
+  );
   const docRef = await addDoc(collection(db, COLLECTION), {
     name: input.name.trim(),
     country: input.country?.trim() || null,
     city: input.city?.trim() || null,
     logoUrl: input.logoUrl?.trim() || null,
+    theme,
     active: input.active,
     testingExpiresAt: input.testingExpiresAt.trim(),
     usageExpiresAt: registryUsageExpiresAt(input),
@@ -62,6 +94,7 @@ export async function createSchoolRecord(
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
+  await syncPlatformSubscription(docRef.id);
   return docRef.id;
 }
 
@@ -70,11 +103,15 @@ export async function updateSchoolRecord(
   input: SchoolRegistryInput,
 ): Promise<void> {
   const db = requireRegistryDb();
+  const theme = themeToFirestore(
+    resolveSchoolTheme(input.theme ?? DEFAULT_SCHOOL_THEME),
+  );
   await updateDoc(doc(db, COLLECTION, schoolId), {
     name: input.name.trim(),
     country: input.country?.trim() || null,
     city: input.city?.trim() || null,
     logoUrl: input.logoUrl?.trim() || null,
+    theme,
     active: input.active,
     testingExpiresAt: input.testingExpiresAt.trim(),
     usageExpiresAt: registryUsageExpiresAt(input),
@@ -82,6 +119,7 @@ export async function updateSchoolRecord(
     firebase: input.firebase,
     updatedAt: serverTimestamp(),
   });
+  await syncPlatformSubscription(schoolId);
 }
 
 export async function deleteSchoolRecord(schoolId: string): Promise<void> {
@@ -92,18 +130,24 @@ export async function deleteSchoolRecord(schoolId: string): Promise<void> {
 export async function setSchoolActive(
   schoolId: string,
   active: boolean,
-): Promise<void> {
+): Promise<RefreshSubscriptionResult> {
   const db = requireRegistryDb();
   await updateDoc(doc(db, COLLECTION, schoolId), {
     active,
     updatedAt: serverTimestamp(),
+    ...(active ? clearSubscriptionDeactivationFields() : {}),
   });
+  return syncPlatformSubscription(schoolId);
 }
 
+/**
+ * Extends testing end date, reactivates the school, and syncs school
+ * platform/subscription so login works without manual Firestore edits.
+ */
 export async function updateSchoolTestingPeriod(
   schoolId: string,
   testingExpiresAt: string,
-): Promise<void> {
+): Promise<RefreshSubscriptionResult> {
   const trimmed = testingExpiresAt.trim();
   if (!trimmed) {
     throw new Error("Testing period end date is required.");
@@ -115,14 +159,27 @@ export async function updateSchoolTestingPeriod(
   const db = requireRegistryDb();
   await updateDoc(doc(db, COLLECTION, schoolId), {
     testingExpiresAt: trimmed,
+    active: true,
     updatedAt: serverTimestamp(),
+    ...clearSubscriptionDeactivationFields(),
   });
+  const result = await syncPlatformSubscription(schoolId);
+  if (!result.entitled) {
+    throw new Error(
+      "Testing date saved, but the school is still not entitled. Check usage expiry or sync IAM on the school project.",
+    );
+  }
+  return result;
 }
 
+/**
+ * Updates paid usage end date, reactivates the school, and syncs
+ * platform/subscription on the school Firebase project.
+ */
 export async function updateSchoolUsagePeriod(
   schoolId: string,
   usageExpiresAt: string,
-): Promise<void> {
+): Promise<RefreshSubscriptionResult> {
   const trimmed = usageExpiresAt.trim();
   if (trimmed && !validateUsageExpiryDate(trimmed)) {
     throw new Error("Usage expiry date must be YYYY-MM-DD.");
@@ -131,8 +188,25 @@ export async function updateSchoolUsagePeriod(
   const db = requireRegistryDb();
   await updateDoc(doc(db, COLLECTION, schoolId), {
     usageExpiresAt: trimmed || null,
+    ...(trimmed
+      ? { active: true, ...clearSubscriptionDeactivationFields() }
+      : {}),
     updatedAt: serverTimestamp(),
   });
+  const result = await syncPlatformSubscription(schoolId);
+  if (trimmed && !result.entitled) {
+    throw new Error(
+      "Usage date saved, but the school is still not entitled. Check testing expiry or sync IAM on the school project.",
+    );
+  }
+  return result;
+}
+
+/** Re-push registry entitlement into school platform/subscription. */
+export async function syncSchoolPlatformSubscription(
+  schoolId: string,
+): Promise<RefreshSubscriptionResult> {
+  return syncPlatformSubscription(schoolId);
 }
 
 export async function updateSchoolLogoUrl(

@@ -324,6 +324,12 @@ export const useAdminRelations = () => {
             } catch (err) {
                 const message = err instanceof Error ? err.message : "Sync failed";
                 setError(message);
+                if (
+                  message.toLowerCase().includes("permission") ||
+                  (err as { code?: string })?.code === "permission-denied"
+                ) {
+                  return { updated: 0, message };
+                }
                 throw new Error(message);
             } finally {
                 setLoading(false);

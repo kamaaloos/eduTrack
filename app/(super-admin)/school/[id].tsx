@@ -22,6 +22,7 @@ import {
   deleteSchoolRecord,
   getSchoolForAdmin,
   setSchoolActive,
+  syncSchoolPlatformSubscription,
 } from "../../../src/services/schoolRegistryAdmin";
 import { refreshSchoolUserCounts } from "../../../src/services/schoolUserCountSync";
 import type { SchoolRecord } from "../../../src/types/school";
@@ -36,6 +37,7 @@ export default function SuperAdminSchoolDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [syncingSubscription, setSyncingSubscription] = useState(false);
   const [busy, setBusy] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -95,12 +97,42 @@ export default function SuperAdminSchoolDetailScreen() {
     }
   };
 
+  const syncSubscription = async () => {
+    if (!schoolId) return;
+    setSyncingSubscription(true);
+    try {
+      const result = await syncSchoolPlatformSubscription(schoolId);
+      Alert.alert(
+        t("common.success"),
+        result.entitled
+          ? t("superAdmin.syncSubscriptionEntitled")
+          : t("superAdmin.syncSubscriptionBlocked", {
+              reason: result.error || "not entitled",
+            }),
+      );
+      await load();
+    } catch (err) {
+      Alert.alert(
+        t("common.error"),
+        err instanceof Error ? err.message : t("superAdmin.syncSubscriptionFailed"),
+      );
+    } finally {
+      setSyncingSubscription(false);
+    }
+  };
+
   const toggleActive = async (active: boolean) => {
     if (!school) return;
     setBusy(true);
     try {
-      await setSchoolActive(school.id, active);
+      const result = await setSchoolActive(school.id, active);
       setSchool({ ...school, active });
+      if (active && !result.entitled) {
+        Alert.alert(
+          t("common.error"),
+          t("superAdmin.reactivatedButNotEntitled"),
+        );
+      }
     } catch (err) {
       Alert.alert(
         t("common.error"),
@@ -195,20 +227,37 @@ export default function SuperAdminSchoolDetailScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{t("superAdmin.billingAndSubscription")}</Text>
-            <TouchableOpacity
-              style={styles.syncButton}
-              onPress={() => void syncUserCount()}
-              disabled={syncing}
-            >
-              {syncing ? (
-                <ActivityIndicator size="small" color="#1E3A8A" />
-              ) : (
-                <Ionicons name="refresh-outline" size={16} color="#1E3A8A" />
-              )}
-              <Text style={styles.syncButtonText}>{t("superAdmin.syncUserCounts")}</Text>
-            </TouchableOpacity>
+            <View style={styles.syncActions}>
+              <TouchableOpacity
+                style={styles.syncButton}
+                onPress={() => void syncSubscription()}
+                disabled={syncingSubscription}
+              >
+                {syncingSubscription ? (
+                  <ActivityIndicator size="small" color="#1E3A8A" />
+                ) : (
+                  <Ionicons name="shield-checkmark-outline" size={16} color="#1E3A8A" />
+                )}
+                <Text style={styles.syncButtonText}>
+                  {t("superAdmin.syncSubscription")}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.syncButton}
+                onPress={() => void syncUserCount()}
+                disabled={syncing}
+              >
+                {syncing ? (
+                  <ActivityIndicator size="small" color="#1E3A8A" />
+                ) : (
+                  <Ionicons name="refresh-outline" size={16} color="#1E3A8A" />
+                )}
+                <Text style={styles.syncButtonText}>{t("superAdmin.syncUserCounts")}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <Text style={styles.sectionHint}>{t("superAdmin.billingHint")}</Text>
+          <Text style={styles.sectionHint}>{t("superAdmin.syncSubscriptionHint")}</Text>
           <SchoolBillingMetrics school={school} />
           <SchoolPeriodEditors
             schoolId={school.id}
@@ -222,6 +271,11 @@ export default function SuperAdminSchoolDetailScreen() {
             onUsageSaved={(next) =>
               setSchool((current) =>
                 current ? { ...current, usageExpiresAt: next } : current,
+              )
+            }
+            onReactivated={() =>
+              setSchool((current) =>
+                current ? { ...current, active: true } : current,
               )
             }
           />
@@ -335,7 +389,7 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "space-between",
     gap: 8,
     marginBottom: 4,
@@ -345,6 +399,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: "#0F172A",
+  },
+  syncActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-end",
+    gap: 6,
+    maxWidth: "55%",
   },
   sectionHint: {
     fontSize: 12,

@@ -16,6 +16,7 @@ import {
   webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { CurrentTermBadge } from "../common/CurrentTermBadge";
 
@@ -47,14 +48,26 @@ export function StudentScreenHeader({
 }: StudentScreenHeaderProps) {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
+  const { theme, fontFamily } = useSchoolTheme();
+  const primary = theme.primaryColor;
   const showMenuButton =
     showMenu &&
     Boolean(onMenuPress) &&
     !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top"]}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: primary }]} edges={["top"]}>
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: primary,
+            ...(Platform.OS === "web"
+              ? { borderBottomColor: primary }
+              : null),
+          },
+        ]}
+      >
         <View
           style={[
             styles.headerInner,
@@ -74,12 +87,15 @@ export function StudentScreenHeader({
               </TouchableOpacity>
             ) : (
               <View style={styles.brandBadge}>
-                <Ionicons name="school" size={22} color="#1E3A8A" />
+                <Ionicons name="school" size={22} color={primary} />
               </View>
             )}
 
             <View style={styles.titleBlock}>
-              <Text style={styles.title} numberOfLines={1}>
+              <Text
+                style={[styles.title, fontFamily ? { fontFamily } : null]}
+                numberOfLines={1}
+              >
                 {title}
               </Text>
               {subtitle ? (
@@ -101,7 +117,7 @@ export function StudentScreenHeader({
                   <Ionicons
                     name="notifications-outline"
                     size={20}
-                    color="#1E3A8A"
+                    color={primary}
                   />
                   {notificationCount > 0 ? (
                     <View style={styles.badge}>
@@ -119,7 +135,7 @@ export function StudentScreenHeader({
                   onPress={onMenuPress}
                   accessibilityLabel={t("admin.management")}
                 >
-                  <Ionicons name="menu" size={20} color="#1E3A8A" />
+                  <Ionicons name="menu" size={20} color={primary} />
                 </TouchableOpacity>
               ) : null}
             </View>

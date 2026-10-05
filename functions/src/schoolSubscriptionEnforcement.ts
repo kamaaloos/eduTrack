@@ -150,6 +150,17 @@ export async function refreshSchoolSubscription(
   }
 
   try {
+    if (entitled) {
+      // Clear expiry deactivation markers when super-admin restores access.
+      await doc.ref.set(
+        {
+          subscriptionBlockReason: FieldValue.delete(),
+          subscriptionDeactivatedAt: FieldValue.delete(),
+        },
+        { merge: true },
+      );
+    }
+
     await syncSchoolPlatformSubscription(
       projectId,
       schoolId,

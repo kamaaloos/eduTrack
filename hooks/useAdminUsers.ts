@@ -63,6 +63,15 @@ export const useAdminUsers = () => {
         } catch (err) {
             const message = err instanceof Error ? err.message : "Failed to load users";
             setError(message);
+            setStudents([]);
+            setTeachers([]);
+            setParents([]);
+            if (
+              message.toLowerCase().includes("permission") ||
+              (err as { code?: string })?.code === "permission-denied"
+            ) {
+              return;
+            }
             throw new Error(message);
         } finally {
             setLoading(false);
