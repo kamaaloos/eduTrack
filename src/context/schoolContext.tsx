@@ -113,13 +113,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
           setError(i18n.t("common.subscriptionExpired"));
           return null;
         }
-        if (
-          (updated.testingExpiresAt ?? null) !==
-            (selectedSchool.testingExpiresAt ?? null) ||
-          (updated.usageExpiresAt ?? null) !==
-            (selectedSchool.usageExpiresAt ?? null) ||
-          updated.name !== selectedSchool.name
-        ) {
+        if (storedSchoolNeedsPersist(selectedSchool, updated)) {
           setSelectedSchool(updated);
         }
         return updated;
@@ -210,28 +204,18 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     const match = schools.find((school) => school.id === selectedSchool.id);
     if (!match) return;
 
-    const nextTesting = match.testingExpiresAt ?? null;
-    const currentTesting = selectedSchool.testingExpiresAt ?? null;
-    const nextUsage = match.usageExpiresAt ?? null;
-    const currentUsage = selectedSchool.usageExpiresAt ?? null;
-    const nextLogo = match.logoUrl ?? null;
-    const currentLogo = selectedSchool.logoUrl ?? null;
-    if (
-      match.name === selectedSchool.name &&
-      nextTesting === currentTesting &&
-      nextUsage === currentUsage &&
-      nextLogo === currentLogo
-    ) {
+    const updated = applyRegistryToStoredSchool(selectedSchool, {
+      id: match.id,
+      name: match.name,
+      testingExpiresAt: match.testingExpiresAt ?? null,
+      usageExpiresAt: match.usageExpiresAt ?? null,
+      logoUrl: match.logoUrl ?? null,
+      theme: match.theme ?? null,
+    });
+    if (!storedSchoolNeedsPersist(selectedSchool, updated)) {
       return;
     }
 
-    const updated: StoredSchool = {
-      ...selectedSchool,
-      name: match.name,
-      testingExpiresAt: nextTesting,
-      usageExpiresAt: nextUsage,
-      logoUrl: nextLogo,
-    };
     void saveSelectedSchool(updated).then(() => setSelectedSchool(updated));
   }, [schools, selectedSchool]);
 

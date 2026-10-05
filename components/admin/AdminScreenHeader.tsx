@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Image,
   Platform,
   StyleSheet,
   Text,
@@ -15,6 +16,7 @@ import {
   webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
+import { useSchoolContext } from "../../src/context/schoolContext";
 import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { CurrentTermBadge } from "../common/CurrentTermBadge";
@@ -43,10 +45,12 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
+  const { selectedSchool } = useSchoolContext();
   const { theme, fontFamily } = useSchoolTheme();
   const showMenuButton =
     Boolean(onMenuPress) && !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
   const primary = theme.primaryColor;
+  const schoolLogoUrl = selectedSchool?.logoUrl?.trim() || null;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: primary }]} edges={["top"]}>
@@ -71,6 +75,13 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
             >
               <Ionicons name="chevron-back" size={22} color="#FFFFFF" />
             </TouchableOpacity>
+          ) : schoolLogoUrl ? (
+            <Image
+              source={{ uri: schoolLogoUrl }}
+              style={styles.brandBadge}
+              resizeMode="cover"
+              accessibilityLabel={selectedSchool?.name ?? title}
+            />
           ) : (
             <View style={styles.brandBadge}>
               <Ionicons name="school" size={22} color={primary} />
@@ -164,6 +175,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
+    overflow: "hidden",
   },
   titleBlock: {
     flex: 1,

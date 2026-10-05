@@ -11,6 +11,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -29,6 +30,7 @@ import { WebPageCard } from "../components/layout/WebPageCard";
 import { ScreenBackgroundLayer } from "../components/ScreenBackgroundLayer";
 import { usePlatformLayout } from "../hooks/usePlatformLayout";
 import { useSchoolContext } from "../src/context/schoolContext";
+import { useSchoolTheme } from "../src/context/schoolThemeContext";
 import {
   APP_COPYRIGHT,
   copyrightBarBottom,
@@ -74,6 +76,8 @@ export default function Login() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { selectedSchool, clearSchool, schoolReady } = useSchoolContext();
+  const { theme } = useSchoolTheme();
+  const [signInHovered, setSignInHovered] = useState(false);
   const navigatedRef = useRef(false);
 
   const goToPostLogin = useCallback(
@@ -311,6 +315,7 @@ export default function Login() {
           contentContainerStyle={[
             styles.scrollContainer,
             webAuthContentStyle(),
+            layout.isWeb ? styles.webScrollContent : null,
             {
               paddingTop:
                 insets.top + (layout.isWeb ? (layout.isCompactWeb ? 16 : 24) : 56),
@@ -406,18 +411,56 @@ export default function Login() {
                   onPress={() => setShowForgotPassword(true)}
                   disabled={busy}
                 >
-                  <Text style={styles.forgotPasswordText}>
+                  <Text style={[styles.forgotPasswordText, { color: theme.primaryColor }]}>
                     {t("auth.login.forgotPassword")}
                   </Text>
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity
+              <Pressable
                 testID="login-submit"
-                style={[styles.primaryButton, busy && styles.buttonDisabled]}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: busy }}
                 onPress={handleLogin}
                 disabled={busy}
-                activeOpacity={0.85}
+                onHoverIn={() => setSignInHovered(true)}
+                onHoverOut={() => setSignInHovered(false)}
+                style={({ pressed }) => [
+                  styles.primaryButton,
+                  {
+                    backgroundColor: theme.primaryColor,
+                    transform: [
+                      {
+                        scale:
+                          busy
+                            ? 1
+                            : pressed
+                              ? 0.98
+                              : signInHovered
+                                ? 1.03
+                                : 1,
+                      },
+                    ],
+                    ...(Platform.OS === "web"
+                      ? ({
+                          cursor: busy ? "default" : "pointer",
+                          transitionProperty:
+                            "transform, box-shadow, filter, background-color",
+                          transitionDuration: "180ms",
+                          transitionTimingFunction: "ease-out",
+                          boxShadow: signInHovered
+                            ? `0 14px 32px ${theme.primaryColor}59`
+                            : `0 8px 24px ${theme.primaryColor}40`,
+                          filter: signInHovered
+                            ? "brightness(1.08)"
+                            : "brightness(1)",
+                        } as object)
+                      : {
+                          shadowColor: theme.primaryColor,
+                        }),
+                  },
+                  busy && styles.buttonDisabled,
+                ]}
               >
                 {busy ? (
                   <ActivityIndicator color="white" size="small" />
@@ -429,7 +472,7 @@ export default function Login() {
                     <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
                   </>
                 )}
-              </TouchableOpacity>
+              </Pressable>
 
               {showAlternateLogin ? (
                 <>
@@ -589,9 +632,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
+  webScrollContent: {
+    width: "100%",
+    maxWidth: 800,
+    alignSelf: "center",
+  },
+
   webCard: {
-    paddingHorizontal: 32,
-    paddingVertical: 36,
+    width: "100%",
+    maxWidth: 760,
+    paddingHorizontal: 48,
+    paddingVertical: 44,
   },
 
   header: {
@@ -614,7 +665,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
     fontWeight: "500",
-    maxWidth: 320,
+    maxWidth: 420,
   },
 
   schoolLogo: {
@@ -717,6 +768,7 @@ const styles = StyleSheet.create({
     ...(Platform.OS === "web"
       ? ({
           boxShadow: "0 8px 24px rgba(37, 99, 235, 0.28)",
+          willChange: "transform",
         } as object)
       : {
           shadowColor: "#2563EB",
