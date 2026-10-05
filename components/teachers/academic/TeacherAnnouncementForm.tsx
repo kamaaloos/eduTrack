@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
+import { SchoolThemeButton } from "../../common/SchoolThemeButton";
 import { teacherAcademicStyles as styles } from "./teacherAcademicStyles";
 
 type TeacherAnnouncementFormProps = {
@@ -40,11 +41,10 @@ export function TeacherAnnouncementForm({
         onChangeText={onAnnouncementTextChange}
       />
 
-      <TouchableOpacity style={styles.button} onPress={onPublish}>
-        <Text style={styles.buttonText}>
-          {t("teacher.academic.publishAnnouncementBtn")}
-        </Text>
-      </TouchableOpacity>
+      <SchoolThemeButton
+        label={t("teacher.academic.publishAnnouncementBtn")}
+        onPress={onPublish}
+      />
     </View>
   );
 }

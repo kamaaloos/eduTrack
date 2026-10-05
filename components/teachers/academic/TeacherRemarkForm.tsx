@@ -1,4 +1,5 @@
-import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, TextInput, View } from "react-native";
+import { SchoolThemeButton } from "../../common/SchoolThemeButton";
 import { useTranslation } from "react-i18next";
 import { Selector } from "../../admin/Selector";
 import { SelectChips } from "../SelectChips";
@@ -99,11 +100,10 @@ export function TeacherRemarkForm({
         maxLength={1}
       />
 
-      <TouchableOpacity style={styles.button} onPress={onPublish}>
-        <Text style={styles.buttonText}>
-          {t("teacher.academic.publishRemarkBtn")}
-        </Text>
-      </TouchableOpacity>
+      <SchoolThemeButton
+        label={t("teacher.academic.publishRemarkBtn")}
+        onPress={onPublish}
+      />
     </View>
   );
 }

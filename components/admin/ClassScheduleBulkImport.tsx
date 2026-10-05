@@ -25,6 +25,7 @@ import {
   isLikelyExcelFilename,
   readExcelArrayBuffer,
 } from "../../src/utils/readExcelFile";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 
 type ClassScheduleBulkImportProps = {
   onImported?: () => void | Promise<void>;
@@ -196,16 +197,13 @@ export function ClassScheduleBulkImport({
             <Text style={styles.clearBtnText}>{t("common.clear")}</Text>
           </TouchableOpacity>
         ) : null}
-        <TouchableOpacity
-          style={[
-            styles.importBtn,
-            (loading || parsedRows.length === 0) && styles.importBtnDisabled,
-          ]}
+        <SchoolThemeButton
+          label={t("admin.scheduleBulkImport")}
           onPress={() => void handleImport()}
           disabled={loading || parsedRows.length === 0}
-        >
-          <Text style={styles.importBtnText}>{t("admin.scheduleBulkImport")}</Text>
-        </TouchableOpacity>
+          loading={loading}
+          style={styles.importBtn}
+        />
       </View>
     </View>
   );
@@ -253,11 +251,6 @@ const styles = StyleSheet.create({
   clearBtnText: { color: "#64748B", fontWeight: "600" },
   importBtn: {
     flex: 1,
-    backgroundColor: "#1E3A8A",
     borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
   },
-  importBtnDisabled: { opacity: 0.55 },
-  importBtnText: { color: "#FFFFFF", fontWeight: "700", fontSize: 15 },
 });

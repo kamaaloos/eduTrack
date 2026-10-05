@@ -24,6 +24,7 @@ import {
 } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { innerCardBorderStyle, INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 
 interface ExcelImportCardProps {
   onImportComplete?: () => void | Promise<void>;
@@ -250,16 +251,13 @@ export const ExcelImportCard: React.FC<ExcelImportCardProps> = ({
             <Text style={styles.clearButtonText}>{t("common.clear")}</Text>
           </TouchableOpacity>
         ) : null}
-        <TouchableOpacity
-          style={[
-            styles.button,
-            (!canImport || loading) && styles.buttonDisabled,
-          ]}
+        <SchoolThemeButton
+          label={t("admin.runImport")}
           onPress={() => void handleImport()}
           disabled={!canImport || loading}
-        >
-          <Text style={styles.buttonText}>{t("admin.runImport")}</Text>
-        </TouchableOpacity>
+          loading={loading}
+          style={styles.importActionBtn}
+        />
       </View>
     </View>
   );
@@ -394,22 +392,8 @@ const styles = StyleSheet.create({
     color: "#64748B",
     fontWeight: "600",
   },
-  button: {
+  importActionBtn: {
     flex: 1,
-    backgroundColor: "#007AFF",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 48,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
   },
   errorText: {
     color: "#DC2626",

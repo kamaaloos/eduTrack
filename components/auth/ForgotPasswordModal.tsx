@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import {
-  ActivityIndicator,
   Modal,
   Pressable,
   StyleSheet,
@@ -8,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { AuthFormField } from "./AuthFormField";
 
 type ForgotPasswordModalProps = {
@@ -62,23 +62,13 @@ export function ForgotPasswordModal({
             >
               <Text style={styles.buttonSecondaryText}>{t("common.cancel")}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.button,
-                styles.buttonPrimary,
-                loading && styles.buttonDisabled,
-              ]}
+            <SchoolThemeButton
+              label={t("auth.login.notifyAdmin")}
               onPress={onSubmit}
+              loading={loading}
               disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#FFFFFF" size="small" />
-              ) : (
-                <Text style={styles.buttonPrimaryText}>
-                  {t("auth.login.notifyAdmin")}
-                </Text>
-              )}
-            </TouchableOpacity>
+              size="compact"
+            />
           </View>
         </View>
       </View>
@@ -139,21 +129,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minHeight: 44,
   },
-  buttonPrimary: {
-    backgroundColor: "#2563EB",
-  },
   buttonSecondary: {
     backgroundColor: "#F1F5F9",
     borderWidth: 1,
     borderColor: "#E2E8F0",
-  },
-  buttonDisabled: {
-    opacity: 0.65,
-  },
-  buttonPrimaryText: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 15,
   },
   buttonSecondaryText: {
     color: "#334155",

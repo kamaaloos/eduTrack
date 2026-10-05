@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Platform, StyleSheet, Text, Pressable, View } from "react-native";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 
 export type ChipOption = {
   value: string;
@@ -16,17 +18,42 @@ function ChipButton({
   label,
   active,
   onPress,
+  primaryColor,
+  accentColor,
 }: {
   label: string;
   active: boolean;
   onPress: () => void;
+  primaryColor: string;
+  accentColor: string;
 }) {
+  const [hovered, setHovered] = useState(false);
+  const bg = active
+    ? hovered
+      ? accentColor
+      : primaryColor
+    : hovered
+      ? "#E2E8F0"
+      : "#E5E7EB";
+
   return (
     <Pressable
       onPress={onPress}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
       style={({ pressed }) => [
         styles.chip,
-        active && styles.chipActive,
+        {
+          backgroundColor: bg,
+          ...(Platform.OS === "web"
+            ? ({
+                cursor: "pointer",
+                transitionProperty: "background-color, transform",
+                transitionDuration: "150ms",
+                transform: [{ scale: pressed ? 0.98 : hovered ? 1.02 : 1 }],
+              } as object)
+            : null),
+        },
         pressed && styles.chipPressed,
       ]}
     >
@@ -43,6 +70,8 @@ export function SelectChips({
   onSelect,
   emptyMessage = "Nothing to select",
 }: SelectChipsProps) {
+  const { theme } = useSchoolTheme();
+
   if (options.length === 0) {
     return <Text style={styles.empty}>{emptyMessage}</Text>;
   }
@@ -53,6 +82,8 @@ export function SelectChips({
       label={opt.label}
       active={selectedValue === opt.value}
       onPress={() => onSelect(opt.value)}
+      primaryColor={theme.primaryColor}
+      accentColor={theme.accentColor}
     />
   ));
 
@@ -68,6 +99,8 @@ export function SelectList({
   onSelect,
   emptyMessage = "Nothing to select",
 }: SelectChipsProps) {
+  const { theme } = useSchoolTheme();
+
   if (options.length === 0) {
     return <Text style={styles.empty}>{emptyMessage}</Text>;
   }
@@ -82,12 +115,22 @@ export function SelectList({
             onPress={() => onSelect(opt.value)}
             style={({ pressed }) => [
               styles.listItem,
-              active && styles.listItemActive,
+              active
+                ? {
+                    backgroundColor: `${theme.primaryColor}14`,
+                    borderColor: theme.primaryColor,
+                  }
+                : null,
               pressed && styles.chipPressed,
             ]}
           >
             <Text
-              style={[styles.listItemText, active && styles.listItemTextActive]}
+              style={[
+                styles.listItemText,
+                active
+                  ? { color: theme.primaryColor, fontWeight: "700" }
+                  : null,
+              ]}
             >
               {opt.label}
             </Text>
@@ -111,13 +154,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 12,
-    backgroundColor: "#E5E7EB",
     marginRight: 8,
     marginBottom: 8,
     alignSelf: "flex-start",
-  },
-  chipActive: {
-    backgroundColor: "#2563EB",
   },
   chipPressed: {
     opacity: 0.85,
@@ -146,18 +185,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     minHeight: Platform.OS === "web" ? undefined : 48,
   },
-  listItemActive: {
-    backgroundColor: "#EFF6FF",
-    borderColor: "#2563EB",
-  },
   listItemText: {
     fontSize: Platform.OS === "web" ? 15 : 16,
     fontWeight: "600",
     color: "#374151",
     lineHeight: Platform.OS === "web" ? 20 : 22,
-  },
-  listItemTextActive: {
-    color: "#1D4ED8",
-    fontWeight: "700",
   },
 });

@@ -16,6 +16,8 @@ import {
   type ConfirmDialogRequest,
 } from "../../src/services/dialogBridge";
 import { platformShadow } from "../../src/utils/platformShadow";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 
 type PendingAlert = AlertDialogRequest & {
   resolve: () => void;
@@ -23,6 +25,7 @@ type PendingAlert = AlertDialogRequest & {
 
 export function AppDialogHost() {
   const { t } = useTranslation();
+  const { theme } = useSchoolTheme();
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogRequest | null>(
     null,
   );
@@ -79,7 +82,7 @@ export function AppDialogHost() {
       ? "#059669"
       : alertVariant === "error"
         ? "#DC2626"
-        : "#2563EB";
+        : theme.primaryColor;
 
   return (
     <>
@@ -108,19 +111,23 @@ export function AppDialogHost() {
                   {confirmDialog?.cancelLabel ?? t("common.cancel")}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  confirmDialog?.destructive
-                    ? styles.buttonDestructive
-                    : styles.buttonPrimary,
-                ]}
-                onPress={() => finishConfirm(true)}
-              >
-                <Text style={styles.buttonPrimaryText}>
-                  {confirmDialog?.confirmLabel ?? t("common.confirm")}
-                </Text>
-              </TouchableOpacity>
+              {confirmDialog?.destructive ? (
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonDestructive]}
+                  onPress={() => finishConfirm(true)}
+                >
+                  <Text style={styles.buttonPrimaryText}>
+                    {confirmDialog?.confirmLabel ?? t("common.confirm")}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <SchoolThemeButton
+                  size="compact"
+                  label={confirmDialog?.confirmLabel ?? t("common.confirm")}
+                  onPress={() => finishConfirm(true)}
+                  textStyle={styles.buttonPrimaryText}
+                />
+              )}
             </View>
           </View>
         </View>
@@ -142,12 +149,13 @@ export function AppDialogHost() {
             {alertDialog?.message ? (
               <Text style={styles.message}>{alertDialog.message}</Text>
             ) : null}
-            <TouchableOpacity
-              style={[styles.button, styles.buttonPrimary, styles.alertOkButton]}
+            <SchoolThemeButton
+              size="compact"
+              label={t("common.close")}
               onPress={finishAlert}
-            >
-              <Text style={styles.buttonPrimaryText}>{t("common.close")}</Text>
-            </TouchableOpacity>
+              style={styles.alertOkButton}
+              textStyle={styles.buttonPrimaryText}
+            />
           </View>
         </View>
       </Modal>
@@ -206,9 +214,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
-  },
-  buttonPrimary: {
-    backgroundColor: "#2563EB",
   },
   buttonDestructive: {
     backgroundColor: "#DC2626",

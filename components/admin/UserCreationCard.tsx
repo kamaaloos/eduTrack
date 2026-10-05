@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { PasswordInput } from "../PasswordInput";
 import { UserRole } from "../../hooks/useAdminUsers";
 import { RoleSelectPicker } from "./RoleSelectPicker";
@@ -113,17 +106,12 @@ export const UserCreationCard: React.FC<UserCreationCardProps> = ({
         disabled={loading}
       />
 
-      <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
+      <SchoolThemeButton
+        label={t("admin.createUser")}
         onPress={handleCreateUser}
+        loading={loading}
         disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.buttonText}>{t("admin.createUser")}</Text>
-        )}
-      </TouchableOpacity>
+      />
     </View>
   );
 };
@@ -159,21 +147,5 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: -4,
     marginBottom: 12,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 48,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
   },
 });

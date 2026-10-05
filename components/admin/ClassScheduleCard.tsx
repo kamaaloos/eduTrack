@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { SelectChips, SelectList } from "../teachers/SelectChips";
 import {
   addClassScheduleSlot,
@@ -365,22 +366,18 @@ export function ClassScheduleCard({ classes, teachers }: ClassScheduleCardProps)
             />
           )}
 
-          <TouchableOpacity
-            style={[styles.addBtn, saving && styles.addBtnDisabled]}
+          <SchoolThemeButton
+            label={t("admin.addToSchedule")}
             onPress={handleAdd}
+            loading={saving}
             disabled={
               saving ||
               assignmentsLoading ||
               !selectedTeacherId ||
               subjectOptions.length === 0
             }
-          >
-            {saving ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.addBtnText}>{t("admin.addToSchedule")}</Text>
-            )}
-          </TouchableOpacity>
+            style={styles.addBtn}
+          />
 
           <Text style={styles.listTitle}>
             {t("admin.periodsForDay", {
@@ -458,15 +455,10 @@ const styles = StyleSheet.create({
   dash: { fontSize: 18, color: "#64748B", fontWeight: "600" },
   inlineLoader: { marginVertical: 10 },
   addBtn: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 14,
     borderRadius: 12,
-    alignItems: "center",
     marginTop: 4,
     marginBottom: 16,
   },
-  addBtnDisabled: { opacity: 0.7 },
-  addBtnText: { color: "#FFFFFF", fontWeight: "700" },
   listTitle: { fontSize: 15, fontWeight: "700", marginBottom: 10 },
   slotRow: {
     flexDirection: "row",

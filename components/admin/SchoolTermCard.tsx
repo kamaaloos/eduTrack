@@ -25,6 +25,7 @@ import {
   showErrorAlert,
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 
 type SchoolTermCardProps = {
   adminUid: string;
@@ -214,15 +215,11 @@ export function SchoolTermCard({ adminUid }: SchoolTermCardProps) {
         ) : null}
 
         {canStart ? (
-          <TouchableOpacity
-            style={[styles.button, styles.buttonPrimary, busy && styles.buttonDisabled]}
+          <SchoolThemeButton
+            label={t("admin.schoolTermStartButton")}
             onPress={() => void handleStart()}
             disabled={busy}
-          >
-            <Text style={styles.buttonPrimaryText}>
-              {t("admin.schoolTermStartButton")}
-            </Text>
-          </TouchableOpacity>
+          />
         ) : null}
 
         <TouchableOpacity
@@ -312,14 +309,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: "center",
-  },
-  buttonPrimary: {
-    backgroundColor: "#2563EB",
-  },
-  buttonPrimaryText: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 15,
   },
   buttonDanger: {
     backgroundColor: "#DC2626",

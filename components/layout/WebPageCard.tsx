@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Platform, StyleSheet, View, type ViewStyle } from "react-native";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import {
+  webAdminDashboardFrameStyle,
   webAuthCardStyle,
   webContentCardStyle,
   webPageCardFrameStyle,
@@ -54,6 +55,8 @@ type WebPageCardFrameProps = {
   style?: ViewStyle;
   /** Use a narrower centered card on desktop web with a left nav (teacher shells). */
   sidebarLayout?: boolean;
+  /** Admin dashboard: full-width main beside themed sidebar. */
+  adminDashboardLayout?: boolean;
 };
 
 /**
@@ -64,6 +67,7 @@ export function WebPageCardFrame({
   children,
   style,
   sidebarLayout = false,
+  adminDashboardLayout = false,
 }: WebPageCardFrameProps) {
   const layout = usePlatformLayout();
 
@@ -72,11 +76,15 @@ export function WebPageCardFrame({
   }
 
   return (
-    <View style={webPageFrameStyle(layout)}>
+    <View style={webPageFrameStyle(layout, { expand: adminDashboardLayout })}>
       <View
         style={[
           webPageCardFrameStyle(layout),
-          sidebarLayout ? webRoleSidebarPageCardStyle(layout) : null,
+          adminDashboardLayout
+            ? webAdminDashboardFrameStyle(layout)
+            : sidebarLayout
+              ? webRoleSidebarPageCardStyle(layout)
+              : null,
           style,
         ]}
       >

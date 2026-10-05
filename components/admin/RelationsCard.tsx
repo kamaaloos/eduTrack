@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
@@ -93,17 +88,12 @@ export const RelationsCard: React.FC<RelationsCardProps> = ({
         disabled={loading}
       />
 
-      <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
+      <SchoolThemeButton
+        label={t("common.assign")}
         onPress={handleAssign}
+        loading={loading}
         disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.buttonText}>{t("common.assign")}</Text>
-        )}
-      </TouchableOpacity>
+      />
     </View>
   );
 };
@@ -121,21 +111,5 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
     marginBottom: 15,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 48,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
   },
 });

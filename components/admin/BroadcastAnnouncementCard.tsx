@@ -1,11 +1,9 @@
 import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  ActivityIndicator,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { AuthContext } from "../../src/context/authContext";
@@ -17,6 +15,7 @@ import {
 } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { innerCardBorderStyle } from "../../src/constants/innerCardBorders";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 
 interface BroadcastAnnouncementCardProps {
   classCount: number;
@@ -120,22 +119,12 @@ export const BroadcastAnnouncementCard: React.FC<
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          (loading || classCount === 0) && styles.buttonDisabled,
-        ]}
+      <SchoolThemeButton
+        label={t("admin.sendToAllClasses", { count: classCount })}
         onPress={() => void handleSend()}
-        disabled={loading || classCount === 0}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.buttonText}>
-            {t("admin.sendToAllClasses", { count: classCount })}
-          </Text>
-        )}
-      </TouchableOpacity>
+        loading={loading}
+        disabled={classCount === 0}
+      />
     </View>
   );
 };
@@ -170,22 +159,6 @@ const styles = StyleSheet.create({
   },
   messageInput: {
     minHeight: 100,
-  },
-  button: {
-    backgroundColor: "#1E3A8A",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 48,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
   },
   errorText: {
     color: "#DC2626",

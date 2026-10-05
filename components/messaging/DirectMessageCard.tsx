@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SelectChips, type ChipOption } from "../teachers/SelectChips";
@@ -22,6 +21,7 @@ import {
 import { platformShadow } from "../../src/utils/platformShadow";
 import { OptionPickerModal } from "./OptionPickerModal";
 import { INNER_CARD_BORDER_GREEN, innerCardBorderStyle } from "../../src/constants/innerCardBorders";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 
 export type DirectMessageRecipientRole = "student" | "parent";
 
@@ -366,17 +366,12 @@ export function DirectMessageCard({
         editable={!loading}
       />
 
-      <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
+      <SchoolThemeButton
+        label={t("directMessage.send")}
         onPress={() => void handleSend()}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.buttonText}>{t("directMessage.send")}</Text>
-        )}
-      </TouchableOpacity>
+        loading={loading}
+        style={{ marginTop: 4 }}
+      />
 
       <OptionPickerModal
         visible={classPickerOpen}
@@ -504,22 +499,5 @@ const styles = StyleSheet.create({
   },
   messageInput: {
     minHeight: 100,
-  },
-  button: {
-    backgroundColor: "#1E3A8A",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 48,
-    marginTop: 4,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
   },
 });

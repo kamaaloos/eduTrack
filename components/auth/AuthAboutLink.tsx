@@ -10,9 +10,14 @@ import {
 
 type AuthAboutLinkProps = {
   style?: ViewStyle;
+  /** Link icon + text color (school theme primary). */
+  color?: string;
 };
 
-export function AuthAboutLink({ style }: AuthAboutLinkProps) {
+export function AuthAboutLink({
+  style,
+  color = "#1E3A8A",
+}: AuthAboutLinkProps) {
   const { t } = useTranslation();
 
   return (
@@ -22,8 +27,8 @@ export function AuthAboutLink({ style }: AuthAboutLinkProps) {
       accessibilityRole="button"
       accessibilityLabel={t("about.title")}
     >
-      <Ionicons name="settings-outline" size={18} color="#1E3A8A" />
-      <Text style={styles.linkText}>{t("about.shortTitle")}</Text>
+      <Ionicons name="settings-outline" size={18} color={color} />
+      <Text style={[styles.linkText, { color }]}>{t("about.shortTitle")}</Text>
     </TouchableOpacity>
   );
 }
@@ -41,7 +46,6 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255, 255, 255, 0.85)",
   },
   linkText: {
-    color: "#1E3A8A",
     fontSize: 13,
     fontWeight: "700",
   },

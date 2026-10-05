@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
+import { SchoolThemeButton } from "../../common/SchoolThemeButton";
 import { SelectChips } from "../SelectChips";
 import { teacherAcademicStyles as styles } from "./teacherAcademicStyles";
 
@@ -74,11 +75,10 @@ export function TeacherExamForm({
         multiline
       />
 
-      <TouchableOpacity style={styles.button} onPress={onPublish}>
-        <Text style={styles.buttonText}>
-          {t("teacher.academic.createExamBtn")}
-        </Text>
-      </TouchableOpacity>
+      <SchoolThemeButton
+        label={t("teacher.academic.createExamBtn")}
+        onPress={onPublish}
+      />
     </View>
   );
 }

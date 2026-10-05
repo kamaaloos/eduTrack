@@ -8,8 +8,10 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { AdminSideMenu } from "../../components/admin/AdminSideMenu";
+import { WebAdminDesktopNav } from "../../components/admin/web/WebAdminDesktopNav";
 import { WebDesktopRoleNav } from "../../components/layout/WebDesktopRoleNav";
 import { useAdminSideMenuItems } from "../../hooks/useAdminSideMenuItems";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useSchoolContext } from "./schoolContext";
 
 type AdminMenuContextValue = {
@@ -21,6 +23,7 @@ const AdminMenuContext = createContext<AdminMenuContextValue | null>(null);
 
 export function AdminMenuProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
   const { selectedSchool } = useSchoolContext();
   const [visible, setVisible] = useState(false);
   const menuItems = useAdminSideMenuItems();
@@ -30,8 +33,10 @@ export function AdminMenuProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => ({ openMenu, closeMenu }), [openMenu, closeMenu]);
 
-  return (
-    <AdminMenuContext.Provider value={value}>
+  const desktopNav =
+    layout.isDesktopWeb ? (
+      <WebAdminDesktopNav items={menuItems}>{children}</WebAdminDesktopNav>
+    ) : (
       <WebDesktopRoleNav
         title={t("admin.management")}
         subtitle={selectedSchool?.name ?? null}
@@ -39,6 +44,11 @@ export function AdminMenuProvider({ children }: { children: ReactNode }) {
       >
         {children}
       </WebDesktopRoleNav>
+    );
+
+  return (
+    <AdminMenuContext.Provider value={value}>
+      {desktopNav}
       {visible ? (
         <AdminSideMenu
           visible

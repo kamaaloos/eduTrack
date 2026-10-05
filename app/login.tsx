@@ -78,7 +78,11 @@ export default function Login() {
   const { selectedSchool, clearSchool, schoolReady } = useSchoolContext();
   const { theme } = useSchoolTheme();
   const [signInHovered, setSignInHovered] = useState(false);
+  const [schoolPillHovered, setSchoolPillHovered] = useState(false);
+  const [logoHovered, setLogoHovered] = useState(false);
+  const [logoTilt, setLogoTilt] = useState({ x: 0, y: 0 });
   const navigatedRef = useRef(false);
+  const logoSize = layout.isWeb ? 112 : 108;
 
   const goToPostLogin = useCallback(
     (reason: string) => {
@@ -273,14 +277,14 @@ export default function Login() {
         onPress={handleChangeSchool}
         activeOpacity={0.85}
         accessibilityRole="button"
-        accessibilityLabel={t("auth.login.changeSchool")}
+        accessibilityLabel={t("common.back")}
       >
-        <Ionicons name="swap-horizontal-outline" size={16} color="#1E3A8A" />
-        <Text style={styles.topActionLinkText}>
-          {t("auth.login.changeSchool")}
+        <Ionicons name="arrow-back" size={16} color={theme.primaryColor} />
+        <Text style={[styles.topActionLinkText, { color: theme.primaryColor }]}>
+          {t("common.back")}
         </Text>
       </TouchableOpacity>
-      <AuthAboutLink />
+      <AuthAboutLink color={theme.primaryColor} />
     </View>
   );
 
@@ -333,33 +337,148 @@ export default function Login() {
               <View style={styles.cardTopActions}>{topActions}</View>
             ) : null}
             <View style={styles.header}>
-              {selectedSchool?.logoUrl ? (
-                <Image
-                  source={{ uri: selectedSchool.logoUrl }}
+              <Pressable
+                focusable={false}
+                onHoverIn={() => {
+                  if (layout.isWeb) setLogoHovered(true);
+                }}
+                onHoverOut={() => {
+                  setLogoHovered(false);
+                  setLogoTilt({ x: 0, y: 0 });
+                }}
+                // RN Web pointer tracking for cursor-follow tilt
+                {...(Platform.OS === "web"
+                  ? ({
+                      onMouseMove: (event: {
+                        nativeEvent: { locationX?: number; locationY?: number };
+                      }) => {
+                        const x = event.nativeEvent.locationX ?? logoSize / 2;
+                        const y = event.nativeEvent.locationY ?? logoSize / 2;
+                        const nx = Math.max(
+                          -1,
+                          Math.min(1, (x / logoSize) * 2 - 1),
+                        );
+                        const ny = Math.max(
+                          -1,
+                          Math.min(1, (y / logoSize) * 2 - 1),
+                        );
+                        setLogoTilt({ x: nx, y: ny });
+                      },
+                    } as object)
+                  : null)}
+                style={[
+                  styles.logoStage,
+                  {
+                    width: logoSize,
+                    height: logoSize,
+                    borderRadius: logoSize / 2,
+                    ...(Platform.OS === "web"
+                      ? ({
+                          cursor: "pointer",
+                          perspective: 600,
+                        } as object)
+                      : null),
+                  },
+                ]}
+              >
+                <View
                   style={[
-                    styles.schoolLogo,
+                    styles.logoMotion,
                     {
-                      width: layout.isWeb ? 96 : 108,
-                      height: layout.isWeb ? 96 : 108,
+                      width: logoSize,
+                      height: logoSize,
+                      borderRadius: logoSize / 2,
+                      transform: [
+                        { perspective: 600 },
+                        {
+                          scale: logoHovered ? 1.14 : 1,
+                        },
+                        {
+                          translateX: logoHovered ? logoTilt.x * 10 : 0,
+                        },
+                        {
+                          translateY: logoHovered ? logoTilt.y * 10 : 0,
+                        },
+                        {
+                          rotateY: `${logoHovered ? logoTilt.x * 12 : 0}deg`,
+                        },
+                        {
+                          rotateX: `${logoHovered ? -logoTilt.y * 12 : 0}deg`,
+                        },
+                      ],
+                      ...(Platform.OS === "web"
+                        ? ({
+                            transitionProperty: logoHovered
+                              ? "box-shadow"
+                              : "transform, box-shadow",
+                            transitionDuration: logoHovered ? "60ms" : "220ms",
+                            transitionTimingFunction: "ease-out",
+                            boxShadow: logoHovered
+                              ? `0 18px 36px ${theme.primaryColor}40, 0 6px 14px rgba(15,23,42,0.12)`
+                              : `0 8px 20px ${theme.primaryColor}22`,
+                          } as object)
+                        : null),
                     },
                   ]}
-                  resizeMode="contain"
-                  accessibilityRole="image"
-                  accessibilityLabel={selectedSchool.name}
-                />
-              ) : (
-                <AppLogo size={layout.isWeb ? 96 : 108} />
-              )}
+                >
+                  {selectedSchool?.logoUrl ? (
+                    <Image
+                      source={{ uri: selectedSchool.logoUrl }}
+                      style={[
+                        styles.schoolLogo,
+                        {
+                          width: logoSize,
+                          height: logoSize,
+                          borderRadius: logoSize / 2,
+                        },
+                      ]}
+                      resizeMode="contain"
+                      accessibilityRole="image"
+                      accessibilityLabel={selectedSchool.name}
+                    />
+                  ) : (
+                    <AppLogo size={logoSize} />
+                  )}
+                </View>
+              </Pressable>
               <Text style={styles.title}>{t("auth.login.title")}</Text>
               <Text style={styles.subtitle}>{t("auth.login.subtitle")}</Text>
 
               {selectedSchool ? (
-                <View style={styles.schoolPill}>
-                  <Ionicons name="business-outline" size={16} color="#1D4ED8" />
-                  <Text style={styles.schoolPillText} numberOfLines={1}>
+                <Pressable
+                  onHoverIn={() => setSchoolPillHovered(true)}
+                  onHoverOut={() => setSchoolPillHovered(false)}
+                  style={[
+                    styles.schoolPill,
+                    {
+                      backgroundColor: schoolPillHovered
+                        ? theme.accentColor
+                        : theme.primaryColor,
+                      borderColor: schoolPillHovered
+                        ? theme.accentColor
+                        : theme.primaryColor,
+                      ...(Platform.OS === "web"
+                        ? ({
+                            cursor: "default",
+                            transitionProperty: "background-color, border-color, box-shadow",
+                            transitionDuration: "160ms",
+                            transitionTimingFunction: "ease-out",
+                            boxShadow: schoolPillHovered
+                              ? `0 8px 20px ${theme.accentColor}55`
+                              : `0 4px 14px ${theme.primaryColor}40`,
+                          } as object)
+                        : null),
+                    },
+                  ]}
+                >
+                  <Ionicons name="business-outline" size={16} color="#FFFFFF" />
+                  <Text
+                    style={[styles.schoolPillText, { color: "#FFFFFF" }]}
+                    numberOfLines={1}
+                  >
                     {selectedSchool.name}
                   </Text>
-                </View>
+                </Pressable>
               ) : null}
             </View>
 
@@ -380,6 +499,7 @@ export default function Login() {
                 testID="login-email"
                 label={t("auth.login.email")}
                 icon="mail-outline"
+                primaryColor={theme.primaryColor}
                 placeholder={t("auth.login.email")}
                 value={email}
                 onChangeText={(text) => {
@@ -397,6 +517,7 @@ export default function Login() {
                   label={t("auth.login.password")}
                   icon="lock-closed-outline"
                   isPassword
+                  primaryColor={theme.primaryColor}
                   placeholder={t("auth.login.password")}
                   value={password}
                   onChangeText={(text) => {
@@ -428,7 +549,9 @@ export default function Login() {
                 style={({ pressed }) => [
                   styles.primaryButton,
                   {
-                    backgroundColor: theme.primaryColor,
+                    backgroundColor: signInHovered
+                      ? theme.accentColor
+                      : theme.primaryColor,
                     transform: [
                       {
                         scale:
@@ -445,18 +568,17 @@ export default function Login() {
                       ? ({
                           cursor: busy ? "default" : "pointer",
                           transitionProperty:
-                            "transform, box-shadow, filter, background-color",
+                            "transform, box-shadow, background-color",
                           transitionDuration: "180ms",
                           transitionTimingFunction: "ease-out",
                           boxShadow: signInHovered
-                            ? `0 14px 32px ${theme.primaryColor}59`
+                            ? `0 14px 32px ${theme.accentColor}66`
                             : `0 8px 24px ${theme.primaryColor}40`,
-                          filter: signInHovered
-                            ? "brightness(1.08)"
-                            : "brightness(1)",
                         } as object)
                       : {
-                          shadowColor: theme.primaryColor,
+                          shadowColor: signInHovered
+                            ? theme.accentColor
+                            : theme.primaryColor,
                         }),
                   },
                   busy && styles.buttonDisabled,
@@ -621,7 +743,6 @@ const styles = StyleSheet.create({
   },
 
   topActionLinkText: {
-    color: "#1E3A8A",
     fontSize: 13,
     fontWeight: "700",
     flexShrink: 1,
@@ -669,9 +790,19 @@ const styles = StyleSheet.create({
   },
 
   schoolLogo: {
-    borderRadius: 20,
     backgroundColor: "#EFF6FF",
+  },
+  logoStage: {
     marginBottom: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "visible",
+  },
+  logoMotion: {
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    backgroundColor: "#FFFFFF",
   },
   schoolPill: {
     marginTop: 8,
@@ -680,19 +811,16 @@ const styles = StyleSheet.create({
     gap: 8,
     alignSelf: "center",
     maxWidth: "100%",
-    backgroundColor: "#EFF6FF",
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: "#BFDBFE",
   },
 
   schoolPillText: {
     flexShrink: 1,
     fontSize: 13,
     fontWeight: "700",
-    color: "#1E3A8A",
   },
 
   formBody: {

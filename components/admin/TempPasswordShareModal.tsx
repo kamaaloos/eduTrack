@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  ActivityIndicator,
   Modal,
   Platform,
   Pressable,
@@ -23,6 +22,7 @@ import {
   buildTempPasswordPayload,
   encodeTempPasswordPayload,
 } from "../../src/utils/tempPasswordCard";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 
 const isWeb = Platform.OS === "web";
 
@@ -165,21 +165,17 @@ export function TempPasswordShareModal({
             >
               <Text style={styles.secondaryBtnText}>{t("common.close")}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.primaryBtn, printing && styles.btnDisabled]}
+            <SchoolThemeButton
+              label={
+                Platform.OS === "web"
+                  ? t("admin.tempPasswordPrint")
+                  : t("admin.tempPasswordSavePdf")
+              }
               onPress={() => void handlePrint()}
+              loading={printing}
               disabled={printing}
-            >
-              {printing ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text style={styles.primaryBtnText}>
-                  {Platform.OS === "web"
-                    ? t("admin.tempPasswordPrint")
-                    : t("admin.tempPasswordSavePdf")}
-                </Text>
-              )}
-            </TouchableOpacity>
+              style={styles.primaryBtnFlex}
+            />
           </View>
         </Pressable>
       </Pressable>
@@ -316,15 +312,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   secondaryBtnText: { fontWeight: "700", color: "#475569" },
-  primaryBtn: {
+  primaryBtnFlex: {
     flex: 1,
-    paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor: "#2563EB",
-    alignItems: "center",
-    minHeight: 48,
-    justifyContent: "center",
   },
-  primaryBtnText: { fontWeight: "700", color: "#FFFFFF" },
-  btnDisabled: { opacity: 0.65 },
 });

@@ -15,13 +15,6 @@ export const adminAcademicStyles = StyleSheet.create({
   },
   noticeTitle: { fontSize: 17, fontWeight: "800", color: "#92400E", marginBottom: 8 },
   noticeText: { fontSize: 14, color: "#78350F", lineHeight: 20, marginBottom: 12 },
-  noticeBtn: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  noticeBtnText: { color: "#FFFFFF", fontWeight: "700" },
   card: {
     backgroundColor: "white",
     padding: 16,
@@ -42,6 +35,4 @@ export const adminAcademicStyles = StyleSheet.create({
     minHeight: 88,
     textAlignVertical: "top",
   },
-  button: { backgroundColor: "#007AFF", padding: 12, borderRadius: 10 },
-  buttonText: { color: "white", textAlign: "center", fontWeight: "600" },
 });

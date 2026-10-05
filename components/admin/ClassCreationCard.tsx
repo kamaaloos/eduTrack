@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
@@ -49,17 +43,12 @@ export const ClassCreationCard: React.FC<ClassCreationCardProps> = ({
         editable={!loading}
       />
 
-      <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
+      <SchoolThemeButton
+        label={t("admin.createClass")}
         onPress={handleCreateClass}
+        loading={loading}
         disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={styles.buttonText}>{t("admin.createClass")}</Text>
-        )}
-      </TouchableOpacity>
+      />
     </View>
   );
 };
@@ -85,21 +74,5 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 12,
     backgroundColor: "white",
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 48,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
   },
 });

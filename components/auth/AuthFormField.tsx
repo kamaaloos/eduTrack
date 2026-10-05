@@ -17,6 +17,8 @@ type AuthFormFieldProps = TextInputProps & {
   label?: string;
   icon: keyof typeof Ionicons.glyphMap;
   isPassword?: boolean;
+  /** Border / icon / hover shadow accent (defaults to app blue). */
+  primaryColor?: string;
   containerStyle?: StyleProp<ViewStyle>;
   fieldStyle?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
@@ -26,6 +28,7 @@ export function AuthFormField({
   label,
   icon,
   isPassword = false,
+  primaryColor = "#2563EB",
   containerStyle,
   fieldStyle,
   inputStyle,
@@ -35,24 +38,50 @@ export function AuthFormField({
 }: AuthFormFieldProps) {
   const [visible, setVisible] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const active = editable && (focused || hovered);
+  const iconColor = editable ? (active ? primaryColor : "#64748B") : "#9CA3AF";
 
   return (
     <View style={[styles.container, containerStyle]}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
-      <View
+      <Pressable
+        focusable={false}
+        onHoverIn={() => {
+          if (editable) setHovered(true);
+        }}
+        onHoverOut={() => setHovered(false)}
         style={[
           styles.field,
-          focused && styles.fieldFocused,
+          active && {
+            borderColor: primaryColor,
+            backgroundColor: "#FFFFFF",
+            ...(Platform.OS === "web"
+              ? ({
+                  boxShadow: `0 0 0 3px ${primaryColor}22, 0 10px 24px ${primaryColor}33`,
+                } as object)
+              : {
+                  shadowColor: primaryColor,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.18,
+                  shadowRadius: 10,
+                  elevation: 3,
+                }),
+          },
           !editable && styles.fieldDisabled,
           fieldStyle,
+          Platform.OS === "web"
+            ? ({
+                transitionProperty: "border-color, box-shadow, background-color",
+                transitionDuration: "160ms",
+                transitionTimingFunction: "ease-out",
+              } as object)
+            : null,
         ]}
       >
         <View style={styles.leadingIcon}>
-          <Ionicons
-            name={icon}
-            size={20}
-            color={editable ? "#2563EB" : "#9CA3AF"}
-          />
+          <Ionicons name={icon} size={20} color={iconColor} />
         </View>
         <TextInput
           {...rest}
@@ -73,7 +102,11 @@ export function AuthFormField({
           <Pressable
             style={({ pressed }) => [
               styles.visibilityToggle,
-              pressed && styles.visibilityTogglePressed,
+              {
+                backgroundColor: `${primaryColor}14`,
+                borderColor: `${primaryColor}55`,
+              },
+              pressed && { opacity: 0.85 },
               editable === false && styles.visibilityToggleDisabled,
             ]}
             onPress={() => setVisible((v) => !v)}
@@ -85,11 +118,11 @@ export function AuthFormField({
             <Ionicons
               name={visible ? "eye-off" : "eye"}
               size={20}
-              color={editable ? "#1D4ED8" : "#9CA3AF"}
+              color={editable ? primaryColor : "#9CA3AF"}
             />
           </Pressable>
         ) : null}
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -113,10 +146,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: "#FFFFFF",
     minHeight: 54,
-  },
-  fieldFocused: {
-    borderColor: "#2563EB",
-    backgroundColor: "#FFFFFF",
   },
   fieldDisabled: {
     opacity: 0.65,
@@ -148,14 +177,9 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 6,
-    backgroundColor: "#EFF6FF",
     borderWidth: 1,
-    borderColor: "#BFDBFE",
     alignItems: "center",
     justifyContent: "center",
-  },
-  visibilityTogglePressed: {
-    backgroundColor: "#DBEAFE",
   },
   visibilityToggleDisabled: {
     backgroundColor: "#F3F4F6",

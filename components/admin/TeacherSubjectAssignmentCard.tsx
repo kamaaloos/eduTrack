@@ -18,6 +18,7 @@ import {
 } from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { innerCardBorderStyle } from "../../src/constants/innerCardBorders";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { Selector } from "./Selector";
 
 export function TeacherSubjectAssignmentCard() {
@@ -162,17 +163,13 @@ export function TeacherSubjectAssignmentCard() {
         />
       )}
 
-      <TouchableOpacity
-        style={[styles.button, busy && styles.buttonDisabled]}
+      <SchoolThemeButton
+        label={t("common.assign")}
         onPress={handleAssign}
+        loading={relationsLoading}
         disabled={busy}
-      >
-        {relationsLoading ? (
-          <ActivityIndicator color="#FFFFFF" />
-        ) : (
-          <Text style={styles.buttonText}>{t("common.assign")}</Text>
-        )}
-      </TouchableOpacity>
+        style={styles.assignButton}
+      />
 
       <Text style={styles.listTitle}>{t("admin.currentAssignments")}</Text>
       {loadingList ? (
@@ -225,17 +222,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 12,
   },
-  button: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 48,
-    marginTop: 4,
-  },
-  buttonDisabled: { opacity: 0.6 },
-  buttonText: { color: "white", fontWeight: "700", fontSize: 16 },
+  assignButton: { marginTop: 4 },
   listTitle: {
     fontSize: 16,
     fontWeight: "700",

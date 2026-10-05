@@ -14,6 +14,7 @@ import {
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminParentsOverview } from "../../components/admin/AdminParentsOverview";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
+import { AdminWebDashboardBody } from "../../components/admin/web/AdminWebDashboardBody";
 import { SchoolTermCard } from "../../components/admin/SchoolTermCard";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { AuthContext } from "../../src/context/authContext";
@@ -79,6 +80,39 @@ export default function AdminDashboard() {
         : null,
     [selectedSchool],
   );
+
+  const webPeriodNotice = useMemo(() => {
+    if (!periodNotice) return null;
+    return {
+      remainingDays: periodNotice.remainingDays,
+      title:
+        periodNotice.kind === "testing"
+          ? t("admin.testingPeriodNoticeTitle")
+          : periodNotice.kind === "usage"
+            ? t("admin.usageSubscriptionNoticeTitle")
+            : t("admin.usageActivationNoticeTitle"),
+      expiredText:
+        periodNotice.kind === "testing"
+          ? t("admin.testingExpiredNotice")
+          : periodNotice.kind === "usage"
+            ? t("admin.usageExpiredNotice")
+            : t("admin.usageActivationExpiredNotice"),
+      remainingText:
+        periodNotice.kind === "activation_grace"
+          ? t("admin.usageActivationRemainingDays", {
+              count: periodNotice.remainingDays,
+            })
+          : t("admin.usageTimeRemainingDays", {
+              count: periodNotice.remainingDays,
+            }),
+      hintText:
+        periodNotice.kind === "testing"
+          ? t("admin.testingContactHint")
+          : periodNotice.kind === "usage"
+            ? t("admin.usageRechargeHint")
+            : t("admin.usageActivationHint"),
+    };
+  }, [periodNotice, t]);
 
   const directoryItems = useMemo(
     () => [
@@ -298,6 +332,94 @@ export default function AdminDashboard() {
     }
   };
 
+  const webShortcutsList = useMemo(
+    () => [
+      {
+        key: "dir-students",
+        label: t("admin.students"),
+        icon: "people" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/user-directory/student",
+        subtitle: String(students.length),
+      },
+      {
+        key: "dir-teachers",
+        label: t("admin.teachers"),
+        icon: "briefcase" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/user-directory/teacher",
+        subtitle: String(teachers.length),
+      },
+      {
+        key: "dir-parents",
+        label: t("admin.parents"),
+        icon: "home" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/user-directory/parent",
+        subtitle: String(parents.length),
+      },
+      {
+        key: "dir-classes",
+        label: t("admin.classes"),
+        icon: "library" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/class-directory",
+        subtitle: String(classes.length),
+      },
+      {
+        key: "users",
+        label: t("admin.users"),
+        icon: "people-outline" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/users",
+      },
+      {
+        key: "assignments",
+        label: t("admin.assignments"),
+        icon: "git-network-outline" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/assignments",
+      },
+      {
+        key: "analytics",
+        label: t("admin.analytics"),
+        icon: "bar-chart-outline" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/analytics",
+      },
+      {
+        key: "performance",
+        label: t("admin.performance"),
+        icon: "trending-up-outline" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/performance",
+      },
+      {
+        key: "certificates",
+        label: t("certificates.adminMenu"),
+        icon: "document-text-outline" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/certificates",
+      },
+      {
+        key: "complaints",
+        label: t("admin.complaintsTitle"),
+        icon: "chatbubble-ellipses-outline" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/complaints",
+      },
+      {
+        key: "system",
+        label: t("admin.system"),
+        icon: "settings-outline" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/system",
+      },
+      {
+        key: "profile",
+        label: t("admin.myProfile"),
+        icon: "person-circle-outline" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/profile",
+      },
+      {
+        key: "notifications",
+        label: t("admin.notificationsTitle"),
+        icon: "notifications-outline" as keyof typeof Ionicons.glyphMap,
+        route: "/(admin)/notifications",
+      },
+    ],
+    [t, students.length, teachers.length, parents.length, classes.length],
+  );
+
   const statItems = [
     {
       key: "students",
@@ -331,6 +453,27 @@ export default function AdminDashboard() {
 
   return (
     <ErrorBoundary>
+      {layout.isDesktopWeb ? (
+        <AdminScreenShell
+          title={t("admin.dashboardTitle")}
+          subtitle={t("admin.dashboardSubtitle")}
+          showNotifications
+          showCurrentTerm
+          webExpandMain
+        >
+          <AdminWebDashboardBody
+            adminUid={user?.uid}
+            students={students.length}
+            teachers={teachers.length}
+            parents={parents.length}
+            classes={classes.length}
+            shortcuts={webShortcutsList}
+            periodNotice={webPeriodNotice}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        </AdminScreenShell>
+      ) : (
       <AdminScreenShell
         title={t("admin.dashboardTitle")}
         subtitle={t("admin.dashboardSubtitle")}
@@ -564,6 +707,7 @@ export default function AdminDashboard() {
           <View style={{ height: 32 }} />
         </ScrollView>
       </AdminScreenShell>
+      )}
     </ErrorBoundary>
   );
 }

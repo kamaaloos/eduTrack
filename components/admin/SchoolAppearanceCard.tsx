@@ -1,12 +1,7 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import { setSchoolAppearance } from "../../src/services/schoolAppearance";
@@ -68,17 +63,13 @@ export function SchoolAppearanceCard() {
             {t("schoolTheme.resetToRegistry")}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.primaryButton, saving && styles.disabled]}
+        <SchoolThemeButton
+          label={t("common.save")}
           onPress={() => void handleSave()}
+          loading={saving}
           disabled={saving}
-        >
-          {saving ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.primaryButtonText}>{t("common.save")}</Text>
-          )}
-        </TouchableOpacity>
+          style={styles.primaryButtonFlex}
+        />
       </View>
     </View>
   );
@@ -123,19 +114,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 13,
   },
-  primaryButton: {
+  primaryButtonFlex: {
     flex: 1,
     borderRadius: 12,
-    backgroundColor: "#1E3A8A",
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  primaryButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 13,
-  },
-  disabled: {
-    opacity: 0.7,
   },
 });

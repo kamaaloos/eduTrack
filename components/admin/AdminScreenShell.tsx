@@ -17,6 +17,8 @@ type AdminScreenShellProps = {
   showBack?: boolean;
   showNotifications?: boolean;
   showCurrentTerm?: boolean;
+  /** Desktop web: use full main width (admin dashboard layout). */
+  webExpandMain?: boolean;
   children: ReactNode;
 };
 
@@ -26,6 +28,7 @@ export function AdminScreenShell({
   showBack = false,
   showNotifications = false,
   showCurrentTerm = false,
+  webExpandMain = false,
   children,
 }: AdminScreenShellProps) {
   const layout = usePlatformLayout();
@@ -38,7 +41,10 @@ export function AdminScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame sidebarLayout={layout.isDesktopWeb}>
+      <WebPageCardFrame
+        sidebarLayout={layout.isDesktopWeb && !webExpandMain}
+        adminDashboardLayout={layout.isDesktopWeb && webExpandMain}
+      >
         <AdminScreenHeader
           title={title}
           subtitle={subtitle}

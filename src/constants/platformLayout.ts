@@ -239,19 +239,37 @@ function webHorizontalPadding(layout: PlatformLayout): number {
 }
 
 /** Outer frame padding around the main web page card. */
-export function webPageFrameStyle(layout: PlatformLayout): ViewStyle {
+export function webPageFrameStyle(
+  layout: PlatformLayout,
+  options?: { expand?: boolean },
+): ViewStyle {
   if (!layout.isWeb) {
     return {};
   }
 
-  const pad = webHorizontalPadding(layout);
+  const pad = options?.expand ? 8 : webHorizontalPadding(layout);
   return {
     flex: 1,
     width: "100%",
-    alignItems: "center",
+    alignItems: options?.expand ? "stretch" : "center",
     paddingHorizontal: pad,
-    paddingTop: 12,
-    paddingBottom: 8,
+    paddingTop: options?.expand ? 8 : 12,
+    paddingBottom: options?.expand ? 8 : 8,
+  };
+}
+
+/** Full-width main card beside admin themed sidebar (desktop web dashboard). */
+export function webAdminDashboardFrameStyle(layout: PlatformLayout): ViewStyle {
+  if (!layout.isWeb) {
+    return {};
+  }
+
+  return {
+    flex: 1,
+    alignSelf: "stretch",
+    width: "100%",
+    maxWidth: "100%",
+    minHeight: 0,
   };
 }
 

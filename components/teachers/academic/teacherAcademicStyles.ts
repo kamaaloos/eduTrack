@@ -19,9 +19,6 @@ export const teacherAcademicStyles = StyleSheet.create({
     height: 42,
     justifyContent: "center",
   },
-  activeTab: {
-    backgroundColor: "#2563EB",
-  },
   tabText: {
     color: "#374151",
     fontWeight: "600",
@@ -63,18 +60,6 @@ export const teacherAcademicStyles = StyleSheet.create({
   textArea: {
     minHeight: 100,
     textAlignVertical: "top",
-  },
-  button: {
-    backgroundColor: "#2563EB",
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
   },
   classLoader: {
     paddingVertical: 12,

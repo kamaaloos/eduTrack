@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { UserAvatar } from "../common/UserAvatar";
 import { PasswordInput } from "../PasswordInput";
 import { AuthContext } from "../../src/context/authContext";
@@ -330,17 +331,12 @@ export function ProfileScreen({
           placeholder="Full name"
           editable={!savingName}
         />
-        <TouchableOpacity
-          style={[styles.primaryBtn, savingName && styles.btnDisabled]}
+        <SchoolThemeButton
+          label={t("profile.saveName")}
           onPress={saveName}
+          loading={savingName}
           disabled={savingName}
-        >
-          {savingName ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.primaryBtnText}>{t("profile.saveName")}</Text>
-          )}
-        </TouchableOpacity>
+        />
       </View>
 
       <View style={styles.card}>
@@ -364,17 +360,12 @@ export function ProfileScreen({
           placeholder={t("profile.currentPassword")}
           editable={!savingEmail}
         />
-        <TouchableOpacity
-          style={[styles.primaryBtn, savingEmail && styles.btnDisabled]}
+        <SchoolThemeButton
+          label={t("profile.updateEmail")}
           onPress={saveEmail}
+          loading={savingEmail}
           disabled={savingEmail}
-        >
-          {savingEmail ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.primaryBtnText}>{t("profile.updateEmail")}</Text>
-          )}
-        </TouchableOpacity>
+        />
       </View>
 
       <View style={styles.card}>
@@ -404,17 +395,12 @@ export function ProfileScreen({
           placeholder={t("profile.confirmPassword")}
           editable={!savingPassword}
         />
-        <TouchableOpacity
-          style={[styles.primaryBtn, savingPassword && styles.btnDisabled]}
+        <SchoolThemeButton
+          label={t("profile.updatePassword")}
           onPress={savePassword}
+          loading={savingPassword}
           disabled={savingPassword}
-        >
-          {savingPassword ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.primaryBtnText}>{t("profile.updatePassword")}</Text>
-          )}
-        </TouchableOpacity>
+        />
       </View>
 
       <View style={styles.infoCard}>
@@ -557,16 +543,6 @@ const styles = StyleSheet.create({
       ? ({ boxSizing: "border-box" } as object)
       : null),
   },
-  primaryBtn: {
-    backgroundColor: "#2563EB",
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: "center",
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  primaryBtnText: { color: "#FFFFFF", fontWeight: "700", fontSize: 15 },
-  btnDisabled: { opacity: 0.6 },
   infoCard: {
     flexDirection: "row",
     gap: 10,

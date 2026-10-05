@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, TouchableOpacity } from "react-native";
+import { Platform, Pressable, ScrollView, Text } from "react-native";
+import { useSchoolTheme } from "../../../src/context/schoolThemeContext";
 import type { AcademicTab } from "./teacherAcademicTypes";
 import { teacherAcademicStyles as styles } from "./teacherAcademicStyles";
 
@@ -19,15 +21,32 @@ function TabButton({
   activeTab: AcademicTab;
   onPress: (tab: AcademicTab) => void;
 }) {
+  const { theme } = useSchoolTheme();
+  const [hovered, setHovered] = useState(false);
+  const isActive = activeTab === value;
+  const backgroundColor = isActive
+    ? hovered
+      ? theme.accentColor
+      : theme.primaryColor
+    : "white";
+
   return (
-    <TouchableOpacity
-      style={[styles.tabButton, activeTab === value && styles.activeTab]}
+    <Pressable
+      style={[
+        styles.tabButton,
+        isActive && { backgroundColor },
+        Platform.OS === "web" && !isActive
+          ? ({ cursor: "pointer" } as object)
+          : null,
+      ]}
       onPress={() => onPress(value)}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
     >
-      <Text style={[styles.tabText, activeTab === value && styles.activeTabText]}>
+      <Text style={[styles.tabText, isActive && styles.activeTabText]}>
         {title}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

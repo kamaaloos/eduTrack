@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TextInput, View } from "react-native";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import type { useAdminAcademic } from "../../hooks/useAdminAcademic";
 import { FormDateInput } from "../common/FormDateInput";
 import { AdminScreenShell } from "./AdminScreenShell";
@@ -54,12 +55,10 @@ export function AdminAcademicView(props: AdminAcademicViewProps) {
             📅 {t("admin.timetableNoticeTitle")}
           </Text>
           <Text style={styles.noticeText}>{t("admin.timetableNoticeText")}</Text>
-          <TouchableOpacity
-            style={styles.noticeBtn}
+          <SchoolThemeButton
+            label={t("admin.openClassSchedule")}
             onPress={() => router.push("/(admin)/classes")}
-          >
-            <Text style={styles.noticeBtnText}>{t("admin.openClassSchedule")}</Text>
-          </TouchableOpacity>
+          />
         </View>
 
         <TextInput

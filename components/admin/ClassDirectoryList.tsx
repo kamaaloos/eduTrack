@@ -16,6 +16,7 @@ import type { ClassData } from "../../hooks/useAdminClasses";
 import { usePaginatedList } from "../../hooks/usePaginatedList";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useAdminData } from "../../src/context/adminDataContext";
+import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import {
   adminDirectoryCardStyle,
   adminDirectoryCardsWrapStyle,
@@ -329,17 +330,13 @@ export function ClassDirectoryList() {
               >
                 <Text style={styles.cancelBtnText}>{t("common.cancel")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.saveBtn, saving && styles.btnDisabled]}
+              <SchoolThemeButton
+                label={t("common.save")}
                 onPress={() => void saveEdit()}
-                disabled={saving}
-              >
-                {saving ? (
-                  <ActivityIndicator color="#FFFFFF" />
-                ) : (
-                  <Text style={styles.saveBtnText}>{t("common.save")}</Text>
-                )}
-              </TouchableOpacity>
+                loading={saving}
+                style={styles.saveBtn}
+                textStyle={styles.saveBtnText}
+              />
             </View>
           </Pressable>
         </Pressable>
@@ -468,13 +465,7 @@ const styles = StyleSheet.create({
   cancelBtnText: { fontWeight: "700", color: "#475569" },
   saveBtn: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: "#2563EB",
-    alignItems: "center",
-    minHeight: 48,
-    justifyContent: "center",
   },
-  saveBtnText: { fontWeight: "700", color: "#FFFFFF" },
+  saveBtnText: { fontWeight: "700", color: "#FFFFFF", fontSize: 15 },
   btnDisabled: { opacity: 0.6 },
 });
