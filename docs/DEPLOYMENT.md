@@ -48,8 +48,8 @@ Enable **Firebase Storage** on the registry project, then deploy:
 
 ```bash
 firebase use <registry-project-id>
-# Paste rules from registry.storage.rules in the Firebase console → Storage → Rules,
-# or add firebase.registry.json pointing at registry.storage.rules and run:
+# Deploys registry.storage.rules (schoolLogos/*) — do NOT use firebase.json here
+# (that file points at school storage.rules).
 firebase deploy --only storage --config firebase.registry.json
 ```
 

@@ -35,6 +35,9 @@ export function getSchoolLogoErrorKey(err: unknown): string {
   }
 
   const code = firebaseErrorCode(err);
+  if (code) {
+    console.warn("schoolLogo upload error:", code, err);
+  }
   switch (code) {
     case "storage/unauthorized":
     case "storage/unauthenticated":
