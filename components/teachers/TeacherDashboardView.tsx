@@ -1,5 +1,6 @@
 import { RefreshControl, ScrollView, View } from "react-native";
 import { useWebDashboardContentStyle } from "../../src/constants/dashboardWebLayout";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { WebDashboardColumns } from "../layout/WebDashboardColumns";
 import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
@@ -49,12 +50,16 @@ export function TeacherDashboardView({
   onRefresh,
   onMenuPress,
 }: TeacherDashboardViewProps) {
+  const layout = usePlatformLayout();
   const dashboardContentStyle = useWebDashboardContentStyle();
 
   return (
     <View style={styles.mainContainer}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame sidebarLayout>
+      <WebPageCardFrame
+        sidebarLayout={false}
+        adminDashboardLayout={layout.isDesktopWeb}
+      >
         <TeacherDashboardHeader
           displayName={displayName}
           photoURL={photoURL}
@@ -65,7 +70,17 @@ export function TeacherDashboardView({
 
         <ScrollView
           style={[styles.container, webPageBodyStyle()]}
-        contentContainerStyle={[styles.scrollContent, dashboardContentStyle]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          layout.isDesktopWeb
+            ? {
+                width: "100%",
+                paddingHorizontal: 20,
+                paddingTop: 16,
+                paddingBottom: 8,
+              }
+            : dashboardContentStyle,
+        ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

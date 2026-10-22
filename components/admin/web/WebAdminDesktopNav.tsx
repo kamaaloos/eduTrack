@@ -16,18 +16,24 @@ import { AuthContext } from "../../../src/context/authContext";
 import { useSchoolContext } from "../../../src/context/schoolContext";
 import { useSchoolTheme } from "../../../src/context/schoolThemeContext";
 
-type WebAdminDesktopNavProps = {
-  items: AdminSideMenuItem[];
-  children: ReactNode;
-};
-
-type NavGroup = {
+export type WebThemedNavGroup = {
   id: string;
   labelKey: string;
   keys: string[];
 };
 
-const GROUPS: NavGroup[] = [
+type WebAdminDesktopNavProps = {
+  items: AdminSideMenuItem[];
+  children: ReactNode;
+  /** Nav sections; defaults to admin groups. */
+  groups?: WebThemedNavGroup[];
+  /** Active item from route segments; defaults to admin resolver. */
+  resolveActiveKey?: (segments: string[]) => string | null;
+  /** i18n key for the role label under the profile name. */
+  roleLabelKey?: string;
+};
+
+const ADMIN_GROUPS: WebThemedNavGroup[] = [
   {
     id: "general",
     labelKey: "admin.webNavGroupGeneral",
@@ -51,7 +57,20 @@ const GROUPS: NavGroup[] = [
   },
 ];
 
-function resolveActiveKey(segments: string[]): string | null {
+export const TEACHER_WEB_NAV_GROUPS: WebThemedNavGroup[] = [
+  {
+    id: "general",
+    labelKey: "admin.webNavGroupGeneral",
+    keys: ["dashboard", "profile"],
+  },
+  {
+    id: "teaching",
+    labelKey: "teacher.webNavGroupTeaching",
+    keys: ["attendance", "academic", "exams", "absences"],
+  },
+];
+
+export function resolveAdminActiveKey(segments: string[]): string | null {
   const path = segments.join("/");
   if (path.includes("dashboard")) return "dashboard";
   if (path.includes("profile")) return "profile";
@@ -67,16 +86,39 @@ function resolveActiveKey(segments: string[]): string | null {
   return null;
 }
 
+export function resolveTeacherActiveKey(segments: string[]): string | null {
+  const path = segments.join("/");
+  if (path.includes("dashboard")) return "dashboard";
+  if (path.includes("logout")) return "profile";
+  if (path.includes("attendance")) return "attendance";
+  if (
+    path.includes("academic") ||
+    path.includes("homework") ||
+    path.includes("remarks") ||
+    path.includes("messages") ||
+    (path.includes("exams") && !path.includes("exam-reports"))
+  ) {
+    return "academic";
+  }
+  if (
+    path.includes("exam-reports") ||
+    path.includes("grades") ||
+    path.includes("student-report")
+  ) {
+    return "exams";
+  }
+  if (path.includes("absence")) return "absences";
+  return null;
+}
+
 function NavItemButton({
   item,
   active,
-  primaryColor,
   accentColor,
   fontFamily,
 }: {
   item: AdminSideMenuItem;
   active: boolean;
-  primaryColor: string;
   accentColor: string;
   fontFamily?: string | null;
 }) {
@@ -136,13 +178,22 @@ function NavItemButton({
   );
 }
 
-export function WebAdminDesktopNav({ items, children }: WebAdminDesktopNavProps) {
+export function WebAdminDesktopNav({
+  items,
+  children,
+  groups = ADMIN_GROUPS,
+  resolveActiveKey = resolveAdminActiveKey,
+  roleLabelKey = "common.admin",
+}: WebAdminDesktopNavProps) {
   const { t } = useTranslation();
   const segments = useSegments();
   const { selectedSchool } = useSchoolContext();
   const { userData } = useContext(AuthContext);
   const { theme, fontFamily } = useSchoolTheme();
-  const activeKey = useMemo(() => resolveActiveKey([...segments]), [segments]);
+  const activeKey = useMemo(
+    () => resolveActiveKey([...segments]),
+    [segments, resolveActiveKey],
+  );
 
   const itemByKey = useMemo(() => {
     const map = new Map<string, AdminSideMenuItem>();
@@ -186,9 +237,9 @@ export function WebAdminDesktopNav({ items, children }: WebAdminDesktopNavProps)
           </View>
           <View style={styles.profileMeta}>
             <Text style={styles.profileName} numberOfLines={1}>
-              {userData?.name ?? t("common.admin")}
+              {userData?.name ?? t(roleLabelKey)}
             </Text>
-            <Text style={styles.profileRole}>{t("common.admin")}</Text>
+            <Text style={styles.profileRole}>{t(roleLabelKey)}</Text>
           </View>
         </View>
 
@@ -197,7 +248,7 @@ export function WebAdminDesktopNav({ items, children }: WebAdminDesktopNavProps)
           contentContainerStyle={styles.sidebarItems}
           showsVerticalScrollIndicator={false}
         >
-          {GROUPS.map((group) => {
+          {groups.map((group) => {
             const groupItems = group.keys
               .map((key) => itemByKey.get(key))
               .filter((item): item is AdminSideMenuItem => Boolean(item));
@@ -210,7 +261,6 @@ export function WebAdminDesktopNav({ items, children }: WebAdminDesktopNavProps)
                     key={item.key}
                     item={item}
                     active={activeKey === item.key}
-                    primaryColor={theme.primaryColor}
                     accentColor={theme.accentColor}
                     fontFamily={fontFamily}
                   />
@@ -222,7 +272,6 @@ export function WebAdminDesktopNav({ items, children }: WebAdminDesktopNavProps)
             <NavItemButton
               item={logoutItem}
               active={false}
-              primaryColor={theme.primaryColor}
               accentColor={theme.accentColor}
               fontFamily={fontFamily}
             />

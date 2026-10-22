@@ -23,7 +23,6 @@ import {
   adminDirectoryCardStyle,
   adminDirectoryCardsWrapStyle,
   adminDirectoryTableHeadStyle,
-  adminDirectoryTableRowStyle,
   adminModalAnimationType,
   adminModalBackdropStyle,
   adminModalCardStyle,
@@ -44,8 +43,10 @@ import {
   type TeacherClassLink,
 } from "../../src/utils/teacherDirectoryDisplay";
 import { AuthFormField } from "../auth/AuthFormField";
-import { TempPasswordShareModal } from "./TempPasswordShareModal";
+import { AdminDirectoryHoverSurface } from "./AdminDirectoryTableRow";
+import { AdminDirectoryTableRow } from "./AdminDirectoryTableRow";
 import { DirectoryPagination } from "./DirectoryPagination";
+import { TempPasswordShareModal } from "./TempPasswordShareModal";
 
 type UserDirectoryListProps = {
   role: UserRole;
@@ -122,8 +123,10 @@ function UserDirectoryCard({
   layout,
   showClassMeta,
   showTeacherMeta,
+  showParentMeta,
   classNameById,
   teacherMetaById,
+  parentNamesByStudentId,
   onEdit,
   onPassword,
   onRemove,
@@ -132,8 +135,10 @@ function UserDirectoryCard({
   layout: ReturnType<typeof usePlatformLayout>;
   showClassMeta: boolean;
   showTeacherMeta: boolean;
+  showParentMeta: boolean;
   classNameById: Record<string, string>;
   teacherMetaById: Record<string, { classes: string; subjects: string }>;
+  parentNamesByStudentId: Record<string, string>;
   onEdit: (user: UserData) => void;
   onPassword: (user: UserData) => void;
   onRemove: (user: UserData) => void;
@@ -142,7 +147,7 @@ function UserDirectoryCard({
   const teacherMeta = teacherMetaById[item.id];
 
   return (
-    <View style={adminDirectoryCardStyle(layout)}>
+    <AdminDirectoryHoverSurface style={adminDirectoryCardStyle(layout)}>
       <View style={styles.cardTop}>
         <UserAvatar
           name={item.name}
@@ -170,6 +175,12 @@ function UserDirectoryCard({
               {resolveClassDisplayName(item.classId, classNameById)}
             </Text>
           ) : null}
+          {showParentMeta ? (
+            <Text style={styles.meta} numberOfLines={2}>
+              {t("admin.parentColumn")}:{" "}
+              {parentNamesByStudentId[item.id] || "—"}
+            </Text>
+          ) : null}
           {showTeacherMeta ? (
             <>
               <Text style={styles.meta} numberOfLines={2}>
@@ -189,7 +200,7 @@ function UserDirectoryCard({
         onPassword={onPassword}
         onRemove={onRemove}
       />
-    </View>
+    </AdminDirectoryHoverSurface>
   );
 }
 
@@ -205,6 +216,7 @@ export function UserDirectoryList({
   const layout = usePlatformLayout();
   const showTableLayout = layout.isDesktopWeb;
   const showClassColumn = role === "student";
+  const showParentColumn = role === "student";
   const showTeacherColumns = role === "teacher";
   const roleLabel = t(`common.${role}`);
   const {
@@ -213,6 +225,7 @@ export function UserDirectoryList({
     setUserPassword,
     removeUser,
     classes,
+    parents,
     loadTeacherSubjectAssignments,
   } = useAdminData();
   const [search, setSearch] = useState("");
@@ -222,6 +235,9 @@ export function UserDirectoryList({
   const [teacherClassLinks, setTeacherClassLinks] = useState<TeacherClassLink[]>(
     [],
   );
+  const [parentStudentLinks, setParentStudentLinks] = useState<
+    { parentId: string; studentId: string }[]
+  >([]);
   const [editing, setEditing] = useState<UserData | null>(null);
   const [passwordUser, setPasswordUser] = useState<UserData | null>(null);
   const [newPassword, setNewPassword] = useState("");
@@ -281,11 +297,71 @@ export function UserDirectoryList({
     }
   }, [loadTeacherSubjectAssignments, role]);
 
+  const loadParentLinks = useCallback(async () => {
+    if (role !== "student" || !db) return;
+    try {
+      const snap = await getDocs(collection(db, "parentStudents"));
+      setParentStudentLinks(
+        snap.docs
+          .map((docSnap) => {
+            const data = docSnap.data();
+            return {
+              parentId: (data.parentId as string | undefined) ?? "",
+              studentId: (data.studentId as string | undefined) ?? "",
+            };
+          })
+          .filter((link) => link.parentId && link.studentId),
+      );
+    } catch (err) {
+      console.error("Load student parent links:", err);
+    }
+  }, [role]);
+
   useFocusEffect(
     useCallback(() => {
       void loadTeacherMeta();
-    }, [loadTeacherMeta]),
+      void loadParentLinks();
+    }, [loadTeacherMeta, loadParentLinks]),
   );
+
+  const parentNamesByStudentId = useMemo(() => {
+    if (!showParentColumn) return {} as Record<string, string>;
+
+    const parentLabelById = Object.fromEntries(
+      parents.map((parent) => [
+        parent.id,
+        parent.name?.trim() || parent.email || parent.id,
+      ]),
+    ) as Record<string, string>;
+
+    const namesByStudent = new Map<string, string[]>();
+    const pushName = (studentId: string, name: string) => {
+      const existing = namesByStudent.get(studentId) ?? [];
+      if (!existing.includes(name)) {
+        namesByStudent.set(studentId, [...existing, name]);
+      }
+    };
+
+    for (const link of parentStudentLinks) {
+      const name = parentLabelById[link.parentId];
+      if (name) pushName(link.studentId, name);
+    }
+
+    for (const parent of parents) {
+      const name = parentLabelById[parent.id];
+      if (!name) continue;
+      for (const studentId of parent.linkedStudentIds ?? []) {
+        pushName(studentId, name);
+      }
+    }
+
+    return Object.fromEntries(
+      [...namesByStudent.entries()].map(([studentId, names]) => [
+        studentId,
+        names.join(", "),
+      ]),
+    ) as Record<string, string>;
+  }, [showParentColumn, parents, parentStudentLinks]);
 
   const teacherMetaById = useMemo(() => {
     if (!showTeacherColumns) {
@@ -449,8 +525,10 @@ export function UserDirectoryList({
           layout={layout}
           showClassMeta={showClassColumn}
           showTeacherMeta={showTeacherColumns}
+          showParentMeta={showParentColumn}
           classNameById={classNameById}
           teacherMetaById={teacherMetaById}
+          parentNamesByStudentId={parentNamesByStudentId}
           onEdit={openEdit}
           onPassword={openPasswordModal}
           onRemove={onRemove}
@@ -470,6 +548,11 @@ export function UserDirectoryList({
         {showClassColumn ? (
           <Text style={[styles.th, styles.colClass]}>{t("common.class")}</Text>
         ) : null}
+        {showParentColumn ? (
+          <Text style={[styles.th, styles.colParent]}>
+            {t("admin.parentColumn")}
+          </Text>
+        ) : null}
         {showTeacherColumns ? (
           <>
             <Text style={[styles.th, styles.colTeacherClass]}>
@@ -486,7 +569,7 @@ export function UserDirectoryList({
       </View>
 
       {pagination.pageItems.map((item) => (
-        <View key={item.id} style={adminDirectoryTableRowStyle()}>
+        <AdminDirectoryTableRow key={item.id}>
           <View style={[styles.colName, styles.tableNameCell]}>
             <UserAvatar
               name={item.name}
@@ -511,6 +594,11 @@ export function UserDirectoryList({
           {showClassColumn ? (
             <Text style={[styles.tableCell, styles.colClass]} numberOfLines={1}>
               {resolveClassDisplayName(item.classId, classNameById)}
+            </Text>
+          ) : null}
+          {showParentColumn ? (
+            <Text style={[styles.tableCell, styles.colParent]} numberOfLines={2}>
+              {parentNamesByStudentId[item.id] || "—"}
             </Text>
           ) : null}
           {showTeacherColumns ? (
@@ -538,7 +626,7 @@ export function UserDirectoryList({
               onRemove={onRemove}
             />
           </View>
-        </View>
+        </AdminDirectoryTableRow>
       ))}
     </>
   );
@@ -809,6 +897,7 @@ const styles = StyleSheet.create({
   colEmail: { flex: 1.4, minWidth: 0 },
   colPhone: { flex: 1, minWidth: 0 },
   colClass: { width: 88, minWidth: 0 },
+  colParent: { flex: 1.1, minWidth: 0 },
   colTeacherClass: { flex: 1, minWidth: 0 },
   colTeacherSubject: { flex: 1, minWidth: 0 },
   colActions: { width: 132, alignItems: "flex-end" },

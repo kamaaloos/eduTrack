@@ -24,6 +24,8 @@ type TeacherScreenShellProps = {
   title: string;
   subtitle?: string;
   showBack?: boolean;
+  /** Override default `router.back()` when `showBack` is true. */
+  onBackPress?: () => void;
   showMenu?: boolean;
   showNotifications?: boolean;
   scroll?: boolean;
@@ -38,6 +40,7 @@ export function TeacherScreenShell({
   title,
   subtitle,
   showBack = false,
+  onBackPress,
   showMenu = true,
   showNotifications = true,
   scroll = true,
@@ -85,12 +88,17 @@ export function TeacherScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame sidebarLayout>
+      <WebPageCardFrame
+        sidebarLayout={false}
+        adminDashboardLayout={layout.isDesktopWeb}
+      >
         <StudentScreenHeader
           title={title}
           subtitle={subtitle}
           showBack={showBack}
+          onBackPress={onBackPress}
           showMenu={showMenu}
+          hideMenuOnDesktopWeb
           notificationCount={showNotifications ? notificationCount : 0}
           onNotificationsPress={
             showNotifications

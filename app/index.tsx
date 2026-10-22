@@ -90,6 +90,11 @@ export default function Index() {
     }
 
     if (Platform.OS === "web") {
+      // Stay on the current deep link while a saved school is reconnecting;
+      // RoleGate / auth restore will finish the session without bouncing to landing.
+      if (selectedSchool) {
+        return;
+      }
       const onLanding = firstSegment === "landing";
       const onPublicPage = Boolean(firstSegment && isPublicEntrySegment(firstSegment));
       if (!onLanding && !onPublicPage) {

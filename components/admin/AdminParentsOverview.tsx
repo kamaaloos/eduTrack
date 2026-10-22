@@ -25,6 +25,7 @@ import {
 import { setParentFeeMonthPaid } from "../../src/services/parentFeePayments";
 import { showErrorAlert } from "../../src/utils/confirmDialog";
 import { DirectoryPagination } from "./DirectoryPagination";
+import { AdminDirectoryTableRow } from "./AdminDirectoryTableRow";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 
 type FeeFilter = "all" | "yes" | "no";
@@ -246,81 +247,97 @@ export function AdminParentsOverview({
             onNext={pagination.nextPage}
           />
 
-          {pagination.pageItems.map((row) => (
-            <View key={row.id} style={[styles.row, showTableLayout && styles.rowWeb]}>
-              <Pressable
-                style={[styles.rowMain, !showTableLayout && styles.rowMainMobile]}
-                onPress={() => openParentDetail(row.id)}
-              >
-                <View style={[styles.colName, !showTableLayout && styles.colNameMobile]}>
-                  <Text style={styles.name} numberOfLines={1}>
-                    {row.name}
-                  </Text>
-                  {!showTableLayout ? (
-                    <Text style={styles.meta} numberOfLines={2}>
+          {pagination.pageItems.map((row) => {
+            const rowBody = (
+              <>
+                <Pressable
+                  style={[styles.rowMain, !showTableLayout && styles.rowMainMobile]}
+                  onPress={() => openParentDetail(row.id)}
+                >
+                  <View style={[styles.colName, !showTableLayout && styles.colNameMobile]}>
+                    <Text style={styles.name} numberOfLines={1}>
+                      {row.name}
+                    </Text>
+                    {!showTableLayout ? (
+                      <Text style={styles.meta} numberOfLines={2}>
+                        {row.contact}
+                      </Text>
+                    ) : null}
+                  </View>
+
+                  {showTableLayout ? (
+                    <Text style={[styles.meta, styles.colContact]} numberOfLines={2}>
                       {row.contact}
                     </Text>
                   ) : null}
-                </View>
 
-                {showTableLayout ? (
-                  <Text style={[styles.meta, styles.colContact]} numberOfLines={2}>
-                    {row.contact}
-                  </Text>
+                  {showTableLayout ? (
+                    <Text style={[styles.students, styles.colStudents]}>
+                      {row.linkedStudentCount}
+                    </Text>
+                  ) : null}
+
+                  {showTableLayout ? (
+                    <Text style={[styles.months, styles.colMonths]}>
+                      {row.paidMonthsThisYear}/12
+                    </Text>
+                  ) : null}
+                </Pressable>
+
+                {!showTableLayout ? (
+                  <View style={styles.mobileStatsRow}>
+                    <Text style={styles.mobileStat}>
+                      {t("admin.parentStudentsColumn")}: {row.linkedStudentCount}
+                    </Text>
+                    <Text style={styles.mobileStatMonths}>
+                      {year}: {row.paidMonthsThisYear}/12
+                    </Text>
+                  </View>
                 ) : null}
 
-                {showTableLayout ? (
-                  <Text style={[styles.students, styles.colStudents]}>
-                    {row.linkedStudentCount}
-                  </Text>
-                ) : null}
+                <TouchableOpacity
+                  style={[
+                    styles.feeBtn,
+                    row.feePaid ? styles.feeBtnYes : styles.feeBtnNo,
+                    showTableLayout && styles.colFee,
+                    !showTableLayout && styles.feeBtnMobile,
+                  ]}
+                  onPress={() => void toggleFee(row)}
+                  disabled={togglingId === row.id}
+                >
+                  {togglingId === row.id ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={row.feePaid ? "#065F46" : "#475569"}
+                    />
+                  ) : (
+                    <Text
+                      style={[
+                        styles.feeBtnText,
+                        row.feePaid ? styles.feeBtnTextYes : styles.feeBtnTextNo,
+                      ]}
+                    >
+                      {row.feePaid ? t("common.yes") : t("common.no")}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </>
+            );
 
-                {showTableLayout ? (
-                  <Text style={[styles.months, styles.colMonths]}>
-                    {row.paidMonthsThisYear}/12
-                  </Text>
-                ) : null}
-              </Pressable>
+            if (showTableLayout) {
+              return (
+                <AdminDirectoryTableRow key={row.id}>
+                  {rowBody}
+                </AdminDirectoryTableRow>
+              );
+            }
 
-              {!showTableLayout ? (
-                <View style={styles.mobileStatsRow}>
-                  <Text style={styles.mobileStat}>
-                    {t("admin.parentStudentsColumn")}: {row.linkedStudentCount}
-                  </Text>
-                  <Text style={styles.mobileStatMonths}>
-                    {year}: {row.paidMonthsThisYear}/12
-                  </Text>
-                </View>
-              ) : null}
-
-              <TouchableOpacity
-                style={[
-                  styles.feeBtn,
-                  row.feePaid ? styles.feeBtnYes : styles.feeBtnNo,
-                  showTableLayout && styles.colFee,
-                  !showTableLayout && styles.feeBtnMobile,
-                ]}
-                onPress={() => void toggleFee(row)}
-                disabled={togglingId === row.id}
-              >
-                {togglingId === row.id ? (
-                  <ActivityIndicator
-                    size="small"
-                    color={row.feePaid ? "#065F46" : "#475569"}
-                  />
-                ) : (
-                  <Text
-                    style={[
-                      styles.feeBtnText,
-                      row.feePaid ? styles.feeBtnTextYes : styles.feeBtnTextNo,
-                    ]}
-                  >
-                    {row.feePaid ? t("common.yes") : t("common.no")}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          ))}
+            return (
+              <View key={row.id} style={styles.row}>
+                {rowBody}
+              </View>
+            );
+          })}
         </>
       )}
     </View>

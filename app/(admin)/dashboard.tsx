@@ -12,7 +12,6 @@ import {
   View,
 } from "react-native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
-import { AdminParentsOverview } from "../../components/admin/AdminParentsOverview";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { AdminWebDashboardBody } from "../../components/admin/web/AdminWebDashboardBody";
 import { SchoolTermCard } from "../../components/admin/SchoolTermCard";
@@ -54,7 +53,7 @@ type DirectoryRoute =
   | "/(admin)/user-directory/student"
   | "/(admin)/user-directory/teacher"
   | "/(admin)/user-directory/parent"
-  | "/(admin)/class-directory";
+  | "/(admin)/classes";
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -144,7 +143,7 @@ export default function AdminDashboard() {
         key: "dir-classes",
         label: t("admin.classes"),
         description: t("admin.dirClassesDesc"),
-        route: "/(admin)/class-directory" as DirectoryRoute,
+        route: "/(admin)/classes" as DirectoryRoute,
         icon: "library" as keyof typeof Ionicons.glyphMap,
         color: "#D97706",
       },
@@ -359,7 +358,7 @@ export default function AdminDashboard() {
         key: "dir-classes",
         label: t("admin.classes"),
         icon: "library" as keyof typeof Ionicons.glyphMap,
-        route: "/(admin)/class-directory",
+        route: "/(admin)/classes",
         subtitle: String(classes.length),
       },
       {
@@ -446,7 +445,7 @@ export default function AdminDashboard() {
       key: "classes",
       value: classes.length,
       label: t("admin.classes"),
-      route: "/(admin)/class-directory" as DirectoryRoute,
+      route: "/(admin)/classes" as DirectoryRoute,
       style: styles.statCardAmber,
     },
   ];
@@ -617,8 +616,6 @@ export default function AdminDashboard() {
               <Text style={styles.insightTitle}>{t("admin.performance")}</Text>
             </TouchableOpacity>
           </View>
-
-          <AdminParentsOverview />
 
           <Text
             style={[

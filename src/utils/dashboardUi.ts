@@ -46,6 +46,15 @@ export function getAttendanceColor(
     };
   }
 
+  if (status === "excused") {
+    return {
+      bg: "#DCFCE7",
+      border: "#16A34A",
+      text: "#16A34A",
+      label: "EXCUSED",
+    };
+  }
+
   switch (status) {
     case "present":
       return {

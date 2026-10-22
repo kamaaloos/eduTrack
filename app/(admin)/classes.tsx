@@ -5,7 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { ClassCreationCard } from "../../components/admin/ClassCreationCard";
-import { AdminClassBrowseList } from "../../components/admin/AdminClassBrowseList";
+import { ClassDirectoryList } from "../../components/admin/ClassDirectoryList";
 import { ClassScheduleCard } from "../../components/admin/ClassScheduleCard";
 import { useAdminData } from "../../src/context/adminDataContext";
 
@@ -23,7 +23,7 @@ export default function AdminClassesScreen() {
     <ErrorBoundary>
       <AdminScreenShell
         title={t("admin.classes")}
-        subtitle={t("admin.classesSubtitle")}
+        subtitle={t("admin.classesManageSubtitle")}
         showBack
       >
         <ScrollView
@@ -32,12 +32,16 @@ export default function AdminClassesScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.panel}>
-            <Text style={styles.sectionTitle}>{t("admin.classBrowseTitle")}</Text>
-            <Text style={styles.sectionHint}>{t("admin.classBrowseHint")}</Text>
-            <AdminClassBrowseList classes={classes} />
+            <ClassCreationCard onClassCreated={refreshAll} />
           </View>
           <View style={styles.panel}>
-            <ClassCreationCard onClassCreated={refreshAll} />
+            <Text style={styles.sectionTitle}>
+              {t("admin.classDirectoryManageTitle")}
+            </Text>
+            <Text style={styles.sectionHint}>
+              {t("admin.classDirectorySubtitle")}
+            </Text>
+            <ClassDirectoryList />
           </View>
           <View style={styles.panel}>
             <ClassScheduleCard

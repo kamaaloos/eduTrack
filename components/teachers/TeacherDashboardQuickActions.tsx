@@ -1,9 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { webTeacherQuickActionsStyle } from "../../src/constants/platformLayout";
+import { AdminWebShortcutTile } from "../admin/web/AdminWebShortcutTile";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 type TeacherDashboardQuickActionsProps = {
@@ -18,59 +18,47 @@ export function TeacherDashboardQuickActions({
 
   return (
     <View style={[styles.actionsContainer, webTeacherQuickActionsStyle(layout)]}>
-      <TouchableOpacity
-        style={styles.actionCard}
-        onPress={() => router.push("/(teachers)/attendance")}
-        activeOpacity={0.85}
-      >
+      <View style={styles.actionTileWrap}>
+        <AdminWebShortcutTile
+          label={t("teacher.dashboard.attendance")}
+          icon="calendar-outline"
+          onPress={() => router.push("/(teachers)/attendance")}
+          rowIndex={0}
+          subtitle={
+            pendingAbsenceCount > 0
+              ? t("teacher.dashboard.awaitingParent")
+              : undefined
+          }
+        />
         {pendingAbsenceCount > 0 ? (
           <View style={styles.actionBadge}>
             <Text style={styles.actionBadgeText}>{pendingAbsenceCount}</Text>
           </View>
         ) : null}
-        <View style={styles.actionIconWrap}>
-          <Ionicons name="calendar-outline" size={22} color="#1E3A8A" />
-        </View>
-        <Text style={styles.actionTitle}>
-          {t("teacher.dashboard.attendance")}
-        </Text>
-        {pendingAbsenceCount > 0 ? (
-          <Text style={styles.actionHint}>
-            {t("teacher.dashboard.awaitingParent")}
-          </Text>
-        ) : null}
-      </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity
-        style={styles.actionCard}
-        onPress={() => router.push("/(teachers)/academic")}
-        activeOpacity={0.85}
-      >
-        <View style={styles.actionIconWrap}>
-          <Ionicons name="book-outline" size={22} color="#1E3A8A" />
-        </View>
-        <Text style={styles.actionTitle}>
-          {t("teacher.dashboard.academic")}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.actionTileWrap}>
+        <AdminWebShortcutTile
+          label={t("teacher.dashboard.academic")}
+          icon="book-outline"
+          onPress={() => router.push("/(teachers)/academic")}
+          rowIndex={1}
+        />
+      </View>
 
-      <TouchableOpacity
-        style={styles.actionCard}
-        onPress={() =>
-          router.push({
-            pathname: "/(teachers)/academic",
-            params: { tab: "remarks" },
-          })
-        }
-        activeOpacity={0.85}
-      >
-        <View style={styles.actionIconWrap}>
-          <Ionicons name="chatbox-ellipses-outline" size={22} color="#1E3A8A" />
-        </View>
-        <Text style={styles.actionTitle}>
-          {t("teacher.dashboard.remarks")}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.actionTileWrap}>
+        <AdminWebShortcutTile
+          label={t("teacher.dashboard.remarks")}
+          icon="chatbox-ellipses-outline"
+          onPress={() =>
+            router.push({
+              pathname: "/(teachers)/academic",
+              params: { tab: "remarks" },
+            })
+          }
+          rowIndex={2}
+        />
+      </View>
     </View>
   );
 }

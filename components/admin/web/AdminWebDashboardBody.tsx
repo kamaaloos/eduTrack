@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { AdminParentsOverview } from "../AdminParentsOverview";
 import { SchoolTermCard } from "../SchoolTermCard";
 import { AdminWebShortcutTile } from "./AdminWebShortcutTile";
 import { WelcomeFlowerRise } from "./WelcomeFlowerRise";
@@ -83,6 +82,63 @@ function PeriodNoticeCard({
   );
 }
 
+function HeroStatBox({
+  label,
+  value,
+  baseIsPrimary,
+  fontFamily,
+  onPress,
+}: {
+  label: string;
+  value: number;
+  baseIsPrimary: boolean;
+  fontFamily?: string | null;
+  onPress: () => void;
+}) {
+  const { theme } = useSchoolTheme();
+  const [hovered, setHovered] = useState(false);
+  const bg = hovered
+    ? baseIsPrimary
+      ? theme.accentColor
+      : theme.primaryColor
+    : baseIsPrimary
+      ? theme.primaryColor
+      : theme.accentColor;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      style={({ pressed }) => [
+        styles.statBox,
+        {
+          backgroundColor: bg,
+          transform: [{ scale: pressed ? 0.97 : hovered ? 1.05 : 1 }],
+          ...(Platform.OS === "web"
+            ? ({
+                cursor: "pointer",
+                transitionProperty: "transform, background-color, box-shadow",
+                transitionDuration: "160ms",
+                transitionTimingFunction: "ease-out",
+                boxShadow: hovered
+                  ? `0 12px 26px ${bg}66`
+                  : `0 3px 10px rgba(15, 23, 42, 0.12)`,
+              } as object)
+            : null),
+        },
+      ]}
+    >
+      <Text style={[styles.statValue, fontFamily ? { fontFamily } : null]}>
+        {value}
+      </Text>
+      <Text style={[styles.statLabel, fontFamily ? { fontFamily } : null]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 export function AdminWebDashboardBody({
   adminUid,
   students,
@@ -100,10 +156,30 @@ export function AdminWebDashboardBody({
   const [welcomeHovered, setWelcomeHovered] = useState(false);
 
   const statBoxes = [
-    { key: "students", value: students, label: t("admin.students") },
-    { key: "teachers", value: teachers, label: t("admin.teachers") },
-    { key: "parents", value: parents, label: t("admin.parents") },
-    { key: "classes", value: classes, label: t("admin.classes") },
+    {
+      key: "students",
+      value: students,
+      label: t("admin.students"),
+      route: "/(admin)/user-directory/student",
+    },
+    {
+      key: "teachers",
+      value: teachers,
+      label: t("admin.teachers"),
+      route: "/(admin)/user-directory/teacher",
+    },
+    {
+      key: "parents",
+      value: parents,
+      label: t("admin.parents"),
+      route: "/(admin)/user-directory/parent",
+    },
+    {
+      key: "classes",
+      value: classes,
+      label: t("admin.classes"),
+      route: "/(admin)/classes",
+    },
   ];
 
   return (
@@ -134,35 +210,14 @@ export function AdminWebDashboardBody({
           )}
           <View style={styles.statsGrid}>
             {statBoxes.map((box, index) => (
-              <View
+              <HeroStatBox
                 key={box.key}
-                style={[
-                  styles.statBox,
-                  {
-                    backgroundColor:
-                      index % 2 === 0
-                        ? theme.primaryColor
-                        : theme.accentColor,
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.statValue,
-                    fontFamily ? { fontFamily } : null,
-                  ]}
-                >
-                  {box.value}
-                </Text>
-                <Text
-                  style={[
-                    styles.statLabel,
-                    fontFamily ? { fontFamily } : null,
-                  ]}
-                >
-                  {box.label}
-                </Text>
-              </View>
+                label={box.label}
+                value={box.value}
+                baseIsPrimary={index % 2 === 0}
+                fontFamily={fontFamily}
+                onPress={() => router.push(box.route as never)}
+              />
             ))}
           </View>
         </View>
@@ -241,8 +296,6 @@ export function AdminWebDashboardBody({
           </View>
         ))}
       </View>
-
-      <AdminParentsOverview />
 
       <View style={{ height: 32 }} />
     </ScrollView>

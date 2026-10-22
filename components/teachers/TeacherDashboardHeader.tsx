@@ -8,6 +8,7 @@ import {
   webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import { UserAvatar } from "../common/UserAvatar";
 import { CurrentTermBadge } from "../common/CurrentTermBadge";
 import { TimeGreeting } from "../dashboard/TimeGreeting";
@@ -30,11 +31,13 @@ export function TeacherDashboardHeader({
 }: TeacherDashboardHeaderProps) {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
+  const { theme, fontFamily } = useSchoolTheme();
+  const primary = theme.primaryColor;
   const showMenuButton = Boolean(onMenuPress) && !layout.isDesktopWeb;
 
   const iconBtnStyle =
     Platform.OS === "web" ? styles.headerIconButton : styles.headerIconButtonNative;
-  const iconColor = Platform.OS === "web" ? "#1E3A8A" : "#FFFFFF";
+  const iconColor = Platform.OS === "web" ? primary : "#FFFFFF";
 
   const headerInner = (
     <View style={[styles.headerInner, webAdminContentStyle(), webAdminPagePaddingStyle()]}>
@@ -43,7 +46,7 @@ export function TeacherDashboardHeader({
           name={displayName}
           photoURL={photoURL}
           size={Platform.OS === "web" ? 48 : 52}
-          textColor="#1E3A8A"
+          textColor={primary}
           backgroundColor="#FFFFFF"
         />
 
@@ -53,7 +56,10 @@ export function TeacherDashboardHeader({
             textStyle={styles.greeting}
             iconColor="#BFDBFE"
           />
-          <Text style={styles.teacherName} numberOfLines={2}>
+          <Text
+            style={[styles.teacherName, fontFamily ? { fontFamily } : null]}
+            numberOfLines={2}
+          >
             {firstName}
           </Text>
           <CurrentTermBadge variant="header" />
@@ -77,7 +83,7 @@ export function TeacherDashboardHeader({
           >
             <Ionicons name="notifications-outline" size={20} color={iconColor} />
             {alertCount > 0 ? (
-              <View style={styles.headerBadge}>
+              <View style={[styles.headerBadge, { borderColor: primary }]}>
                 <Text style={styles.headerBadgeText}>
                   {alertCount > 9 ? "9+" : alertCount}
                 </Text>
@@ -91,15 +97,17 @@ export function TeacherDashboardHeader({
 
   if (Platform.OS === "web") {
     return (
-      <SafeAreaView style={styles.headerSafe} edges={["top"]}>
-        <View style={styles.header}>{headerInner}</View>
+      <SafeAreaView style={[styles.headerSafe, { backgroundColor: primary }]} edges={["top"]}>
+        <View style={[styles.header, { backgroundColor: primary }]}>{headerInner}</View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.headerSafe} edges={["top"]}>
-      <View style={[styles.header, { paddingTop: 4 }]}>{headerInner}</View>
+    <SafeAreaView style={[styles.headerSafe, { backgroundColor: primary }]} edges={["top"]}>
+      <View style={[styles.header, { backgroundColor: primary, paddingTop: 4 }]}>
+        {headerInner}
+      </View>
     </SafeAreaView>
   );
 }

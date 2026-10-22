@@ -112,6 +112,11 @@ export const teacherDashboardStyles = StyleSheet.create({
     marginTop: isWeb ? 4 : 20,
     ...webActionGrid,
   },
+  actionTileWrap: {
+    flex: isWeb ? undefined : 1,
+    position: "relative",
+    minWidth: 0,
+  },
   linkBanner: {
     flexDirection: "row",
     alignItems: "center",

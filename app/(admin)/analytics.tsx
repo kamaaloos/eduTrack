@@ -9,21 +9,18 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
-import { BarChart } from "react-native-chart-kit";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import type { TranslateFn } from "../../src/types/i18n";
 import { platformShadow } from "../../src/utils/platformShadow";
 import {
-  adminChartConfig,
+  AdminInteractiveBarChart,
   AdminPieChart,
-  barColorsFromHex,
   ChartCard,
   ChartLegend,
   useAdminChartWidth,
 } from "../../components/admin/adminChartHelpers";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import {
-  chartValues,
   loadAdminAnalytics,
   type AdminAnalyticsStats,
 } from "../../src/services/adminAnalytics";
@@ -249,27 +246,10 @@ export default function AnalyticsScreen() {
 
         {hasActivityChart ? (
           <ChartCard title={t("admin.activitySummary")}>
-            <BarChart
-              data={{
-                labels: activityItems.map((item) => item.label),
-                datasets: [
-                  {
-                    data: chartValues(activityItems.map((i) => i.value)),
-                    colors: barColorsFromHex(activityItems.map((i) => i.color)),
-                  },
-                ],
-              }}
-              width={chartWidth}
+            <AdminInteractiveBarChart
+              items={activityItems}
+              chartWidth={chartWidth}
               height={220}
-              yAxisLabel=""
-              yAxisSuffix=""
-              chartConfig={adminChartConfig}
-              style={styles.chart}
-              fromZero
-              showValuesOnTopOfBars
-              withCustomBarColorFromData
-              flatColor
-              showBarTops={false}
             />
             <ChartLegend
               items={activityItems.map((item) => ({

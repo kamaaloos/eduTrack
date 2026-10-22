@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import type { UserData } from "../../hooks/useAdminUsers";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import { AdminDirectoryTableRow } from "./AdminDirectoryTableRow";
 
 type AdminClassStudentNamesListProps = {
   students: UserData[];
@@ -25,14 +26,14 @@ export function AdminClassStudentNamesList({
   return (
     <View style={styles.list}>
       {students.map((student, index) => (
-        <View
+        <AdminDirectoryTableRow
           key={student.id}
           style={[styles.row, index === students.length - 1 && styles.rowLast]}
         >
           <Text style={styles.name} numberOfLines={2}>
             {student.name || student.email || t("common.student")}
           </Text>
-        </View>
+        </AdminDirectoryTableRow>
       ))}
     </View>
   );
@@ -57,8 +58,6 @@ const styles = StyleSheet.create({
   row: {
     paddingVertical: 14,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
     backgroundColor: "#FFFFFF",
   },
   rowLast: {

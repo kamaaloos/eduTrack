@@ -9,13 +9,14 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
-import { BarChart, LineChart } from "react-native-chart-kit";
+import { LineChart } from "react-native-chart-kit";
 import {
   ACADEMIC_CHART_COLORS,
   adminChartConfig,
-  barColorsFromHex,
+  AdminInteractiveBarChart,
   ChartCard,
   ChartLegend,
+  ChartTiltSurface,
   ROLE_CHART_COLORS,
   useAdminChartWidth,
 } from "../../components/admin/adminChartHelpers";
@@ -212,48 +213,33 @@ export default function PerformanceCharts() {
             "common.absent",
           ).toLowerCase()}`}
         >
-          <LineChart
-            data={{
-              labels: [
-                t("admin.chartPast"),
-                t("admin.chartNow"),
-                t("admin.chartTarget"),
-              ],
-              datasets: [{ data: attendanceLine }],
-            }}
-            width={chartWidth}
-            height={220}
-            yAxisSuffix="%"
-            chartConfig={adminChartConfig}
-            bezier
-            style={styles.chart}
-            fromZero
-          />
+          <ChartTiltSurface width={chartWidth} height={220}>
+            <LineChart
+              data={{
+                labels: [
+                  t("admin.chartPast"),
+                  t("admin.chartNow"),
+                  t("admin.chartTarget"),
+                ],
+                datasets: [{ data: attendanceLine }],
+              }}
+              width={chartWidth}
+              height={220}
+              yAxisSuffix="%"
+              chartConfig={adminChartConfig}
+              bezier
+              style={styles.chart}
+              fromZero
+            />
+          </ChartTiltSurface>
         </ChartCard>
 
         {roleItems.length > 0 ? (
           <ChartCard title={t("admin.userDistribution")}>
-            <BarChart
-              data={{
-                labels: roleItems.map((item) => item.label),
-                datasets: [
-                  {
-                    data: chartValues(roleItems.map((i) => i.value)),
-                    colors: barColorsFromHex(roleItems.map((i) => i.color)),
-                  },
-                ],
-              }}
-              width={chartWidth}
+            <AdminInteractiveBarChart
+              items={roleItems}
+              chartWidth={chartWidth}
               height={220}
-              yAxisLabel=""
-              yAxisSuffix=""
-              chartConfig={adminChartConfig}
-              style={styles.chart}
-              fromZero
-              showValuesOnTopOfBars
-              withCustomBarColorFromData
-              flatColor
-              showBarTops={false}
             />
             <ChartLegend
               items={roleItems.map((item) => ({
@@ -272,27 +258,10 @@ export default function PerformanceCharts() {
             title={t("admin.academicActivity")}
             caption={t("admin.legacyCollectionsNote")}
           >
-            <BarChart
-              data={{
-                labels: academicItems.map((item) => item.label),
-                datasets: [
-                  {
-                    data: chartValues(academicItems.map((i) => i.value)),
-                    colors: barColorsFromHex(academicItems.map((i) => i.color)),
-                  },
-                ],
-              }}
-              width={chartWidth}
+            <AdminInteractiveBarChart
+              items={academicItems}
+              chartWidth={chartWidth}
               height={220}
-              yAxisLabel=""
-              yAxisSuffix=""
-              chartConfig={adminChartConfig}
-              style={styles.chart}
-              fromZero
-              showValuesOnTopOfBars
-              withCustomBarColorFromData
-              flatColor
-              showBarTops={false}
             />
             <ChartLegend
               items={academicItems.map((item) => ({

@@ -12,6 +12,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 import type { TodayMap, StudentRow } from "../components/teachers/attendance/teacherAttendanceTypes";
+import type { AttendanceMarkStatus } from "../components/teachers/attendance/attendanceMarkStatus";
 import { AuthContext } from "../src/context/authContext";
 import { notifyAttendanceMarked } from "../src/services/notificationEvents";
 import { db } from "../src/services/firebase";
@@ -180,14 +181,17 @@ export function useTeacherAttendance() {
   const excusedToday = useMemo(
     () =>
       Object.values(todayByStudent).filter(
-        (r) => r.status === "absent" && hasParentAttendanceResponse(r),
+        (r) =>
+          r.status === "excused" ||
+          (r.status === "absent" && hasParentAttendanceResponse(r)),
       ),
     [todayByStudent],
   );
 
   const markAttendance = async (
     studentId: string,
-    status: "present" | "absent" | "late",
+    status: AttendanceMarkStatus,
+    options?: { silent?: boolean },
   ) => {
     if (!classId) {
       Alert.alert(t("teacher.attendance.selectClass"));
@@ -206,8 +210,11 @@ export function useTeacherAttendance() {
         date: today,
         status,
         markedBy: user?.uid,
+        markedAt: Date.now(),
       });
-      Alert.alert(t("common.success"), t("teacher.attendance.saved"));
+      if (!options?.silent) {
+        Alert.alert(t("common.success"), t("teacher.attendance.saved"));
+      }
 
       if (status === "absent" || status === "late") {
         void notifyAttendanceMarked({
@@ -219,6 +226,48 @@ export function useTeacherAttendance() {
           actorId: user?.uid ?? null,
         });
       }
+    } catch (error) {
+      console.log(error);
+      Alert.alert(t("common.error"), t("teacher.attendance.saveError"));
+    }
+  };
+
+  const markClassAttendance = async (status: AttendanceMarkStatus) => {
+    if (!classId) {
+      Alert.alert(t("teacher.attendance.selectClass"));
+      return;
+    }
+    if (sortedStudents.length === 0) return;
+
+    try {
+      await Promise.all(
+        sortedStudents.map(async (student) => {
+          await addDoc(collection(db, "attendance"), {
+            studentId: student.id,
+            classId,
+            date: today,
+            status,
+            markedBy: user?.uid,
+            markedAt: Date.now(),
+          });
+
+          if (status === "absent" || status === "late") {
+            const studentName =
+              studentNameById.get(student.id) ||
+              student.name ||
+              t("common.student");
+            void notifyAttendanceMarked({
+              classId,
+              studentId: student.id,
+              studentName,
+              status,
+              date: today,
+              actorId: user?.uid ?? null,
+            });
+          }
+        }),
+      );
+      Alert.alert(t("common.success"), t("teacher.attendance.saved"));
     } catch (error) {
       console.log(error);
       Alert.alert(t("common.error"), t("teacher.attendance.saveError"));
@@ -279,6 +328,7 @@ export function useTeacherAttendance() {
     refreshing,
     onRefresh,
     markAttendance,
+    markClassAttendance,
     selectStudent,
     goPrevStudent,
     goNextStudent,

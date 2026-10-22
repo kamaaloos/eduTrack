@@ -21,7 +21,6 @@ import {
   adminDirectoryCardStyle,
   adminDirectoryCardsWrapStyle,
   adminDirectoryTableHeadStyle,
-  adminDirectoryTableRowStyle,
   adminModalAnimationType,
   adminModalBackdropStyle,
   adminModalCardStyle,
@@ -32,6 +31,7 @@ import {
   showErrorAlert,
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
+import { AdminDirectoryHoverSurface, AdminDirectoryTableRow } from "./AdminDirectoryTableRow";
 import { DirectoryPagination } from "./DirectoryPagination";
 
 function ClassDirectoryCard({
@@ -54,7 +54,7 @@ function ClassDirectoryCard({
   const { t } = useTranslation();
 
   return (
-    <View style={adminDirectoryCardStyle(layout)}>
+    <AdminDirectoryHoverSurface style={adminDirectoryCardStyle(layout)}>
       <TouchableOpacity
         style={styles.cardTop}
         activeOpacity={0.85}
@@ -90,7 +90,7 @@ function ClassDirectoryCard({
           <Text style={styles.actionRemove}>{t("common.delete")}</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </AdminDirectoryHoverSurface>
   );
 }
 
@@ -219,7 +219,7 @@ export function ClassDirectoryList() {
         const { subjectCountLabel, subjectsPreview } = formatSubjects(item);
 
         return (
-          <View key={item.id} style={adminDirectoryTableRowStyle()}>
+          <AdminDirectoryTableRow key={item.id}>
             <TouchableOpacity
               style={[styles.colName, styles.tableNameCell]}
               activeOpacity={0.85}
@@ -255,7 +255,7 @@ export function ClassDirectoryList() {
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
+          </AdminDirectoryTableRow>
         );
       })}
     </>

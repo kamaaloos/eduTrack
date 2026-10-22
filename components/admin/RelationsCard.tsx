@@ -3,7 +3,12 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { useAdminData } from "../../src/context/adminDataContext";
-import { showErrorAlert, showSuccessAlert } from "../../src/utils/confirmDialog";
+import { getLinkedParentIdForStudent } from "../../src/services/parentStudentLinks";
+import {
+  confirmAction,
+  showErrorAlert,
+  showSuccessAlert,
+} from "../../src/utils/confirmDialog";
 import { platformShadow } from "../../src/utils/platformShadow";
 import { innerCardBorderStyle } from "../../src/constants/innerCardBorders";
 import { SelectableItem, Selector } from "./Selector";
@@ -37,6 +42,9 @@ export const RelationsCard: React.FC<RelationsCardProps> = ({
     linkParentToStudent,
   } = useAdminData();
 
+  const resolveName = (items: SelectableItem[], id: string) =>
+    items.find((item) => item.id === id)?.name?.trim() || id;
+
   const handleAssign = async () => {
     try {
       if (!selectedLeft || !selectedRight) {
@@ -54,8 +62,34 @@ export const RelationsCard: React.FC<RelationsCardProps> = ({
         await assignTeacherToClass(selectedLeft, selectedRight);
         showSuccessAlert(t("common.success"), t("admin.teacherAssigned"));
       } else if (type === "parent-student") {
-        await linkParentToStudent(selectedLeft, selectedRight);
-        showSuccessAlert(t("common.success"), t("admin.parentLinked"));
+        const parentId = selectedLeft;
+        const studentId = selectedRight;
+        const existingParentId = await getLinkedParentIdForStudent(studentId);
+
+        if (existingParentId && existingParentId !== parentId) {
+          const studentName = resolveName(rightItems, studentId);
+          const newParentName = resolveName(leftItems, parentId);
+          const currentParentName = resolveName(leftItems, existingParentId);
+          const confirmed = await confirmAction(
+            t("admin.replaceParentTitle"),
+            t("admin.replaceParentMessage", {
+              student: studentName,
+              currentParent: currentParentName,
+              newParent: newParentName,
+            }),
+            t("admin.replaceParentConfirm"),
+            t("common.cancel"),
+          );
+          if (!confirmed) return;
+        }
+
+        await linkParentToStudent(parentId, studentId);
+        showSuccessAlert(
+          t("common.success"),
+          existingParentId && existingParentId !== parentId
+            ? t("admin.parentReplaced")
+            : t("admin.parentLinked"),
+        );
       }
 
       setSelectedLeft("");
@@ -71,6 +105,9 @@ export const RelationsCard: React.FC<RelationsCardProps> = ({
   return (
     <View style={styles.card}>
       <Text style={styles.sectionTitle}>{title}</Text>
+      {type === "parent-student" ? (
+        <Text style={styles.hint}>{t("admin.parentLinkHint")}</Text>
+      ) : null}
 
       <Selector
         title={leftLabel}
@@ -111,5 +148,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
     marginBottom: 15,
+  },
+  hint: {
+    fontSize: 13,
+    color: "#64748B",
+    lineHeight: 18,
+    marginTop: -6,
+    marginBottom: 14,
   },
 });

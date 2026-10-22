@@ -28,7 +28,7 @@ export function AdminScreenShell({
   showBack = false,
   showNotifications = false,
   showCurrentTerm = false,
-  webExpandMain = false,
+  webExpandMain = true,
   children,
 }: AdminScreenShellProps) {
   const layout = usePlatformLayout();
@@ -42,7 +42,7 @@ export function AdminScreenShell({
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
       <WebPageCardFrame
-        sidebarLayout={layout.isDesktopWeb && !webExpandMain}
+        sidebarLayout={false}
         adminDashboardLayout={layout.isDesktopWeb && webExpandMain}
       >
         <AdminScreenHeader

@@ -1,9 +1,9 @@
-import { RefreshControl, ScrollView, View } from "react-native";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { TeacherScreenShell } from "./TeacherScreenShell";
-import { StudentPickerModal } from "./attendance/StudentPickerModal";
 import { TeacherAttendanceHeader } from "./attendance/TeacherAttendanceHeader";
-import { TeacherAttendanceStudentSection } from "./attendance/TeacherAttendanceStudentSection";
+import { TeacherAttendanceRosterTable } from "./attendance/TeacherAttendanceRosterTable";
 import { TeacherAttendanceSummarySections } from "./attendance/TeacherAttendanceSummarySections";
 import { teacherAttendanceStyles as styles } from "./attendance/teacherAttendanceStyles";
 import type { useTeacherAttendance } from "../../hooks/useTeacherAttendance";
@@ -15,15 +15,7 @@ export function TeacherAttendanceView({
   classId,
   setClassId,
   students,
-  selectedStudent,
-  selectedStudentId,
-  selectedIndex,
   sortedStudents,
-  filteredPickerStudents,
-  pickerOpen,
-  setPickerOpen,
-  studentSearch,
-  setStudentSearch,
   todayByStudent,
   recentAbsents,
   pendingToday,
@@ -32,9 +24,8 @@ export function TeacherAttendanceView({
   refreshing,
   onRefresh,
   markAttendance,
+  markClassAttendance,
   selectStudent,
-  goPrevStudent,
-  goNextStudent,
 }: TeacherAttendanceViewProps) {
   const { t } = useTranslation();
 
@@ -42,64 +33,55 @@ export function TeacherAttendanceView({
     <TeacherScreenShell
       title={t("teacher.attendance.title")}
       subtitle={t("teacher.attendance.selectClass")}
+      showBack
+      onBackPress={() => router.push("/(teachers)/dashboard")}
       scroll={false}
       refreshing={refreshing}
       onRefresh={onRefresh}
     >
       <View style={styles.container}>
-      <TeacherAttendanceHeader
-        classes={classes}
-        classId={classId}
-        onSelectClass={setClassId}
-      />
-
-      <ScrollView
-        style={styles.scrollBody}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <TeacherAttendanceStudentSection
+        <TeacherAttendanceHeader
+          classes={classes}
           classId={classId}
-          students={students}
-          selectedStudent={selectedStudent}
-          selectedIndex={selectedIndex}
-          sortedStudentCount={sortedStudents.length}
-          todayRecord={
-            selectedStudent ? todayByStudent[selectedStudent.id] : undefined
-          }
-          onOpenPicker={() => setPickerOpen(true)}
-          onPrevStudent={goPrevStudent}
-          onNextStudent={goNextStudent}
-          onMark={(status) =>
-            selectedStudent && markAttendance(selectedStudent.id, status)
-          }
+          onSelectClass={setClassId}
         />
 
-        <TeacherAttendanceSummarySections
-          classId={classId}
-          pendingToday={pendingToday}
-          excusedToday={excusedToday}
-          recentAbsents={recentAbsents}
-          studentNameById={studentNameById}
-          onSelectStudent={selectStudent}
-        />
-      </ScrollView>
+        <ScrollView
+          style={styles.scrollBody}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          {!classId ? (
+            <Text style={styles.sub}>{t("teacher.attendance.selectClass")}</Text>
+          ) : students.length === 0 ? (
+            <Text style={styles.warning}>
+              {t("teacher.attendance.noStudents")}
+            </Text>
+          ) : (
+            <TeacherAttendanceRosterTable
+              students={sortedStudents}
+              todayByStudent={todayByStudent}
+              onMark={(studentId, status) =>
+                void markAttendance(studentId, status, { silent: true })
+              }
+              onMarkAll={(status) => void markClassAttendance(status)}
+            />
+          )}
 
-      <StudentPickerModal
-        visible={pickerOpen}
-        onClose={() => setPickerOpen(false)}
-        studentSearch={studentSearch}
-        onStudentSearchChange={setStudentSearch}
-        filteredStudents={filteredPickerStudents}
-        selectedStudentId={selectedStudentId}
-        todayByStudent={todayByStudent}
-        onSelectStudent={selectStudent}
-      />
-    </View>
+          <TeacherAttendanceSummarySections
+            classId={classId}
+            pendingToday={pendingToday}
+            excusedToday={excusedToday}
+            recentAbsents={recentAbsents}
+            studentNameById={studentNameById}
+            onSelectStudent={selectStudent}
+          />
+        </ScrollView>
+      </View>
     </TeacherScreenShell>
   );
 }

@@ -2,9 +2,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import type { ClassData } from "../../hooks/useAdminClasses";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import { AdminDirectoryTableRow } from "./AdminDirectoryTableRow";
 
 type AdminClassBrowseListProps = {
   classes: ClassData[];
@@ -30,16 +31,15 @@ export function AdminClassBrowseList({ classes }: AdminClassBrowseListProps) {
   return (
     <View style={styles.list}>
       {sorted.map((item, index) => (
-        <TouchableOpacity
+        <AdminDirectoryTableRow
           key={item.id}
-          style={[styles.row, index === sorted.length - 1 && styles.rowLast]}
-          activeOpacity={0.85}
           onPress={() =>
             router.push({
               pathname: "/(admin)/class/[classId]",
               params: { classId: item.id },
             })
           }
+          style={[styles.row, index === sorted.length - 1 && styles.rowLast]}
         >
           <View style={styles.iconWrap}>
             <Ionicons name="school" size={18} color="#D97706" />
@@ -48,7 +48,7 @@ export function AdminClassBrowseList({ classes }: AdminClassBrowseListProps) {
             {item.name || t("common.classFallback")}
           </Text>
           <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
-        </TouchableOpacity>
+        </AdminDirectoryTableRow>
       ))}
     </View>
   );
@@ -69,13 +69,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
     paddingHorizontal: 14,
     paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
   },
   rowLast: {
     borderBottomWidth: 0,

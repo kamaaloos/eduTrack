@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import type { ParentChild } from "../../src/services/parentChildren";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import { AdminDirectoryTableRow } from "./AdminDirectoryTableRow";
 
 type AdminParentChildrenListProps = {
   linkedChildren: ParentChild[];
@@ -29,7 +30,7 @@ export function AdminParentChildrenList({
         <Text style={[styles.th, styles.colClass]}>{t("common.class")}</Text>
       </View>
       {linkedChildren.map((child, index) => (
-        <View
+        <AdminDirectoryTableRow
           key={child.id}
           style={[styles.row, index === linkedChildren.length - 1 && styles.rowLast]}
         >
@@ -39,7 +40,7 @@ export function AdminParentChildrenList({
           <Text style={[styles.className, styles.colClass]} numberOfLines={2}>
             {child.className || child.classId || "—"}
           </Text>
-        </View>
+        </AdminDirectoryTableRow>
       ))}
     </View>
   );
@@ -70,13 +71,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
-    gap: 12,
   },
   rowLast: {
     borderBottomWidth: 0,
@@ -99,12 +95,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#475569",
   },
+  loader: { marginTop: 24 },
   empty: {
+    textAlign: "center",
+    color: "#64748B",
     fontSize: 14,
     lineHeight: 20,
-    color: "#94A3B8",
-  },
-  loader: {
-    marginVertical: 12,
+    paddingVertical: 24,
   },
 });

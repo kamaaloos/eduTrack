@@ -12,6 +12,7 @@ export function getAttendanceStatusLabel(
     }
     return t("common.absent");
   }
+  if (status === "excused") return t("common.excused");
   if (status === "present") return t("common.present");
   if (status === "late") return t("common.late");
   if (!status) return t("common.unknown");

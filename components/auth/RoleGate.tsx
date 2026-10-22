@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useContext, useEffect, useMemo } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { AuthContext } from "../../src/context/authContext";
+import { useSchoolContext } from "../../src/context/schoolContext";
 import { getRoleHomeRoute, getSignedOutRoute } from "../../src/utils/authNavigation";
 import { isSchoolRole, type SchoolRole } from "../../src/utils/schoolRoles";
 
@@ -34,13 +35,15 @@ export function RoleGate({
   children,
 }: RoleGateProps) {
   const { user, role, loading } = useContext(AuthContext);
+  const { schoolReady } = useSchoolContext();
   const permitted = useMemo(
     () => resolveAllowedRoles(allowedRole, allowedRoles),
     [allowedRole, allowedRoles],
   );
 
   useEffect(() => {
-    if (loading) return;
+    // Wait until school + auth finish restoring before treating as signed out.
+    if (!schoolReady || loading) return;
 
     if (!user || !isSchoolRole(role)) {
       router.replace(getSignedOutRoute() as never);
@@ -50,17 +53,9 @@ export function RoleGate({
     if (!permitted.includes(role)) {
       router.replace(getRoleHomeRoute(role) as never);
     }
-  }, [loading, user, role, permitted]);
+  }, [schoolReady, loading, user, role, permitted]);
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#2563EB" />
-      </View>
-    );
-  }
-
-  if (!user || !isSchoolRole(role) || !permitted.includes(role)) {
+  if (!schoolReady || loading || !user || !isSchoolRole(role) || !permitted.includes(role)) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#2563EB" />

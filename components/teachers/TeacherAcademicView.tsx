@@ -1,6 +1,7 @@
 import { useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
+import { router } from "expo-router";
 import type { useTeacherAcademic } from "../../hooks/useTeacherAcademic";
 import { DirectMessageCard } from "../messaging/DirectMessageCard";
 import { AuthContext } from "../../src/context/authContext";
@@ -86,6 +87,8 @@ export function TeacherAcademicView(props: TeacherAcademicViewProps) {
     <TeacherScreenShell
       title={t("teacher.academic.headerTitle")}
       subtitle={t("teacher.academic.headerSubtitle")}
+      showBack
+      onBackPress={() => router.push("/(teachers)/dashboard")}
       scroll={false}
     >
       <View style={styles.container}>

@@ -1,9 +1,21 @@
 import type { FirebaseApp } from "firebase/app";
-import { getAuth, initializeAuth, type Auth } from "firebase/auth";
+import {
+  browserLocalPersistence,
+  getAuth,
+  indexedDBLocalPersistence,
+  initializeAuth,
+  type Auth,
+} from "firebase/auth";
 
+/**
+ * Web auth must use durable persistence. `initializeAuth(app)` with no options
+ * uses in-memory persistence, which signs users out on every page refresh.
+ */
 export function initAuthForApp(app: FirebaseApp): Auth {
   try {
-    return initializeAuth(app);
+    return initializeAuth(app, {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+    });
   } catch (err) {
     if (
       err &&

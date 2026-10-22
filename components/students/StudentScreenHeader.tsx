@@ -26,6 +26,8 @@ type StudentScreenHeaderProps = {
   title: string;
   subtitle?: string;
   showBack?: boolean;
+  /** Override default `router.back()` when `showBack` is true. */
+  onBackPress?: () => void;
   showMenu?: boolean;
   /** Hide hamburger on desktop web when a persistent sidebar is shown (teacher/parent). */
   hideMenuOnDesktopWeb?: boolean;
@@ -40,6 +42,7 @@ export function StudentScreenHeader({
   title,
   subtitle,
   showBack = false,
+  onBackPress,
   showMenu = true,
   hideMenuOnDesktopWeb = true,
   notificationCount = 0,
@@ -84,7 +87,7 @@ export function StudentScreenHeader({
             {showBack ? (
               <TouchableOpacity
                 style={styles.sideButton}
-                onPress={() => router.back()}
+                onPress={onBackPress ?? (() => router.back())}
                 accessibilityLabel={t("admin.goBackA11y")}
               >
                 <Ionicons name="chevron-back" size={22} color="#FFFFFF" />

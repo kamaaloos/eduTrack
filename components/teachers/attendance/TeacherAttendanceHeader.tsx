@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
+import { useSchoolTheme } from "../../../src/context/schoolThemeContext";
 import { teacherAttendanceStyles as styles } from "./teacherAttendanceStyles";
 
 type TeacherAttendanceHeaderProps = {
@@ -14,26 +15,35 @@ export function TeacherAttendanceHeader({
   onSelectClass,
 }: TeacherAttendanceHeaderProps) {
   const { t } = useTranslation();
+  const { theme } = useSchoolTheme();
 
   return (
     <View style={styles.fixedHeader}>
       <View style={styles.classRow}>
-        {classes.map((c) => (
-          <TouchableOpacity
-            key={c.id}
-            style={[styles.classBtn, classId === c.id && styles.activeClass]}
-            onPress={() => onSelectClass(c.id)}
-          >
-            <Text
+        {classes.map((c) => {
+          const active = classId === c.id;
+          return (
+            <TouchableOpacity
+              key={c.id}
               style={[
-                styles.classText,
-                classId === c.id && styles.activeClassText,
+                styles.classBtn,
+                active
+                  ? { backgroundColor: theme.primaryColor }
+                  : null,
               ]}
+              onPress={() => onSelectClass(c.id)}
             >
-              {c.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                style={[
+                  styles.classText,
+                  active ? styles.activeClassText : null,
+                ]}
+              >
+                {c.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {classes.length === 0 ? (

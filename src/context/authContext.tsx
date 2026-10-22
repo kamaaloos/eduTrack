@@ -61,18 +61,14 @@ export const AuthProvider = ({ children }: any) => {
       setUser(null);
       setUserData(null);
       setRole(null);
+      // Keep loading true until school connection is ready when we expect a session.
       setLoading(false);
       return;
     }
 
-    const sameSchoolSession =
-      sessionRef.current.schoolId === selectedSchoolId &&
-      sessionRef.current.uid === auth.currentUser?.uid &&
-      Boolean(sessionRef.current.uid);
-
-    if (!sameSchoolSession) {
-      setLoading(true);
-    }
+    // Always show loading while attaching auth for a school so refresh does not
+    // briefly look signed-out and bounce to the landing page.
+    setLoading(true);
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       authLog("auth:onAuthStateChanged", {

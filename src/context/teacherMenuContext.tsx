@@ -8,9 +8,16 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { AdminSideMenu } from "../../components/admin/AdminSideMenu";
+import {
+  TEACHER_WEB_NAV_GROUPS,
+  WebAdminDesktopNav,
+  resolveTeacherActiveKey,
+} from "../../components/admin/web/WebAdminDesktopNav";
 import { WebDesktopRoleNav } from "../../components/layout/WebDesktopRoleNav";
+import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useTeacherSideMenuItems } from "../../hooks/useTeacherSideMenuItems";
 import { AuthContext } from "./authContext";
+import { useSchoolContext } from "./schoolContext";
 
 type TeacherMenuContextValue = {
   openMenu: () => void;
@@ -21,6 +28,8 @@ const TeacherMenuContext = createContext<TeacherMenuContextValue | null>(null);
 
 export function TeacherMenuProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
+  const layout = usePlatformLayout();
+  const { selectedSchool } = useSchoolContext();
   const { userData } = useContext(AuthContext);
   const [visible, setVisible] = useState(false);
   const menuItems = useTeacherSideMenuItems();
@@ -32,21 +41,35 @@ export function TeacherMenuProvider({ children }: { children: ReactNode }) {
 
   const firstName = userData?.name?.split(" ")[0] ?? t("common.teacher");
 
+  const desktopNav = layout.isDesktopWeb ? (
+    <WebAdminDesktopNav
+      items={menuItems}
+      groups={TEACHER_WEB_NAV_GROUPS}
+      resolveActiveKey={resolveTeacherActiveKey}
+      roleLabelKey="common.teacher"
+    >
+      {children}
+    </WebAdminDesktopNav>
+  ) : (
+    <WebDesktopRoleNav
+      title={t("admin.management")}
+      subtitle={firstName}
+      items={menuItems}
+    >
+      {children}
+    </WebDesktopRoleNav>
+  );
+
   return (
     <TeacherMenuContext.Provider value={value}>
-      <WebDesktopRoleNav
-        title={t("admin.management")}
-        subtitle={firstName}
-        items={menuItems}
-      >
-        {children}
-      </WebDesktopRoleNav>
+      {desktopNav}
       {visible ? (
         <AdminSideMenu
           visible
           onClose={closeMenu}
           title={t("admin.management")}
-          subtitle={firstName}
+          subtitle={selectedSchool?.name ?? firstName}
+          subtitleTone="accent"
           items={menuItems}
         />
       ) : null}

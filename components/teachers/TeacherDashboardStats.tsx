@@ -1,15 +1,79 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, View } from "react-native";
-import {
-  INNER_CARD_BORDER_GREEN,
-  INNER_CARD_BORDER_RED,
-} from "../../src/constants/innerCardBorders";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 type TeacherDashboardStatsProps = {
   classCount: number;
   studentCount: number;
 };
+
+function ThemedStatCard({
+  label,
+  value,
+  baseIsPrimary,
+}: {
+  label: string;
+  value: number;
+  baseIsPrimary: boolean;
+}) {
+  const { theme, fontFamily } = useSchoolTheme();
+  const [hovered, setHovered] = useState(false);
+  const bg = hovered
+    ? baseIsPrimary
+      ? theme.accentColor
+      : theme.primaryColor
+    : baseIsPrimary
+      ? theme.primaryColor
+      : theme.accentColor;
+
+  return (
+    <Pressable
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      style={({ pressed }) => [
+        styles.statCard,
+        localStyles.statCardThemed,
+        {
+          backgroundColor: bg,
+          borderColor: bg,
+          transform: [{ scale: pressed ? 0.97 : hovered ? 1.05 : 1 }],
+          ...(Platform.OS === "web"
+            ? ({
+                cursor: "default",
+                transitionProperty: "transform, background-color, box-shadow",
+                transitionDuration: "160ms",
+                transitionTimingFunction: "ease-out",
+                boxShadow: hovered
+                  ? `0 12px 26px ${bg}66`
+                  : `0 3px 10px rgba(15, 23, 42, 0.12)`,
+              } as object)
+            : null),
+        },
+      ]}
+    >
+      <Text
+        style={[
+          styles.statValue,
+          localStyles.statValueThemed,
+          fontFamily ? { fontFamily } : null,
+        ]}
+      >
+        {value}
+      </Text>
+      <Text
+        style={[
+          styles.statLabel,
+          localStyles.statLabelThemed,
+          fontFamily ? { fontFamily } : null,
+        ]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
 
 export function TeacherDashboardStats({
   classCount,
@@ -19,25 +83,28 @@ export function TeacherDashboardStats({
 
   return (
     <View style={styles.statsContainer}>
-      <View
-        style={[
-          styles.statCard,
-          { backgroundColor: "#DBEAFE", borderColor: INNER_CARD_BORDER_RED },
-        ]}
-      >
-        <Text style={styles.statValue}>{classCount}</Text>
-        <Text style={styles.statLabel}>{t("teacher.dashboard.classes")}</Text>
-      </View>
-
-      <View
-        style={[
-          styles.statCard,
-          { backgroundColor: "#DCFCE7", borderColor: INNER_CARD_BORDER_GREEN },
-        ]}
-      >
-        <Text style={styles.statValue}>{studentCount}</Text>
-        <Text style={styles.statLabel}>{t("teacher.dashboard.students")}</Text>
-      </View>
+      <ThemedStatCard
+        label={t("teacher.dashboard.classes")}
+        value={classCount}
+        baseIsPrimary
+      />
+      <ThemedStatCard
+        label={t("teacher.dashboard.students")}
+        value={studentCount}
+        baseIsPrimary={false}
+      />
     </View>
   );
 }
+
+const localStyles = StyleSheet.create({
+  statCardThemed: {
+    borderWidth: 0,
+  },
+  statValueThemed: {
+    color: "#FFFFFF",
+  },
+  statLabelThemed: {
+    color: "rgba(255,255,255,0.9)",
+  },
+});

@@ -15,6 +15,7 @@ export type TeacherAttendanceRecord = {
   classId: string;
   date: string;
   status: string;
+  markedAt?: number;
   parentResponse?: {
     reason?: string;
     reasonCode?: string;
@@ -51,6 +52,7 @@ export function subscribeClassAttendance(
           classId: String(data.classId ?? classId),
           date: String(data.date ?? date),
           status: String(data.status ?? ""),
+          markedAt: Number(data.markedAt ?? 0) || 0,
           parentResponse: data.parentResponse as
             | TeacherAttendanceRecord["parentResponse"]
             | undefined,
@@ -61,6 +63,15 @@ export function subscribeClassAttendance(
           byStudent.set(studentId, record);
           return;
         }
+
+        const prevAt = prev.markedAt ?? 0;
+        const nextAt = record.markedAt ?? 0;
+        if (nextAt > prevAt) {
+          byStudent.set(studentId, record);
+          return;
+        }
+        if (nextAt < prevAt) return;
+
         const prevExcused = hasParentAttendanceResponse(prev);
         const nextExcused = hasParentAttendanceResponse(record);
         if (nextExcused && !prevExcused) {

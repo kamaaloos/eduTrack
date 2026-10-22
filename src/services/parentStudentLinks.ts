@@ -71,12 +71,18 @@ export async function reconcileParentStudentLinks(): Promise<void> {
   );
 }
 
-/** Creates/updates the canonical link and keeps parent profile in sync. */
+/** Creates/updates the canonical link and keeps parent profile in sync.
+ * Rule: a student has at most one parent; a parent may have many students.
+ */
 export async function upsertParentStudentLink(
   parentId: string,
   studentId: string,
 ): Promise<void> {
   const schoolDb = requireSchoolDb();
+
+  // Replace any existing parent for this student (one parent max).
+  await removeAllParentLinksForStudent(studentId);
+
   const linkId = parentStudentLinkId(parentId, studentId);
 
   await setDoc(
@@ -232,4 +238,34 @@ export async function collectLinkedStudentIds(parentId: string): Promise<string[
   }
 
   return [...ids];
+}
+
+/** Current parent linked to a student, or null if none. */
+export async function getLinkedParentIdForStudent(
+  studentId: string,
+): Promise<string | null> {
+  if (!studentId) return null;
+  const schoolDb = requireSchoolDb();
+
+  const byFieldSnap = await getDocs(
+    query(
+      collection(schoolDb, "parentStudents"),
+      where("studentId", "==", studentId),
+    ),
+  );
+  for (const linkDoc of byFieldSnap.docs) {
+    const parentId = linkDoc.data().parentId as string | undefined;
+    if (parentId) return parentId;
+  }
+
+  const suffix = `_${studentId}`;
+  const allLinksSnap = await getDocs(collection(schoolDb, "parentStudents"));
+  for (const linkDoc of allLinksSnap.docs) {
+    if (linkDoc.id.endsWith(suffix)) {
+      const parentId = linkDoc.id.slice(0, -suffix.length);
+      if (parentId) return parentId;
+    }
+  }
+
+  return null;
 }
