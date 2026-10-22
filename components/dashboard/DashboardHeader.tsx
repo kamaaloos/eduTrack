@@ -53,7 +53,7 @@ export function DashboardHeader({
   const layout = usePlatformLayout();
 
   const showMenuButton =
-    Boolean(onMenuPress) && !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
+    Boolean(onMenuPress) && !(layout.showWebSidebar && hideMenuOnDesktopWeb);
 
   const iconBtnStyle =
     Platform.OS === "web"

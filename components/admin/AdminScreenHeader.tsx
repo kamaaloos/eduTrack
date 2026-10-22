@@ -48,7 +48,7 @@ export const AdminScreenHeader: React.FC<AdminScreenHeaderProps> = ({
   const { selectedSchool } = useSchoolContext();
   const { theme, fontFamily } = useSchoolTheme();
   const showMenuButton =
-    Boolean(onMenuPress) && !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
+    Boolean(onMenuPress) && !(layout.showWebSidebar && hideMenuOnDesktopWeb);
   const primary = theme.primaryColor;
   const schoolLogoUrl = selectedSchool?.logoUrl?.trim() || null;
 

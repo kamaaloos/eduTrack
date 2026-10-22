@@ -425,7 +425,7 @@ export function webDashboardSectionStyle(layout: PlatformLayout): ViewStyle | un
 
 /** Two-column dashboard row on desktop web. */
 export function webDashboardColumnsStyle(layout: PlatformLayout): ViewStyle | undefined {
-  if (!layout.isDesktopWeb) {
+  if (!layout.showWebSidebar) {
     return undefined;
   }
 
@@ -438,7 +438,7 @@ export function webDashboardColumnsStyle(layout: PlatformLayout): ViewStyle | un
 }
 
 export function webDashboardColumnStyle(layout: PlatformLayout): ViewStyle | undefined {
-  if (!layout.isDesktopWeb) {
+  if (!layout.showWebSidebar) {
     return undefined;
   }
 

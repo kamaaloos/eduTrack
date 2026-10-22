@@ -15,6 +15,7 @@ import {
 import { SchoolTermCard } from "../SchoolTermCard";
 import { AdminWebShortcutTile } from "./AdminWebShortcutTile";
 import { WelcomeFlowerRise } from "./WelcomeFlowerRise";
+import { usePlatformLayout } from "../../../hooks/usePlatformLayout";
 import { useSchoolContext } from "../../../src/context/schoolContext";
 import { useSchoolTheme } from "../../../src/context/schoolThemeContext";
 type ShortcutDef = {
@@ -153,7 +154,14 @@ export function AdminWebDashboardBody({
   const { t } = useTranslation();
   const { selectedSchool } = useSchoolContext();
   const { theme, fontFamily } = useSchoolTheme();
+  const layout = usePlatformLayout();
   const [welcomeHovered, setWelcomeHovered] = useState(false);
+
+  const shortcutCellWidth = layout.isCompactWeb
+    ? "100%"
+    : layout.isTabletWeb
+      ? "50%"
+      : "25%";
 
   const statBoxes = [
     {
@@ -185,7 +193,10 @@ export function AdminWebDashboardBody({
   return (
     <ScrollView
       style={styles.scroll}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        layout.isCompactWeb ? styles.contentCompact : null,
+      ]}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -285,12 +296,15 @@ export function AdminWebDashboardBody({
 
       <View style={styles.grid}>
         {shortcuts.map((item, index) => (
-          <View key={item.key} style={styles.gridCell}>
+          <View
+            key={item.key}
+            style={[styles.gridCell, { width: shortcutCellWidth }]}
+          >
             <AdminWebShortcutTile
               label={item.label}
               icon={item.icon}
               subtitle={item.subtitle}
-              rowIndex={Math.floor(index / 4)}
+              rowIndex={Math.floor(index / (layout.isCompactWeb ? 1 : layout.isTabletWeb ? 2 : 4))}
               onPress={() => router.push(item.route as never)}
             />
           </View>
@@ -308,6 +322,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 8,
     paddingBottom: 24,
+  },
+  contentCompact: {
+    paddingHorizontal: 14,
   },
   usageCard: {
     flexDirection: "row",

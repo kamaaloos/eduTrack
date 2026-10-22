@@ -86,12 +86,16 @@ export function ParentScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame sidebarLayout>
+      <WebPageCardFrame
+        sidebarLayout={false}
+        adminDashboardLayout={layout.isWeb}
+      >
         <StudentScreenHeader
           title={title}
           subtitle={subtitle}
           showBack={showBack}
           showMenu={showMenu}
+          hideMenuOnDesktopWeb
           notificationCount={showNotifications ? notificationCount : 0}
           onNotificationsPress={
             showNotifications

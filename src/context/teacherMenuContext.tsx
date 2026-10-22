@@ -13,7 +13,6 @@ import {
   WebAdminDesktopNav,
   resolveTeacherActiveKey,
 } from "../../components/admin/web/WebAdminDesktopNav";
-import { WebDesktopRoleNav } from "../../components/layout/WebDesktopRoleNav";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useTeacherSideMenuItems } from "../../hooks/useTeacherSideMenuItems";
 import { AuthContext } from "./authContext";
@@ -41,7 +40,7 @@ export function TeacherMenuProvider({ children }: { children: ReactNode }) {
 
   const firstName = userData?.name?.split(" ")[0] ?? t("common.teacher");
 
-  const desktopNav = layout.isDesktopWeb ? (
+  const shell = layout.showWebSidebar ? (
     <WebAdminDesktopNav
       items={menuItems}
       groups={TEACHER_WEB_NAV_GROUPS}
@@ -51,18 +50,12 @@ export function TeacherMenuProvider({ children }: { children: ReactNode }) {
       {children}
     </WebAdminDesktopNav>
   ) : (
-    <WebDesktopRoleNav
-      title={t("admin.management")}
-      subtitle={firstName}
-      items={menuItems}
-    >
-      {children}
-    </WebDesktopRoleNav>
+    children
   );
 
   return (
     <TeacherMenuContext.Provider value={value}>
-      {desktopNav}
+      {shell}
       {visible ? (
         <AdminSideMenu
           visible

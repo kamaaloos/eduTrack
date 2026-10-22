@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { APP_MENU_BACKDROP } from "../../src/constants/appTheme";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import { platformShadowDrawer } from "../../src/utils/platformShadow";
 
 const isWeb = Platform.OS === "web";
@@ -46,6 +47,8 @@ export function AdminSideMenu({
 }: AdminSideMenuProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { theme, fontFamily } = useSchoolTheme();
+  const primary = theme.primaryColor;
 
   const runItem = (onPress: () => void) => {
     onClose();
@@ -79,8 +82,12 @@ export function AdminSideMenu({
             },
           ]}
         >
-          <View style={styles.header}>
-            <Text style={styles.title}>{title}</Text>
+          <View style={[styles.header, { backgroundColor: primary }]}>
+            <Text
+              style={[styles.title, fontFamily ? { fontFamily } : null]}
+            >
+              {title}
+            </Text>
             {subtitle ? (
               <Text
                 style={[
@@ -111,12 +118,13 @@ export function AdminSideMenu({
                 <Ionicons
                   name={item.icon}
                   size={20}
-                  color={item.destructive ? "#B91C1C" : "#1E3A8A"}
+                  color={item.destructive ? "#B91C1C" : primary}
                 />
                 <Text
                   style={[
                     styles.itemText,
                     item.destructive && styles.itemTextDestructive,
+                    fontFamily ? { fontFamily } : null,
                   ]}
                 >
                   {item.label}
@@ -131,7 +139,9 @@ export function AdminSideMenu({
             onPress={onClose}
             activeOpacity={0.85}
           >
-            <Text style={styles.closeText}>{t("common.close")}</Text>
+            <Text style={[styles.closeText, { color: primary }]}>
+              {t("common.close")}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -159,7 +169,6 @@ const styles = StyleSheet.create({
     ...platformShadowDrawer(),
   },
   header: {
-    backgroundColor: "#1E3A8A",
     borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 16,
@@ -174,7 +183,7 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: 4,
     fontSize: 13,
-    color: "#BFDBFE",
+    color: "rgba(255,255,255,0.85)",
   },
   subtitleAccent: {
     fontSize: 13,
@@ -227,6 +236,5 @@ const styles = StyleSheet.create({
   closeText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#475569",
   },
 });

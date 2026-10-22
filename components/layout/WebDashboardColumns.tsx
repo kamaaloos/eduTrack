@@ -18,7 +18,7 @@ export function WebDashboardColumns({
 }: WebDashboardColumnsProps) {
   const layout = usePlatformLayout();
 
-  if (!layout.isDesktopWeb) {
+  if (!layout.showWebSidebar) {
     return (
       <>
         {primary}

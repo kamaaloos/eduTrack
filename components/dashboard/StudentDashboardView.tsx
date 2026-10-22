@@ -85,7 +85,10 @@ export function StudentDashboardView({
   return (
     <View style={styles.mainContainer}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame sidebarLayout={layout.isDesktopWeb}>
+      <WebPageCardFrame
+        sidebarLayout={false}
+        adminDashboardLayout={layout.isWeb}
+      >
         <DashboardHeader
           displayName={displayName}
           photoURL={photoURL}

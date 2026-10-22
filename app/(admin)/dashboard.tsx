@@ -452,7 +452,7 @@ export default function AdminDashboard() {
 
   return (
     <ErrorBoundary>
-      {layout.isDesktopWeb ? (
+      {layout.isWeb ? (
         <AdminScreenShell
           title={t("admin.dashboardTitle")}
           subtitle={t("admin.dashboardSubtitle")}

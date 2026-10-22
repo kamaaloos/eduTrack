@@ -60,7 +60,7 @@ export function StudentScreenHeader({
   const showMenuButton =
     showMenu &&
     Boolean(onMenuPress) &&
-    !(layout.isDesktopWeb && hideMenuOnDesktopWeb);
+    !(layout.showWebSidebar && hideMenuOnDesktopWeb);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: primary }]} edges={["top"]}>

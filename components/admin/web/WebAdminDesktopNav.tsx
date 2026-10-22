@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import type { AdminSideMenuItem } from "../AdminSideMenu";
+import { usePlatformLayout } from "../../../hooks/usePlatformLayout";
 import { AuthContext } from "../../../src/context/authContext";
 import { useSchoolContext } from "../../../src/context/schoolContext";
 import { useSchoolTheme } from "../../../src/context/schoolThemeContext";
@@ -187,6 +188,7 @@ export function WebAdminDesktopNav({
 }: WebAdminDesktopNavProps) {
   const { t } = useTranslation();
   const segments = useSegments();
+  const layout = usePlatformLayout();
   const { selectedSchool } = useSchoolContext();
   const { userData } = useContext(AuthContext);
   const { theme, fontFamily } = useSchoolTheme();
@@ -202,13 +204,14 @@ export function WebAdminDesktopNav({
   }, [items]);
 
   const logoutItem = itemByKey.get("logout");
+  const sidebarWidth = layout.isTabletWeb ? 220 : 272;
 
   return (
     <View style={styles.shell}>
       <View
         style={[
           styles.sidebar,
-          { backgroundColor: theme.primaryColor },
+          { backgroundColor: theme.primaryColor, width: sidebarWidth },
         ]}
       >
         <View style={styles.brandBlock}>
@@ -291,7 +294,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   sidebar: {
-    width: 272,
     paddingTop: 16,
     paddingHorizontal: 14,
     paddingBottom: 14,

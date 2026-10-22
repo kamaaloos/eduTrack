@@ -43,7 +43,7 @@ export function AdminScreenShell({
       <ScreenBackgroundLayer />
       <WebPageCardFrame
         sidebarLayout={false}
-        adminDashboardLayout={layout.isDesktopWeb && webExpandMain}
+        adminDashboardLayout={layout.isWeb && webExpandMain}
       >
         <AdminScreenHeader
           title={title}

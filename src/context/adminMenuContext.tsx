@@ -9,7 +9,6 @@ import React, {
 import { useTranslation } from "react-i18next";
 import { AdminSideMenu } from "../../components/admin/AdminSideMenu";
 import { WebAdminDesktopNav } from "../../components/admin/web/WebAdminDesktopNav";
-import { WebDesktopRoleNav } from "../../components/layout/WebDesktopRoleNav";
 import { useAdminSideMenuItems } from "../../hooks/useAdminSideMenuItems";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import { useSchoolContext } from "./schoolContext";
@@ -33,22 +32,15 @@ export function AdminMenuProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => ({ openMenu, closeMenu }), [openMenu, closeMenu]);
 
-  const desktopNav =
-    layout.isDesktopWeb ? (
-      <WebAdminDesktopNav items={menuItems}>{children}</WebAdminDesktopNav>
-    ) : (
-      <WebDesktopRoleNav
-        title={t("admin.management")}
-        subtitle={selectedSchool?.name ?? null}
-        items={menuItems}
-      >
-        {children}
-      </WebDesktopRoleNav>
-    );
+  const shell = layout.showWebSidebar ? (
+    <WebAdminDesktopNav items={menuItems}>{children}</WebAdminDesktopNav>
+  ) : (
+    children
+  );
 
   return (
     <AdminMenuContext.Provider value={value}>
-      {desktopNav}
+      {shell}
       {visible ? (
         <AdminSideMenu
           visible

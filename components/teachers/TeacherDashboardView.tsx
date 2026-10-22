@@ -58,7 +58,7 @@ export function TeacherDashboardView({
       <ScreenBackgroundLayer />
       <WebPageCardFrame
         sidebarLayout={false}
-        adminDashboardLayout={layout.isDesktopWeb}
+        adminDashboardLayout={layout.isWeb}
       >
         <TeacherDashboardHeader
           displayName={displayName}
@@ -72,10 +72,10 @@ export function TeacherDashboardView({
           style={[styles.container, webPageBodyStyle()]}
         contentContainerStyle={[
           styles.scrollContent,
-          layout.isDesktopWeb
+          layout.isWeb
             ? {
                 width: "100%",
-                paddingHorizontal: 20,
+                paddingHorizontal: layout.isCompactWeb ? 14 : 20,
                 paddingTop: 16,
                 paddingBottom: 8,
               }

@@ -20,20 +20,26 @@ export type PlatformLayout = {
   isCompactWeb: boolean;
   isTabletWeb: boolean;
   isDesktopWeb: boolean;
+  /** Persistent left nav on web (tablet+). Phones use the hamburger drawer. */
+  showWebSidebar: boolean;
   width: number;
 };
 
 export function usePlatformLayout(): PlatformLayout {
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
+  const isCompactWeb = isWeb && width < WEB_TABLET_BREAKPOINT;
+  const isTabletWeb =
+    isWeb && width >= WEB_TABLET_BREAKPOINT && width < WEB_DESKTOP_BREAKPOINT;
+  const isDesktopWeb = isWeb && width >= WEB_DESKTOP_BREAKPOINT;
 
   return {
     isWeb,
     isNative: !isWeb,
-    isCompactWeb: isWeb && width < WEB_TABLET_BREAKPOINT,
-    isTabletWeb:
-      isWeb && width >= WEB_TABLET_BREAKPOINT && width < WEB_DESKTOP_BREAKPOINT,
-    isDesktopWeb: isWeb && width >= WEB_DESKTOP_BREAKPOINT,
+    isCompactWeb,
+    isTabletWeb,
+    isDesktopWeb,
+    showWebSidebar: isTabletWeb || isDesktopWeb,
     width,
   };
 }

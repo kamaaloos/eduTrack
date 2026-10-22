@@ -90,7 +90,7 @@ export function TeacherScreenShell({
       <ScreenBackgroundLayer />
       <WebPageCardFrame
         sidebarLayout={false}
-        adminDashboardLayout={layout.isDesktopWeb}
+        adminDashboardLayout={layout.isWeb}
       >
         <StudentScreenHeader
           title={title}

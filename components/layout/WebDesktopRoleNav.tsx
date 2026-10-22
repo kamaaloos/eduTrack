@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import type { ReactNode } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { usePlatformLayout } from "../../hooks/usePlatformLayout";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import type { AdminSideMenuItem } from "../admin/AdminSideMenu";
 
 type WebDesktopRoleNavProps = {
@@ -11,7 +12,7 @@ type WebDesktopRoleNavProps = {
   children: ReactNode;
 };
 
-/** Persistent left navigation on desktop web for teacher/parent roles. */
+/** Persistent left navigation on tablet/desktop web for role shells. */
 export function WebDesktopRoleNav({
   title,
   subtitle,
@@ -19,15 +20,22 @@ export function WebDesktopRoleNav({
   children,
 }: WebDesktopRoleNavProps) {
   const layout = usePlatformLayout();
+  const { theme, fontFamily } = useSchoolTheme();
 
-  if (!layout.isDesktopWeb) {
+  if (!layout.showWebSidebar) {
     return <>{children}</>;
   }
 
+  const primary = theme.primaryColor;
+
   return (
     <View style={styles.shell}>
-      <View style={styles.sidebar}>
-        <Text style={styles.sidebarTitle}>{title}</Text>
+      <View style={[styles.sidebar, { backgroundColor: primary }]}>
+        <Text
+          style={[styles.sidebarTitle, fontFamily ? { fontFamily } : null]}
+        >
+          {title}
+        </Text>
         {subtitle ? (
           <Text style={styles.sidebarSubtitle} numberOfLines={2}>
             {subtitle}
@@ -57,6 +65,7 @@ export function WebDesktopRoleNav({
                 style={[
                   styles.navItemText,
                   item.destructive ? styles.navItemTextDestructive : null,
+                  fontFamily ? { fontFamily } : null,
                 ]}
                 numberOfLines={2}
               >
@@ -71,8 +80,6 @@ export function WebDesktopRoleNav({
   );
 }
 
-const NAVY = "#1E3A8A";
-
 const styles = StyleSheet.create({
   shell: {
     flex: 1,
@@ -83,8 +90,7 @@ const styles = StyleSheet.create({
   sidebar: {
     width: 258,
     borderRightWidth: 1,
-    borderRightColor: "#172554",
-    backgroundColor: NAVY,
+    borderRightColor: "rgba(0,0,0,0.12)",
     paddingTop: 20,
     paddingHorizontal: 14,
     paddingBottom: 14,
@@ -97,7 +103,7 @@ const styles = StyleSheet.create({
   },
   sidebarSubtitle: {
     fontSize: 13,
-    color: "#BFDBFE",
+    color: "rgba(255,255,255,0.85)",
     marginTop: 6,
     marginBottom: 14,
     paddingHorizontal: 10,

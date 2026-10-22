@@ -27,7 +27,10 @@ export function SecretaryScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame sidebarLayout={layout.isDesktopWeb}>
+      <WebPageCardFrame
+        sidebarLayout={false}
+        adminDashboardLayout={layout.isWeb}
+      >
         <AdminScreenHeader
           title={title}
           subtitle={subtitle}

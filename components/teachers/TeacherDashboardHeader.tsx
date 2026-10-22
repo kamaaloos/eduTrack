@@ -33,7 +33,7 @@ export function TeacherDashboardHeader({
   const layout = usePlatformLayout();
   const { theme, fontFamily } = useSchoolTheme();
   const primary = theme.primaryColor;
-  const showMenuButton = Boolean(onMenuPress) && !layout.isDesktopWeb;
+  const showMenuButton = Boolean(onMenuPress) && !layout.showWebSidebar;
 
   const iconBtnStyle =
     Platform.OS === "web" ? styles.headerIconButton : styles.headerIconButtonNative;

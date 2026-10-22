@@ -87,7 +87,10 @@ export function StudentScreenShell({
   return (
     <View style={styles.screen}>
       <ScreenBackgroundLayer />
-      <WebPageCardFrame sidebarLayout={layout.isDesktopWeb}>
+      <WebPageCardFrame
+        sidebarLayout={false}
+        adminDashboardLayout={layout.isWeb}
+      >
         <StudentScreenHeader
           title={title}
           subtitle={subtitle}
