@@ -61,6 +61,9 @@ export const floatingTabBarStyle = {
   paddingHorizontal: 8,
 };
 
+export const tabBarActiveTintColor = "#1D4ED8";
+export const tabBarInactiveTintColor = "#64748B";
+
 export const tabSceneContainerStyle = {
   paddingBottom: FLOATING_TAB_BAR_INSET,
   backgroundColor: "transparent" as const,

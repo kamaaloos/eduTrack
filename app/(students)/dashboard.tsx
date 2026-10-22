@@ -4,6 +4,7 @@ import { AuthContext } from "../../src/context/authContext";
 import { StudentDashboardView } from "../../components/dashboard/StudentDashboardView";
 import { useStudentDashboardData } from "../../hooks/useStudentDashboardData";
 import { useStudentMenu } from "../../src/context/studentMenuContext";
+import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 
 export default function StudentDashboard() {
   const { t } = useTranslation();
@@ -46,6 +47,7 @@ export default function StudentDashboard() {
       schedule={schedule}
       remarksAndAttendance={remarksAndAttendance}
       gradedExamIds={gradedExamIds}
+      contentBottomInset={FLOATING_TAB_BAR_INSET + 32}
     />
   );
 }

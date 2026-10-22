@@ -14,6 +14,7 @@ import { useDismissedContent } from "../../hooks/useDismissedContent";
 import { SwipeToDeleteRow } from "../../components/common/SwipeToDeleteRow";
 import { StudentScreenShell } from "../../components/students/StudentScreenShell";
 import { studentScreenStyles as styles } from "../../components/students/studentScreenStyles";
+import { FLOATING_TAB_BAR_INSET } from "../../src/constants/tabBar";
 
 export default function MessagesScreen() {
   const { t } = useTranslation();
@@ -33,7 +34,7 @@ export default function MessagesScreen() {
           userId: user.uid,
           role: "student",
           studentId: user.uid,
-        }),
+        }).filter((a) => isDirectAnnouncement(a)),
       );
     };
 
@@ -58,33 +59,25 @@ export default function MessagesScreen() {
 
   return (
     <StudentScreenShell
-      title={t("student.messages")}
-      showBack
+      title={t("tabs.student.messages")}
       showMenu={false}
+      contentContainerStyle={{ paddingBottom: FLOATING_TAB_BAR_INSET + 24 }}
     >
       {visibleMessages.length === 0 ? (
-        <Text style={styles.emptyText}>{t("common.noData")}</Text>
+        <Text style={styles.emptyText}>{t("student.noDirectMessages")}</Text>
       ) : (
         visibleMessages.map((m) => {
           const senderLine = getAnnouncementSenderLine(m, t);
-          const isDirect = isDirectAnnouncement(m);
           return (
             <SwipeToDeleteRow
               key={m.id}
               onDelete={() => handleDismiss(m.id)}
               webDismissLabel={t("common.delete")}
             >
-              <View
-                style={[
-                  styles.listCard,
-                  isDirect && styles.listCardDirect,
-                ]}
-              >
-                {isDirect ? (
-                  <Text style={styles.listCardBadge}>
-                    {t("announcement.personalMessage")}
-                  </Text>
-                ) : null}
+              <View style={[styles.listCard, styles.listCardDirect]}>
+                <Text style={styles.listCardBadge}>
+                  {t("announcement.personalMessage")}
+                </Text>
                 {senderLine ? (
                   <Text style={styles.listCardSender}>{senderLine}</Text>
                 ) : null}

@@ -1,23 +1,34 @@
-import { Stack, Tabs } from "expo-router";
-import { Platform } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RoleGate } from "../../components/auth/RoleGate";
+import { HapticTab } from "../../components/haptic-tab";
 import { RoleAppFrame } from "../../components/layout/RoleAppFrame";
 import {
-  hiddenTabBarStyle,
-  SHELL_SCENE_CONTAINER_STYLE,
-  WEB_SHELL_CONTENT_STYLE,
+  floatingTabBarStyleForSafeArea,
+  tabBarItemStyle,
+  tabBarLabelStyle,
+  tabSceneContainerStyle,
 } from "../../src/constants/tabBar";
 import { StudentMenuProvider } from "../../src/context/studentMenuContext";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 
-const STUDENT_STACK_SCREENS = [
+const STUDENT_TAB_SCREENS = [
   "dashboard",
+  "messages",
+  "announcements",
+  "schedule",
+  "more",
+] as const;
+
+const STUDENT_HIDDEN_SCREENS = [
   "attendance",
   "analytics",
   "notifications",
   "report-card",
   "account",
   "homeworks",
-  "messages",
   "remarks",
   "exams",
   "announcement-detail",
@@ -27,30 +38,29 @@ const STUDENT_STACK_SCREENS = [
   "attendance-detail",
 ] as const;
 
-/** Web: stack navigation + hamburger menu (no bottom tabs). */
-function StudentWebStack() {
-  return (
-    <Stack
-      initialRouteName="dashboard"
-      screenOptions={{
-        headerShown: false,
-        animation: "fade",
-        contentStyle: WEB_SHELL_CONTENT_STYLE,
-      }}
-    >
-      {STUDENT_STACK_SCREENS.map((name) => (
-        <Stack.Screen key={name} name={name} />
-      ))}
-    </Stack>
-  );
-}
+const TAB_ICONS: Record<
+  (typeof STUDENT_TAB_SCREENS)[number],
+  keyof typeof Ionicons.glyphMap
+> = {
+  dashboard: "home-outline",
+  messages: "chatbubble-ellipses-outline",
+  announcements: "megaphone-outline",
+  schedule: "calendar-outline",
+  more: "ellipsis-horizontal-circle-outline",
+};
 
-/** Native: tabs shell with bar hidden — side menu is primary navigation. */
 function StudentTabs() {
-  const sceneStyle =
-    Platform.OS === "web"
-      ? WEB_SHELL_CONTENT_STYLE
-      : SHELL_SCENE_CONTAINER_STYLE;
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const { theme } = useSchoolTheme();
+
+  const titles: Record<(typeof STUDENT_TAB_SCREENS)[number], string> = {
+    dashboard: t("tabs.student.home"),
+    messages: t("tabs.student.messages"),
+    announcements: t("tabs.student.announcements"),
+    schedule: t("tabs.student.schedule"),
+    more: t("tabs.student.more"),
+  };
 
   return (
     <Tabs
@@ -59,12 +69,30 @@ function StudentTabs() {
         headerShown: false,
         lazy: true,
         detachInactiveScreens: true,
-        sceneStyle,
-        sceneContainerStyle: sceneStyle,
-        tabBarStyle: hiddenTabBarStyle,
+        sceneStyle: tabSceneContainerStyle,
+        sceneContainerStyle: tabSceneContainerStyle,
+        tabBarButton: HapticTab,
+        tabBarActiveTintColor: theme.primaryColor,
+        tabBarInactiveTintColor: "#64748B",
+        tabBarStyle: floatingTabBarStyleForSafeArea(insets.bottom),
+        tabBarLabelStyle,
+        tabBarItemStyle,
       }}
     >
-      {STUDENT_STACK_SCREENS.map((name) => (
+      {STUDENT_TAB_SCREENS.map((name) => (
+        <Tabs.Screen
+          key={name}
+          name={name}
+          options={{
+            title: titles[name],
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name={TAB_ICONS[name]} size={size ?? 22} color={color} />
+            ),
+          }}
+        />
+      ))}
+      {STUDENT_HIDDEN_SCREENS.map((name) => (
         <Tabs.Screen
           key={name}
           name={name}
@@ -76,14 +104,15 @@ function StudentTabs() {
 }
 
 export default function StudentLayout() {
-  const Navigator =
-    Platform.OS === "web" ? StudentWebStack : StudentTabs;
-
   return (
     <RoleGate allowedRole="student">
       <StudentMenuProvider>
-        <RoleAppFrame copyrightBottomOffset={8}>
-          <Navigator />
+        <RoleAppFrame
+          showCopyright={false}
+          reserveContentFooterSpace={false}
+          copyrightBottomOffset={0}
+        >
+          <StudentTabs />
         </RoleAppFrame>
       </StudentMenuProvider>
     </RoleGate>

@@ -8,6 +8,7 @@ import { getAttendanceColor } from "../../src/utils/dashboardUi";
 import { getAttendanceStatusLabel } from "../../src/utils/attendanceLabels";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import { platformShadow } from "../../src/utils/platformShadow";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import {
   ReportCardWebAbsencesSection,
   ReportCardWebExamsSection,
@@ -36,6 +37,8 @@ export function ReportCardView({
   contentMaxWidth,
 }: ReportCardViewProps) {
   const { t } = useTranslation();
+  const { theme, fontFamily } = useSchoolTheme();
+  const primary = theme.primaryColor;
   const columnMaxWidth = contentMaxWidth ?? STUDENT_LIST_MAX_WIDTH;
   const useWideColumn = contentMaxWidth != null;
   const useWebFilteredLists = Platform.OS === "web";
@@ -64,9 +67,13 @@ export function ReportCardView({
           { maxWidth: columnMaxWidth },
         ]}
       >
-      <View style={styles.hero}>
+      <View style={[styles.hero, { backgroundColor: primary }]}>
         <Text style={styles.heroEyebrow}>{t("reportCard.heroEyebrow")}</Text>
-        <Text style={styles.heroTitle}>{report.studentName}</Text>
+        <Text
+          style={[styles.heroTitle, fontFamily ? { fontFamily } : null]}
+        >
+          {report.studentName}
+        </Text>
         <Text style={styles.heroSub}>{t("reportCard.heroSub")}</Text>
 
         <View style={styles.heroStats}>
@@ -324,7 +331,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   hero: {
-    backgroundColor: "#1E3A8A",
     borderRadius: 20,
     padding: 22,
     marginBottom: 24,

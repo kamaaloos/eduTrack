@@ -519,6 +519,10 @@
     },
     "student": {
       "home": "Home",
+      "messages": "Messages",
+      "announcements": "Announcements",
+      "schedule": "Schedule",
+      "more": "More",
       "attendance": "Attendance",
       "analytics": "Analytics",
       "reports": "Reports",
@@ -908,6 +912,7 @@
     "examDetail": "Exam details",
     "remarkDetail": "Remark details",
     "messages": "Messages",
+    "noDirectMessages": "No personal messages yet",
     "noHomework": "No homework assigned",
     "dueDate": "Due {{date}}",
     "submitted": "Submitted",

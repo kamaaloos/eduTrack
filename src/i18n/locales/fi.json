@@ -517,6 +517,10 @@
     },
     "student": {
       "home": "Koti",
+      "messages": "Viestit",
+      "announcements": "Ilmoitukset",
+      "schedule": "Aikataulu",
+      "more": "Lisää",
       "attendance": "Läsnäolo",
       "analytics": "Analytiikka",
       "reports": "Raportit",
@@ -904,6 +908,7 @@
     "examDetail": "Kokeen tiedot",
     "remarkDetail": "Huomautuksen tiedot",
     "messages": "Viestit",
+    "noDirectMessages": "Ei henkilökohtaisia viestejä vielä",
     "noHomework": "Kotitehtäviä ei ole annettu",
     "dueDate": "Eräpäivä {{date}}",
     "submitted": "Lähetetty",

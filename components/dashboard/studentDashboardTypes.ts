@@ -23,6 +23,8 @@ export type StudentDashboardViewProps = {
   schedule: any[];
   remarksAndAttendance: any[];
   gradedExamIds?: ReadonlySet<string>;
+  /** Extra scroll bottom padding (e.g. floating student tab bar). */
+  contentBottomInset?: number;
 };
 
 export type StudentDashboardNavigation = {

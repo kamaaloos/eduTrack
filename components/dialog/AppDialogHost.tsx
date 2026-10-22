@@ -3,11 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import {
@@ -25,7 +23,9 @@ type PendingAlert = AlertDialogRequest & {
 
 export function AppDialogHost() {
   const { t } = useTranslation();
-  const { theme } = useSchoolTheme();
+  const { theme, fontFamily } = useSchoolTheme();
+  const primary = theme.primaryColor;
+  const accent = theme.accentColor;
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogRequest | null>(
     null,
   );
@@ -33,10 +33,6 @@ export function AppDialogHost() {
   const confirmResolverRef = useRef<((value: boolean) => void) | null>(null);
 
   useEffect(() => {
-    if (Platform.OS !== "web") {
-      return;
-    }
-
     registerDialogBridge({
       confirm: (request) =>
         new Promise<boolean>((resolve) => {
@@ -66,10 +62,6 @@ export function AppDialogHost() {
     setAlertDialog(null);
   };
 
-  if (Platform.OS !== "web") {
-    return null;
-  }
-
   const alertVariant = alertDialog?.variant ?? "info";
   const alertIcon =
     alertVariant === "success"
@@ -77,12 +69,18 @@ export function AppDialogHost() {
       : alertVariant === "error"
         ? "alert-circle"
         : "information-circle";
-  const alertIconColor =
+  const alertTone =
     alertVariant === "success"
       ? "#059669"
       : alertVariant === "error"
         ? "#DC2626"
-        : theme.primaryColor;
+        : primary;
+
+  const confirmIsDestructive = Boolean(confirmDialog?.destructive);
+  const confirmIcon = confirmIsDestructive
+    ? "warning"
+    : "help-circle";
+  const confirmTone = confirmIsDestructive ? "#DC2626" : primary;
 
   return (
     <>
@@ -98,37 +96,73 @@ export function AppDialogHost() {
             onPress={() => finishConfirm(false)}
           />
           <View style={styles.card} accessibilityRole="alert">
-            <Text style={styles.title}>{confirmDialog?.title}</Text>
+            <View
+              style={[
+                styles.accentBar,
+                { backgroundColor: confirmIsDestructive ? "#DC2626" : primary },
+              ]}
+            />
+            <View
+              style={[
+                styles.iconBadge,
+                {
+                  backgroundColor: confirmIsDestructive
+                    ? "#FEE2E2"
+                    : `${primary}18`,
+                },
+              ]}
+            >
+              <Ionicons name={confirmIcon} size={28} color={confirmTone} />
+            </View>
+            <Text
+              style={[styles.title, fontFamily ? { fontFamily } : null]}
+            >
+              {confirmDialog?.title}
+            </Text>
             {confirmDialog?.message ? (
               <Text style={styles.message}>{confirmDialog.message}</Text>
             ) : null}
             <View style={styles.actions}>
-              <TouchableOpacity
-                style={[styles.button, styles.buttonSecondary]}
+              <Pressable
                 onPress={() => finishConfirm(false)}
+                style={({ pressed }) => [
+                  styles.button,
+                  styles.buttonSecondary,
+                  { borderColor: `${primary}33` },
+                  pressed ? styles.pressed : null,
+                ]}
               >
-                <Text style={styles.buttonSecondaryText}>
+                <Text style={[styles.buttonSecondaryText, { color: primary }]}>
                   {confirmDialog?.cancelLabel ?? t("common.cancel")}
                 </Text>
-              </TouchableOpacity>
-              {confirmDialog?.destructive ? (
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonDestructive]}
+              </Pressable>
+              {confirmIsDestructive ? (
+                <Pressable
                   onPress={() => finishConfirm(true)}
+                  style={({ pressed }) => [
+                    styles.button,
+                    styles.buttonDestructive,
+                    pressed ? styles.pressed : null,
+                  ]}
                 >
                   <Text style={styles.buttonPrimaryText}>
                     {confirmDialog?.confirmLabel ?? t("common.confirm")}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               ) : (
                 <SchoolThemeButton
                   size="compact"
                   label={confirmDialog?.confirmLabel ?? t("common.confirm")}
                   onPress={() => finishConfirm(true)}
+                  style={styles.confirmPrimary}
                   textStyle={styles.buttonPrimaryText}
                 />
               )}
             </View>
+            <View
+              style={[styles.softGlow, { backgroundColor: accent }]}
+              pointerEvents="none"
+            />
           </View>
         </View>
       </Modal>
@@ -142,10 +176,22 @@ export function AppDialogHost() {
         <View style={styles.overlay}>
           <Pressable style={styles.backdrop} onPress={finishAlert} />
           <View style={styles.card} accessibilityRole="alert">
-            <View style={styles.alertHeader}>
-              <Ionicons name={alertIcon} size={22} color={alertIconColor} />
-              <Text style={styles.title}>{alertDialog?.title}</Text>
+            <View
+              style={[styles.accentBar, { backgroundColor: alertTone }]}
+            />
+            <View
+              style={[
+                styles.iconBadge,
+                { backgroundColor: `${alertTone}18` },
+              ]}
+            >
+              <Ionicons name={alertIcon} size={28} color={alertTone} />
             </View>
+            <Text
+              style={[styles.title, fontFamily ? { fontFamily } : null]}
+            >
+              {alertDialog?.title}
+            </Text>
             {alertDialog?.message ? (
               <Text style={styles.message}>{alertDialog.message}</Text>
             ) : null}
@@ -155,6 +201,13 @@ export function AppDialogHost() {
               onPress={finishAlert}
               style={styles.alertOkButton}
               textStyle={styles.buttonPrimaryText}
+            />
+            <View
+              style={[
+                styles.softGlow,
+                { backgroundColor: accent },
+              ]}
+              pointerEvents="none"
             />
           </View>
         </View>
@@ -172,56 +225,82 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(15, 23, 42, 0.45)",
+    backgroundColor: "rgba(15, 23, 42, 0.52)",
   },
   card: {
     width: "100%",
-    maxWidth: 420,
+    maxWidth: 400,
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 22,
+    paddingTop: 22,
+    paddingHorizontal: 22,
+    paddingBottom: 20,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "#E8EEF5",
+    overflow: "hidden",
     ...platformShadow("xl"),
     zIndex: 1,
   },
-  alertHeader: {
-    flexDirection: "row",
+  accentBar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 4,
+  },
+  softGlow: {
+    position: "absolute",
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    right: -40,
+    bottom: -50,
+    opacity: 0.08,
+  },
+  iconBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 18,
     alignItems: "center",
-    gap: 8,
+    justifyContent: "center",
+    marginBottom: 14,
   },
   title: {
-    flex: 1,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "800",
     color: "#0F172A",
+    lineHeight: 26,
   },
   message: {
     marginTop: 10,
     fontSize: 15,
     lineHeight: 22,
-    color: "#475569",
+    color: "#64748B",
   },
   actions: {
     flexDirection: "row",
     justifyContent: "flex-end",
+    alignItems: "center",
     gap: 10,
-    marginTop: 20,
+    marginTop: 22,
   },
   button: {
-    minWidth: 96,
+    minWidth: 104,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: "center",
+    justifyContent: "center",
   },
   buttonDestructive: {
     backgroundColor: "#DC2626",
   },
   buttonSecondary: {
-    backgroundColor: "#F1F5F9",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1.5,
+  },
+  confirmPrimary: {
+    minWidth: 104,
   },
   buttonPrimaryText: {
     color: "#FFFFFF",
@@ -229,12 +308,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   buttonSecondaryText: {
-    color: "#334155",
     fontWeight: "700",
     fontSize: 15,
   },
   alertOkButton: {
     alignSelf: "flex-end",
-    marginTop: 20,
+    marginTop: 22,
+    minWidth: 104,
+  },
+  pressed: {
+    opacity: 0.88,
+    transform: [{ scale: 0.98 }],
   },
 });

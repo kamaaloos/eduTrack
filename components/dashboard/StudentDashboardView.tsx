@@ -47,6 +47,7 @@ export function StudentDashboardView({
   schedule,
   remarksAndAttendance,
   gradedExamIds,
+  contentBottomInset,
 }: StudentDashboardViewProps) {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
@@ -106,7 +107,13 @@ export function StudentDashboardView({
 
         <ScrollView
           style={[styles.container, webPageBodyStyle()]}
-        contentContainerStyle={[styles.scrollContent, dashboardContentStyle]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          dashboardContentStyle,
+          contentBottomInset
+            ? { paddingBottom: contentBottomInset }
+            : null,
+        ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -120,7 +127,7 @@ export function StudentDashboardView({
                 classId={classId}
                 useParentRoutes={useParentRoutes}
                 navigation={navigation}
-                listRoute={listRoute("/messages")}
+                listRoute={listRoute("/announcements")}
               />
 
               <DashboardScheduleSection

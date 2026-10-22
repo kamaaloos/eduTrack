@@ -9,9 +9,10 @@ import {
   View,
 } from "react-native";
 import { MOBILE_SCREEN_HORIZONTAL_PADDING } from "../../src/constants/appTheme";
+import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import type { ParentChild } from "../../src/services/parentChildren";
 import { platformShadow } from "../../src/utils/platformShadow";
-import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import { UserAvatar } from "../common/UserAvatar";
 
 type ParentChildrenListProps = {
@@ -24,6 +25,9 @@ export function ParentChildrenList({
   onSelect,
 }: ParentChildrenListProps) {
   const { t } = useTranslation();
+  const { theme } = useSchoolTheme();
+  const primary = theme.primaryColor;
+  const softBg = `${primary}14`;
   const isWeb = Platform.OS === "web";
 
   const renderCard = (child: ParentChild) => (
@@ -41,8 +45,8 @@ export function ParentChildrenList({
         email={child.email}
         photoURL={child.photoURL}
         size={isWeb ? 56 : 52}
-        textColor="#1E3A8A"
-        backgroundColor="#EFF6FF"
+        textColor={primary}
+        backgroundColor={softBg}
       />
       <View style={[styles.childBody, !isWeb && styles.childBodyMobile]}>
         <Text
@@ -51,9 +55,12 @@ export function ParentChildrenList({
         >
           {child.name}
         </Text>
-        <View style={styles.classPill}>
-          <Ionicons name="school-outline" size={12} color="#1D4ED8" />
-          <Text style={styles.classPillText} numberOfLines={1}>
+        <View style={[styles.classPill, { backgroundColor: softBg }]}>
+          <Ionicons name="school-outline" size={12} color={primary} />
+          <Text
+            style={[styles.classPillText, { color: primary }]}
+            numberOfLines={1}
+          >
             {child.className || child.classId || t("common.class")}
           </Text>
         </View>
@@ -62,7 +69,9 @@ export function ParentChildrenList({
             {child.email}
           </Text>
         ) : null}
-        <Text style={styles.viewLink}>{t("parent.viewStudent")} →</Text>
+        <Text style={[styles.viewLink, { color: primary }]}>
+          {t("parent.viewStudent")} →
+        </Text>
       </View>
       {isWeb ? (
         <Ionicons name="chevron-forward" size={22} color="#94A3B8" />
@@ -74,8 +83,15 @@ export function ParentChildrenList({
     <View style={styles.section}>
       <View style={styles.sectionHead}>
         <Text style={styles.sectionTitle}>{t("parent.selectChild")}</Text>
-        <View style={styles.countPill}>
-          <Text style={styles.countPillText}>{childList.length}</Text>
+        <View
+          style={[
+            styles.countPill,
+            { backgroundColor: softBg, borderColor: `${primary}55` },
+          ]}
+        >
+          <Text style={[styles.countPillText, { color: primary }]}>
+            {childList.length}
+          </Text>
         </View>
       </View>
 
@@ -116,17 +132,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
   },
   countPill: {
-    backgroundColor: "#EFF6FF",
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderWidth: 1,
-    borderColor: "#BFDBFE",
   },
   countPillText: {
     fontSize: 12,
     fontWeight: "800",
-    color: "#1D4ED8",
   },
   webGrid: {
     flexDirection: "row",
@@ -135,9 +148,6 @@ const styles = StyleSheet.create({
     maxWidth: 680,
     alignSelf: "center",
     width: "100%",
-  },
-  mobileRowScroll: {
-    marginHorizontal: -MOBILE_SCREEN_HORIZONTAL_PADDING,
   },
   mobileRow: {
     paddingHorizontal: MOBILE_SCREEN_HORIZONTAL_PADDING,
@@ -197,7 +207,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     gap: 4,
     maxWidth: "100%",
-    backgroundColor: "#EFF6FF",
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -205,7 +214,6 @@ const styles = StyleSheet.create({
   classPillText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#1D4ED8",
     flexShrink: 1,
   },
   childEmail: {
@@ -215,7 +223,6 @@ const styles = StyleSheet.create({
   viewLink: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#2563EB",
     marginTop: 2,
   },
 });

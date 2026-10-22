@@ -517,6 +517,10 @@
     },
     "student": {
       "home": "الرئيسية",
+      "messages": "الرسائل",
+      "announcements": "الإعلانات",
+      "schedule": "الجدول",
+      "more": "المزيد",
       "attendance": "الحضور",
       "analytics": "التحليلات",
       "reports": "التقارير",
@@ -904,6 +908,7 @@
     "examDetail": "تفاصيل الاختبار",
     "remarkDetail": "تفاصيل الملاحظة",
     "messages": "الرسائل",
+    "noDirectMessages": "لا توجد رسائل شخصية بعد",
     "noHomework": "لا توجد واجبات مُعيَّنة",
     "dueDate": "الاستحقاق {{date}}",
     "submitted": "مُسلَّم",

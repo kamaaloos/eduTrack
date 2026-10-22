@@ -517,6 +517,10 @@
     },
     "student": {
       "home": "Guriga",
+      "messages": "Fariimaha",
+      "announcements": "Ogeysiisyada",
+      "schedule": "Jadwalka",
+      "more": "Wax badan",
       "attendance": "Imaanshaha",
       "analytics": "Falanqayn",
       "reports": "Warbixino",
@@ -904,6 +908,7 @@
     "examDetail": "Faahfaahinta imtixaanka",
     "remarkDetail": "Faahfaahinta faallada",
     "messages": "Fariimaha",
+    "noDirectMessages": "Weli ma jiraan fariimo gaar ah",
     "noHomework": "Hawl guri lama qoondeyn",
     "dueDate": "Waqtiga {{date}}",
     "submitted": "La gudbiyay",

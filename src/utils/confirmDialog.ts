@@ -1,7 +1,7 @@
 import { Alert, Platform } from "react-native";
 import { getDialogBridge } from "../services/dialogBridge";
 
-/** Multi-button Alert.alert is unreliable on web — use AppDialogHost instead. */
+/** Prefer AppDialogHost (themed) when registered; fall back to system alerts. */
 export function confirmAction(
   title: string,
   message: string,
@@ -9,7 +9,7 @@ export function confirmAction(
   cancelLabel: string,
 ): Promise<boolean> {
   const bridge = getDialogBridge();
-  if (Platform.OS === "web" && bridge) {
+  if (bridge) {
     return bridge.confirm({ title, message, confirmLabel, cancelLabel });
   }
 
@@ -33,7 +33,7 @@ export function confirmDestructiveAction(
   cancelLabel: string,
 ): Promise<boolean> {
   const bridge = getDialogBridge();
-  if (Platform.OS === "web" && bridge) {
+  if (bridge) {
     return bridge.confirm({
       title,
       message,
@@ -57,7 +57,7 @@ export function confirmDestructiveAction(
 
 export function showSuccessAlert(title: string, message: string): void {
   const bridge = getDialogBridge();
-  if (Platform.OS === "web" && bridge) {
+  if (bridge) {
     void bridge.alert({ title, message, variant: "success" });
     return;
   }
@@ -67,7 +67,7 @@ export function showSuccessAlert(title: string, message: string): void {
 
 export function showErrorAlert(title: string, message: string): void {
   const bridge = getDialogBridge();
-  if (Platform.OS === "web" && bridge) {
+  if (bridge) {
     void bridge.alert({ title, message, variant: "error" });
     return;
   }

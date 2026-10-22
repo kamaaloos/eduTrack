@@ -8,6 +8,7 @@ import {
   webAdminContentStyle,
   webAdminPagePaddingStyle,
 } from "../../src/constants/webLayout";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import {
   confirmDestructiveAction,
   showErrorAlert,
@@ -51,6 +52,8 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const { t } = useTranslation();
   const layout = usePlatformLayout();
+  const { theme, fontFamily } = useSchoolTheme();
+  const primary = theme.primaryColor;
 
   const showMenuButton =
     Boolean(onMenuPress) && !(layout.showWebSidebar && hideMenuOnDesktopWeb);
@@ -59,7 +62,7 @@ export function DashboardHeader({
     Platform.OS === "web"
       ? styles.headerIconButton
       : styles.headerIconButtonNative;
-  const iconColor = Platform.OS === "web" ? "#1E3A8A" : "#FFFFFF";
+  const iconColor = Platform.OS === "web" ? primary : "#FFFFFF";
 
   const headerInner = (
     <View
@@ -74,13 +77,16 @@ export function DashboardHeader({
           name={displayName}
           photoURL={photoURL}
           size={Platform.OS === "web" ? 48 : 52}
-          textColor="#1E3A8A"
+          textColor={primary}
           backgroundColor="#FFFFFF"
         />
 
         <View style={styles.headerTextBlock}>
           <TimeGreeting textStyle={styles.greeting} iconColor="#BFDBFE" />
-          <Text style={styles.name} numberOfLines={2}>
+          <Text
+            style={[styles.name, fontFamily ? { fontFamily } : null]}
+            numberOfLines={2}
+          >
             {firstName}
           </Text>
           {headerSubtitle ? (
@@ -124,7 +130,7 @@ export function DashboardHeader({
                 color={iconColor}
               />
               {notificationUnreadCount > 0 ? (
-                <View style={styles.headerBadge}>
+                <View style={[styles.headerBadge, { borderColor: primary }]}>
                   <Text style={styles.headerBadgeText}>
                     {notificationUnreadCount > 9
                       ? "9+"
@@ -141,8 +147,10 @@ export function DashboardHeader({
               onPress={onLogout}
               accessibilityLabel={t("common.logout")}
             >
-              <Ionicons name="log-out-outline" size={18} color="#1E3A8A" />
-              <Text style={styles.logoutText}>{t("common.logout")}</Text>
+              <Ionicons name="log-out-outline" size={18} color={primary} />
+              <Text style={[styles.logoutText, { color: primary }]}>
+                {t("common.logout")}
+              </Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -151,10 +159,14 @@ export function DashboardHeader({
   );
 
   return (
-    <SafeAreaView style={styles.headerSafe} edges={["top"]}>
+    <SafeAreaView
+      style={[styles.headerSafe, { backgroundColor: primary }]}
+      edges={["top"]}
+    >
       <View
         style={[
           styles.header,
+          { backgroundColor: primary },
           Platform.OS !== "web" ? { paddingTop: 4 } : null,
         ]}
       >
