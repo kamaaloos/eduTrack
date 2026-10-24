@@ -20,18 +20,76 @@ import {
 } from "./schoolSubscriptionSync";
 import { DEFAULT_SCHOOL_THEME } from "../constants/schoolThemeDefaults";
 import { resolveSchoolTheme, themeToFirestore } from "../utils/schoolTheme";
+import { getUsageRemainingDays } from "../utils/usageExpiry";
 import { validateUsageExpiryDate } from "../utils/validation";
+
+/** Registry date was written; school platform/subscription sync failed afterward. */
+export class PeriodSyncError extends Error {
+  readonly registrySaved: true = true;
+  readonly savedDate: string | null;
+
+  constructor(message: string, savedDate: string | null) {
+    super(message);
+    this.name = "PeriodSyncError";
+    this.savedDate = savedDate;
+  }
+}
+
+function formatPlatformSyncFailure(raw: string | undefined): string {
+  const detail = (raw || "").trim();
+  const lower = detail.toLowerCase();
+  if (!detail || detail === "missing_project_id") {
+    return (
+      "Date was saved in the registry, but the school has no firebase.projectId — " +
+      "fix the school Firebase config, then tap Sync access."
+    );
+  }
+  if (
+    lower.includes("permission") ||
+    lower.includes("permission_denied") ||
+    lower.includes("7 ") ||
+    lower.includes("iam")
+  ) {
+    return (
+      "Date was saved in the registry, but syncing platform/subscription to the school " +
+      "Firebase project failed (permission denied). Grant the registry Cloud Functions " +
+      "service account Cloud Datastore User on that school project, then tap Sync access."
+    );
+  }
+  return (
+    `Date was saved in the registry, but platform sync failed: ${detail}. ` +
+    "Deploy registry Cloud Functions and check school-project IAM, then tap Sync access."
+  );
+}
 
 /** Pushes registry entitlement into school platform/subscription (Admin SDK via CF). */
 async function syncPlatformSubscription(
   schoolId: string,
 ): Promise<RefreshSubscriptionResult> {
-  const result = await refreshSchoolSubscriptionSync(schoolId);
+  let result = await refreshSchoolSubscriptionSync(schoolId);
+  // One retry — callable can briefly read the pre-update registry snapshot.
+  if (result.ok && !result.entitled) {
+    result = await refreshSchoolSubscriptionSync(schoolId);
+  }
+  return result;
+}
+
+async function requireSyncedEntitlement(
+  schoolId: string,
+  savedDate: string,
+  pastDateMessage: string,
+  notEntitledMessage: string,
+): Promise<RefreshSubscriptionResult> {
+  const result = await syncPlatformSubscription(schoolId);
   if (!result.ok) {
-    throw new Error(
-      result.error ||
-        "Could not sync platform/subscription on the school Firebase project.",
-    );
+    throw new PeriodSyncError(formatPlatformSyncFailure(result.error), savedDate);
+  }
+  if (!result.entitled) {
+    const days = getUsageRemainingDays(savedDate);
+    if (days != null && days < 0) {
+      throw new PeriodSyncError(pastDateMessage, savedDate);
+    }
+    throw new PeriodSyncError(notEntitledMessage, savedDate);
   }
   return result;
 }
@@ -155,6 +213,10 @@ export async function updateSchoolTestingPeriod(
   if (!validateUsageExpiryDate(trimmed)) {
     throw new Error("Testing period end date must be YYYY-MM-DD.");
   }
+  const testingDays = getUsageRemainingDays(trimmed);
+  if (testingDays != null && testingDays < 0) {
+    throw new Error("Testing end date must be today or in the future.");
+  }
 
   const db = requireRegistryDb();
   await updateDoc(doc(db, COLLECTION, schoolId), {
@@ -163,13 +225,12 @@ export async function updateSchoolTestingPeriod(
     updatedAt: serverTimestamp(),
     ...clearSubscriptionDeactivationFields(),
   });
-  const result = await syncPlatformSubscription(schoolId);
-  if (!result.entitled) {
-    throw new Error(
-      "Testing date saved, but the school is still not entitled. Check usage expiry or sync IAM on the school project.",
-    );
-  }
-  return result;
+  return requireSyncedEntitlement(
+    schoolId,
+    trimmed,
+    "Testing date was saved, but it is in the past so access stays blocked. Choose today or a future date.",
+    "Testing date was saved, but the school is still not entitled. If a past usage end date is set, extend or clear usage, then tap Sync access.",
+  );
 }
 
 /**
@@ -184,6 +245,12 @@ export async function updateSchoolUsagePeriod(
   if (trimmed && !validateUsageExpiryDate(trimmed)) {
     throw new Error("Usage expiry date must be YYYY-MM-DD.");
   }
+  if (trimmed) {
+    const usageDays = getUsageRemainingDays(trimmed);
+    if (usageDays != null && usageDays < 0) {
+      throw new Error("Usage end date must be today or in the future.");
+    }
+  }
 
   const db = requireRegistryDb();
   await updateDoc(doc(db, COLLECTION, schoolId), {
@@ -193,13 +260,19 @@ export async function updateSchoolUsagePeriod(
       : {}),
     updatedAt: serverTimestamp(),
   });
-  const result = await syncPlatformSubscription(schoolId);
-  if (trimmed && !result.entitled) {
-    throw new Error(
-      "Usage date saved, but the school is still not entitled. Check testing expiry or sync IAM on the school project.",
-    );
+  if (!trimmed) {
+    const cleared = await syncPlatformSubscription(schoolId);
+    if (!cleared.ok) {
+      throw new PeriodSyncError(formatPlatformSyncFailure(cleared.error), null);
+    }
+    return cleared;
   }
-  return result;
+  return requireSyncedEntitlement(
+    schoolId,
+    trimmed,
+    "Usage date was saved, but it is in the past so access stays blocked. Choose today or a future date.",
+    "Usage date was saved, but the school is still not entitled. Tap Sync access, or check school Firebase IAM for the registry service account.",
+  );
 }
 
 /** Re-push registry entitlement into school platform/subscription. */

@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import {
+  PeriodSyncError,
   updateSchoolTestingPeriod,
   updateSchoolUsagePeriod,
 } from "../../src/services/schoolRegistryAdmin";
@@ -66,6 +67,10 @@ export function SchoolPeriodEditors({
       onReactivated?.();
       Alert.alert(t("common.success"), t("superAdmin.testingPeriodSavedSynced"));
     } catch (err) {
+      if (err instanceof PeriodSyncError && err.savedDate) {
+        onTestingSaved(err.savedDate);
+        onReactivated?.();
+      }
       Alert.alert(
         t("common.error"),
         err instanceof Error ? err.message : t("superAdmin.testingPeriodSaveFailed"),
@@ -94,6 +99,10 @@ export function SchoolPeriodEditors({
           : t("superAdmin.usagePeriodSaved"),
       );
     } catch (err) {
+      if (err instanceof PeriodSyncError) {
+        onUsageSaved(err.savedDate);
+        if (err.savedDate) onReactivated?.();
+      }
       Alert.alert(
         t("common.error"),
         err instanceof Error ? err.message : t("superAdmin.usagePeriodSaveFailed"),

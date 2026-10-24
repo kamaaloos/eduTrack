@@ -80,12 +80,18 @@
       "android": {
         "track": "internal",
         "releaseStatus": "draft"
+      },
+      "ios": {
+        "ascAppId": "6825875472"
       }
     },
     "production-dugsi": {
       "android": {
         "track": "internal",
         "releaseStatus": "draft"
+      },
+      "ios": {
+        "ascAppId": "6825875472"
       }
     }
   }

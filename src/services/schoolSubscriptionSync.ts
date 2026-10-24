@@ -1,6 +1,6 @@
 import { FirebaseError } from "firebase/app";
 import { httpsCallable } from "firebase/functions";
-import { registryAuth } from "./firebase";
+import { getRegistryFirebaseApp, registryAuth } from "./firebase";
 import { getRegistryFunctions } from "./registryFunctions";
 
 export type RefreshSubscriptionResult = {
@@ -12,10 +12,34 @@ export type RefreshSubscriptionResult = {
   error?: string;
 };
 
+function superAdminRequiredHint(): string {
+  const uid = registryAuth?.currentUser?.uid ?? "your-uid";
+  const projectId =
+    registryAuth?.app.options.projectId ??
+    getRegistryFirebaseApp()?.options.projectId ??
+    "registry-project";
+  return (
+    `Super admin required to refresh school subscription. ` +
+    `In Firebase project "${projectId}", ensure Firestore users/${uid} has role = "superAdmin" ` +
+    `(document id must match your Auth UID). Then sign out and sign in again. ` +
+    `If that is already correct: Cloud Run → refreshschoolsubscriptions → Allow unauthenticated invoke.`
+  );
+}
+
 function parseCallableError(err: unknown): Error {
   if (err instanceof FirebaseError) {
     if (err.code === "functions/permission-denied") {
-      return new Error("Super admin required to refresh school subscription.");
+      // Prefer server detail (role mismatch / missing profile) when present.
+      const serverMessage = err.message?.replace(/^Firebase:\s*/i, "").trim();
+      if (
+        serverMessage &&
+        (serverMessage.includes("users/") ||
+          serverMessage.includes("role mismatch") ||
+          serverMessage.includes("profile missing"))
+      ) {
+        return new Error(serverMessage);
+      }
+      return new Error(superAdminRequiredHint());
     }
     if (err.code === "functions/unauthenticated") {
       return new Error("Sign in required. Open Platform admin and sign in again.");
@@ -44,6 +68,8 @@ export async function refreshSchoolSubscriptionSync(
   }
 
   try {
+    // Ensure the callable gets a fresh registry ID token (stale tokens can look like permission-denied).
+    await registryAuth.currentUser.getIdToken(true);
     const callable = httpsCallable<{ schoolId: string }, RefreshSubscriptionResult>(
       functions,
       "refreshSchoolSubscriptions",

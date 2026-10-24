@@ -108,20 +108,25 @@ export async function syncAllSchoolUserCounts(): Promise<SyncSchoolResult[]> {
 }
 
 function normalizeSuperAdminRole(value: unknown): string {
-  return typeof value === "string" ? value.trim() : "";
+  if (typeof value !== "string") return "";
+  return value.trim().replace(/[-_\s]/g, "").toLowerCase();
+}
+
+function isSuperAdminRole(value: unknown): boolean {
+  return normalizeSuperAdminRole(value) === "superadmin";
 }
 
 export async function assertRegistrySuperAdmin(uid: string): Promise<void> {
   const registryDb = getRegistryDb();
   const profile = await registryDb.collection("users").doc(uid).get();
-  const role = normalizeSuperAdminRole(profile.data()?.role);
-  if (profile.exists && role === "superAdmin") {
+  const profileRole = profile.data()?.role ?? null;
+  if (profile.exists && isSuperAdminRole(profileRole)) {
     return;
   }
 
   try {
     const authUser = await getAuth().getUser(uid);
-    if (normalizeSuperAdminRole(authUser.customClaims?.role) === "superAdmin") {
+    if (isSuperAdminRole(authUser.customClaims?.role)) {
       return;
     }
   } catch {
@@ -131,10 +136,18 @@ export async function assertRegistrySuperAdmin(uid: string): Promise<void> {
   logger.warn("assertRegistrySuperAdmin denied", {
     uid,
     profileExists: profile.exists,
-    profileRole: profile.data()?.role ?? null,
+    profileRole,
   });
 
-  throw new Error("permission_denied");
+  if (!profile.exists) {
+    throw new Error(
+      `Super admin profile missing: create Firestore users/${uid} with role "superAdmin".`,
+    );
+  }
+
+  throw new Error(
+    `Super admin role mismatch on users/${uid}: found "${String(profileRole)}", expected "superAdmin".`,
+  );
 }
 
 export { getRegistryDb };

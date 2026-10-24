@@ -29,6 +29,8 @@ export const AuthProvider = ({ children }: any) => {
     uid: null,
     schoolId: null,
   });
+  /** Survives denyAccess → signOut → onAuthStateChanged(null), which would otherwise clear error. */
+  const denyMessageRef = useRef<string | null>(null);
   const [user, setUser] = useState<any>(null);
 
   const [userData, setUserData] = useState<any>(null);
@@ -40,6 +42,7 @@ export const AuthProvider = ({ children }: any) => {
   const [error, setError] = useState<string | null>(null);
 
   const denyAccess = async (message: string) => {
+    denyMessageRef.current = message;
     setError(message);
     setUserData(null);
     setRole(null);
@@ -77,16 +80,25 @@ export const AuthProvider = ({ children }: any) => {
       });
 
       try {
-        setError(null);
-
         if (!currentUser) {
           sessionRef.current = { uid: null, schoolId: null };
           setUser(null);
           setUserData(null);
           setRole(null);
+          // Keep denial message from denyAccess; only clear on a normal signed-out state.
+          const denied = denyMessageRef.current;
+          if (denied) {
+            setError(denied);
+            denyMessageRef.current = null;
+          } else {
+            setError(null);
+          }
           setLoading(false);
           return;
         }
+
+        denyMessageRef.current = null;
+        setError(null);
 
         const profileRefreshOnly =
           sessionRef.current.uid === currentUser.uid &&

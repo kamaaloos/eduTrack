@@ -125,6 +125,17 @@ export default function Login() {
     goToPostLogin("signInComplete");
   }, [awaitingProfile, authLoading, user, role, goToPostLogin]);
 
+  // Auth succeeded then was denied/signed out — stop spinner even if error was raced away.
+  useEffect(() => {
+    if (!awaitingProfile || authLoading || user) return;
+    authLog("login:awaitingProfile:aborted", { hasAuthError: Boolean(authError) });
+    setAwaitingProfile(false);
+    setLoading(false);
+    if (!authError) {
+      setError((prev) => prev || t("auth.login.loginFailed"));
+    }
+  }, [awaitingProfile, authLoading, user, authError, t]);
+
   // Recovery: session exists but login screen is still visible.
   useEffect(() => {
     if (awaitingProfile || authLoading || !user || !role) return;

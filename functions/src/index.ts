@@ -43,8 +43,10 @@ export const refreshSchoolSubscriptions = onCall(
 
     try {
       await assertRegistrySuperAdmin(request.auth.uid);
-    } catch {
-      throw new HttpsError("permission-denied", "Super admin required.");
+    } catch (err) {
+      const detail =
+        err instanceof Error ? err.message : "Super admin required.";
+      throw new HttpsError("permission-denied", detail);
     }
 
     const schoolId =
@@ -96,8 +98,10 @@ export const refreshSchoolUserCounts = onCall(
 
     try {
       await assertRegistrySuperAdmin(request.auth.uid);
-    } catch {
-      throw new HttpsError("permission-denied", "Super admin required.");
+    } catch (err) {
+      const detail =
+        err instanceof Error ? err.message : "Super admin required.";
+      throw new HttpsError("permission-denied", detail);
     }
 
     const schoolId =

@@ -61,6 +61,7 @@ export async function refreshSchoolUserCounts(
   }
 
   try {
+    await registryAuth.currentUser.getIdToken(true);
     const callable = httpsCallable<
       { schoolId?: string },
       RefreshUserCountsResult

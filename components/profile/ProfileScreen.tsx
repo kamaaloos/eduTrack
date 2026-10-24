@@ -37,6 +37,7 @@ import {
 import { canUploadProfilePhoto } from "../../src/utils/userAvatar";
 import { STUDENT_LIST_MAX_WIDTH } from "../students/studentScreenStyles";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
+import { ProfileDeleteAccountSection } from "./ProfileDeleteAccountSection";
 
 type ProfileScreenProps = {
   roleLabel?: string;
@@ -407,6 +408,8 @@ export function ProfileScreen({
         <Ionicons name="information-circle-outline" size={20} color="#64748B" />
         <Text style={styles.infoText}>{t("profile.forgotHint")}</Text>
       </View>
+
+      <ProfileDeleteAccountSection />
 
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
         <Ionicons name="log-out-outline" size={20} color="#FFFFFF" />
