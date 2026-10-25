@@ -279,6 +279,44 @@ export async function notifyAdminsParentComplaint(params: {
   }
 }
 
+/** Alert school admins when a teacher saves attendance for a class. */
+export async function notifyAdminsAttendanceSaved(params: {
+  classId: string;
+  className: string;
+  date: string;
+  summary: string;
+  actorId?: string | null;
+}): Promise<void> {
+  if (!db || !params.classId) return;
+
+  try {
+    const admins = await getDocs(
+      query(collection(db, "users"), where("role", "==", "admin")),
+    );
+    if (admins.empty) return;
+
+    await createNotifications(
+      admins.docs.map((adminDoc) => ({
+        title: "Attendance saved",
+        message: `${params.className}: ${params.summary} (${params.date}).`,
+        type: "attendance_saved",
+        targetRole: "admin",
+        targetUserId: adminDoc.id,
+        classId: params.classId,
+        actorId: params.actorId ?? null,
+        actorRole: "teacher",
+        localeParams: {
+          className: params.className,
+          summary: params.summary,
+          date: params.date,
+        },
+      })),
+    );
+  } catch (err) {
+    console.warn("notifyAdminsAttendanceSaved failed:", err);
+  }
+}
+
 export async function notifyParentComplaintResolved(params: {
   parentId: string;
   subject: string;

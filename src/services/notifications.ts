@@ -28,6 +28,7 @@ export type NotificationType =
   | "parent_complaint_resolved"
   | "attendance_absent"
   | "attendance_late"
+  | "attendance_saved"
   | "grade_posted"
   | "parent_absence_report"
   | "parent_attendance_response"
@@ -77,6 +78,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   parent_complaint_resolved: "Complaint resolved",
   attendance_absent: "Absence",
   attendance_late: "Late",
+  attendance_saved: "Attendance saved",
   grade_posted: "Grade",
   parent_absence_report: "Absence report",
   parent_attendance_response: "Attendance reply",

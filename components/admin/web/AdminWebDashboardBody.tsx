@@ -157,7 +157,7 @@ export function AdminWebDashboardBody({
   const layout = usePlatformLayout();
   const [welcomeHovered, setWelcomeHovered] = useState(false);
 
-  const shortcutCellWidth = layout.isCompactWeb
+  const shortcutCellWidth = layout.isCompact
     ? "100%"
     : layout.isTabletWeb
       ? "50%"
@@ -195,7 +195,7 @@ export function AdminWebDashboardBody({
       style={styles.scroll}
       contentContainerStyle={[
         styles.content,
-        layout.isCompactWeb ? styles.contentCompact : null,
+        layout.isCompact ? styles.contentCompact : null,
       ]}
       showsVerticalScrollIndicator={false}
       refreshControl={
@@ -207,7 +207,9 @@ export function AdminWebDashboardBody({
       ) : null}
 
       <View style={styles.heroRow}>
-        <View style={styles.statsHero}>
+        <View
+          style={[styles.statsHero, layout.isCompact ? styles.statsHeroCompact : null]}
+        >
           {selectedSchool?.logoUrl ? (
             <Image
               source={{ uri: selectedSchool.logoUrl }}
@@ -239,6 +241,7 @@ export function AdminWebDashboardBody({
           onPress={() => router.push("/(admin)/system")}
           style={[
             styles.welcomeCard,
+            layout.isCompact ? styles.welcomeCardCompact : null,
             {
               backgroundColor: welcomeHovered
                 ? theme.accentColor
@@ -253,7 +256,13 @@ export function AdminWebDashboardBody({
                       ? `0 14px 32px ${theme.accentColor}55`
                       : `0 8px 22px ${theme.primaryColor}40`,
                   } as object)
-                : null),
+                : {
+                    shadowColor: theme.primaryColor,
+                    shadowOpacity: 0.25,
+                    shadowRadius: 12,
+                    shadowOffset: { width: 0, height: 6 },
+                    elevation: 4,
+                  }),
             },
           ]}
         >
@@ -304,7 +313,7 @@ export function AdminWebDashboardBody({
               label={item.label}
               icon={item.icon}
               subtitle={item.subtitle}
-              rowIndex={Math.floor(index / (layout.isCompactWeb ? 1 : layout.isTabletWeb ? 2 : 4))}
+              rowIndex={Math.floor(index / (layout.isCompact ? 1 : layout.isTabletWeb ? 2 : 4))}
               onPress={() => router.push(item.route as never)}
             />
           </View>
@@ -377,6 +386,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
+  statsHeroCompact: {
+    minWidth: "100%",
+    flexBasis: "100%",
+  },
   statsLogo: {
     width: 72,
     height: 72,
@@ -424,6 +437,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     overflow: "hidden",
     position: "relative",
+  },
+  welcomeCardCompact: {
+    minWidth: "100%",
+    flexBasis: "100%",
+    padding: 20,
   },
   welcomeContent: {
     zIndex: 1,

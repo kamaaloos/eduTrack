@@ -9,7 +9,6 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
-import { usePlatformLayout } from "../../hooks/usePlatformLayout";
 import type { TranslateFn } from "../../src/types/i18n";
 import { platformShadow } from "../../src/utils/platformShadow";
 import {
@@ -58,7 +57,6 @@ function attendanceHistoryLabelT(
 
 export default function AnalyticsScreen() {
   const { t } = useTranslation();
-  const layout = usePlatformLayout();
   const chartWidth = useAdminChartWidth();
   const [stats, setStats] = useState<AdminAnalyticsStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -213,17 +211,17 @@ export default function AnalyticsScreen() {
           </View>
         ) : null}
 
-        <View style={[styles.summaryCard, layout.isWeb && styles.summaryCardWeb]}>
+        <View style={[styles.summaryCard, styles.summaryCardWeb]}>
           <Text style={styles.summaryTitle}>{t("admin.overview")}</Text>
           <View style={styles.statsGrid}>
-            <Stat label={t("admin.students")} value={s.students} web={layout.isWeb} />
-            <Stat label={t("admin.teachers")} value={s.teachers} web={layout.isWeb} />
-            <Stat label={t("admin.parents")} value={s.parents} web={layout.isWeb} />
-            <Stat label={t("admin.classes")} value={s.classes} web={layout.isWeb} />
-            <Stat label={t("common.homework")} value={s.homeworks} web={layout.isWeb} />
-            <Stat label={t("common.exams")} value={s.exams} web={layout.isWeb} />
-            <Stat label={t("common.remarks")} value={s.remarks} web={layout.isWeb} />
-            <Stat label={t("common.average")} value={avgGradeDisplay} web={layout.isWeb} />
+            <Stat label={t("admin.students")} value={s.students} web />
+            <Stat label={t("admin.teachers")} value={s.teachers} web />
+            <Stat label={t("admin.parents")} value={s.parents} web />
+            <Stat label={t("admin.classes")} value={s.classes} web />
+            <Stat label={t("common.homework")} value={s.homeworks} web />
+            <Stat label={t("common.exams")} value={s.exams} web />
+            <Stat label={t("common.remarks")} value={s.remarks} web />
+            <Stat label={t("common.average")} value={avgGradeDisplay} web />
             {s.gradesSampleSize > 0 ? (
               <Text style={styles.gradeNote}>
                 {t("admin.gradeAverageSample", { count: s.gradesSampleSize })}

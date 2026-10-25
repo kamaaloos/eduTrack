@@ -247,14 +247,19 @@ export function webPageFrameStyle(
     return {};
   }
 
-  const pad = options?.expand ? 8 : webHorizontalPadding(layout);
+  // Phone web admin: edge-to-edge (closer to desktop main + native), not a floating inset card.
+  const pad = options?.expand
+    ? layout.isCompactWeb
+      ? 0
+      : 8
+    : webHorizontalPadding(layout);
   return {
     flex: 1,
     width: "100%",
     alignItems: options?.expand ? "stretch" : "center",
     paddingHorizontal: pad,
-    paddingTop: options?.expand ? 8 : 12,
-    paddingBottom: options?.expand ? 8 : 8,
+    paddingTop: options?.expand ? (layout.isCompactWeb ? 0 : 8) : 12,
+    paddingBottom: options?.expand ? (layout.isCompactWeb ? 0 : 8) : 8,
   };
 }
 
@@ -270,6 +275,13 @@ export function webAdminDashboardFrameStyle(layout: PlatformLayout): ViewStyle {
     width: "100%",
     maxWidth: "100%",
     minHeight: 0,
+    ...(layout.isCompactWeb
+      ? ({
+          borderRadius: 0,
+          borderWidth: 0,
+          boxShadow: "none",
+        } as object)
+      : null),
   };
 }
 
@@ -364,6 +376,13 @@ export function webContentCardStyle(layout: PlatformLayout): ViewStyle {
 export function webRolePagePaddingStyle(layout: PlatformLayout): ViewStyle | undefined {
   if (!layout.isWeb) {
     return undefined;
+  }
+
+  // Compact admin already pads inside scroll content; avoid double gutters.
+  if (layout.isCompactWeb) {
+    return {
+      paddingHorizontal: 0,
+    };
   }
 
   return {

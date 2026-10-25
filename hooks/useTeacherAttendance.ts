@@ -14,7 +14,10 @@ import { Alert } from "react-native";
 import type { TodayMap, StudentRow } from "../components/teachers/attendance/teacherAttendanceTypes";
 import type { AttendanceMarkStatus } from "../components/teachers/attendance/attendanceMarkStatus";
 import { AuthContext } from "../src/context/authContext";
-import { notifyAttendanceMarked } from "../src/services/notificationEvents";
+import {
+  notifyAdminsAttendanceSaved,
+  notifyAttendanceMarked,
+} from "../src/services/notificationEvents";
 import { db } from "../src/services/firebase";
 import { hasParentAttendanceResponse } from "../src/services/parentAttendanceResponse";
 import {
@@ -203,6 +206,10 @@ export function useTeacherAttendance() {
       students.find((s) => s.id === studentId)?.name ||
       t("common.student");
 
+    const className =
+      classes.find((item) => item.id === classId)?.name ||
+      t("common.classFallback");
+
     try {
       await addDoc(collection(db, "attendance"), {
         studentId,
@@ -226,6 +233,16 @@ export function useTeacherAttendance() {
           actorId: user?.uid ?? null,
         });
       }
+
+      if (!options?.silent) {
+        void notifyAdminsAttendanceSaved({
+          classId,
+          className,
+          date: today,
+          summary: `${studentName} → ${status}`,
+          actorId: user?.uid ?? null,
+        });
+      }
     } catch (error) {
       console.log(error);
       Alert.alert(t("common.error"), t("teacher.attendance.saveError"));
@@ -238,6 +255,10 @@ export function useTeacherAttendance() {
       return;
     }
     if (sortedStudents.length === 0) return;
+
+    const className =
+      classes.find((item) => item.id === classId)?.name ||
+      t("common.classFallback");
 
     try {
       await Promise.all(
@@ -268,6 +289,16 @@ export function useTeacherAttendance() {
         }),
       );
       Alert.alert(t("common.success"), t("teacher.attendance.saved"));
+      void notifyAdminsAttendanceSaved({
+        classId,
+        className,
+        date: today,
+        summary: t("admin.attendanceBulkSavedSummary", {
+          count: sortedStudents.length,
+          status,
+        }),
+        actorId: user?.uid ?? null,
+      });
     } catch (error) {
       console.log(error);
       Alert.alert(t("common.error"), t("teacher.attendance.saveError"));

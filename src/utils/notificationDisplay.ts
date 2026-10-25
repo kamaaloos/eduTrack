@@ -76,6 +76,19 @@ export function getLocalizedNotificationDisplay(
     };
   }
 
+  if (item.type === "attendance_saved") {
+    const params = item.localeParams ?? {};
+    return {
+      typeLabel,
+      title: t("notifications.attendanceSavedTitle"),
+      message: t("notifications.attendanceSavedMessage", {
+        className: params.className ?? "",
+        summary: params.summary ?? "",
+        date: params.date ?? "",
+      }),
+    };
+  }
+
   return {
     typeLabel,
     title: item.title,

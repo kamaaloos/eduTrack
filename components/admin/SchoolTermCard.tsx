@@ -25,6 +25,7 @@ import {
   showErrorAlert,
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import { SchoolThemeButton } from "../common/SchoolThemeButton";
 
 type SchoolTermCardProps = {
@@ -33,6 +34,8 @@ type SchoolTermCardProps = {
 
 export function SchoolTermCard({ adminUid }: SchoolTermCardProps) {
   const { t } = useTranslation();
+  const { theme } = useSchoolTheme();
+  const primary = theme.primaryColor;
   const [term, setTerm] = useState<SchoolTermRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -160,7 +163,7 @@ export function SchoolTermCard({ adminUid }: SchoolTermCardProps) {
   if (loading) {
     return (
       <View style={styles.card}>
-        <ActivityIndicator color="#2563EB" />
+        <ActivityIndicator color={primary} />
       </View>
     );
   }
@@ -172,7 +175,9 @@ export function SchoolTermCard({ adminUid }: SchoolTermCardProps) {
 
       <View style={styles.statusRow}>
         <Text style={styles.statusLabel}>{t("admin.schoolTermCurrentLabel")}</Text>
-        <Text style={styles.statusValue}>{resolved.label}</Text>
+        <Text style={[styles.statusValue, { color: primary }]}>
+          {resolved.label}
+        </Text>
       </View>
       <View style={styles.statusRow}>
         <Text style={styles.statusLabel}>{t("admin.schoolTermStatusLabel")}</Text>
@@ -227,7 +232,9 @@ export function SchoolTermCard({ adminUid }: SchoolTermCardProps) {
           onPress={() => void loadTerm()}
           disabled={busy}
         >
-          <Text style={styles.linkButtonText}>{t("common.refresh")}</Text>
+          <Text style={[styles.linkButtonText, { color: primary }]}>
+            {t("common.refresh")}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

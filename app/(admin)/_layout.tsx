@@ -23,6 +23,7 @@ export default function AdminLayout() {
             <Stack.Screen name="parent/[parentId]" />
             <Stack.Screen name="class-directory" />
             <Stack.Screen name="class/[classId]" />
+            <Stack.Screen name="student-report/[studentId]" />
             <Stack.Screen name="classes" />
             <Stack.Screen name="assignments" />
             <Stack.Screen name="system" />

@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 
 type DirectoryPaginationProps = {
   rangeStart: number;
@@ -26,6 +27,8 @@ export function DirectoryPagination({
   onNext,
 }: DirectoryPaginationProps) {
   const { t } = useTranslation();
+  const { theme } = useSchoolTheme();
+  const primary = theme.primaryColor;
 
   if (totalCount === 0) {
     return null;
@@ -42,16 +45,26 @@ export function DirectoryPagination({
       </Text>
       <View style={styles.row}>
         <TouchableOpacity
-          style={[styles.navBtn, !canPrev && styles.navBtnDisabled]}
+          style={[
+            styles.navBtn,
+            { backgroundColor: `${primary}14` },
+            !canPrev && styles.navBtnDisabled,
+          ]}
           onPress={onPrev}
           disabled={!canPrev}
         >
           <Ionicons
             name="chevron-back"
             size={18}
-            color={canPrev ? "#1E3A8A" : "#94A3B8"}
+            color={canPrev ? primary : "#94A3B8"}
           />
-          <Text style={[styles.navText, !canPrev && styles.navTextDisabled]}>
+          <Text
+            style={[
+              styles.navText,
+              { color: primary },
+              !canPrev && styles.navTextDisabled,
+            ]}
+          >
             {t("admin.directoryPrevious")}
           </Text>
         </TouchableOpacity>
@@ -61,17 +74,27 @@ export function DirectoryPagination({
         </Text>
 
         <TouchableOpacity
-          style={[styles.navBtn, !canNext && styles.navBtnDisabled]}
+          style={[
+            styles.navBtn,
+            { backgroundColor: `${primary}14` },
+            !canNext && styles.navBtnDisabled,
+          ]}
           onPress={onNext}
           disabled={!canNext}
         >
-          <Text style={[styles.navText, !canNext && styles.navTextDisabled]}>
+          <Text
+            style={[
+              styles.navText,
+              { color: primary },
+              !canNext && styles.navTextDisabled,
+            ]}
+          >
             {t("admin.directoryNext")}
           </Text>
           <Ionicons
             name="chevron-forward"
             size={18}
-            color={canNext ? "#1E3A8A" : "#94A3B8"}
+            color={canNext ? primary : "#94A3B8"}
           />
         </TouchableOpacity>
       </View>
@@ -109,7 +132,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 10,
-    backgroundColor: "#EFF6FF",
   },
   navBtnDisabled: {
     backgroundColor: "#F1F5F9",
@@ -117,7 +139,6 @@ const styles = StyleSheet.create({
   navText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#1E3A8A",
   },
   navTextDisabled: {
     color: "#94A3B8",

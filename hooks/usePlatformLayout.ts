@@ -20,6 +20,8 @@ export type PlatformLayout = {
   isCompactWeb: boolean;
   isTabletWeb: boolean;
   isDesktopWeb: boolean;
+  /** Phone web or native — shared compact admin/teacher layouts. */
+  isCompact: boolean;
   /** Persistent left nav on web (tablet+). Phones use the hamburger drawer. */
   showWebSidebar: boolean;
   width: number;
@@ -28,6 +30,7 @@ export type PlatformLayout = {
 export function usePlatformLayout(): PlatformLayout {
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
+  const isNative = !isWeb;
   const isCompactWeb = isWeb && width < WEB_TABLET_BREAKPOINT;
   const isTabletWeb =
     isWeb && width >= WEB_TABLET_BREAKPOINT && width < WEB_DESKTOP_BREAKPOINT;
@@ -35,10 +38,11 @@ export function usePlatformLayout(): PlatformLayout {
 
   return {
     isWeb,
-    isNative: !isWeb,
+    isNative,
     isCompactWeb,
     isTabletWeb,
     isDesktopWeb,
+    isCompact: isCompactWeb || isNative,
     showWebSidebar: isTabletWeb || isDesktopWeb,
     width,
   };

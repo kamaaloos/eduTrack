@@ -142,8 +142,9 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "#1E3A8A",
     paddingBottom: Platform.OS === "web" ? 14 : 18,
-    borderBottomLeftRadius: Platform.OS === "web" ? 0 : 24,
-    borderBottomRightRadius: Platform.OS === "web" ? 0 : 24,
+    // Match desktop admin flat header on all platforms (phone web + native).
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     ...platformShadow("lg"),
     ...(Platform.OS === "web"
       ? { borderBottomWidth: 1, borderBottomColor: "#1E3A8A" }
