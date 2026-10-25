@@ -122,23 +122,32 @@ export default function Login() {
   useEffect(() => {
     if (!awaitingProfile) return;
     if (authLoading || !user || !role) return;
+    setError(null);
     goToPostLogin("signInComplete");
   }, [awaitingProfile, authLoading, user, role, goToPostLogin]);
 
-  // Auth succeeded then was denied/signed out — stop spinner even if error was raced away.
+  // Do NOT treat the brief post-signIn user=null gap as failure (that flashed "login failed"
+  // then still navigated). Only stop a stuck spinner after a real wait, or via authError above.
   useEffect(() => {
-    if (!awaitingProfile || authLoading || user) return;
-    authLog("login:awaitingProfile:aborted", { hasAuthError: Boolean(authError) });
-    setAwaitingProfile(false);
-    setLoading(false);
-    if (!authError) {
-      setError((prev) => prev || t("auth.login.loginFailed"));
-    }
-  }, [awaitingProfile, authLoading, user, authError, t]);
+    if (!awaitingProfile || user) return;
+
+    const timer = setTimeout(() => {
+      if (authLoading) return;
+      authLog("login:awaitingProfile:timeout", {
+        hasAuthError: Boolean(authError),
+      });
+      setAwaitingProfile(false);
+      setLoading(false);
+      setError((prev) => prev || authError || t("auth.login.loginFailed"));
+    }, 25_000);
+
+    return () => clearTimeout(timer);
+  }, [awaitingProfile, user, authLoading, authError, t]);
 
   // Recovery: session exists but login screen is still visible.
   useEffect(() => {
     if (awaitingProfile || authLoading || !user || !role) return;
+    setError(null);
     goToPostLogin("sessionRecovery");
   }, [awaitingProfile, authLoading, user, role, goToPostLogin]);
 
