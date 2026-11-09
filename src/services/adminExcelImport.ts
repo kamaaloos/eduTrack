@@ -179,6 +179,73 @@ function cellToImportString(value: unknown): string {
   return stripMailto(String(value).trim());
 }
 
+/**
+ * Excel often auto-converts emails to mailto hyperlinks. Display text can be
+ * empty while the address lives on `!hyperlinks` and/or `cell.l.Target`.
+ */
+function collectMailtoByHeader(
+  sheet: XLSX.WorkSheet,
+  json: ImportRow[],
+): Map<string, Map<number, string>> {
+  const mailtoByHeader = new Map<string, Map<number, string>>();
+
+  const setMailto = (header: string | undefined, dataRowIndex: number, target: string) => {
+    if (!header || dataRowIndex < 0) return;
+    const byRow = mailtoByHeader.get(header) ?? new Map<number, string>();
+    byRow.set(dataRowIndex, stripMailto(target));
+    mailtoByHeader.set(header, byRow);
+  };
+
+  const hyperlinks = (
+    sheet as XLSX.WorkSheet & {
+      "!hyperlinks"?: { ref?: string; Target?: string; target?: string }[];
+    }
+  )["!hyperlinks"];
+
+  const ref = sheet["!ref"];
+  const headerByCol = new Map<number, string>();
+  if (ref) {
+    const range = XLSX.utils.decode_range(ref);
+    for (let C = range.s.c; C <= range.e.c; C++) {
+      const addr = XLSX.utils.encode_cell({ r: range.s.r, c: C });
+      const cell = sheet[addr];
+      if (!cell) continue;
+      const header = String(cell.w ?? cell.v ?? "").replace(/^\uFEFF/, "").trim();
+      if (header) headerByCol.set(C, header);
+    }
+
+    // Prefer cell-level links (common when Excel auto-detects emails).
+    for (let R = range.s.r + 1; R <= range.e.r; R++) {
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const addr = XLSX.utils.encode_cell({ r: R, c: C });
+        const cell = sheet[addr] as XLSX.CellObject & {
+          l?: { Target?: string; target?: string };
+        };
+        const target = String(cell?.l?.Target ?? cell?.l?.target ?? "").trim();
+        if (!/^mailto:/i.test(target)) continue;
+        setMailto(headerByCol.get(C), R - range.s.r - 1, target);
+      }
+    }
+  }
+
+  if (hyperlinks?.length) {
+    for (const link of hyperlinks) {
+      const target = String(link.Target ?? link.target ?? "").trim();
+      if (!/^mailto:/i.test(target) || !link.ref) continue;
+      try {
+        const addr = XLSX.utils.decode_cell(link.ref.split(":")[0]);
+        const header =
+          headerByCol.get(addr.c) ?? Object.keys(json[0] ?? {})[addr.c];
+        setMailto(header, addr.r - 1, target);
+      } catch {
+        /* ignore bad link refs */
+      }
+    }
+  }
+
+  return mailtoByHeader;
+}
+
 function rowsFromSheet(sheet: XLSX.WorkSheet): ImportRow[] {
   const json = XLSX.utils.sheet_to_json<ImportRow>(sheet, {
     defval: "",
@@ -186,32 +253,7 @@ function rowsFromSheet(sheet: XLSX.WorkSheet): ImportRow[] {
     blankrows: false,
   });
 
-  // Excel often stores emails as mailto hyperlinks; merge those into cell values.
-  const hyperlinks = (
-    sheet as XLSX.WorkSheet & {
-      "!hyperlinks"?: { ref?: string; Target?: string; target?: string }[];
-    }
-  )["!hyperlinks"];
-  const mailtoByHeader = new Map<string, Map<number, string>>();
-  if (hyperlinks?.length && json.length > 0) {
-    const headerKeys = Object.keys(json[0] ?? {});
-    for (const link of hyperlinks) {
-      const target = String(link.Target ?? link.target ?? "").trim();
-      if (!/^mailto:/i.test(target) || !link.ref) continue;
-      try {
-        const addr = XLSX.utils.decode_cell(link.ref.split(":")[0]);
-        const header = headerKeys[addr.c];
-        if (!header) continue;
-        const dataRowIndex = addr.r - 1; // row 0 = header in sheet_to_json
-        if (dataRowIndex < 0) continue;
-        const byRow = mailtoByHeader.get(header) ?? new Map<number, string>();
-        byRow.set(dataRowIndex, stripMailto(target));
-        mailtoByHeader.set(header, byRow);
-      } catch {
-        /* ignore bad link refs */
-      }
-    }
-  }
+  const mailtoByHeader = collectMailtoByHeader(sheet, json);
 
   return json.map((row, rowIndex) => {
     const out: ImportRow = {};
@@ -222,13 +264,19 @@ function rowsFromSheet(sheet: XLSX.WorkSheet): ImportRow[] {
       if (!text) {
         text = mailtoByHeader.get(k)?.get(rowIndex) ?? "";
       }
-      if (!text && key.includes("email")) {
-        text = mailtoByHeader.get(k)?.get(rowIndex) ?? "";
-      }
       out[key] = text;
     }
     return out;
   });
+}
+
+function firstEmailLikeValues(row: ImportRow): string[] {
+  const emails: string[] = [];
+  for (const value of Object.values(row)) {
+    const text = cellToImportString(value);
+    if (text.includes("@")) emails.push(text.toLowerCase());
+  }
+  return emails;
 }
 
 /**
@@ -269,6 +317,55 @@ function coerceTeacherClassRow(row: ImportRow): ImportRow {
     ...row,
     ...(email ? { teacheremail: email } : null),
     ...(className ? { classname: className } : null),
+  };
+}
+
+/** Recover student_class when headers are off: first email → student, first non-email → class. */
+function coerceStudentClassRow(row: ImportRow): ImportRow {
+  const hasEmail = Boolean(
+    cell(row, "studentEmail", "student_email", "studentemail", "email", "mail"),
+  );
+  const hasClass = Boolean(
+    cell(row, "className", "class_name", "class", "classname", "grade"),
+  );
+  if (hasEmail && hasClass) return row;
+
+  let email = "";
+  let className = "";
+  for (const value of Object.values(row)) {
+    const text = cellToImportString(value);
+    if (!text) continue;
+    if (!email && text.includes("@")) {
+      email = text.toLowerCase();
+      continue;
+    }
+    if (!className && !text.includes("@")) {
+      className = text;
+    }
+  }
+
+  return {
+    ...row,
+    ...(email ? { studentemail: email } : null),
+    ...(className ? { classname: className } : null),
+  };
+}
+
+/** Recover parent_student when headers are off: first email → parent, second → student. */
+function coerceParentStudentRow(row: ImportRow): ImportRow {
+  const hasParent = Boolean(
+    cell(row, "parentEmail", "parent_email", "parentemail"),
+  );
+  const hasStudent = Boolean(
+    cell(row, "studentEmail", "student_email", "studentemail"),
+  );
+  if (hasParent && hasStudent) return row;
+
+  const emails = firstEmailLikeValues(row);
+  return {
+    ...row,
+    ...(emails[0] ? { parentemail: emails[0] } : null),
+    ...(emails[1] ? { studentemail: emails[1] } : null),
   };
 }
 
@@ -680,14 +777,14 @@ async function importStudentClass(
   };
 
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
+    const row = coerceStudentClassRow(rows[i]);
     const rowNum = i + 2;
     const studentId = resolveUserId(
       ctx,
       row,
       rowNum,
       "student",
-      ["studentEmail", "student_email"],
+      ["studentEmail", "student_email", "email", "mail"],
       summary.errors,
       "student",
     );
@@ -777,14 +874,14 @@ async function importParentStudent(
   };
 
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
+    const row = coerceParentStudentRow(rows[i]);
     const rowNum = i + 2;
     const parentId = resolveUserId(
       ctx,
       row,
       rowNum,
       "parent",
-      ["parentEmail", "parent_email"],
+      ["parentEmail", "parent_email", "email", "mail"],
       summary.errors,
       "parent",
     );
