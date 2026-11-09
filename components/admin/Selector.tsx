@@ -17,38 +17,68 @@ export interface SelectableItem {
   name: string;
 }
 
-interface SelectorProps {
+type SingleSelectorProps = {
   title: string;
   items: SelectableItem[];
   selectedId: string;
   onSelect: (id: string) => void;
+  selectedIds?: never;
+  onChangeSelectedIds?: never;
+  multiSelect?: false;
   disabled?: boolean;
   searchable?: boolean;
   searchPlaceholder?: string;
   maxListHeight?: number;
-  /** Rows per page when searchable (default 4). */
   visibleLimit?: number;
   containerStyle?: ViewStyle;
-}
+};
 
-export const Selector: React.FC<SelectorProps> = ({
-  title,
-  items,
-  selectedId,
-  onSelect,
-  disabled = false,
-  searchable = false,
-  searchPlaceholder,
-  maxListHeight = 280,
-  visibleLimit = 4,
-  containerStyle,
-}) => {
+type MultiSelectorProps = {
+  title: string;
+  items: SelectableItem[];
+  selectedId?: never;
+  onSelect?: never;
+  selectedIds: string[];
+  onChangeSelectedIds: (ids: string[]) => void;
+  multiSelect: true;
+  disabled?: boolean;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  maxListHeight?: number;
+  visibleLimit?: number;
+  containerStyle?: ViewStyle;
+};
+
+export type SelectorProps = SingleSelectorProps | MultiSelectorProps;
+
+export const Selector: React.FC<SelectorProps> = (props) => {
+  const {
+    title,
+    items,
+    disabled = false,
+    searchable = false,
+    searchPlaceholder,
+    maxListHeight = 280,
+    visibleLimit = 4,
+    containerStyle,
+  } = props;
+  const multiSelect = props.multiSelect === true;
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const selectedItem = items.find((item) => item.id === selectedId);
   const resolvedSearchPlaceholder =
     searchPlaceholder ?? t("admin.selectorSearch");
+
+  const selectedIds = multiSelect
+    ? props.selectedIds
+    : props.selectedId
+      ? [props.selectedId]
+      : [];
+
+  const selectedItems = useMemo(
+    () => items.filter((item) => selectedIds.includes(item.id)),
+    [items, selectedIds],
+  );
 
   const filteredItems = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -66,8 +96,36 @@ export const Selector: React.FC<SelectorProps> = ({
   const displayItems = searchable ? pagination.pageItems : filteredItems;
   const rowHeight = 49;
   const listMaxHeight = searchable
-    ? Math.min(maxListHeight, visibleLimit * rowHeight)
+    ? Math.min(maxListHeight, Math.max(visibleLimit, 6) * rowHeight)
     : maxListHeight;
+
+  const buttonLabel = (() => {
+    if (selectedItems.length === 0) {
+      return multiSelect
+        ? t("admin.selectorSelectMany", { title })
+        : t("admin.selectorSelect", { title });
+    }
+    if (!multiSelect) {
+      return selectedItems[0]?.name ?? "";
+    }
+    if (selectedItems.length === 1) {
+      return selectedItems[0].name;
+    }
+    return t("admin.selectorManySelected", { count: selectedItems.length });
+  })();
+
+  const toggleId = (id: string) => {
+    if (!multiSelect) {
+      props.onSelect?.(id);
+      setOpen(false);
+      setSearchQuery("");
+      return;
+    }
+    const next = selectedIds.includes(id)
+      ? selectedIds.filter((itemId) => itemId !== id)
+      : [...selectedIds, id];
+    props.onChangeSelectedIds(next);
+  };
 
   if (items.length === 0) {
     return (
@@ -97,15 +155,34 @@ export const Selector: React.FC<SelectorProps> = ({
         activeOpacity={0.8}
       >
         <Text
-          style={[styles.selectorText, !selectedItem && styles.placeholderText]}
+          style={[
+            styles.selectorText,
+            selectedItems.length === 0 && styles.placeholderText,
+          ]}
           numberOfLines={1}
         >
-          {selectedItem
-            ? selectedItem.name
-            : t("admin.selectorSelect", { title })}
+          {buttonLabel}
         </Text>
         <Text style={styles.selectorIcon}>{open ? "▲" : "▼"}</Text>
       </TouchableOpacity>
+
+      {multiSelect && selectedItems.length > 0 ? (
+        <View style={styles.chips}>
+          {selectedItems.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.chip}
+              onPress={() => toggleId(item.id)}
+              disabled={disabled}
+            >
+              <Text style={styles.chipText} numberOfLines={1}>
+                {item.name}
+              </Text>
+              <Text style={styles.chipRemove}>×</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      ) : null}
 
       {open && (
         <View style={styles.optionsContainer}>
@@ -134,16 +211,12 @@ export const Selector: React.FC<SelectorProps> = ({
                 keyboardShouldPersistTaps="handled"
               >
                 {displayItems.map((item) => {
-                  const selected = selectedId === item.id;
+                  const selected = selectedIds.includes(item.id);
                   return (
                     <TouchableOpacity
                       key={item.id}
                       style={[styles.option, selected && styles.selectedOption]}
-                      onPress={() => {
-                        onSelect(item.id);
-                        setOpen(false);
-                        setSearchQuery("");
-                      }}
+                      onPress={() => toggleId(item.id)}
                       disabled={disabled}
                     >
                       <Text
@@ -152,6 +225,7 @@ export const Selector: React.FC<SelectorProps> = ({
                           selected && styles.selectedOptionText,
                         ]}
                       >
+                        {multiSelect ? (selected ? "✓ " : "○ ") : ""}
                         {item.name}
                       </Text>
                     </TouchableOpacity>
@@ -167,6 +241,17 @@ export const Selector: React.FC<SelectorProps> = ({
                   onPrev={pagination.prevPage}
                   onNext={pagination.nextPage}
                 />
+              ) : null}
+              {multiSelect ? (
+                <TouchableOpacity
+                  style={styles.doneBtn}
+                  onPress={() => {
+                    setOpen(false);
+                    setSearchQuery("");
+                  }}
+                >
+                  <Text style={styles.doneBtnText}>{t("common.done")}</Text>
+                </TouchableOpacity>
               ) : null}
             </>
           )}
@@ -213,6 +298,35 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     fontSize: 12,
   },
+  chips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 10,
+  },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    maxWidth: "100%",
+    backgroundColor: "#EFF6FF",
+    borderRadius: 999,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+  },
+  chipText: {
+    flexShrink: 1,
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#1D4ED8",
+  },
+  chipRemove: {
+    fontSize: 16,
+    color: "#64748B",
+    lineHeight: 16,
+  },
   optionsContainer: {
     marginTop: 8,
     backgroundColor: "white",
@@ -256,6 +370,18 @@ const styles = StyleSheet.create({
   selectedOptionText: {
     color: "#1D4ED8",
     fontWeight: "700",
+  },
+  doneBtn: {
+    paddingVertical: 12,
+    alignItems: "center",
+    backgroundColor: "#F8FAFC",
+    borderTopWidth: 1,
+    borderTopColor: "#E5E7EB",
+  },
+  doneBtnText: {
+    fontWeight: "700",
+    color: "#1D4ED8",
+    fontSize: 14,
   },
   emptyContainer: {
     paddingVertical: 20,

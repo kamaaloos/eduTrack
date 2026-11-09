@@ -76,10 +76,17 @@ export default function AdminAssignmentsScreen() {
             <RelationsCard
               title={t("admin.linkParentToStudent")}
               type="parent-student"
-              leftItems={parents.map((p) => ({ id: p.id, name: p.name }))}
-              rightItems={students.map((s) => ({ id: s.id, name: s.name }))}
+              leftItems={parents.map((p) => ({
+                id: p.id,
+                name: p.email ? `${p.name} (${p.email})` : p.name,
+              }))}
+              rightItems={students.map((s) => ({
+                id: s.id,
+                name: s.email ? `${s.name} (${s.email})` : s.name,
+              }))}
               leftLabel={t("admin.parents")}
               rightLabel={t("admin.students")}
+              onAssignSuccess={refreshAll}
             />
             <Text style={styles.hint}>{t("admin.parentLinkHint")}</Text>
             <TouchableOpacity

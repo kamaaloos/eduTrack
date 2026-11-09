@@ -79,6 +79,38 @@ type ImportContext = {
   userByEmail: Map<string, UserCache>;
 };
 
+const USER_CREATE_GAP_MS = 700;
+const AUTH_RATE_LIMIT_RETRIES = 5;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isAuthRateLimited(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err ?? "");
+  const code =
+    err && typeof err === "object" && "code" in err
+      ? String((err as { code?: string }).code ?? "")
+      : "";
+  return (
+    code.includes("too-many-requests") ||
+    message.includes("too-many-requests") ||
+    message.includes("TOO_MANY_ATTEMPTS")
+  );
+}
+
+function isEmailAlreadyInUse(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err ?? "");
+  const code =
+    err && typeof err === "object" && "code" in err
+      ? String((err as { code?: string }).code ?? "")
+      : "";
+  return (
+    code.includes("email-already-in-use") ||
+    message.includes("email-already-in-use")
+  );
+}
+
 function normalizeKey(key: string): string {
   return key
     .trim()
@@ -106,6 +138,8 @@ const SHEET_ALIASES: Record<string, ImportKind> = {
   teacher_class: "teacher_class",
   teacher_classes: "teacher_class",
   teacherclass: "teacher_class",
+  teacher_class_links: "teacher_class",
+  teachers_classes: "teacher_class",
   parent_student: "parent_student",
   parent_students: "parent_student",
   parentstudent: "parent_student",
@@ -124,18 +158,118 @@ function sheetNameToKind(name: string): ImportKind | null {
   return SHEET_ALIASES[key] ?? null;
 }
 
+function stripMailto(value: string): string {
+  return value.replace(/^mailto:/i, "").trim();
+}
+
+function cellToImportString(value: unknown): string {
+  if (value === undefined || value === null) return "";
+  if (typeof value === "string" || typeof value === "number") {
+    return stripMailto(String(value).trim());
+  }
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    if (typeof record.text === "string" && record.text.trim()) {
+      return stripMailto(record.text.trim());
+    }
+    if (typeof record.hyperlink === "string" && record.hyperlink.trim()) {
+      return stripMailto(record.hyperlink.trim());
+    }
+  }
+  return stripMailto(String(value).trim());
+}
+
 function rowsFromSheet(sheet: XLSX.WorkSheet): ImportRow[] {
   const json = XLSX.utils.sheet_to_json<ImportRow>(sheet, {
     defval: "",
     raw: false,
+    blankrows: false,
   });
-  return json.map((row) => {
+
+  // Excel often stores emails as mailto hyperlinks; merge those into cell values.
+  const hyperlinks = (
+    sheet as XLSX.WorkSheet & {
+      "!hyperlinks"?: { ref?: string; Target?: string; target?: string }[];
+    }
+  )["!hyperlinks"];
+  const mailtoByHeader = new Map<string, Map<number, string>>();
+  if (hyperlinks?.length && json.length > 0) {
+    const headerKeys = Object.keys(json[0] ?? {});
+    for (const link of hyperlinks) {
+      const target = String(link.Target ?? link.target ?? "").trim();
+      if (!/^mailto:/i.test(target) || !link.ref) continue;
+      try {
+        const addr = XLSX.utils.decode_cell(link.ref.split(":")[0]);
+        const header = headerKeys[addr.c];
+        if (!header) continue;
+        const dataRowIndex = addr.r - 1; // row 0 = header in sheet_to_json
+        if (dataRowIndex < 0) continue;
+        const byRow = mailtoByHeader.get(header) ?? new Map<number, string>();
+        byRow.set(dataRowIndex, stripMailto(target));
+        mailtoByHeader.set(header, byRow);
+      } catch {
+        /* ignore bad link refs */
+      }
+    }
+  }
+
+  return json.map((row, rowIndex) => {
     const out: ImportRow = {};
     for (const [k, v] of Object.entries(row)) {
-      out[normalizeKey(k)] = v;
+      const key = normalizeKey(k.replace(/^\uFEFF/, ""));
+      if (!key || key.startsWith("__empty")) continue;
+      let text = cellToImportString(v);
+      if (!text) {
+        text = mailtoByHeader.get(k)?.get(rowIndex) ?? "";
+      }
+      if (!text && key.includes("email")) {
+        text = mailtoByHeader.get(k)?.get(rowIndex) ?? "";
+      }
+      out[key] = text;
     }
     return out;
   });
+}
+
+/**
+ * If headers were not recognized, recover teacher_class rows from values:
+ * first email-looking cell → teacherEmail, first non-email cell → className.
+ */
+function coerceTeacherClassRow(row: ImportRow): ImportRow {
+  const hasEmail = Boolean(
+    cell(
+      row,
+      "teacherEmail",
+      "teacher_email",
+      "teacheremail",
+      "email",
+      "mail",
+    ),
+  );
+  const hasClass = Boolean(
+    cell(row, "className", "class_name", "class", "classname", "grade"),
+  );
+  if (hasEmail && hasClass) return row;
+
+  let email = "";
+  let className = "";
+  for (const value of Object.values(row)) {
+    const text = cellToImportString(value);
+    if (!text) continue;
+    if (!email && text.includes("@")) {
+      email = text.toLowerCase();
+      continue;
+    }
+    if (!className && !text.includes("@")) {
+      className = text;
+    }
+  }
+
+  return {
+    ...row,
+    ...(email ? { teacheremail: email } : null),
+    ...(className ? { classname: className } : null),
+  };
 }
 
 export function parseWorkbookFromArrayBuffer(
@@ -204,6 +338,25 @@ function cell(row: ImportRow, ...keys: string[]): string {
   return "";
 }
 
+/** Fallback when headers are close but not exact (e.g. "Teacher E-mail Address"). */
+function cellByKeyMatch(
+  row: ImportRow,
+  match: (normalizedKey: string) => boolean,
+): string {
+  for (const [key, value] of Object.entries(row)) {
+    if (!match(key)) continue;
+    if (value === undefined || value === null) continue;
+    const s = String(value).trim();
+    if (s) return s;
+  }
+  return "";
+}
+
+function rowColumnHint(row: ImportRow): string {
+  const keys = Object.keys(row);
+  return keys.length > 0 ? keys.join(", ") : "(no columns)";
+}
+
 function num(row: ImportRow, ...keys: string[]): number | null {
   const s = cell(row, ...keys);
   if (!s) return null;
@@ -245,12 +398,40 @@ function resolveClassId(
   rowNum: number,
   errors: string[],
 ): string | null {
-  const classId = cell(row, "classId", "class_id");
+  const classId = cell(
+    row,
+    "classId",
+    "class_id",
+    "classid",
+    "id_class",
+  );
   if (classId) return classId;
 
-  const className = cell(row, "className", "class_name", "class");
+  let className = cell(
+    row,
+    "className",
+    "class_name",
+    "class",
+    "classname",
+    "grade",
+    "gradeName",
+    "grade_name",
+    "luokka",
+  );
   if (!className) {
-    errors.push(`Row ${rowNum}: missing className or classId`);
+    className = cellByKeyMatch(
+      row,
+      (key) =>
+        (key.includes("class") || key.includes("grade") || key.includes("luokka")) &&
+        !key.includes("teacher") &&
+        !key.includes("student") &&
+        !key.includes("email"),
+    );
+  }
+  if (!className) {
+    errors.push(
+      `Row ${rowNum}: missing className or classId (columns: ${rowColumnHint(row)}). Use header className`,
+    );
     return null;
   }
   const id = ctx.classByName.get(className.toLowerCase());
@@ -270,12 +451,47 @@ function resolveUserId(
   errors: string[],
   expectedRole?: string,
 ): string | null {
-  const directId = cell(row, `${field}Id`, `${field}_id`);
+  const directId = cell(row, `${field}Id`, `${field}_id`, `${field}id`);
   if (directId) return directId;
 
-  const email = cell(row, `${field}Email`, `${field}_email`, field, ...aliases);
+  let email = cell(
+    row,
+    `${field}Email`,
+    `${field}_email`,
+    `${field}email`,
+    field,
+    ...aliases,
+  );
   if (!email) {
-    errors.push(`Row ${rowNum}: missing ${field} email or id`);
+    email = cellByKeyMatch(row, (key) => {
+      if (key.includes("password")) return false;
+      if (field === "teacher") {
+        return (
+          (key.includes("teacher") &&
+            (key.includes("email") || key.includes("mail"))) ||
+          key === "email" ||
+          key === "mail"
+        );
+      }
+      if (field === "student") {
+        return (
+          key.includes("student") &&
+          (key.includes("email") || key.includes("mail"))
+        );
+      }
+      if (field === "parent") {
+        return (
+          key.includes("parent") &&
+          (key.includes("email") || key.includes("mail"))
+        );
+      }
+      return key.includes(field) && key.includes("email");
+    });
+  }
+  if (!email) {
+    errors.push(
+      `Row ${rowNum}: missing ${field} email or id (columns: ${rowColumnHint(row)}). Use header ${field}Email`,
+    );
     return null;
   }
   const user = ctx.userByEmail.get(email.toLowerCase());
@@ -376,40 +592,76 @@ async function importUsers(
       continue;
     }
 
-    try {
-      const secondaryAuth = ensureAdminCreateAuth();
-      if (!secondaryAuth) {
-        summary.errors.push(`Row ${rowNum}: school connection not ready`);
-        continue;
+    const secondaryAuth = ensureAdminCreateAuth();
+    if (!secondaryAuth) {
+      summary.errors.push(`Row ${rowNum}: school connection not ready`);
+      continue;
+    }
+
+    let created = false;
+    for (let attempt = 0; attempt <= AUTH_RATE_LIMIT_RETRIES; attempt++) {
+      try {
+        if (summary.created > 0 || attempt > 0) {
+          await sleep(
+            attempt === 0
+              ? USER_CREATE_GAP_MS
+              : Math.min(30_000, 4_000 * 2 ** (attempt - 1)),
+          );
+        }
+
+        const userCred = await createUserWithEmailAndPassword(
+          secondaryAuth,
+          email,
+          password,
+        );
+        const profile: Record<string, unknown> = {
+          name,
+          email,
+          role,
+          mustChangePassword: true,
+          createdAt: new Date(),
+        };
+        if (phone) profile.phone = phone;
+
+        await setDoc(doc(db, "users", userCred.user.uid), profile);
+        await signOut(secondaryAuth).catch(() => {});
+        ctx.userByEmail.set(email, {
+          id: userCred.user.uid,
+          role,
+          name,
+          email,
+        });
+        summary.created++;
+        created = true;
+        break;
+      } catch (e) {
+        await signOut(secondaryAuth).catch(() => {});
+
+        if (isEmailAlreadyInUse(e)) {
+          summary.skipped++;
+          summary.errors.push(
+            `Row ${rowNum}: ${email} already exists in Auth — skipped (re-run after rate limit clears, or create Firestore profile manually if missing)`,
+          );
+          created = true;
+          break;
+        }
+
+        if (isAuthRateLimited(e) && attempt < AUTH_RATE_LIMIT_RETRIES) {
+          continue;
+        }
+
+        const detail = e instanceof Error ? e.message : "failed";
+        summary.errors.push(
+          isAuthRateLimited(e)
+            ? `Row ${rowNum}: ${detail} — Firebase Auth temporarily blocked bulk creates. Wait 15–60 minutes, then import again (existing emails are skipped).`
+            : `Row ${rowNum}: ${detail}`,
+        );
+        break;
       }
+    }
 
-      const userCred = await createUserWithEmailAndPassword(
-        secondaryAuth,
-        email,
-        password,
-      );
-      const profile: Record<string, unknown> = {
-        name,
-        email,
-        role,
-        mustChangePassword: true,
-        createdAt: new Date(),
-      };
-      if (phone) profile.phone = phone;
-
-      await setDoc(doc(db, "users", userCred.user.uid), profile);
-      await signOut(secondaryAuth).catch(() => {});
-      ctx.userByEmail.set(email, {
-        id: userCred.user.uid,
-        role,
-        name,
-        email,
-      });
-      summary.created++;
-    } catch (e) {
-      summary.errors.push(
-        `Row ${rowNum}: ${e instanceof Error ? e.message : "failed"}`,
-      );
+    if (!created && summary.errors.length === 0) {
+      summary.errors.push(`Row ${rowNum}: could not create user`);
     }
   }
 
@@ -473,14 +725,22 @@ async function importTeacherClass(
   };
 
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
+    const row = coerceTeacherClassRow(rows[i]);
     const rowNum = i + 2;
     const teacherId = resolveUserId(
       ctx,
       row,
       rowNum,
       "teacher",
-      ["teacherEmail", "teacher_email"],
+      [
+        "teacherEmail",
+        "teacher_email",
+        "teacheremail",
+        "email",
+        "mail",
+        "teacher_mail",
+        "teacherMail",
+      ],
       summary.errors,
       "teacher",
     );
