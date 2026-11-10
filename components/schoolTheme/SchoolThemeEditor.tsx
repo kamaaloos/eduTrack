@@ -1,12 +1,19 @@
-import { useMemo } from "react";
+import { createElement, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Modal,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  SCHOOL_THEME_COLOR_PLATE,
+  schoolThemePresetPlateColors,
+} from "../../src/constants/schoolThemeColorPlate";
 import { SCHOOL_THEME_PRESETS } from "../../src/constants/schoolThemeDefaults";
 import type { SchoolFontKey, SchoolThemeConfig } from "../../src/types/schoolTheme";
 import { SCHOOL_FONT_KEYS } from "../../src/types/schoolTheme";
@@ -29,16 +36,29 @@ function ColorField({
   onChangeText: (text: string) => void;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation();
+  const [plateOpen, setPlateOpen] = useState(false);
   const valid = isValidThemeHex(value);
+  const presetColors = useMemo(() => schoolThemePresetPlateColors(), []);
+
+  const pickColor = (hex: string) => {
+    onChangeText(hex.toUpperCase());
+    setPlateOpen(false);
+  };
+
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.colorRow}>
-        <View
+        <TouchableOpacity
           style={[
             styles.swatch,
             { backgroundColor: valid ? value : "#CBD5E1" },
           ]}
+          disabled={disabled}
+          onPress={() => setPlateOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel={t("schoolTheme.openColorPlate")}
         />
         <TextInput
           style={[styles.input, !valid && styles.inputInvalid]}
@@ -50,7 +70,107 @@ function ColorField({
           placeholder="#1E3A8A"
           placeholderTextColor="#94A3B8"
         />
+        <TouchableOpacity
+          style={styles.plateBtn}
+          disabled={disabled}
+          onPress={() => setPlateOpen(true)}
+        >
+          <Text style={styles.plateBtnText}>{t("schoolTheme.colorPlate")}</Text>
+        </TouchableOpacity>
       </View>
+
+      <Modal
+        visible={plateOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPlateOpen(false)}
+      >
+        <Pressable
+          style={styles.plateBackdrop}
+          onPress={() => setPlateOpen(false)}
+        >
+          <Pressable
+            style={styles.plateCard}
+            onPress={(event) => event.stopPropagation()}
+          >
+            <Text style={styles.plateTitle}>{label}</Text>
+            <Text style={styles.plateHint}>{t("schoolTheme.colorPlateHint")}</Text>
+
+            <Text style={styles.plateSection}>{t("schoolTheme.presets")}</Text>
+            <View style={styles.plateGrid}>
+              {presetColors.map((hex) => {
+                const selected = value.toUpperCase() === hex.toUpperCase();
+                return (
+                  <TouchableOpacity
+                    key={`preset-${hex}`}
+                    style={[
+                      styles.plateSwatch,
+                      { backgroundColor: hex },
+                      selected && styles.plateSwatchSelected,
+                    ]}
+                    onPress={() => pickColor(hex)}
+                    accessibilityLabel={hex}
+                  />
+                );
+              })}
+            </View>
+
+            <Text style={styles.plateSection}>{t("schoolTheme.colorPlateAll")}</Text>
+            <View style={styles.plateGrid}>
+              {SCHOOL_THEME_COLOR_PLATE.map((hex) => {
+                const selected = value.toUpperCase() === hex.toUpperCase();
+                return (
+                  <TouchableOpacity
+                    key={hex}
+                    style={[
+                      styles.plateSwatch,
+                      { backgroundColor: hex },
+                      selected && styles.plateSwatchSelected,
+                      hex.toUpperCase() === "#FFFFFF" && styles.plateSwatchBordered,
+                    ]}
+                    onPress={() => pickColor(hex)}
+                    accessibilityLabel={hex}
+                  />
+                );
+              })}
+            </View>
+
+            {Platform.OS === "web"
+              ? createElement(
+                  "div",
+                  { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginTop: 4 } },
+                  createElement(
+                    Text,
+                    { style: styles.plateSection },
+                    t("schoolTheme.customColor"),
+                  ),
+                  createElement("input", {
+                    type: "color",
+                    value: valid ? value : "#1E3A8A",
+                    onChange: (event: { target: { value: string } }) =>
+                      pickColor(event.target.value),
+                    style: {
+                      width: 48,
+                      height: 36,
+                      border: "1px solid #CBD5E1",
+                      borderRadius: 8,
+                      padding: 0,
+                      background: "transparent",
+                      cursor: "pointer",
+                    },
+                  }),
+                )
+              : null}
+
+            <TouchableOpacity
+              style={styles.plateClose}
+              onPress={() => setPlateOpen(false)}
+            >
+              <Text style={styles.plateCloseText}>{t("common.close")}</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -254,6 +374,84 @@ const styles = StyleSheet.create({
   },
   inputInvalid: {
     borderColor: "#FCA5A5",
+  },
+  plateBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: "#EFF6FF",
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+  },
+  plateBtnText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#1D4ED8",
+  },
+  plateBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(15, 23, 42, 0.45)",
+    justifyContent: "center",
+    padding: 20,
+  },
+  plateCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 18,
+    gap: 10,
+    maxWidth: 420,
+    width: "100%",
+    alignSelf: "center",
+  },
+  plateTitle: {
+    fontSize: 17,
+    fontWeight: "800",
+    color: "#0F172A",
+  },
+  plateHint: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: "#64748B",
+  },
+  plateSection: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#475569",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+    marginTop: 4,
+  },
+  plateGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  plateSwatch: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(15, 23, 42, 0.12)",
+  },
+  plateSwatchBordered: {
+    borderColor: "#CBD5E1",
+  },
+  plateSwatchSelected: {
+    borderWidth: 2,
+    borderColor: "#1D4ED8",
+  },
+  plateClose: {
+    marginTop: 8,
+    alignSelf: "flex-end",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: "#F1F5F9",
+  },
+  plateCloseText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#334155",
   },
   preview: {
     marginTop: 6,
