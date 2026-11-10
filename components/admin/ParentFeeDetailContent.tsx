@@ -31,6 +31,8 @@ type ParentFeeDetailContentProps = {
   parents: UserData[];
   loadUsers: () => Promise<void>;
   syncClassAccess?: boolean;
+  /** Fee calendar — secretary only by default for callers that opt in. */
+  showFeePayment?: boolean;
 };
 
 export function ParentFeeDetailContent({
@@ -38,6 +40,7 @@ export function ParentFeeDetailContent({
   parents,
   loadUsers,
   syncClassAccess = true,
+  showFeePayment = true,
 }: ParentFeeDetailContentProps) {
   const { t } = useTranslation();
 
@@ -73,7 +76,7 @@ export function ParentFeeDetailContent({
   }, [parentId, syncClassAccess, t]);
 
   const loadMonths = useCallback(async () => {
-    if (!parentId) return;
+    if (!parentId || !showFeePayment) return;
     setLoadingFees(true);
     try {
       const map = await loadParentFeeMonths(parentId);
@@ -91,7 +94,7 @@ export function ParentFeeDetailContent({
     } finally {
       setLoadingFees(false);
     }
-  }, [parentId, year, t, parents]);
+  }, [parentId, year, t, parents, showFeePayment]);
 
   useEffect(() => {
     void loadChildren();
@@ -140,37 +143,39 @@ export function ParentFeeDetailContent({
         <AdminParentChildrenList linkedChildren={children} loading={loadingChildren} />
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>{t("admin.parentPaymentTitle")}</Text>
-        <Text style={styles.sectionHint}>{t("admin.parentPaymentSubtitle")}</Text>
+      {showFeePayment ? (
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>{t("admin.parentPaymentTitle")}</Text>
+          <Text style={styles.sectionHint}>{t("admin.parentPaymentSubtitle")}</Text>
 
-        <View style={styles.yearRow}>
-          <TouchableOpacity
-            style={styles.yearBtn}
-            onPress={() => setYear((y) => y - 1)}
-          >
-            <Text style={styles.yearBtnText}>‹</Text>
-          </TouchableOpacity>
-          <Text style={styles.yearText}>{year}</Text>
-          <TouchableOpacity
-            style={styles.yearBtn}
-            onPress={() => setYear((y) => y + 1)}
-          >
-            <Text style={styles.yearBtnText}>›</Text>
-          </TouchableOpacity>
+          <View style={styles.yearRow}>
+            <TouchableOpacity
+              style={styles.yearBtn}
+              onPress={() => setYear((y) => y - 1)}
+            >
+              <Text style={styles.yearBtnText}>‹</Text>
+            </TouchableOpacity>
+            <Text style={styles.yearText}>{year}</Text>
+            <TouchableOpacity
+              style={styles.yearBtn}
+              onPress={() => setYear((y) => y + 1)}
+            >
+              <Text style={styles.yearBtnText}>›</Text>
+            </TouchableOpacity>
+          </View>
+
+          {loadingFees ? (
+            <ActivityIndicator color="#7C3AED" style={styles.loader} />
+          ) : (
+            <ParentPaymentCalendar
+              year={year}
+              feeMonths={feeMonths}
+              onToggleMonth={(month, paid) => void handleToggleMonth(month, paid)}
+              disabled={saving}
+            />
+          )}
         </View>
-
-        {loadingFees ? (
-          <ActivityIndicator color="#7C3AED" style={styles.loader} />
-        ) : (
-          <ParentPaymentCalendar
-            year={year}
-            feeMonths={feeMonths}
-            onToggleMonth={(month, paid) => void handleToggleMonth(month, paid)}
-            disabled={saving}
-          />
-        )}
-      </View>
+      ) : null}
     </ScrollView>
   );
 }

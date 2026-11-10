@@ -61,26 +61,35 @@ export function AdminDirectoryTableRow({
 type AdminDirectoryHoverSurfaceProps = {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
+  onPress?: () => void;
 };
 
 /** Soft theme hover for directory cards / list surfaces on web. */
 export function AdminDirectoryHoverSurface({
   children,
   style,
+  onPress,
 }: AdminDirectoryHoverSurfaceProps) {
   const { theme } = useSchoolTheme();
   const [hovered, setHovered] = useState(false);
 
   return (
     <Pressable
+      onPress={onPress}
       onHoverIn={() => setHovered(true)}
       onHoverOut={() => setHovered(false)}
-      style={[
+      style={({ pressed }) => [
         style,
         {
-          transform: [{ scale: hovered ? 1.015 : 1 }],
+          transform: [
+            {
+              scale:
+                pressed && onPress ? 0.995 : hovered ? 1.015 : 1,
+            },
+          ],
           ...(Platform.OS === "web"
             ? ({
+                cursor: onPress ? "pointer" : "default",
                 transitionProperty: "transform, box-shadow, border-color",
                 transitionDuration: "160ms",
                 transitionTimingFunction: "ease-out",

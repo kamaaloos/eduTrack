@@ -22,6 +22,7 @@ export default function AdminParentDetailScreen() {
         parentId={parentId}
         parents={parents}
         loadUsers={loadUsers}
+        showFeePayment={false}
       />
     </AdminScreenShell>
   );

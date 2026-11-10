@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
+import { router } from "expo-router";
 import { collection, getDocs } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -81,12 +82,21 @@ function UserRowActions({
   onRemove,
 }: UserRowActionsProps) {
   const { t } = useTranslation();
+  const stopRowPress = (event?: { stopPropagation?: () => void }) => {
+    event?.stopPropagation?.();
+  };
 
   return (
-    <View style={[styles.actions, compact && styles.actionsCompact]}>
+    <View
+      style={[styles.actions, compact && styles.actionsCompact]}
+      onStartShouldSetResponder={() => true}
+    >
       <TouchableOpacity
         style={styles.actionBtn}
-        onPress={() => onEdit(item)}
+        onPress={(event) => {
+          stopRowPress(event);
+          onEdit(item);
+        }}
         accessibilityLabel={t("common.edit")}
       >
         <Ionicons name="create-outline" size={18} color="#2563EB" />
@@ -96,7 +106,10 @@ function UserRowActions({
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.actionBtn}
-        onPress={() => onPassword(item)}
+        onPress={(event) => {
+          stopRowPress(event);
+          onPassword(item);
+        }}
         accessibilityLabel={t("admin.setPasswordAction")}
       >
         <Ionicons name="key-outline" size={18} color="#D97706" />
@@ -106,7 +119,10 @@ function UserRowActions({
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.actionBtn}
-        onPress={() => void onRemove(item)}
+        onPress={(event) => {
+          stopRowPress(event);
+          void onRemove(item);
+        }}
         accessibilityLabel={t("common.remove")}
       >
         <Ionicons name="trash-outline" size={18} color="#DC2626" />
@@ -127,6 +143,7 @@ function UserDirectoryCard({
   classNameById,
   teacherMetaById,
   parentNamesByStudentId,
+  onOpen,
   onEdit,
   onPassword,
   onRemove,
@@ -139,6 +156,7 @@ function UserDirectoryCard({
   classNameById: Record<string, string>;
   teacherMetaById: Record<string, { classes: string; subjects: string }>;
   parentNamesByStudentId: Record<string, string>;
+  onOpen?: (user: UserData) => void;
   onEdit: (user: UserData) => void;
   onPassword: (user: UserData) => void;
   onRemove: (user: UserData) => void;
@@ -147,7 +165,10 @@ function UserDirectoryCard({
   const teacherMeta = teacherMetaById[item.id];
 
   return (
-    <AdminDirectoryHoverSurface style={adminDirectoryCardStyle(layout)}>
+    <AdminDirectoryHoverSurface
+      style={adminDirectoryCardStyle(layout)}
+      onPress={onOpen ? () => onOpen(item) : undefined}
+    >
       <View style={styles.cardTop}>
         <UserAvatar
           name={item.name}
@@ -191,7 +212,13 @@ function UserDirectoryCard({
               </Text>
             </>
           ) : null}
+          {onOpen ? (
+            <Text style={styles.openHint}>{t("admin.parentDetailSubtitle")}</Text>
+          ) : null}
         </View>
+        {onOpen ? (
+          <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+        ) : null}
       </View>
 
       <UserRowActions
@@ -390,6 +417,13 @@ export function UserDirectoryList({
     users,
   ]);
 
+  const openParentDetail = useCallback((user: UserData) => {
+    router.push({
+      pathname: "/(admin)/parent/[parentId]",
+      params: { parentId: user.id },
+    });
+  }, []);
+
   const openEdit = (user: UserData) => {
     setEditing(user);
     setEditName(user.name || "");
@@ -529,6 +563,7 @@ export function UserDirectoryList({
           classNameById={classNameById}
           teacherMetaById={teacherMetaById}
           parentNamesByStudentId={parentNamesByStudentId}
+          onOpen={role === "parent" ? openParentDetail : undefined}
           onEdit={openEdit}
           onPassword={openPasswordModal}
           onRemove={onRemove}
@@ -569,7 +604,12 @@ export function UserDirectoryList({
       </View>
 
       {pagination.pageItems.map((item) => (
-        <AdminDirectoryTableRow key={item.id}>
+        <AdminDirectoryTableRow
+          key={item.id}
+          onPress={
+            role === "parent" ? () => openParentDetail(item) : undefined
+          }
+        >
           <View style={[styles.colName, styles.tableNameCell]}>
             <UserAvatar
               name={item.name}
@@ -862,6 +902,12 @@ const styles = StyleSheet.create({
   name: { fontSize: 16, fontWeight: "800", color: "#0F172A" },
   email: { fontSize: 13, color: "#64748B", marginTop: 2 },
   meta: { fontSize: 12, color: "#94A3B8", marginTop: 4 },
+  openHint: {
+    fontSize: 12,
+    color: "#2563EB",
+    marginTop: 6,
+    fontWeight: "600",
+  },
   actions: {
     flexDirection: "row",
     flexWrap: "wrap",
