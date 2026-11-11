@@ -78,10 +78,26 @@ export const useAdminExcelImport = () => {
           const hint = formatWorkbookPickHint(workbook);
           if (hint) setError(hint);
         } else if (singleSheetKind) {
-          const rows = workbook.sheets[singleSheetKind]?.length ?? 0;
-          if (rows === 0) {
+          const rows = workbook.sheets[singleSheetKind] ?? [];
+          if (rows.length === 0) {
             setError(
-              `No data rows on the first sheet. Add headers + data, or use Full workbook mode with a sheet named “${singleSheetKind}”.`,
+              `No data rows for “${singleSheetKind}”. Add a sheet named “${singleSheetKind}” (or put that data on the first tab).`,
+            );
+          } else if (
+            singleSheetKind === "schedule" &&
+            rows
+              .slice(0, 5)
+              .every(
+                (row) =>
+                  row.name != null &&
+                  row.classname == null &&
+                  row.className == null &&
+                  row.dayofweek == null &&
+                  row.subject == null,
+              )
+          ) {
+            setError(
+              'Selected Schedule, but this sheet looks like Classes (column "name"). Open the "schedule" tab in the template or switch type to classes.',
             );
           }
         }

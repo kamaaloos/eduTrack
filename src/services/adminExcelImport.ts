@@ -246,28 +246,100 @@ function collectMailtoByHeader(
   return mailtoByHeader;
 }
 
+const HEADER_HINT_KEYS = new Set([
+  "classname",
+  "class_name",
+  "class",
+  "dayofweek",
+  "day_of_week",
+  "day",
+  "starttime",
+  "endtime",
+  "subject",
+  "teachername",
+  "teacheremail",
+  "studentemail",
+  "parentemail",
+  "email",
+  "password",
+  "name",
+  "role",
+]);
+
+function scoreHeaderRow(cells: unknown[]): number {
+  let score = 0;
+  for (const value of cells) {
+    const key = normalizeKey(String(value ?? "").replace(/^\uFEFF/, ""));
+    if (HEADER_HINT_KEYS.has(key)) score += 2;
+    else if (key.includes("class") || key.includes("email") || key.includes("day"))
+      score += 1;
+  }
+  return score;
+}
+
 function rowsFromSheet(sheet: XLSX.WorkSheet): ImportRow[] {
-  const json = XLSX.utils.sheet_to_json<ImportRow>(sheet, {
+  const matrix = XLSX.utils.sheet_to_json<(string | number | boolean | null)[]>(
+    sheet,
+    {
+      header: 1,
+      defval: "",
+      raw: false,
+      blankrows: false,
+    },
+  );
+
+  if (matrix.length === 0) return [];
+
+  // Prefer a real header row (skips title/blank rows above the template).
+  let headerRowIndex = 0;
+  let bestScore = scoreHeaderRow(matrix[0] ?? []);
+  const scanLimit = Math.min(matrix.length, 8);
+  for (let i = 1; i < scanLimit; i++) {
+    const score = scoreHeaderRow(matrix[i] ?? []);
+    if (score > bestScore) {
+      bestScore = score;
+      headerRowIndex = i;
+    }
+  }
+
+  const headerCells = (matrix[headerRowIndex] ?? []).map((value) =>
+    String(value ?? "").replace(/^\uFEFF/, "").trim(),
+  );
+  const headers = headerCells.map((value) => normalizeKey(value));
+
+  const jsonFallback = XLSX.utils.sheet_to_json<ImportRow>(sheet, {
     defval: "",
     raw: false,
     blankrows: false,
   });
+  const mailtoByHeader = collectMailtoByHeader(sheet, jsonFallback);
 
-  const mailtoByHeader = collectMailtoByHeader(sheet, json);
-
-  return json.map((row, rowIndex) => {
+  const rows: ImportRow[] = [];
+  for (let r = headerRowIndex + 1; r < matrix.length; r++) {
+    const line = matrix[r] ?? [];
     const out: ImportRow = {};
-    for (const [k, v] of Object.entries(row)) {
-      const key = normalizeKey(k.replace(/^\uFEFF/, ""));
+    let hasValue = false;
+    for (let c = 0; c < headers.length; c++) {
+      const key = headers[c];
       if (!key || key.startsWith("__empty")) continue;
-      let text = cellToImportString(v);
+      const rawHeader = headerCells[c] || key;
+      let text = cellToImportString(line[c]);
       if (!text) {
-        text = mailtoByHeader.get(k)?.get(rowIndex) ?? "";
+        text =
+          mailtoByHeader.get(rawHeader)?.get(r - headerRowIndex - 1) ??
+          mailtoByHeader.get(rawHeader)?.get(r - 1) ??
+          "";
       }
-      out[key] = text;
+      if (text) hasValue = true;
+      // Keep first non-empty value if duplicate headers collide after normalize.
+      if (!out[key] || !String(out[key]).trim()) {
+        out[key] = text;
+      }
     }
-    return out;
-  });
+    if (hasValue) rows.push(out);
+  }
+
+  return rows;
 }
 
 function firstEmailLikeValues(row: ImportRow): string[] {
@@ -369,6 +441,97 @@ function coerceParentStudentRow(row: ImportRow): ImportRow {
   };
 }
 
+const DAY_NAME_HINTS = new Set([
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+  "sun",
+]);
+
+/** Recover schedule rows when className header was lost/misread. */
+function coerceScheduleRow(row: ImportRow): ImportRow {
+  const hasClass = Boolean(
+    cell(
+      row,
+      "className",
+      "class_name",
+      "class",
+      "classname",
+      "grade",
+      "gradeName",
+      "grade_name",
+      "luokka",
+      "name",
+    ),
+  );
+  if (hasClass) {
+    // Classes sheets use `name`; map to className when schedule fields exist.
+    const named = cell(row, "name");
+    const classNamed = cell(row, "className", "class_name", "classname");
+    if (named && !classNamed && rowLooksLikeSchedule(row)) {
+      return { ...row, classname: named };
+    }
+    return row;
+  }
+
+  let className = "";
+  for (const value of Object.values(row)) {
+    const text = cellToImportString(value);
+    if (!text) continue;
+    if (text.includes("@")) continue;
+    if (DAY_NAME_HINTS.has(text.toLowerCase())) continue;
+    if (/^\d{1,2}:\d{2}/.test(text)) continue;
+    // Prefer values that look like class labels (letters / punctuation).
+    if (!/[A-Za-zÀ-ÿ]/.test(text)) continue;
+    className = text;
+    break;
+  }
+
+  return {
+    ...row,
+    ...(className ? { classname: className } : null),
+  };
+}
+
+function normalizeClassLookupKey(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[’']/g, "'")
+    .trim();
+}
+
+function findSheetNameForKind(
+  sheetNames: string[],
+  kind: ImportKind,
+): string | null {
+  for (const name of sheetNames) {
+    if (sheetNameToKind(name) === kind) return name;
+  }
+  return null;
+}
+
+/** True when a row has schedule fields (not just classes `name`). */
+function rowLooksLikeSchedule(row: ImportRow): boolean {
+  return Boolean(
+    cell(row, "className", "class_name", "classname") ||
+      cell(row, "dayOfWeek", "day_of_week", "day") ||
+      cell(row, "startTime", "start_time", "start") ||
+      cell(row, "endTime", "end_time", "end") ||
+      cell(row, "subject"),
+  );
+}
+
 export function parseWorkbookFromArrayBuffer(
   data: ArrayBuffer,
   singleSheetKind?: ImportKind,
@@ -378,10 +541,13 @@ export function parseWorkbookFromArrayBuffer(
   const unknownSheets: string[] = [];
 
   if (singleSheetKind && wb.SheetNames.length > 0) {
-    const first = wb.SheetNames[0];
-    sheets[singleSheetKind] = rowsFromSheet(wb.Sheets[first]);
-    for (let i = 1; i < wb.SheetNames.length; i++) {
-      const name = wb.SheetNames[i];
+    // Prefer a tab named for this kind (e.g. "schedule") so full-template
+    // uploads don't import the first "classes" sheet as schedule.
+    const matched =
+      findSheetNameForKind(wb.SheetNames, singleSheetKind) ?? wb.SheetNames[0];
+    sheets[singleSheetKind] = rowsFromSheet(wb.Sheets[matched]);
+    for (const name of wb.SheetNames) {
+      if (name === matched) continue;
       const rows = rowsFromSheet(wb.Sheets[name]);
       if (rows.length > 0) unknownSheets.push(name);
     }
@@ -470,7 +636,9 @@ async function buildContext(): Promise<ImportContext> {
   const classByName = new Map<string, string>();
   for (const d of classesSnap.docs) {
     const name = (d.data().name as string | undefined)?.trim();
-    if (name) classByName.set(name.toLowerCase(), d.id);
+    if (!name) continue;
+    classByName.set(name.toLowerCase(), d.id);
+    classByName.set(normalizeClassLookupKey(name), d.id);
   }
 
   const userByEmail = new Map<string, UserCache>();
@@ -514,6 +682,9 @@ function resolveClassId(
     "gradeName",
     "grade_name",
     "luokka",
+    "class name",
+    "Class Name",
+    "name",
   );
   if (!className) {
     className = cellByKeyMatch(
@@ -522,7 +693,8 @@ function resolveClassId(
         (key.includes("class") || key.includes("grade") || key.includes("luokka")) &&
         !key.includes("teacher") &&
         !key.includes("student") &&
-        !key.includes("email"),
+        !key.includes("email") &&
+        !key.includes("day"),
     );
   }
   if (!className) {
@@ -531,9 +703,13 @@ function resolveClassId(
     );
     return null;
   }
-  const id = ctx.classByName.get(className.toLowerCase());
+  const id =
+    ctx.classByName.get(className.toLowerCase()) ??
+    ctx.classByName.get(normalizeClassLookupKey(className));
   if (!id) {
-    errors.push(`Row ${rowNum}: class "${className}" not found`);
+    errors.push(
+      `Row ${rowNum}: class "${className}" not found. Create it under Classes first (name must match exactly).`,
+    );
     return null;
   }
   return id;
@@ -1138,8 +1314,21 @@ async function importSchedule(
     errors: [],
   };
 
+  const sample = rows.slice(0, 8);
+  const scheduleLike = sample.filter((row) => rowLooksLikeSchedule(row)).length;
+  const classesOnly = sample.filter((row) => {
+    const hasName = Boolean(cell(row, "name"));
+    return hasName && !rowLooksLikeSchedule(row);
+  }).length;
+  if (rows.length > 0 && scheduleLike === 0 && classesOnly > 0) {
+    summary.errors.push(
+      'This sheet looks like Classes (column "name"), not Schedule. Use the "schedule" tab with headers className, dayOfWeek, startTime, endTime, subject — or switch import type to classes.',
+    );
+    return summary;
+  }
+
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
+    const row = coerceScheduleRow(rows[i]);
     const rowNum = i + 2;
     const classId = resolveClassId(ctx, row, rowNum, summary.errors);
     if (!classId) continue;
