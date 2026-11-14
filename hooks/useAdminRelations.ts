@@ -182,6 +182,73 @@ export const useAdminRelations = () => {
         [],
     );
 
+    const removeTeacherFromClass = useCallback(
+        async (teacherId: string, classId: string): Promise<void> => {
+            if (!teacherId || !classId) {
+                throw new Error("Teacher ID and Class ID are required");
+            }
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                const schoolDb = requireSchoolDb();
+                await deleteDoc(
+                    doc(schoolDb, "teacherClasses", `${teacherId}_${classId}`),
+                ).catch(() => undefined);
+
+                // Drop subject assignments for this teacher+class as well.
+                // Filter client-side to avoid a composite index requirement.
+                const subjectSnap = await getDocs(
+                    query(
+                        collection(schoolDb, "teacherSubjects"),
+                        where("teacherId", "==", teacherId),
+                    ),
+                );
+                await Promise.all(
+                    subjectSnap.docs
+                        .filter((d) => d.data().classId === classId)
+                        .map((d) => deleteDoc(d.ref).catch(() => undefined)),
+                );
+            } catch (err) {
+                const message =
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to remove teacher from class";
+                setError(message);
+                throw new Error(message);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [],
+    );
+
+    const loadTeacherClassAssignments = useCallback(
+        async (
+            teacherId?: string,
+        ): Promise<{ teacherId: string; classId: string }[]> => {
+            const schoolDb = requireSchoolDb();
+            const snap = teacherId
+                ? await getDocs(
+                      query(
+                          collection(schoolDb, "teacherClasses"),
+                          where("teacherId", "==", teacherId),
+                      ),
+                  )
+                : await getDocs(collection(schoolDb, "teacherClasses"));
+
+            return snap.docs.map((d) => {
+                const data = d.data();
+                return {
+                    teacherId: data.teacherId as string,
+                    classId: data.classId as string,
+                };
+            });
+        },
+        [],
+    );
+
     const assignTeacherToSubject = useCallback(
         async (
             teacherId: string,
@@ -425,6 +492,8 @@ export const useAdminRelations = () => {
         assignStudentToClass,
         removeStudentFromClass,
         assignTeacherToClass,
+        removeTeacherFromClass,
+        loadTeacherClassAssignments,
         assignTeacherToSubject,
         loadTeacherSubjectAssignments,
         removeTeacherSubjectAssignment,

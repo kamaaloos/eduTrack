@@ -1,3 +1,4 @@
+import * as DocumentPicker from "expo-document-picker";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -12,11 +13,22 @@ import type { UserData } from "../../hooks/useAdminUsers";
 import { useAdminData } from "../../src/context/adminDataContext";
 import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import {
+  importStudentsIntoClass,
+  parseClassStudentsWorkbook,
+  type ImportSummary,
+} from "../../src/services/adminExcelImport";
+import { shareClassStudentsImportTemplate } from "../../src/services/adminExcelImportTemplate";
+import {
   confirmAction,
   confirmDestructiveAction,
   showErrorAlert,
   showSuccessAlert,
 } from "../../src/utils/confirmDialog";
+import {
+  EXCEL_DOCUMENT_PICKER_TYPES,
+  isLikelyExcelFilename,
+  readExcelArrayBuffer,
+} from "../../src/utils/readExcelFile";
 import { PasswordInput } from "../PasswordInput";
 import { SchoolThemeButton } from "../common/SchoolThemeButton";
 import { AdminClassStudentNamesList } from "./AdminClassStudentNamesList";
@@ -33,7 +45,7 @@ type AdminClassRosterPanelProps = {
   onChanged?: () => void | Promise<void>;
 };
 
-type RosterMode = "list" | "addExisting" | "createNew";
+type RosterMode = "list" | "addExisting" | "createNew" | "importExcel";
 
 export function AdminClassRosterPanel({
   classId,
@@ -63,6 +75,11 @@ export function AdminClassRosterPanel({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState(() => t("admin.defaultPassword"));
+  const [importFileName, setImportFileName] = useState<string | null>(null);
+  const [importRowCount, setImportRowCount] = useState(0);
+  const [importRows, setImportRows] = useState<Record<string, unknown>[] | null>(
+    null,
+  );
 
   const classNameById = useMemo(() => {
     const map = new Map<string, string>();
@@ -212,15 +229,141 @@ export function AdminClassRosterPanel({
     }
   };
 
+  const clearImportFile = () => {
+    setImportFileName(null);
+    setImportRowCount(0);
+    setImportRows(null);
+  };
+
+  const handleDownloadImportTemplate = async () => {
+    setBusy(true);
+    try {
+      await shareClassStudentsImportTemplate();
+    } catch (err) {
+      showErrorAlert(
+        t("common.error"),
+        err instanceof Error
+          ? err.message
+          : t("admin.couldNotDownloadTemplate"),
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handlePickImportFile = async () => {
+    setBusy(true);
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: [...EXCEL_DOCUMENT_PICKER_TYPES],
+        copyToCacheDirectory: true,
+      });
+      if (result.canceled || !result.assets?.[0]?.uri) {
+        return;
+      }
+
+      const asset = result.assets[0];
+      const pickedName = asset.name ?? "students.xlsx";
+      if (!isLikelyExcelFilename(pickedName)) {
+        showErrorAlert(
+          t("common.error"),
+          t("admin.classRosterImportBadFile", { name: pickedName }),
+        );
+      }
+
+      const webFile = (asset as { file?: Blob }).file;
+      const buffer =
+        Platform.OS === "web" && webFile
+          ? await webFile.arrayBuffer()
+          : await readExcelArrayBuffer(asset.uri);
+      if (!buffer.byteLength) {
+        throw new Error(t("admin.couldNotReadFile"));
+      }
+
+      const parsed = parseClassStudentsWorkbook(buffer);
+      if (parsed.rows.length === 0) {
+        clearImportFile();
+        showErrorAlert(t("common.error"), t("admin.classRosterImportNoRows"));
+        return;
+      }
+
+      setImportFileName(pickedName);
+      setImportRowCount(parsed.rows.length);
+      setImportRows(parsed.rows);
+    } catch (err) {
+      clearImportFile();
+      showErrorAlert(
+        t("common.error"),
+        err instanceof Error ? err.message : t("admin.couldNotReadFile"),
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const formatImportSummary = (s: ImportSummary): string => {
+    const err =
+      s.errors.length > 0
+        ? `\n${s.errors.slice(0, 5).join("\n")}${
+            s.errors.length > 5
+              ? t("admin.importMoreErrors", { count: s.errors.length - 5 })
+              : ""
+          }`
+        : "";
+    return `${t("admin.importSummary", {
+      kind: t("admin.classRosterImportKind"),
+      created: s.created,
+      skipped: s.skipped,
+    })}${err}`;
+  };
+
+  const handleRunImport = async () => {
+    if (!importRows?.length) {
+      showErrorAlert(t("common.error"), t("admin.classRosterImportPickFirst"));
+      return;
+    }
+
+    const confirmed = await confirmAction(
+      t("admin.excelConfirmTitle"),
+      t("admin.classRosterImportConfirm", {
+        count: importRowCount,
+        className,
+      }),
+      t("common.import"),
+      t("common.cancel"),
+    );
+    if (!confirmed) return;
+
+    setBusy(true);
+    try {
+      const summary = await importStudentsIntoClass(importRows, classId, {
+        defaultPassword: t("admin.defaultPassword"),
+      });
+      showSuccessAlert(t("common.success"), formatImportSummary(summary));
+      clearImportFile();
+      setMode("list");
+      await onChanged?.();
+    } catch (err) {
+      showErrorAlert(
+        t("common.error"),
+        err instanceof Error ? err.message : t("admin.operationFailed"),
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const toggleMode = (next: RosterMode) => {
+    setMode((m) => (m === next ? "list" : next));
+  };
+
   return (
     <View style={styles.root}>
       <Text style={styles.hint}>{t("admin.classStudentsHint")}</Text>
 
       <View style={styles.actions}>
         <Pressable
-          onPress={() =>
-            setMode((m) => (m === "addExisting" ? "list" : "addExisting"))
-          }
+          onPress={() => toggleMode("addExisting")}
           disabled={working}
           style={[
             styles.actionChip,
@@ -239,9 +382,7 @@ export function AdminClassRosterPanel({
           </Text>
         </Pressable>
         <Pressable
-          onPress={() =>
-            setMode((m) => (m === "createNew" ? "list" : "createNew"))
-          }
+          onPress={() => toggleMode("createNew")}
           disabled={working}
           style={[
             styles.actionChip,
@@ -257,6 +398,25 @@ export function AdminClassRosterPanel({
             ]}
           >
             {t("admin.classRosterCreateNew")}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => toggleMode("importExcel")}
+          disabled={working}
+          style={[
+            styles.actionChip,
+            mode === "importExcel"
+              ? { backgroundColor: primary, borderColor: primary }
+              : null,
+          ]}
+        >
+          <Text
+            style={[
+              styles.actionChipText,
+              mode === "importExcel" ? styles.actionChipTextActive : null,
+            ]}
+          >
+            {t("admin.classRosterImportExcel")}
           </Text>
         </Pressable>
       </View>
@@ -334,6 +494,43 @@ export function AdminClassRosterPanel({
             onPress={handleCreateAndLink}
             loading={working}
             disabled={working}
+          />
+        </View>
+      ) : null}
+
+      {mode === "importExcel" ? (
+        <View style={styles.formBlock}>
+          <Text style={styles.formTitle}>
+            {t("admin.classRosterImportTitle")}
+          </Text>
+          <Text style={styles.formHint}>
+            {t("admin.classRosterImportHint", { className })}
+          </Text>
+          <SchoolThemeButton
+            label={t("admin.classRosterImportDownloadTemplate")}
+            onPress={handleDownloadImportTemplate}
+            loading={working}
+            disabled={working}
+          />
+          <SchoolThemeButton
+            label={t("admin.classRosterImportPickFile")}
+            onPress={handlePickImportFile}
+            loading={working}
+            disabled={working}
+          />
+          {importFileName ? (
+            <Text style={styles.tempHint}>
+              {t("admin.classRosterImportFileReady", {
+                name: importFileName,
+                count: importRowCount,
+              })}
+            </Text>
+          ) : null}
+          <SchoolThemeButton
+            label={t("admin.classRosterImportRun")}
+            onPress={handleRunImport}
+            loading={working}
+            disabled={working || !importRows?.length}
           />
         </View>
       ) : null}

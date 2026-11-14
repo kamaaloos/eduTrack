@@ -5,10 +5,13 @@ import {
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
+  query,
   serverTimestamp,
   setDoc,
+  where,
 } from "firebase/firestore";
 import * as XLSX from "xlsx";
 import { db, ensureAdminCreateAuth } from "./firebase";
@@ -64,7 +67,7 @@ export type ParsedWorkbook = {
 };
 
 export type ImportSummary = {
-  kind: ImportKind | "workbook";
+  kind: ImportKind | "workbook" | "class_students";
   created: number;
   skipped: number;
   errors: string[];
@@ -941,6 +944,27 @@ async function importUsers(
   return summary;
 }
 
+/** One class per student: drop other studentClasses links, then set this class. */
+async function linkStudentToClassExclusive(
+  studentId: string,
+  classId: string,
+): Promise<void> {
+  const existing = await getDocs(
+    query(collection(db, "studentClasses"), where("studentId", "==", studentId)),
+  );
+  await Promise.all(
+    existing.docs
+      .filter((d) => d.id !== `${studentId}_${classId}`)
+      .map((d) => deleteDoc(d.ref).catch(() => undefined)),
+  );
+  await setDoc(
+    doc(db, "studentClasses", `${studentId}_${classId}`),
+    { studentId, classId, createdAt: serverTimestamp() },
+    { merge: true },
+  );
+  await setDoc(doc(db, "users", studentId), { classId }, { merge: true });
+}
+
 async function importStudentClass(
   rows: ImportRow[],
   ctx: ImportContext,
@@ -967,18 +991,221 @@ async function importStudentClass(
     const classId = resolveClassId(ctx, row, rowNum, summary.errors);
     if (!studentId || !classId) continue;
 
-    const linkId = `${studentId}_${classId}`;
     try {
-      await setDoc(
-        doc(db, "studentClasses", linkId),
-        { studentId, classId, createdAt: serverTimestamp() },
-        { merge: true },
-      );
-      await setDoc(doc(db, "users", studentId), { classId }, { merge: true });
+      await linkStudentToClassExclusive(studentId, classId);
       summary.created++;
     } catch (e) {
       summary.errors.push(
         `Row ${rowNum}: ${e instanceof Error ? e.message : "failed"}`,
+      );
+    }
+  }
+
+  return summary;
+}
+
+const CLASS_STUDENT_SHEET_ALIASES = new Set([
+  "students",
+  "student",
+  "users",
+  "user",
+  "class_students",
+  "classstudents",
+]);
+
+/**
+ * Parse an Excel buffer for class roster bulk import.
+ * Prefers a sheet named students/users; otherwise uses the first non-empty sheet.
+ */
+export function parseClassStudentsWorkbook(
+  buffer: ArrayBuffer,
+): { rows: ImportRow[]; sheetName: string; sheetNames: string[] } {
+  const wb = XLSX.read(buffer, { type: "array", cellDates: true });
+  const sheetNames = wb.SheetNames ?? [];
+  if (sheetNames.length === 0) {
+    throw new Error("Workbook has no sheets");
+  }
+
+  let chosen =
+    sheetNames.find((name) =>
+      CLASS_STUDENT_SHEET_ALIASES.has(normalizeKey(name)),
+    ) ?? null;
+
+  if (!chosen) {
+    chosen =
+      sheetNames.find((name) => rowsFromSheet(wb.Sheets[name]).length > 0) ??
+      sheetNames[0];
+  }
+
+  const rows = rowsFromSheet(wb.Sheets[chosen]).map((row) => {
+    // Allow studentEmail-only templates by normalizing to email.
+    const email =
+      cell(row, "email", "mail") ||
+      cell(row, "studentEmail", "student_email", "studentemail");
+    if (email && !cell(row, "email")) {
+      return { ...row, email };
+    }
+    return row;
+  });
+
+  return { rows, sheetName: chosen, sheetNames };
+}
+
+export type ClassStudentsImportOptions = {
+  /** Used when a new student row has no password (default 123456). */
+  defaultPassword?: string;
+};
+
+/**
+ * Bulk create/link students into one selected class.
+ * - New email → create student (role forced) + link to classId
+ * - Existing student → move/link to classId (clears other class links)
+ */
+export async function importStudentsIntoClass(
+  rows: ImportRow[],
+  classId: string,
+  options: ClassStudentsImportOptions = {},
+): Promise<ImportSummary> {
+  if (!classId) {
+    throw new Error("Class ID is required");
+  }
+
+  const defaultPassword = (options.defaultPassword || "123456").trim();
+  const ctx = await buildContext();
+  const summary: ImportSummary = {
+    kind: "class_students",
+    created: 0,
+    skipped: 0,
+    errors: [],
+  };
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rowNum = i + 2;
+    const email = cell(
+      row,
+      "email",
+      "mail",
+      "studentEmail",
+      "student_email",
+      "studentemail",
+    ).toLowerCase();
+    const name = cell(row, "name", "full_name", "fullname", "studentname");
+    const phone = cell(row, "phone", "phone_number", "phonenumber");
+    let password = cell(row, "password");
+
+    if (!email) {
+      summary.skipped++;
+      summary.errors.push(`Row ${rowNum}: email required`);
+      continue;
+    }
+
+    const existing = ctx.userByEmail.get(email);
+    if (existing) {
+      if (existing.role && existing.role !== "student") {
+        summary.errors.push(
+          `Row ${rowNum}: "${email}" is a ${existing.role}, not a student`,
+        );
+        continue;
+      }
+      try {
+        await linkStudentToClassExclusive(existing.id, classId);
+        summary.created++;
+      } catch (e) {
+        summary.errors.push(
+          `Row ${rowNum}: ${e instanceof Error ? e.message : "failed to link"}`,
+        );
+      }
+      continue;
+    }
+
+    if (!name) {
+      summary.skipped++;
+      summary.errors.push(`Row ${rowNum}: name required for new student`);
+      continue;
+    }
+    if (!password) password = defaultPassword;
+    if (password.length < 6) {
+      summary.errors.push(`Row ${rowNum}: password must be at least 6 chars`);
+      continue;
+    }
+
+    const secondaryAuth = ensureAdminCreateAuth();
+    if (!secondaryAuth) {
+      summary.errors.push(`Row ${rowNum}: school connection not ready`);
+      continue;
+    }
+
+    let createdUid: string | null = null;
+    for (let attempt = 0; attempt <= AUTH_RATE_LIMIT_RETRIES; attempt++) {
+      try {
+        if (summary.created > 0 || attempt > 0) {
+          await sleep(
+            attempt === 0
+              ? USER_CREATE_GAP_MS
+              : Math.min(30_000, 4_000 * 2 ** (attempt - 1)),
+          );
+        }
+
+        const userCred = await createUserWithEmailAndPassword(
+          secondaryAuth,
+          email,
+          password,
+        );
+        const profile: Record<string, unknown> = {
+          name,
+          email,
+          role: "student",
+          classId,
+          mustChangePassword: true,
+          createdAt: new Date(),
+        };
+        if (phone) profile.phone = phone;
+
+        await setDoc(doc(db, "users", userCred.user.uid), profile);
+        await signOut(secondaryAuth).catch(() => {});
+        createdUid = userCred.user.uid;
+        ctx.userByEmail.set(email, {
+          id: userCred.user.uid,
+          role: "student",
+          name,
+          email,
+        });
+        break;
+      } catch (e) {
+        await signOut(secondaryAuth).catch(() => {});
+
+        if (isEmailAlreadyInUse(e)) {
+          summary.errors.push(
+            `Row ${rowNum}: ${email} already exists in Auth but not in school users — skipped`,
+          );
+          break;
+        }
+
+        if (isAuthRateLimited(e) && attempt < AUTH_RATE_LIMIT_RETRIES) {
+          continue;
+        }
+
+        const detail = e instanceof Error ? e.message : "failed";
+        summary.errors.push(
+          isAuthRateLimited(e)
+            ? `Row ${rowNum}: ${detail} — Auth rate limited. Wait, then import again (existing emails are linked).`
+            : `Row ${rowNum}: ${detail}`,
+        );
+        break;
+      }
+    }
+
+    if (!createdUid) continue;
+
+    try {
+      await linkStudentToClassExclusive(createdUid, classId);
+      summary.created++;
+    } catch (e) {
+      summary.errors.push(
+        `Row ${rowNum}: user created but link failed — ${
+          e instanceof Error ? e.message : "failed"
+        }`,
       );
     }
   }

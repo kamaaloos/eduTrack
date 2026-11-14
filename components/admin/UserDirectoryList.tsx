@@ -424,6 +424,20 @@ export function UserDirectoryList({
     });
   }, []);
 
+  const openTeacherDetail = useCallback((user: UserData) => {
+    router.push({
+      pathname: "/(admin)/teacher/[teacherId]",
+      params: { teacherId: user.id },
+    });
+  }, []);
+
+  const openDirectoryDetail =
+    role === "parent"
+      ? openParentDetail
+      : role === "teacher"
+        ? openTeacherDetail
+        : undefined;
+
   const openEdit = (user: UserData) => {
     setEditing(user);
     setEditName(user.name || "");
@@ -563,7 +577,7 @@ export function UserDirectoryList({
           classNameById={classNameById}
           teacherMetaById={teacherMetaById}
           parentNamesByStudentId={parentNamesByStudentId}
-          onOpen={role === "parent" ? openParentDetail : undefined}
+          onOpen={openDirectoryDetail}
           onEdit={openEdit}
           onPassword={openPasswordModal}
           onRemove={onRemove}
@@ -607,7 +621,9 @@ export function UserDirectoryList({
         <AdminDirectoryTableRow
           key={item.id}
           onPress={
-            role === "parent" ? () => openParentDetail(item) : undefined
+            openDirectoryDetail
+              ? () => openDirectoryDetail(item)
+              : undefined
           }
         >
           <View style={[styles.colName, styles.tableNameCell]}>

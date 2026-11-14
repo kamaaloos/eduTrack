@@ -84,15 +84,29 @@ export function buildImportTemplateBase64(
   return XLSX.write(wb, { type: "base64", bookType: "xlsx" });
 }
 
-export async function shareImportTemplate(
-  kinds?: ImportKind[],
-): Promise<void> {
-  const base64 = buildImportTemplateBase64(kinds);
+export const CLASS_STUDENTS_TEMPLATE_FILENAME = `${APP_DISPLAY_NAME.toLowerCase().replace(/\s+/g, "-")}-class-students-template.xlsx`;
 
+/** Template for importing students into one selected class (class comes from the UI). */
+export function buildClassStudentsImportTemplateBase64(): string {
+  const wb = XLSX.utils.book_new();
+  const rows = [
+    ["email", "password", "name", "phone"],
+    ["student@school.com", "123456", "Jane Student", "+252612345678"],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb, ws, "students");
+  return XLSX.write(wb, { type: "base64", bookType: "xlsx" });
+}
+
+async function shareBase64Xlsx(
+  base64: string,
+  filename: string,
+  dialogTitle: string,
+): Promise<void> {
   if (Platform.OS === "web") {
     downloadBase64AsFile(
       base64,
-      IMPORT_TEMPLATE_FILENAME,
+      filename,
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
     return;
@@ -108,7 +122,7 @@ export async function shareImportTemplate(
     throw new Error("Cache directory is not available");
   }
 
-  const path = `${cacheDir}${IMPORT_TEMPLATE_FILENAME}`;
+  const path = `${cacheDir}${filename}`;
 
   await FileSystem.writeAsStringAsync(path, base64, {
     encoding: FileSystem.EncodingType.Base64,
@@ -117,7 +131,25 @@ export async function shareImportTemplate(
   await Sharing.shareAsync(path, {
     mimeType:
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    dialogTitle: `${APP_DISPLAY_NAME} import template`,
+    dialogTitle,
     UTI: "com.microsoft.excel.xlsx",
   });
+}
+
+export async function shareClassStudentsImportTemplate(): Promise<void> {
+  await shareBase64Xlsx(
+    buildClassStudentsImportTemplateBase64(),
+    CLASS_STUDENTS_TEMPLATE_FILENAME,
+    `${APP_DISPLAY_NAME} class students template`,
+  );
+}
+
+export async function shareImportTemplate(
+  kinds?: ImportKind[],
+): Promise<void> {
+  await shareBase64Xlsx(
+    buildImportTemplateBase64(kinds),
+    IMPORT_TEMPLATE_FILENAME,
+    `${APP_DISPLAY_NAME} import template`,
+  );
 }
