@@ -6,6 +6,7 @@ import { usePaginatedList } from "../../hooks/usePaginatedList";
 import { parsePhotoURL } from "../../src/utils/userAvatar";
 import { ListPageNav } from "../common/ListPageNav";
 import { UserAvatar } from "../common/UserAvatar";
+import { TeacherSectionTitle } from "./TeacherSectionTitle";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 const STUDENT_LIST_PAGE_SIZE = 2;
@@ -43,10 +44,10 @@ export function TeacherDashboardStudentsSection({
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>
+        <TeacherSectionTitle>
           {t("teacher.dashboard.studentsSection")}
           {selectedClassLabel ? ` · ${selectedClassLabel}` : ""}
-        </Text>
+        </TeacherSectionTitle>
         {selectedClassId ? (
           <Text style={styles.sectionHint}>
             {filteredStudents.length} {t("teacher.dashboard.students")}

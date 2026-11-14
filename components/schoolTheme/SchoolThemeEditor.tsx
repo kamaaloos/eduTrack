@@ -15,8 +15,15 @@ import {
   schoolThemePresetPlateColors,
 } from "../../src/constants/schoolThemeColorPlate";
 import { SCHOOL_THEME_PRESETS } from "../../src/constants/schoolThemeDefaults";
-import type { SchoolFontKey, SchoolThemeConfig } from "../../src/types/schoolTheme";
-import { SCHOOL_FONT_KEYS } from "../../src/types/schoolTheme";
+import type {
+  SchoolFontKey,
+  SchoolHeadingSizeKey,
+  SchoolThemeConfig,
+} from "../../src/types/schoolTheme";
+import {
+  SCHOOL_FONT_KEYS,
+  SCHOOL_HEADING_SIZE_KEYS,
+} from "../../src/types/schoolTheme";
 import { isValidThemeHex } from "../../src/utils/schoolTheme";
 
 type SchoolThemeEditorProps = {
@@ -191,6 +198,15 @@ export function SchoolThemeEditor({
     [t],
   );
 
+  const headingSizeOptions = useMemo(
+    () =>
+      SCHOOL_HEADING_SIZE_KEYS.map((key) => ({
+        key,
+        label: t(`schoolTheme.headingSize.${key}`),
+      })),
+    [t],
+  );
+
   return (
     <View style={styles.wrap}>
       <Text style={styles.hint}>{t("schoolTheme.editorHint")}</Text>
@@ -265,6 +281,36 @@ export function SchoolThemeEditor({
               disabled={disabled}
               onPress={() =>
                 onChange({ ...value, fontKey: option.key as SchoolFontKey })
+              }
+            >
+              <Text
+                style={[
+                  styles.presetText,
+                  selected && styles.presetTextSelected,
+                ]}
+              >
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      <Text style={styles.label}>{t("schoolTheme.headingSizeLabel")}</Text>
+      <Text style={styles.hint}>{t("schoolTheme.headingSizeHint")}</Text>
+      <View style={styles.presetsRow}>
+        {headingSizeOptions.map((option) => {
+          const selected = (value.headingSize ?? "md") === option.key;
+          return (
+            <TouchableOpacity
+              key={option.key}
+              style={[styles.presetChip, selected && styles.presetChipSelected]}
+              disabled={disabled}
+              onPress={() =>
+                onChange({
+                  ...value,
+                  headingSize: option.key as SchoolHeadingSizeKey,
+                })
               }
             >
               <Text

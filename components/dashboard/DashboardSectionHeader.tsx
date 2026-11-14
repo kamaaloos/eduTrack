@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
+import { useSchoolTheme } from "../../src/context/schoolThemeContext";
 import { dashboardStyles as styles } from "./dashboardStyles";
 
 type DashboardSectionHeaderProps = {
@@ -18,6 +19,8 @@ export function DashboardSectionHeader({
   route,
   viewAllLabel,
 }: DashboardSectionHeaderProps) {
+  const { fontFamily, headingFontSize } = useSchoolTheme();
+
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionTitleRow}>
@@ -26,7 +29,15 @@ export function DashboardSectionHeader({
             <Ionicons name={icon} size={16} color={iconColor} />
           </View>
         ) : null}
-        <Text style={styles.sectionTitle}>{title}</Text>
+        <Text
+          style={[
+            styles.sectionTitle,
+            { fontSize: headingFontSize },
+            fontFamily ? { fontFamily } : null,
+          ]}
+        >
+          {title}
+        </Text>
       </View>
       {route ? (
         <TouchableOpacity

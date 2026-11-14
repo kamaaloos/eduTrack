@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How eduTrack Works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,500&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0b1f33;
+      --ink-soft: #334155;
+      --muted: #64748b;
+      --paper: #f7fafc;
+      --card: #ffffff;
+      --line: #dbe4ee;
+      --accent: #0f4c81;
+      --accent-2: #1d7a5c;
+      --warm: #c9783c;
+      --shadow: 0 18px 40px rgba(15, 33, 51, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(15, 76, 129, 0.16), transparent 42%),
+        radial-gradient(circle at 88% 12%, rgba(29, 122, 92, 0.14), transparent 36%),
+        linear-gradient(160deg, #e8eef5 0%, #f7fafc 48%, #eef6f2 100%);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .shell {
+      width: min(1120px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--ink-soft);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+
+    .deck {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      background: var(--card);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(15, 76, 129, 0.08);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: clamp(28px, 5vw, 56px);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 280ms ease, transform 280ms ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      background:
+        linear-gradient(135deg, rgba(15, 76, 129, 0.05), transparent 42%),
+        linear-gradient(320deg, rgba(29, 122, 92, 0.05), transparent 40%),
+        var(--card);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    h1, h2 {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 700;
+      line-height: 1.12;
+      color: var(--ink);
+    }
+
+    h1 { font-size: clamp(34px, 5vw, 58px); max-width: 14ch; }
+    h2 { font-size: clamp(28px, 3.6vw, 42px); max-width: 22ch; }
+
+    .lede {
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.5;
+      color: var(--ink-soft);
+      max-width: 46ch;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      margin-top: 8px;
+    }
+
+    .card {
+      background: rgba(247, 250, 252, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 16px 14px;
+      min-height: 108px;
+    }
+
+    .card strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .card span {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .step i {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: #fff;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .step p {
+      font-size: 15px;
+      line-height: 1.45;
+      color: var(--ink-soft);
+      padding-top: 7px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 800px) {
+      .two-col { grid-template-columns: 1fr; }
+      .deck { aspect-ratio: auto; min-height: 70vh; }
+    }
+
+    .panel {
+      border-radius: 18px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+    }
+
+    .panel h3 {
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .panel p, .panel li {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--ink-soft);
+    }
+
+    .panel ul {
+      margin-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .closing {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tagline {
+      font-size: clamp(18px, 2.4vw, 24px);
+      color: var(--ink-soft);
+      max-width: 34ch;
+      line-height: 1.4;
+    }
+
+    .footer-note {
+      position: absolute;
+      left: clamp(28px, 5vw, 56px);
+      bottom: 22px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .progress {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #cbd5e1;
+    }
+
+    .dot.on { background: var(--accent); width: 22px; }
+
+    .hint {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .brand-mark {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="toolbar">
+      <div class="brand-mark">eduTrack · How it works</div>
+      <div class="toolbar-actions">
+        <button type="button" id="prevBtn">← Prev</button>
+        <button type="button" class="primary" id="nextBtn">Next →</button>
+        <button type="button" id="fsBtn">Fullscreen</button>
+      </div>
+    </div>
+
+    <div class="deck" id="deck" tabindex="0" aria-live="polite">
+      <section class="slide active" data-title="Title">
+        <div class="eyebrow">Product walkthrough</div>
+        <h1>How eduTrack works</h1>
+        <p class="lede">One school platform for students, teachers, parents, and admins — on mobile and web, across many schools.</p>
+        <div class="footer-note">Also branded as Dugsi</div>
+      </section>
+
+      <section class="slide" data-title="Big idea">
+        <div class="eyebrow">Architecture</div>
+        <h2>Registry + school projects</h2>
+        <div class="two-col">
+          <div class="panel">
+            <h3>Registry</h3>
+            <ul>
+              <li>School list &amp; logos</li>
+              <li>Each school’s Firebase config</li>
+              <li>Usage / expiry</li>
+              <li>Super-admin control</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>School project</h3>
+            <ul>
+              <li>Users, classes, links</li>
+              <li>Homework, exams, grades</li>
+              <li>Attendance &amp; remarks</li>
+              <li>Notifications</li>
+            </ul>
+          </div>
+        </div>
+        <p class="lede">Pick a school → connect to that school’s data → sign in there.</p>
+      </section>
+
+      <section class="slide" data-title="Roles">
+        <div class="eyebrow">People</div>
+        <h2>Roles in the school</h2>
+        <div class="grid">
+          <div class="card"><strong>Student</strong><span>Homework, exams, grades, attendance, announcements</span></div>
+          <div class="card"><strong>Teacher</strong><span>Classes, attendance, homework/exams, remarks</span></div>
+          <div class="card"><strong>Parent</strong><span>Linked children, absence replies, school updates</span></div>
+          <div class="card"><strong>Admin</strong><span>Users, classes, import, appearance, notify</span></div>
+          <div class="card"><strong>Secretary</strong><span>Parent directory &amp; fee operations</span></div>
+          <div class="card"><strong>Super admin</strong><span>Register schools &amp; platform controls</span></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Login">
+        <div class="eyebrow">Getting in</div>
+        <h2>First-run journey</h2>
+        <div class="steps">
+          <div class="step"><i>1</i><p>Open the app (onboarding if needed)</p></div>
+          <div class="step"><i>2</i><p>Choose your school from the registry</p></div>
+          <div class="step"><i>3</i><p>Sign in with school email &amp; password</p></div>
+          <div class="step"><i>4</i><p>Land on your role dashboard</p></div>
+        </div>
+        <p class="lede">Forgot password notifies the school admin. Scan QR can fill a temporary login card.</p>
+      </section>
+
+      <section class="slide" data-title="Daily loop">
+        <div class="eyebrow">School day</div>
+        <h2>The daily loop</h2>
+        <div class="grid">
+          <div class="card"><strong>Attendance</strong><span>Teacher marks class; parents can be notified</span></div>
+          <div class="card"><strong>Homework &amp; exams</strong><span>Published to students (and often parents)</span></div>
+          <div class="card"><strong>Progress</strong><span>Grades, remarks, report cards</span></div>
+          <div class="card"><strong>Comms</strong><span>Announcements, in-app alerts, mobile push</span></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Admin">
+        <div class="eyebrow">Operations</div>
+        <h2>What admins run</h2>
+        <div class="grid">
+          <div class="card"><strong>Accounts</strong><span>Create users, set temp passwords, QR/print cards</span></div>
+          <div class="card"><strong>Structure</strong><span>Classes + student/teacher/parent links</span></div>
+          <div class="card"><strong>Import</strong><span>Excel bulk setup for users &amp; relations</span></div>
+          <div class="card"><strong>Brand</strong><span>School colors &amp; fonts (appearance)</span></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Families">
+        <div class="eyebrow">Parents</div>
+        <h2>Parent ↔ student model</h2>
+        <div class="two-col">
+          <div class="panel">
+            <h3>Links</h3>
+            <ul>
+              <li>One student → one parent (replace with confirm)</li>
+              <li>One parent → many students</li>
+              <li>Detail shows children + their classes</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Parent view</h3>
+            <ul>
+              <li>Follow linked children</li>
+              <li>Respond to absences</li>
+              <li>Receive school updates</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Platforms">
+        <div class="eyebrow">Delivery</div>
+        <h2>Platforms &amp; brands</h2>
+        <div class="grid">
+          <div class="card"><strong>Android / iOS / Web</strong><span>Same Expo codebase</span></div>
+          <div class="card"><strong>eduTrack or Dugsi</strong><span>Brand via build settings</span></div>
+          <div class="card"><strong>Web hosting</strong><span>Static export to Firebase Hosting</span></div>
+          <div class="card"><strong>Security</strong><span>Firestore rules per school + registry</span></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Close">
+        <div class="eyebrow">Summary</div>
+        <div class="closing">
+          <h1>One app. Many schools.</h1>
+          <p class="tagline">Pick a school → role-based school life: academics, attendance, family links, and admin ops.</p>
+          <p class="lede">Super-admin keeps the platform; each school keeps its own data.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="progress" id="progress" aria-hidden="true"></div>
+    <p class="hint">Arrow keys or buttons · F for fullscreen · Space for next</p>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const progress = document.getElementById("progress");
+    const deck = document.getElementById("deck");
+    let index = 0;
+
+    function render() {
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+      progress.innerHTML = slides
+        .map((_, i) => `<span class="dot${i === index ? " on" : ""}"></span>`)
+        .join("");
+      document.title = `How eduTrack Works — ${slides[index].dataset.title}`;
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(slides.length - 1, index + delta));
+      render();
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => go(-1));
+    document.getElementById("nextBtn").addEventListener("click", () => go(1));
+    document.getElementById("fsBtn").addEventListener("click", () => {
+      if (!document.fullscreenElement) deck.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === " " || event.key === "PageDown") {
+        event.preventDefault();
+        go(1);
+      } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        go(-1);
+      } else if (event.key.toLowerCase() === "f") {
+        if (!document.fullscreenElement) deck.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      } else if (event.key === "Home") {
+        index = 0;
+        render();
+      } else if (event.key === "End") {
+        index = slides.length - 1;
+        render();
+      }
+    });
+
+    render();
+    deck.focus();
+  </script>
+</body>
+</html>

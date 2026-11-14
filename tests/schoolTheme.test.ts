@@ -29,17 +29,19 @@ describe("schoolTheme utils", () => {
   it("resolves layers over defaults", () => {
     const theme = resolveSchoolTheme(
       { primaryColor: "#14532D" },
-      { accentColor: "#4ADE80", fontKey: "rounded" },
+      { accentColor: "#4ADE80", fontKey: "rounded", headingSize: "lg" },
     );
     expect(theme.primaryColor).toBe("#14532D");
     expect(theme.accentColor).toBe("#4ADE80");
     expect(theme.backgroundColor).toBe(DEFAULT_SCHOOL_THEME.backgroundColor);
     expect(theme.fontKey).toBe("rounded");
+    expect(theme.headingSize).toBe("lg");
   });
 
   it("rejects invalid theme fields", () => {
     expect(validateThemeInput({ primaryColor: "red" })).toMatch(/Primary/i);
     expect(validateThemeInput({ fontKey: "comic" as never })).toMatch(/Font/i);
+    expect(validateThemeInput({ headingSize: "xl" as never })).toMatch(/Heading/i);
     expect(validateThemeInput({ primaryColor: "#112233" })).toBeNull();
   });
 });

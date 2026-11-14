@@ -31,6 +31,7 @@ type AdminDataContextValue = {
     message: string;
   }>;
   assignStudentToClass: (studentId: string, classId: string) => Promise<void>;
+  removeStudentFromClass: (studentId: string, classId: string) => Promise<void>;
   assignTeacherToClass: (teacherId: string, classId: string) => Promise<void>;
   assignTeacherToSubject: (
     teacherId: string,
@@ -88,6 +89,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     loading: relationsLoading,
     syncClassIdsFromAssignments,
     assignStudentToClass,
+    removeStudentFromClass,
     assignTeacherToClass,
     assignTeacherToSubject,
     loadTeacherSubjectAssignments,
@@ -116,6 +118,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       updateClassSubjects,
       syncClassIdsFromAssignments,
       assignStudentToClass,
+      removeStudentFromClass,
       assignTeacherToClass,
       assignTeacherToSubject,
       loadTeacherSubjectAssignments,
@@ -144,6 +147,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       updateClassSubjects,
       syncClassIdsFromAssignments,
       assignStudentToClass,
+      removeStudentFromClass,
       assignTeacherToClass,
       assignTeacherToSubject,
       loadTeacherSubjectAssignments,

@@ -17,6 +17,7 @@ import {
   buildWebPageBackgroundStyle,
   fontFamilyForKey,
   resolveSchoolTheme,
+  sectionHeadingFontSize,
 } from "../utils/schoolTheme";
 import { useSchoolContext } from "./schoolContext";
 
@@ -26,6 +27,8 @@ export type SchoolThemeContextValue = {
   registryTheme: SchoolThemeConfig;
   webPageBackgroundStyle: ViewStyle;
   fontFamily: TextStyle["fontFamily"];
+  /** Dashboard section title size (Announcements, Schedule, …). */
+  headingFontSize: number;
   refreshAppearance: () => Promise<void>;
 };
 
@@ -101,6 +104,7 @@ export function SchoolThemeProvider({ children }: { children: ReactNode }) {
       registryTheme,
       webPageBackgroundStyle,
       fontFamily: fontFamilyForKey(theme.fontKey),
+      headingFontSize: sectionHeadingFontSize(theme.headingSize),
       refreshAppearance,
     };
   }, [theme, registryTheme, refreshAppearance]);
@@ -124,6 +128,7 @@ export function useSchoolTheme(): SchoolThemeContextValue {
           ? (buildWebPageBackgroundStyle(theme) as ViewStyle)
           : {},
       fontFamily: fontFamilyForKey(theme.fontKey),
+      headingFontSize: sectionHeadingFontSize(theme.headingSize),
       refreshAppearance: async () => undefined,
     };
   }

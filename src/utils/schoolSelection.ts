@@ -12,6 +12,7 @@ function themeSnapshotKey(theme: StoredSchool["theme"]): string {
     accentColor: theme.accentColor ?? "",
     backgroundColor: theme.backgroundColor ?? "",
     fontKey: theme.fontKey ?? "",
+    headingSize: theme.headingSize ?? "",
   });
 }
 

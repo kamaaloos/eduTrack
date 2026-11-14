@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
 import { DashboardSlideRow } from "../dashboard/DashboardSlideRow";
+import { TeacherSectionTitle } from "./TeacherSectionTitle";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 type TeacherDashboardAnnouncementsSectionProps = {
@@ -35,9 +36,9 @@ export function TeacherDashboardAnnouncementsSection({
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>
+        <TeacherSectionTitle>
           {t("teacher.dashboard.schoolUpdates")}
-        </Text>
+        </TeacherSectionTitle>
       </View>
 
       <DashboardSlideRow variant="carousel">

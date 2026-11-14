@@ -12,7 +12,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import { AdminClassAttendancePanel } from "../../../components/admin/AdminClassAttendancePanel";
 import { AdminClassPerformancePanel } from "../../../components/admin/AdminClassPerformancePanel";
-import { AdminClassStudentNamesList } from "../../../components/admin/AdminClassStudentNamesList";
+import { AdminClassRosterPanel } from "../../../components/admin/AdminClassRosterPanel";
 import { AdminScreenShell } from "../../../components/admin/AdminScreenShell";
 import { useAdminData } from "../../../src/context/adminDataContext";
 import { useSchoolTheme } from "../../../src/context/schoolThemeContext";
@@ -115,14 +115,16 @@ export default function AdminClassDetailScreen() {
 
           <View style={styles.panel}>
             {tab === "students" ? (
-              <>
-                <Text style={styles.panelHint}>{t("admin.classStudentsHint")}</Text>
-                <AdminClassStudentNamesList
-                  students={classStudents}
-                  loading={isLoading}
-                  onSelectStudent={openStudentReport}
-                />
-              </>
+              <AdminClassRosterPanel
+                classId={classId}
+                className={classTitle}
+                classStudents={classStudents}
+                allStudents={students}
+                classes={classes}
+                loading={isLoading}
+                onSelectStudent={openStudentReport}
+                onChanged={refreshAll}
+              />
             ) : null}
 
             {tab === "attendance" ? (
@@ -173,10 +175,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 18,
     gap: 12,
-  },
-  panelHint: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: "#64748B",
   },
 });

@@ -3,6 +3,10 @@
 | File | Purpose |
 |------|---------|
 | [`edutrack-platform-promo.html`](./edutrack-platform-promo.html) | Auto-playing slide deck — **screen-record this** to create an MP4 |
+| [`how-edutrack-works.html`](./how-edutrack-works.html) | Manual walkthrough of how the app works (keyboard / fullscreen) |
+| [`how-edutrack-works.pptx`](./how-edutrack-works.pptx) | Same walkthrough as PowerPoint |
+| [`how-edutrack-works-stunning.pptx`](./how-edutrack-works-stunning.pptx) | Polished deck with slide transitions + entrance animations |
+| [`build-how-edutrack-works-pptx.mjs`](./build-how-edutrack-works-pptx.mjs) | Regenerates the `.pptx` (`node docs/promo/build-how-edutrack-works-pptx.mjs`) |
 | [`VOICEOVER.md`](./VOICEOVER.md) | Narration script timed to each slide (English) |
 | [`VOICEOVER.fi.md`](./VOICEOVER.fi.md) | Same script in Finnish |
 | [`VOICEOVER.so.md`](./VOICEOVER.so.md) | Same script in Somali |

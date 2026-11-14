@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 import { SelectChips } from "./SelectChips";
+import { TeacherSectionTitle } from "./TeacherSectionTitle";
 import { teacherDashboardStyles as styles } from "./teacherDashboardStyles";
 
 type ChipOption = { value: string; label: string };
@@ -21,9 +22,9 @@ export function TeacherDashboardClassesSection({
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>
+        <TeacherSectionTitle>
           {t("teacher.dashboard.assignedClasses")}
-        </Text>
+        </TeacherSectionTitle>
         <Text style={styles.sectionHint}>
           {t("teacher.dashboard.tapClassHint")}
         </Text>

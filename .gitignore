@@ -93,3 +93,7 @@ assets/images/dugsi-logo.source.png
 
 # Local debug logs
 crash-full.txt
+
+# Office lock / temp files (open .pptx/.docx/.xlsx)
+~$*
+**/~$*

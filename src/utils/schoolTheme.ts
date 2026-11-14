@@ -2,10 +2,14 @@ import { Platform, type TextStyle } from "react-native";
 import { DEFAULT_SCHOOL_THEME } from "../constants/schoolThemeDefaults";
 import type {
   SchoolFontKey,
+  SchoolHeadingSizeKey,
   SchoolThemeConfig,
   SchoolThemeInput,
 } from "../types/schoolTheme";
-import { SCHOOL_FONT_KEYS } from "../types/schoolTheme";
+import {
+  SCHOOL_FONT_KEYS,
+  SCHOOL_HEADING_SIZE_KEYS,
+} from "../types/schoolTheme";
 
 const HEX_COLOR_RE = /^#([0-9A-Fa-f]{6})$/;
 
@@ -32,6 +36,29 @@ export function normalizeFontKey(
   return SCHOOL_FONT_KEYS.includes(key) ? key : fallback;
 }
 
+export function normalizeHeadingSize(
+  value: unknown,
+  fallback: SchoolHeadingSizeKey = "md",
+): SchoolHeadingSizeKey {
+  if (typeof value !== "string") return fallback;
+  const key = value.trim().toLowerCase() as SchoolHeadingSizeKey;
+  return SCHOOL_HEADING_SIZE_KEYS.includes(key) ? key : fallback;
+}
+
+/** Font size for dashboard section titles (Announcements, Schedule, …). */
+export function sectionHeadingFontSize(
+  size: SchoolHeadingSizeKey,
+): number {
+  if (Platform.OS === "web") {
+    if (size === "sm") return 13;
+    if (size === "lg") return 18;
+    return 15;
+  }
+  if (size === "sm") return 15;
+  if (size === "lg") return 22;
+  return 18;
+}
+
 export function normalizeSchoolThemeInput(
   raw: unknown,
 ): SchoolThemeInput | null {
@@ -54,6 +81,9 @@ export function normalizeSchoolThemeInput(
   if (typeof data.fontKey === "string") {
     out.fontKey = normalizeFontKey(data.fontKey);
   }
+  if (typeof data.headingSize === "string") {
+    out.headingSize = normalizeHeadingSize(data.headingSize);
+  }
 
   return Object.keys(out).length > 0 ? out : null;
 }
@@ -75,6 +105,10 @@ export function resolveSchoolTheme(
         resolved.backgroundColor,
       ),
       fontKey: normalizeFontKey(layer.fontKey, resolved.fontKey),
+      headingSize: normalizeHeadingSize(
+        layer.headingSize,
+        resolved.headingSize,
+      ),
     };
   }
   return resolved;
@@ -140,6 +174,7 @@ export function themeToFirestore(theme: SchoolThemeConfig): SchoolThemeConfig {
     accentColor: theme.accentColor.toUpperCase(),
     backgroundColor: theme.backgroundColor.toUpperCase(),
     fontKey: theme.fontKey,
+    headingSize: theme.headingSize,
   };
 }
 
@@ -158,6 +193,12 @@ export function validateThemeInput(input: SchoolThemeInput): string | null {
   }
   if (input.fontKey != null && !SCHOOL_FONT_KEYS.includes(input.fontKey)) {
     return "Font must be system, rounded, or serif.";
+  }
+  if (
+    input.headingSize != null &&
+    !SCHOOL_HEADING_SIZE_KEYS.includes(input.headingSize)
+  ) {
+    return "Heading size must be sm, md, or lg.";
   }
   return null;
 }

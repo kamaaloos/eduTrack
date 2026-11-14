@@ -6,6 +6,7 @@ export const DEFAULT_SCHOOL_THEME: SchoolThemeConfig = {
   accentColor: "#6B9FD4",
   backgroundColor: "#E8F2FA",
   fontKey: "system",
+  headingSize: "md",
 };
 
 export const SCHOOL_THEME_PRESETS: Array<{
@@ -26,6 +27,7 @@ export const SCHOOL_THEME_PRESETS: Array<{
       accentColor: "#4ADE80",
       backgroundColor: "#ECFDF5",
       fontKey: "system",
+      headingSize: "md",
     },
   },
   {
@@ -36,6 +38,7 @@ export const SCHOOL_THEME_PRESETS: Array<{
       accentColor: "#F87171",
       backgroundColor: "#FEF2F2",
       fontKey: "system",
+      headingSize: "md",
     },
   },
   {
@@ -46,6 +49,7 @@ export const SCHOOL_THEME_PRESETS: Array<{
       accentColor: "#94A3B8",
       backgroundColor: "#F1F5F9",
       fontKey: "rounded",
+      headingSize: "md",
     },
   },
 ];

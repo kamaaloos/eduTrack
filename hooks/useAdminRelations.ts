@@ -35,6 +35,68 @@ export const useAdminRelations = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const syncParentsForStudent = useCallback(async (studentId: string) => {
+        const parentLinks = await getDocs(
+            query(
+                collection(requireSchoolDb(), "parentStudents"),
+                where("studentId", "==", studentId),
+            ),
+        );
+        await Promise.all(
+            parentLinks.docs.map((d) => {
+                const parentId = d.data().parentId as string;
+                return syncParentClassAccess(parentId, studentId);
+            }),
+        );
+    }, []);
+
+    const removeStudentFromClass = useCallback(
+        async (studentId: string, classId: string): Promise<void> => {
+            if (!studentId || !classId) {
+                throw new Error("Student ID and Class ID are required");
+            }
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                const db = requireSchoolDb();
+                const linkId = `${studentId}_${classId}`;
+                await deleteDoc(doc(db, "studentClasses", linkId)).catch(() => undefined);
+
+                // Drop any other stale class links for this student as well.
+                const otherLinks = await getDocs(
+                    query(
+                        collection(db, "studentClasses"),
+                        where("studentId", "==", studentId),
+                    ),
+                );
+                await Promise.all(
+                    otherLinks.docs.map((d) => deleteDoc(d.ref).catch(() => undefined)),
+                );
+
+                const userRef = doc(db, "users", studentId);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    const currentClassId = userSnap.data().classId as string | undefined;
+                    if (!currentClassId || currentClassId === classId) {
+                        await setDoc(userRef, { classId: null }, { merge: true });
+                    }
+                }
+
+                await syncParentsForStudent(studentId);
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Failed to remove student from class";
+                setError(message);
+                throw new Error(message);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [syncParentsForStudent],
+    );
+
     const assignStudentToClass = useCallback(
         async (studentId: string, classId: string): Promise<void> => {
             if (!studentId || !classId) {
@@ -45,9 +107,24 @@ export const useAdminRelations = () => {
             setError(null);
 
             try {
+                const db = requireSchoolDb();
+
+                // One class per student: remove prior studentClasses links first.
+                const existingLinks = await getDocs(
+                    query(
+                        collection(db, "studentClasses"),
+                        where("studentId", "==", studentId),
+                    ),
+                );
+                await Promise.all(
+                    existingLinks.docs
+                        .filter((d) => d.id !== `${studentId}_${classId}`)
+                        .map((d) => deleteDoc(d.ref).catch(() => undefined)),
+                );
+
                 const linkId = `${studentId}_${classId}`;
                 await setDoc(
-                    doc(requireSchoolDb(), "studentClasses", linkId),
+                    doc(db, "studentClasses", linkId),
                     {
                         studentId,
                         classId,
@@ -56,25 +133,13 @@ export const useAdminRelations = () => {
                     { merge: true },
                 );
 
-                // Update user profile
                 await setDoc(
-                    doc(requireSchoolDb(), "users", studentId),
+                    doc(db, "users", studentId),
                     { classId },
-                    { merge: true }
+                    { merge: true },
                 );
 
-                const parentLinks = await getDocs(
-                    query(
-                        collection(requireSchoolDb(), "parentStudents"),
-                        where("studentId", "==", studentId),
-                    ),
-                );
-                await Promise.all(
-                    parentLinks.docs.map((d) => {
-                        const parentId = d.data().parentId as string;
-                        return syncParentClassAccess(parentId, studentId);
-                    }),
-                );
+                await syncParentsForStudent(studentId);
             } catch (err) {
                 const message = err instanceof Error ? err.message : "Failed to assign student to class";
                 setError(message);
@@ -83,7 +148,7 @@ export const useAdminRelations = () => {
                 setLoading(false);
             }
         },
-        []
+        [syncParentsForStudent],
     );
 
     const assignTeacherToClass = useCallback(
@@ -358,6 +423,7 @@ export const useAdminRelations = () => {
         loading,
         error,
         assignStudentToClass,
+        removeStudentFromClass,
         assignTeacherToClass,
         assignTeacherToSubject,
         loadTeacherSubjectAssignments,

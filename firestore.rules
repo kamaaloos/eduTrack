@@ -714,19 +714,27 @@ service cloud.firestore {
     }
 
     /** Per-school colors/fonts — school admin may override registry defaults. */
-    match /platform/appearance {
-      allow read: if isSignedIn();
-      allow write: if isAdmin()
-        && request.resource.data.keys().hasOnly([
-          'primaryColor', 'accentColor', 'backgroundColor', 'fontKey', 'updatedAt'
-        ])
-        && request.resource.data.primaryColor is string
+    function appearanceThemeValid() {
+      return request.resource.data.primaryColor is string
         && request.resource.data.primaryColor.matches('^#[0-9A-Fa-f]{6}$')
         && request.resource.data.accentColor is string
         && request.resource.data.accentColor.matches('^#[0-9A-Fa-f]{6}$')
         && request.resource.data.backgroundColor is string
         && request.resource.data.backgroundColor.matches('^#[0-9A-Fa-f]{6}$')
-        && request.resource.data.fontKey in ['system', 'rounded', 'serif'];
+        && request.resource.data.fontKey in ['system', 'rounded', 'serif']
+        && request.resource.data.headingSize in ['sm', 'md', 'lg'];
+    }
+
+    match /platform/appearance {
+      allow read: if isSignedIn();
+      // Validate theme fields only — avoid hasOnly(keys) which fails on merge
+      // when the doc already has extra metadata fields.
+      allow create: if isAdmin() && appearanceThemeValid();
+      allow update: if isAdmin()
+        && appearanceThemeValid()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['primaryColor', 'accentColor', 'backgroundColor', 'fontKey', 'headingSize', 'updatedAt']);
+      allow delete: if isAdmin();
     }
 
     /** Public marketing contact form — create only, validated fields. */
