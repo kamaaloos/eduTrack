@@ -1,5 +1,12 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import type { ParentChild } from "../../src/services/parentChildren";
 import { INNER_CARD_BORDER_GREEN } from "../../src/constants/innerCardBorders";
 import { AdminDirectoryTableRow } from "./AdminDirectoryTableRow";
@@ -7,16 +14,25 @@ import { AdminDirectoryTableRow } from "./AdminDirectoryTableRow";
 type AdminParentChildrenListProps = {
   linkedChildren: ParentChild[];
   loading?: boolean;
+  actionsDisabled?: boolean;
+  onEdit?: (child: ParentChild) => void;
+  onUnlink?: (child: ParentChild) => void;
+  onDelete?: (child: ParentChild) => void;
 };
 
 export function AdminParentChildrenList({
   linkedChildren,
   loading = false,
+  actionsDisabled = false,
+  onEdit,
+  onUnlink,
+  onDelete,
 }: AdminParentChildrenListProps) {
   const { t } = useTranslation();
+  const showActions = Boolean(onEdit || onUnlink || onDelete);
 
   if (loading) {
-    return <ActivityIndicator color="#7C3AED" style={styles.loader} />;
+    return <ActivityIndicator color="#2563EB" style={styles.loader} />;
   }
 
   if (linkedChildren.length === 0) {
@@ -28,19 +44,90 @@ export function AdminParentChildrenList({
       <View style={styles.tableHead}>
         <Text style={[styles.th, styles.colChild]}>{t("admin.students")}</Text>
         <Text style={[styles.th, styles.colClass]}>{t("common.class")}</Text>
+        {showActions ? (
+          <Text style={[styles.th, styles.colActions]}>
+            {t("admin.directoryActionsColumn")}
+          </Text>
+        ) : null}
       </View>
       {linkedChildren.map((child, index) => (
-        <AdminDirectoryTableRow
+        <View
           key={child.id}
-          style={[styles.row, index === linkedChildren.length - 1 && styles.rowLast]}
+          style={[styles.rowWrap, index === linkedChildren.length - 1 && styles.rowLast]}
         >
-          <Text style={[styles.childName, styles.colChild]} numberOfLines={2}>
-            {child.name}
-          </Text>
-          <Text style={[styles.className, styles.colClass]} numberOfLines={2}>
-            {child.className || child.classId || "—"}
-          </Text>
-        </AdminDirectoryTableRow>
+          <AdminDirectoryTableRow style={[styles.row, styles.rowMain]}>
+            <Text style={[styles.childName, styles.colChild]} numberOfLines={2}>
+              {child.name}
+            </Text>
+            <Text style={[styles.className, styles.colClass]} numberOfLines={2}>
+              {child.className || child.classId || "—"}
+            </Text>
+          </AdminDirectoryTableRow>
+          {showActions ? (
+            <View style={styles.actions}>
+              {onEdit ? (
+                <Pressable
+                  onPress={() => {
+                    if (!actionsDisabled) onEdit(child);
+                  }}
+                  disabled={actionsDisabled}
+                  hitSlop={6}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("admin.parentChildEditA11y", {
+                    name: child.name,
+                  })}
+                  style={styles.actionBtn}
+                >
+                  <Ionicons
+                    name="create-outline"
+                    size={20}
+                    color={actionsDisabled ? "#CBD5E1" : "#2563EB"}
+                  />
+                </Pressable>
+              ) : null}
+              {onUnlink ? (
+                <Pressable
+                  onPress={() => {
+                    if (!actionsDisabled) onUnlink(child);
+                  }}
+                  disabled={actionsDisabled}
+                  hitSlop={6}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("admin.parentChildUnlinkA11y", {
+                    name: child.name,
+                  })}
+                  style={styles.actionBtn}
+                >
+                  <Ionicons
+                    name="unlink-outline"
+                    size={20}
+                    color={actionsDisabled ? "#CBD5E1" : "#D97706"}
+                  />
+                </Pressable>
+              ) : null}
+              {onDelete ? (
+                <Pressable
+                  onPress={() => {
+                    if (!actionsDisabled) onDelete(child);
+                  }}
+                  disabled={actionsDisabled}
+                  hitSlop={6}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("admin.parentChildDeleteA11y", {
+                    name: child.name,
+                  })}
+                  style={styles.actionBtn}
+                >
+                  <Ionicons
+                    name="trash-outline"
+                    size={20}
+                    color={actionsDisabled ? "#CBD5E1" : "#DC2626"}
+                  />
+                </Pressable>
+              ) : null}
+            </View>
+          ) : null}
+        </View>
       ))}
     </View>
   );
@@ -70,9 +157,23 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.4,
   },
+  rowWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "#E2E8F0",
+  },
   row: {
     paddingVertical: 12,
     paddingHorizontal: 14,
+  },
+  rowMain: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 0,
+    backgroundColor: "#FFFFFF",
   },
   rowLast: {
     borderBottomWidth: 0,
@@ -85,6 +186,10 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
   },
+  colActions: {
+    width: 108,
+    textAlign: "center",
+  },
   childName: {
     fontSize: 15,
     fontWeight: "700",
@@ -94,6 +199,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#475569",
+  },
+  actions: {
+    width: 108,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 2,
+    paddingRight: 8,
+  },
+  actionBtn: {
+    padding: 6,
   },
   loader: { marginTop: 24 },
   empty: {

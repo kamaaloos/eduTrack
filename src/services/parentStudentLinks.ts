@@ -130,6 +130,45 @@ export async function upsertParentStudentLink(
   await syncParentClassAccess(parentId, studentId);
 }
 
+/** Unlink one student from one parent (keeps the student account). */
+export async function unlinkParentFromStudent(
+  parentId: string,
+  studentId: string,
+): Promise<void> {
+  if (!parentId || !studentId) {
+    throw new Error("Parent ID and Student ID are required");
+  }
+
+  const schoolDb = requireSchoolDb();
+  await deleteDoc(
+    doc(schoolDb, "parentStudents", parentStudentLinkId(parentId, studentId)),
+  ).catch(() => undefined);
+
+  const legacyRef = doc(schoolDb, "parentStudents", parentId);
+  const legacySnap = await getDoc(legacyRef);
+  if (legacySnap.exists() && legacySnap.data()?.studentId === studentId) {
+    await deleteDoc(legacyRef).catch(() => undefined);
+  }
+
+  await setDoc(
+    doc(schoolDb, "users", parentId),
+    { linkedStudentIds: arrayRemove(studentId) },
+    { merge: true },
+  );
+
+  const accessSnap = await getDocs(
+    query(
+      collection(schoolDb, "parentClassAccess"),
+      where("parentId", "==", parentId),
+    ),
+  );
+  await Promise.all(
+    accessSnap.docs
+      .filter((d) => d.data().studentId === studentId)
+      .map((d) => deleteDoc(d.ref).catch(() => undefined)),
+  );
+}
+
 /** Removes all parentStudents docs and linkedStudentIds entries for a student. */
 export async function removeAllParentLinksForStudent(
   studentId: string,

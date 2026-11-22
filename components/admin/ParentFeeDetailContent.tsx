@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { AdminParentChildrenList } from "./AdminParentChildrenList";
+import { AdminParentChildrenPanel } from "./AdminParentChildrenPanel";
 import { ParentPaymentCalendar } from "./ParentPaymentCalendar";
 import type { UserData } from "../../hooks/useAdminUsers";
 import {
@@ -33,6 +34,8 @@ type ParentFeeDetailContentProps = {
   syncClassAccess?: boolean;
   /** Fee calendar — secretary only by default for callers that opt in. */
   showFeePayment?: boolean;
+  /** Admin-only: create/link children from this parent card. */
+  manageChildren?: boolean;
 };
 
 export function ParentFeeDetailContent({
@@ -41,6 +44,7 @@ export function ParentFeeDetailContent({
   loadUsers,
   syncClassAccess = true,
   showFeePayment = true,
+  manageChildren = false,
 }: ParentFeeDetailContentProps) {
   const { t } = useTranslation();
 
@@ -138,9 +142,31 @@ export function ParentFeeDetailContent({
         <Text style={styles.parentName}>{parent?.name || "—"}</Text>
         <Text style={styles.contact}>{contact}</Text>
 
-        <Text style={styles.sectionTitle}>{t("admin.parentDetailChildrenTitle")}</Text>
-        <Text style={styles.sectionHint}>{t("admin.parentDetailChildrenHint")}</Text>
-        <AdminParentChildrenList linkedChildren={children} loading={loadingChildren} />
+        {manageChildren ? (
+          <AdminParentChildrenPanel
+            parentId={parentId}
+            parentName={parent?.name || parent?.email || t("admin.parentDetailTitle")}
+            linkedChildren={children}
+            loading={loadingChildren}
+            onChanged={async () => {
+              await loadUsers();
+              await loadChildren();
+            }}
+          />
+        ) : (
+          <>
+            <Text style={styles.sectionTitle}>
+              {t("admin.parentDetailChildrenTitle")}
+            </Text>
+            <Text style={styles.sectionHint}>
+              {t("admin.parentDetailChildrenHint")}
+            </Text>
+            <AdminParentChildrenList
+              linkedChildren={children}
+              loading={loadingChildren}
+            />
+          </>
+        )}
       </View>
 
       {showFeePayment ? (

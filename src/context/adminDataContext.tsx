@@ -47,6 +47,7 @@ type AdminDataContextValue = {
   >;
   removeTeacherSubjectAssignment: (assignmentId: string) => Promise<void>;
   linkParentToStudent: (parentId: string, studentId: string) => Promise<void>;
+  unlinkParentFromStudent: (parentId: string, studentId: string) => Promise<void>;
   repairParentStudentLinks: () => Promise<string>;
   updateUser: (
     userId: string,
@@ -101,6 +102,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     loadTeacherSubjectAssignments,
     removeTeacherSubjectAssignment,
     linkParentToStudent,
+    unlinkParentFromStudent,
     repairParentStudentLinks,
   } = useAdminRelations();
 
@@ -132,6 +134,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       loadTeacherSubjectAssignments,
       removeTeacherSubjectAssignment,
       linkParentToStudent,
+      unlinkParentFromStudent,
       repairParentStudentLinks,
       updateUser,
       setUserPassword,
@@ -163,6 +166,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       loadTeacherSubjectAssignments,
       removeTeacherSubjectAssignment,
       linkParentToStudent,
+      unlinkParentFromStudent,
       repairParentStudentLinks,
       updateUser,
       setUserPassword,

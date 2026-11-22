@@ -14,6 +14,7 @@ import { normalizeSubjectKey, subjectsMatch } from "../src/utils/subjectKey";
 import { syncParentClassAccess } from "../src/services/parentChildren";
 import {
     reconcileParentStudentLinks,
+    unlinkParentFromStudent as unlinkParentFromStudentService,
     upsertParentStudentLink,
 } from "../src/services/parentStudentLinks";
 
@@ -383,6 +384,31 @@ export const useAdminRelations = () => {
         []
     );
 
+    const unlinkParentFromStudent = useCallback(
+        async (parentId: string, studentId: string): Promise<void> => {
+            if (!parentId || !studentId) {
+                throw new Error("Parent ID and Student ID are required");
+            }
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                await unlinkParentFromStudentService(parentId, studentId);
+            } catch (err) {
+                const message =
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to unlink parent from student";
+                setError(message);
+                throw new Error(message);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [],
+    );
+
     const syncClassIdsFromAssignments = useCallback(
         async (): Promise<{ updated: number; message: string }> => {
             setLoading(true);
@@ -498,6 +524,7 @@ export const useAdminRelations = () => {
         loadTeacherSubjectAssignments,
         removeTeacherSubjectAssignment,
         linkParentToStudent,
+        unlinkParentFromStudent,
         syncClassIdsFromAssignments,
         repairParentStudentLinks,
     };
