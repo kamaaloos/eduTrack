@@ -134,6 +134,41 @@ function UserRowActions({
   );
 }
 
+function SelectionCheckbox({
+  selected,
+  onToggle,
+  disabled = false,
+  accessibilityLabel,
+}: {
+  selected: boolean;
+  onToggle: () => void;
+  disabled?: boolean;
+  accessibilityLabel: string;
+}) {
+  return (
+    <Pressable
+      onPress={(event) => {
+        event?.stopPropagation?.();
+        if (!disabled) onToggle();
+      }}
+      disabled={disabled}
+      hitSlop={8}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: selected, disabled }}
+      accessibilityLabel={accessibilityLabel}
+      style={[
+        styles.checkbox,
+        selected ? styles.checkboxSelected : null,
+        disabled ? styles.checkboxDisabled : null,
+      ]}
+    >
+      {selected ? (
+        <Ionicons name="checkmark" size={14} color="#FFFFFF" />
+      ) : null}
+    </Pressable>
+  );
+}
+
 function UserDirectoryCard({
   item,
   layout,
@@ -143,7 +178,12 @@ function UserDirectoryCard({
   classNameById,
   teacherMetaById,
   parentNamesByStudentId,
+  selected,
+  selectionEnabled,
+  selectionDisabled,
+  onToggleSelect,
   onOpen,
+  openHint,
   onEdit,
   onPassword,
   onRemove,
@@ -156,7 +196,12 @@ function UserDirectoryCard({
   classNameById: Record<string, string>;
   teacherMetaById: Record<string, { classes: string; subjects: string }>;
   parentNamesByStudentId: Record<string, string>;
+  selected?: boolean;
+  selectionEnabled?: boolean;
+  selectionDisabled?: boolean;
+  onToggleSelect?: (user: UserData) => void;
   onOpen?: (user: UserData) => void;
+  openHint?: string;
   onEdit: (user: UserData) => void;
   onPassword: (user: UserData) => void;
   onRemove: (user: UserData) => void;
@@ -166,10 +211,23 @@ function UserDirectoryCard({
 
   return (
     <AdminDirectoryHoverSurface
-      style={adminDirectoryCardStyle(layout)}
+      style={[
+        adminDirectoryCardStyle(layout),
+        selected ? styles.cardSelected : null,
+      ]}
       onPress={onOpen ? () => onOpen(item) : undefined}
     >
       <View style={styles.cardTop}>
+        {selectionEnabled && onToggleSelect ? (
+          <SelectionCheckbox
+            selected={Boolean(selected)}
+            onToggle={() => onToggleSelect(item)}
+            disabled={selectionDisabled}
+            accessibilityLabel={t("admin.bulkSelectUserA11y", {
+              name: item.name || item.email || t("common.unnamed"),
+            })}
+          />
+        ) : null}
         <UserAvatar
           name={item.name}
           email={item.email}
@@ -212,8 +270,8 @@ function UserDirectoryCard({
               </Text>
             </>
           ) : null}
-          {onOpen ? (
-            <Text style={styles.openHint}>{t("admin.parentDetailSubtitle")}</Text>
+          {onOpen && openHint ? (
+            <Text style={styles.openHint}>{openHint}</Text>
           ) : null}
         </View>
         {onOpen ? (
@@ -245,6 +303,7 @@ export function UserDirectoryList({
   const showClassColumn = role === "student";
   const showParentColumn = role === "student";
   const showTeacherColumns = role === "teacher";
+  const supportsBulkDelete = role === "student" || role === "parent";
   const roleLabel = t(`common.${role}`);
   const {
     usersLoading,
@@ -256,6 +315,8 @@ export function UserDirectoryList({
     loadTeacherSubjectAssignments,
   } = useAdminData();
   const [search, setSearch] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const [teacherSubjectLinks, setTeacherSubjectLinks] = useState<
     TeacherSubjectLink[]
   >([]);
@@ -292,6 +353,56 @@ export function UserDirectoryList({
   }, [users, search]);
 
   const pagination = usePaginatedList(filtered, showTableLayout ? 8 : 4, search);
+
+  useEffect(() => {
+    const alive = new Set(users.map((u) => u.id));
+    setSelectedIds((prev) => prev.filter((id) => alive.has(id)));
+  }, [users]);
+
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [role, search]);
+
+  const selectedCount = selectedIds.length;
+  const pageIds = useMemo(
+    () => pagination.pageItems.map((item) => item.id),
+    [pagination.pageItems],
+  );
+  const allPageSelected =
+    pageIds.length > 0 && pageIds.every((id) => selectedIds.includes(id));
+  const allFilteredSelected =
+    filtered.length > 0 &&
+    filtered.every((item) => selectedIds.includes(item.id));
+
+  const toggleSelect = useCallback((user: UserData) => {
+    setSelectedIds((prev) =>
+      prev.includes(user.id)
+        ? prev.filter((id) => id !== user.id)
+        : [...prev, user.id],
+    );
+  }, []);
+
+  const selectAllOnPage = useCallback(() => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      pageIds.forEach((id) => next.add(id));
+      return [...next];
+    });
+  }, [pageIds]);
+
+  const clearPageSelection = useCallback(() => {
+    const pageSet = new Set(pageIds);
+    setSelectedIds((prev) => prev.filter((id) => !pageSet.has(id)));
+  }, [pageIds]);
+
+  const selectAllFiltered = useCallback(() => {
+    setSelectedIds(filtered.map((item) => item.id));
+  }, [filtered]);
+
+  const clearSelection = useCallback(() => {
+    setSelectedIds([]);
+  }, []);
+
   const classNameById = useMemo(
     () =>
       Object.fromEntries(
@@ -545,6 +656,7 @@ export function UserDirectoryList({
 
     try {
       const result = await removeUser(user.id, role);
+      setSelectedIds((prev) => prev.filter((id) => id !== user.id));
       if (result.authDeleted === false) {
         showErrorAlert(
           t("admin.userRemovedPartialTitle"),
@@ -564,6 +676,131 @@ export function UserDirectoryList({
     }
   };
 
+  const onBulkRemove = async () => {
+    if (!supportsBulkDelete || selectedIds.length === 0) return;
+
+    const selectedUsers = users.filter((u) => selectedIds.includes(u.id));
+    const confirmed = await confirmDestructiveAction(
+      t("admin.bulkDeleteTitle", { role: roleLabel }),
+      t("admin.bulkDeleteMessage", {
+        count: selectedUsers.length,
+        role: roleLabel,
+      }),
+      t("admin.bulkDeleteConfirm"),
+      t("common.cancel"),
+    );
+    if (!confirmed) return;
+
+    setBulkDeleting(true);
+    let removed = 0;
+    let partialAuth = 0;
+    const errors: string[] = [];
+
+    try {
+      for (const user of selectedUsers) {
+        try {
+          const result = await removeUser(user.id, role);
+          removed += 1;
+          if (result.authDeleted === false) partialAuth += 1;
+        } catch (err) {
+          const label = user.name || user.email || user.id;
+          const detail =
+            err instanceof Error ? err.message : t("admin.couldNotRemove");
+          errors.push(`${label}: ${detail}`);
+        }
+      }
+
+      setSelectedIds([]);
+
+      if (errors.length > 0) {
+        showErrorAlert(
+          t("common.error"),
+          t("admin.bulkDeletePartial", {
+            removed,
+            total: selectedUsers.length,
+            errors: errors.slice(0, 5).join("\n"),
+          }),
+        );
+      } else if (partialAuth > 0) {
+        showErrorAlert(
+          t("admin.userRemovedPartialTitle"),
+          t("admin.bulkDeleteAuthPartial", {
+            removed,
+            role: roleLabel,
+          }),
+        );
+      } else {
+        showSuccessAlert(
+          t("common.success"),
+          t("admin.bulkDeleteSuccess", {
+            count: removed,
+            role: roleLabel,
+          }),
+        );
+      }
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
+  const detailOpenHint =
+    role === "teacher"
+      ? t("admin.teacherDetailSubtitle")
+      : role === "parent"
+        ? t("admin.parentDetailSubtitle")
+        : undefined;
+
+  const renderBulkToolbar = () => {
+    if (!supportsBulkDelete) return null;
+
+    return (
+      <View style={styles.bulkBar}>
+        <Text style={styles.bulkCount}>
+          {t("admin.bulkSelectedCount", { count: selectedCount })}
+        </Text>
+        <View style={styles.bulkActions}>
+          <TouchableOpacity
+            style={styles.bulkChip}
+            disabled={bulkDeleting || pageIds.length === 0}
+            onPress={allPageSelected ? clearPageSelection : selectAllOnPage}
+          >
+            <Text style={styles.bulkChipText}>
+              {allPageSelected
+                ? t("admin.bulkClearPage")
+                : t("admin.bulkSelectPage")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.bulkChip}
+            disabled={bulkDeleting || filtered.length === 0}
+            onPress={
+              allFilteredSelected ? clearSelection : selectAllFiltered
+            }
+          >
+            <Text style={styles.bulkChipText}>
+              {allFilteredSelected
+                ? t("admin.bulkClearAll")
+                : t("admin.bulkSelectAll", { count: filtered.length })}
+            </Text>
+          </TouchableOpacity>
+          {selectedCount > 0 ? (
+            <TouchableOpacity
+              style={[styles.bulkChip, styles.bulkDeleteChip]}
+              disabled={bulkDeleting}
+              onPress={() => void onBulkRemove()}
+            >
+              <Text style={styles.bulkDeleteText}>
+                {bulkDeleting
+                  ? t("admin.bulkDeleting")
+                  : t("admin.bulkDeleteAction", { count: selectedCount })}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      </View>
+    );
+  };
+
   const renderCardList = () => (
     <View style={adminDirectoryCardsWrapStyle(layout)}>
       {pagination.pageItems.map((item) => (
@@ -577,7 +814,12 @@ export function UserDirectoryList({
           classNameById={classNameById}
           teacherMetaById={teacherMetaById}
           parentNamesByStudentId={parentNamesByStudentId}
+          selected={selectedIds.includes(item.id)}
+          selectionEnabled={supportsBulkDelete}
+          selectionDisabled={bulkDeleting}
+          onToggleSelect={toggleSelect}
           onOpen={openDirectoryDetail}
+          openHint={detailOpenHint}
           onEdit={openEdit}
           onPassword={openPasswordModal}
           onRemove={onRemove}
@@ -589,6 +831,16 @@ export function UserDirectoryList({
   const renderTableList = () => (
     <>
       <View style={adminDirectoryTableHeadStyle()}>
+        {supportsBulkDelete ? (
+          <View style={styles.colSelect}>
+            <SelectionCheckbox
+              selected={allPageSelected}
+              onToggle={allPageSelected ? clearPageSelection : selectAllOnPage}
+              disabled={bulkDeleting || pageIds.length === 0}
+              accessibilityLabel={t("admin.bulkSelectPage")}
+            />
+          </View>
+        ) : null}
         <Text style={[styles.th, styles.colName]}>{t("admin.fullNameLabel")}</Text>
         <Text style={[styles.th, styles.colEmail]}>
           {t("admin.emailProfileLabel")}
@@ -620,12 +872,25 @@ export function UserDirectoryList({
       {pagination.pageItems.map((item) => (
         <AdminDirectoryTableRow
           key={item.id}
+          style={selectedIds.includes(item.id) ? styles.rowSelected : null}
           onPress={
             openDirectoryDetail
               ? () => openDirectoryDetail(item)
               : undefined
           }
         >
+          {supportsBulkDelete ? (
+            <View style={styles.colSelect}>
+              <SelectionCheckbox
+                selected={selectedIds.includes(item.id)}
+                onToggle={() => toggleSelect(item)}
+                disabled={bulkDeleting}
+                accessibilityLabel={t("admin.bulkSelectUserA11y", {
+                  name: item.name || item.email || t("common.unnamed"),
+                })}
+              />
+            </View>
+          ) : null}
           <View style={[styles.colName, styles.tableNameCell]}>
             <UserAvatar
               name={item.name}
@@ -719,6 +984,8 @@ export function UserDirectoryList({
             onPrev={pagination.prevPage}
             onNext={pagination.nextPage}
           />
+
+          {renderBulkToolbar()}
 
           {showTableLayout ? renderTableList() : renderCardList()}
         </>
@@ -913,7 +1180,72 @@ const styles = StyleSheet.create({
     marginTop: 32,
     fontSize: 15,
   },
-  cardTop: { flexDirection: "row", gap: 12, marginBottom: 12 },
+  bulkBar: {
+    marginBottom: 12,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    backgroundColor: "#F8FAFC",
+    gap: 10,
+  },
+  bulkCount: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#334155",
+  },
+  bulkActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  bulkChip: {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  bulkChipText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#475569",
+  },
+  bulkDeleteChip: {
+    borderColor: "#FECACA",
+    backgroundColor: "#FEF2F2",
+  },
+  bulkDeleteText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#DC2626",
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: "#94A3B8",
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkboxSelected: {
+    borderColor: "#2563EB",
+    backgroundColor: "#2563EB",
+  },
+  checkboxDisabled: {
+    opacity: 0.5,
+  },
+  cardSelected: {
+    borderColor: "#93C5FD",
+    backgroundColor: "#EFF6FF",
+  },
+  rowSelected: {
+    backgroundColor: "#EFF6FF",
+  },
+  cardTop: { flexDirection: "row", gap: 12, marginBottom: 12, alignItems: "flex-start" },
   cardBody: { flex: 1, minWidth: 0 },
   name: { fontSize: 16, fontWeight: "800", color: "#0F172A" },
   email: { fontSize: 13, color: "#64748B", marginTop: 2 },
@@ -954,6 +1286,11 @@ const styles = StyleSheet.create({
     color: "#64748B",
     textTransform: "uppercase",
     letterSpacing: 0.4,
+  },
+  colSelect: {
+    width: 36,
+    alignItems: "center",
+    justifyContent: "center",
   },
   colName: { flex: 1.3, minWidth: 0 },
   colEmail: { flex: 1.4, minWidth: 0 },
