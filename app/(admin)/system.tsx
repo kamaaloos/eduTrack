@@ -5,6 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { ErrorBoundary } from "../../components/ErrorBoundary";
 import { AdminScreenShell } from "../../components/admin/AdminScreenShell";
 import { BroadcastAnnouncementCard } from "../../components/admin/BroadcastAnnouncementCard";
+import { ExcelExportCard } from "../../components/admin/ExcelExportCard";
 import { ExcelImportCard } from "../../components/admin/ExcelImportCard";
 import { SchoolAppearanceCard } from "../../components/admin/SchoolAppearanceCard";
 import { DirectMessageCard } from "../../components/messaging/DirectMessageCard";
@@ -107,6 +108,8 @@ export default function AdminSystemScreen() {
             senderId={user?.uid}
             senderName={userData?.name ?? t("common.admin")}
           />
+
+          <ExcelExportCard />
 
           <ExcelImportCard onImportComplete={handleImportComplete} />
         </ScrollView>
