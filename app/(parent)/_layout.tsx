@@ -1,4 +1,5 @@
 import { Stack, Tabs } from "expo-router";
+import type { ReactNode } from "react";
 import { Platform } from "react-native";
 import { RoleGate } from "../../components/auth/RoleGate";
 import { RoleAppFrame } from "../../components/layout/RoleAppFrame";
@@ -7,7 +8,10 @@ import {
   SHELL_SCENE_CONTAINER_STYLE,
   WEB_SHELL_CONTENT_STYLE,
 } from "../../src/constants/tabBar";
-import { ParentChildProvider } from "../../src/context/parentChildContext";
+import {
+  ParentChildProvider,
+  useParentChild,
+} from "../../src/context/parentChildContext";
 import { ParentMenuProvider } from "../../src/context/parentMenuContext";
 
 const PARENT_STACK_SCREENS = [
@@ -67,6 +71,21 @@ function ParentTabs() {
   );
 }
 
+function ParentShell({ children }: { children: ReactNode }) {
+  const { selectedChild } = useParentChild();
+  const viewingChild = Boolean(selectedChild);
+
+  return (
+    <RoleAppFrame
+      showCopyright={!viewingChild}
+      reserveContentFooterSpace={!viewingChild}
+      copyrightBottomOffset={viewingChild ? 0 : 8}
+    >
+      {children}
+    </RoleAppFrame>
+  );
+}
+
 export default function ParentLayout() {
   const Navigator = Platform.OS === "web" ? ParentWebStack : ParentTabs;
 
@@ -74,9 +93,9 @@ export default function ParentLayout() {
     <RoleGate allowedRole="parent">
       <ParentChildProvider>
         <ParentMenuProvider>
-          <RoleAppFrame copyrightBottomOffset={8}>
+          <ParentShell>
             <Navigator />
-          </RoleAppFrame>
+          </ParentShell>
         </ParentMenuProvider>
       </ParentChildProvider>
     </RoleGate>

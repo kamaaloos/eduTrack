@@ -33,8 +33,8 @@ function ChipButton({
       ? accentColor
       : primaryColor
     : hovered
-      ? "#E2E8F0"
-      : "#E5E7EB";
+      ? primaryColor
+      : accentColor;
 
   return (
     <Pressable
@@ -57,9 +57,7 @@ function ChipButton({
         pressed && styles.chipPressed,
       ]}
     >
-      <Text style={[styles.chipText, active && styles.chipTextActive]}>
-        {label}
-      </Text>
+      <Text style={styles.chipText}>{label}</Text>
     </Pressable>
   );
 }
@@ -162,12 +160,9 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   chipText: {
-    color: "#1F2937",
+    color: "#FFFFFF",
     fontWeight: "600",
     fontSize: 14,
-  },
-  chipTextActive: {
-    color: "#FFFFFF",
   },
   empty: {
     color: "#6B7280",

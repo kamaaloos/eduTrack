@@ -61,9 +61,10 @@ export default function ParentDashboard() {
 
   useFocusEffect(
     useCallback(() => {
+      setSelectedChild(null);
       setLoading(true);
       void load();
-    }, [load]),
+    }, [load, setSelectedChild]),
   );
 
   const onRefresh = () => {

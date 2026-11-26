@@ -1003,6 +1003,7 @@
     "complaintSuccess": "Your complaint was sent to school administrators.",
     "complaintError": "Could not send your complaint.",
     "studentDetail": "Student overview",
+    "backToChildren": "Back to children",
     "greetingMorning": "Good morning",
     "greetingAfternoon": "Good afternoon",
     "greetingEvening": "Good evening",
