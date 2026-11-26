@@ -1,7 +1,7 @@
 {
   "name": "edutrack",
   "main": "expo-router/entry",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "start": "cross-env CHOKIDAR_USEPOLLING=true EXPO_USE_FAST_RESOLVER=1 expo start",
     "start:clear": "cross-env CHOKIDAR_USEPOLLING=true EXPO_USE_FAST_RESOLVER=1 expo start --clear",
@@ -41,7 +41,12 @@
     "submit:android:dugsi": "eas submit -p android --profile production-dugsi --latest",
     "build:ios:preview": "eas build -p ios --profile preview",
     "build:ios:production": "eas build -p ios --profile production",
-    "build:ios:development": "eas build -p ios --profile development"
+    "build:ios:development": "eas build -p ios --profile development",
+    "build:ios:preview-dugsi": "eas build -p ios --profile preview-dugsi",
+    "build:ios:production-dugsi": "eas build -p ios --profile production-dugsi",
+    "build:ios:development-dugsi": "eas build -p ios --profile development-dugsi",
+    "submit:ios": "eas submit -p ios --profile production --latest",
+    "submit:ios:dugsi": "eas submit -p ios --profile production-dugsi --latest"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
