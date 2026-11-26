@@ -24,6 +24,7 @@ export function TeacherDashboardQuickActions({
           icon="calendar-outline"
           onPress={() => router.push("/(teachers)/attendance")}
           rowIndex={0}
+          compact
           subtitle={
             pendingAbsenceCount > 0
               ? t("teacher.dashboard.awaitingParent")
@@ -43,6 +44,7 @@ export function TeacherDashboardQuickActions({
           icon="book-outline"
           onPress={() => router.push("/(teachers)/academic")}
           rowIndex={1}
+          compact
         />
       </View>
 
@@ -57,6 +59,7 @@ export function TeacherDashboardQuickActions({
             })
           }
           rowIndex={2}
+          compact
         />
       </View>
     </View>
