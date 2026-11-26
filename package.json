@@ -38,7 +38,7 @@
     "build:android:production-dugsi": "eas build -p android --profile production-dugsi",
     "build:android:development-dugsi": "eas build -p android --profile development-dugsi",
     "submit:android": "eas submit -p android --profile production --latest",
-    "submit:android:dugsi": "eas submit -p android --profile production-dugsi --latest",
+    "submit:android:dugsi": "cross-env EXPO_PUBLIC_APP_BRAND=dugsi EXPO_PUBLIC_ANDROID_PACKAGE=com.maylesoft.dugsi EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER=com.maylesoft.dugsi eas submit -p android --profile production-dugsi --latest",
     "build:ios:preview": "eas build -p ios --profile preview",
     "build:ios:production": "eas build -p ios --profile production",
     "build:ios:development": "eas build -p ios --profile development",
@@ -46,7 +46,7 @@
     "build:ios:production-dugsi": "eas build -p ios --profile production-dugsi",
     "build:ios:development-dugsi": "eas build -p ios --profile development-dugsi",
     "submit:ios": "eas submit -p ios --profile production --latest",
-    "submit:ios:dugsi": "eas submit -p ios --profile production-dugsi --latest"
+    "submit:ios:dugsi": "cross-env EXPO_PUBLIC_APP_BRAND=dugsi EXPO_PUBLIC_ANDROID_PACKAGE=com.maylesoft.dugsi EXPO_PUBLIC_IOS_BUNDLE_IDENTIFIER=com.maylesoft.dugsi eas submit -p ios --profile production-dugsi --latest"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
