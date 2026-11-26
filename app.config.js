@@ -37,6 +37,11 @@ module.exports = ({ config }) => {
     ios: {
       ...config.ios,
       bundleIdentifier: iosBundleId,
+      // HTTPS/TLS via Apple OS only — skips App Store encryption questionnaire.
+      infoPlist: {
+        ...config.ios?.infoPlist,
+        ITSAppUsesNonExemptEncryption: false,
+      },
     },
     web: {
       ...config.web,
