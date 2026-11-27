@@ -15,7 +15,7 @@ import {
   mobileScreenPaddingStyle,
 } from "../../src/constants/webLayout";
 import { webRolePagePaddingStyle } from "../../src/constants/platformLayout";
-import { useStudentMenu } from "../../src/context/studentMenuContext";
+import { StudentMenuContext } from "../../src/context/studentMenuContext";
 import { useContext } from "react";
 import { ScreenBackgroundLayer } from "../ScreenBackgroundLayer";
 import { WebPageCardFrame, webPageBodyStyle } from "../layout/WebPageCard";
@@ -51,7 +51,9 @@ export function StudentScreenShell({
 }: StudentScreenShellProps) {
   const { user } = useContext(AuthContext);
   const layout = usePlatformLayout();
-  const { openMenu } = useStudentMenu();
+  // Parent child tabs reuse this shell without StudentMenuProvider.
+  const studentMenu = useContext(StudentMenuContext);
+  const menuEnabled = showMenu && !!studentMenu;
   const notificationCount = useUnreadNotificationCount(
     showNotifications ? user?.uid : null,
   );
@@ -95,7 +97,7 @@ export function StudentScreenShell({
           title={title}
           subtitle={subtitle}
           showBack={showBack}
-          showMenu={showMenu}
+          showMenu={menuEnabled}
           hideMenuOnDesktopWeb
           notificationCount={showNotifications ? notificationCount : 0}
           onNotificationsPress={
@@ -103,7 +105,7 @@ export function StudentScreenShell({
               ? () => router.push("/(students)/notifications" as never)
               : undefined
           }
-          onMenuPress={openMenu}
+          onMenuPress={studentMenu && menuEnabled ? studentMenu.openMenu : undefined}
           headerRight={headerRight}
         />
         <View style={[styles.body, webPageBodyStyle()]}>{body}</View>

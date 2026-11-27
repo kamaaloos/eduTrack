@@ -17,7 +17,8 @@ type StudentMenuContextValue = {
   closeMenu: () => void;
 };
 
-const StudentMenuContext = createContext<StudentMenuContextValue | null>(null);
+export const StudentMenuContext =
+  createContext<StudentMenuContextValue | null>(null);
 
 export function StudentMenuProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
